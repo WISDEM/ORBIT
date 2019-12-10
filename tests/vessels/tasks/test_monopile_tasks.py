@@ -10,8 +10,8 @@ from copy import deepcopy
 
 import pytest
 
-from tests.vessels import WTIV, FEEDER
 from ORBIT.vessels import tasks
+from tests.vessels import WTIV, FEEDER
 
 
 def test_upend_monopile():

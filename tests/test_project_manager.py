@@ -10,10 +10,10 @@ from datetime import datetime
 import pandas as pd
 import pytest
 
-from tests.data import test_weather
 from ORBIT import ProjectManager
-from tests.vessels import WTIV_SPECS
+from tests.data import test_weather
 from ORBIT.manager import MissingKeys, PhaseNotFound, WeatherProfileError
+from tests.vessels import WTIV_SPECS
 
 SPECIFIC_WTIV = deepcopy(WTIV_SPECS)
 SPECIFIC_WTIV["name"] = "Phase Specific WTIV"

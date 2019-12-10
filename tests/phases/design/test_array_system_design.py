@@ -12,10 +12,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from ORBIT.phases.design import (
-    ArraySystemDesign,
-    CustomArraySystemDesign,
-)
+from ORBIT.phases.design import ArraySystemDesign, CustomArraySystemDesign
 from ORBIT.simulation.exceptions import LibraryItemNotFoundError
 
 ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../.."))
