@@ -6,9 +6,8 @@ __status__ = "Development"
 
 import os
 
-from .manager import ProjectManager
-
 from ._defaults import defaults  # isort:skip
+from .manager import ProjectManager  # isort:skip
 
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
