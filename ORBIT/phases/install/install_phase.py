@@ -342,7 +342,10 @@ class InstallPhase(BasePhase):
 
         logs = self.logs.loc[self.logs["level"] == "INFO"]
         grouped = (
-            logs.groupby(["agent", "type"]).sum()["time"].unstack().fillna(0.0)
+            logs.groupby(["agent", "type"])
+            .sum()["duration"]
+            .unstack()
+            .fillna(0.0)
         )
 
         if "Operations" not in grouped.columns:
