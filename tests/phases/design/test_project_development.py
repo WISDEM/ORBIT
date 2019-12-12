@@ -5,11 +5,14 @@ __copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
-
+import os
 from copy import deepcopy
 
-from ORBIT._defaults import defaults
+from ORBIT.library import extract_library_specs
 from ORBIT.phases.design import ProjectDevelopment
+
+ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../.."))
+TEST_LIBRARY = os.path.join(ROOT, "data", "library")
 
 base = {
     "project_development": {
@@ -42,8 +45,10 @@ def test_defaults():
         _config = deepcopy(base)
         _config["project_development"].pop(k)
 
-        dev = ProjectDevelopment(_config)
+        dev = ProjectDevelopment(_config, library_path=TEST_LIBRARY)
         dev.run()
+
+        defaults = extract_library_specs("defaults", "project")
 
         _split = k.split("_")
         n = "_".join(_split[:-1])

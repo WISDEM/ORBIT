@@ -9,6 +9,7 @@ __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
 
+import itertools
 from copy import deepcopy
 
 import pytest
@@ -33,6 +34,7 @@ config = {
     "plant": {"layout": "grid", "turbine_spacing": 5, "num_turbines": 40},
     "turbine": {"rotor_diameter": 154, "turbine_rating": 9},
     "array_system": {
+        "strategy": "lay_bury",
         "cables": {
             "XLPE_400mm_36kV": {
                 "cable_sections": [(0.81, 28)],
@@ -47,22 +49,26 @@ config = {
                 ],
                 "linear_density": 43.29,
             },
-        }
+        },
     },
     "export_system": {
+        "strategy": "lay_bury",
         "cables": {
             "XLPE_300mm_36kV": {
                 "cable_sections": [(33.3502, 10)],
                 "linear_density": 50.0,
             }
-        }
+        },
     },
 }
 
+installs = (ArrInstall, ExpInstall)
+weather = (None, test_weather)
+strategies = ("lay_bury", "lay", "bury")
+
 
 @pytest.mark.parametrize(
-    "CableInstall,weather",
-    (((c, w) for c in (ArrInstall, ExpInstall) for w in (None, test_weather))),
+    "CableInstall,weather", itertools.product(installs, weather)
 )
 def test_creation(CableInstall, weather):
     sim = CableInstall(config, weather=weather, print_logs=False)
@@ -73,8 +79,7 @@ def test_creation(CableInstall, weather):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,weather",
-    (((c, w) for c in (ArrInstall, ExpInstall) for w in (None, test_weather))),
+    "CableInstall,weather", itertools.product(installs, weather)
 )
 def test_vessel_creation(CableInstall, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
@@ -86,8 +91,7 @@ def test_vessel_creation(CableInstall, weather):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,weather",
-    ((c, w) for c in (ArrInstall, ExpInstall) for w in (None, test_weather)),
+    "CableInstall,weather", itertools.product(installs, weather)
 )
 def test_carousel_system_creation(CableInstall, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
@@ -113,19 +117,22 @@ def test_logger_creation(CableInstall, weather, log_level, expected):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,weather",
-    (((c, w) for c in (ArrInstall, ExpInstall) for w in (None, test_weather))),
+    "CableInstall,strategy,weather",
+    itertools.product(installs, strategies, weather),
 )
-def test_full_run_completes(CableInstall, weather):
-    sim = CableInstall(config, weather=weather, log_level="DEBUG")
+def test_full_run_completes(CableInstall, strategy, weather):
+    strategy_config = deepcopy(config)
+    strategy_config["array_system"]["strategy"] = strategy
+    strategy_config["export_system"]["strategy"] = strategy
+
+    sim = CableInstall(strategy_config, weather=weather, log_level="DEBUG")
     sim.run()
 
     assert float(sim.logs[sim.logs.action == "Complete"]["time"]) > 0
 
 
 @pytest.mark.parametrize(
-    "CableInstall,weather",
-    (((c, w) for c in (ArrInstall, ExpInstall) for w in (None, test_weather))),
+    "CableInstall,weather", itertools.product(installs, weather)
 )
 def test_full_run_is_valid(CableInstall, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
@@ -143,8 +150,7 @@ def test_trench_install_creation(weather):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,weather",
-    (((c, w) for c in (ArrInstall, ExpInstall) for w in (None, test_weather))),
+    "CableInstall,weather", itertools.product(installs, weather)
 )
 def test_full_run_logging(CableInstall, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
@@ -263,12 +269,13 @@ def test_kwargs_for_array_install():
 def test_kwargs_for_export_install():
 
     new_export_system = {
+        "strategy": "lay_bury",
         "cables": {
             "XLPE_300mm_36kV": {
                 "cable_sections": [(88.02, 10)],
                 "linear_density": 50.0,
             }
-        }
+        },
     }
     new_site = {
         "distance": 50,

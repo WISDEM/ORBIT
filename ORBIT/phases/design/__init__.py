@@ -7,6 +7,7 @@ __email__ = ["jake.nunemaker@nrel.gov" "robert.hammond@nrel.gov"]
 
 
 from .design_phase import DesignPhase  # isort:skip
+from .oss_design import OffshoreSubstationDesign
 from .monopile_design import MonopileDesign
 from .array_system_design import ArraySystemDesign, CustomArraySystemDesign
 from .project_development import ProjectDevelopment

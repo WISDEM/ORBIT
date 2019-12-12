@@ -31,22 +31,35 @@ __email__ = "robert.hammond@nrel.gov"
 
 
 import os
+import re
 import csv
 import warnings
 
 import yaml
 import pandas as pd
+from yaml import Dumper
 
 from ORBIT.simulation.exceptions import LibraryItemNotFoundError
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-
-
 ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../.."))
 default_library = os.path.join(ROOT, "library")
+
+# Need a custom loader to read in scientific notation correctly
+loader = yaml.SafeLoader
+loader.add_implicit_resolver(
+    "tag:yaml.org,2002:float",
+    re.compile(
+        """^(?:
+     [-+]?(?:[0-9][0-9_]*)\\.[0-9_]*(?:[eE][-+]?[0-9]+)?
+    |[-+]?(?:[0-9][0-9_]*)(?:[eE][-+]?[0-9]+)
+    |\\.[0-9_]+(?:[eE][-+][0-9]+)?
+    |[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\\.[0-9_]*
+    |[-+]?\\.(?:inf|Inf|INF)
+    |\\.(?:nan|NaN|NAN))$""",
+        re.X,
+    ),
+    list("-+0123456789."),
+)
 
 
 def clean_warning(message, category, filename, lineno, file=None, line=""):
@@ -175,7 +188,7 @@ def _extract_file(filepath):
     """
 
     if filepath.endswith("yaml"):
-        return yaml.load(open(filepath, "r"), Loader=Loader)
+        return yaml.load(open(filepath, "r"), Loader=loader)
 
     elif filepath.endswith("csv"):
         df = pd.read_csv(filepath, index_col=False)
@@ -241,6 +254,8 @@ def export_library_specs(key, filename, data, file_ext="yaml"):
 
 
 PATH_LIBRARY = {
+    # default data
+    "defaults": "defaults",
     # vessels
     "array_cable_lay_vessel": "vessels",
     "export_cable_lay_vessel": "vessels",

@@ -19,6 +19,7 @@ from ORBIT.phases.design import (
     ExportSystemDesign,
     ProjectDevelopment,
     ScourProtectionDesign,
+    OffshoreSubstationDesign,
 )
 from ORBIT.phases.install import (
     TurbineInstallation,
@@ -47,6 +48,7 @@ class ProjectManager:
         ArraySystemDesign,
         ExportSystemDesign,
         ScourProtectionDesign,
+        OffshoreSubstationDesign,
     ]
 
     _install_phases = [

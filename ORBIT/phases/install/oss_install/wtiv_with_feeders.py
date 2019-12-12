@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 
-from ORBIT import defaults
 from ORBIT.vessels import Vessel, tasks
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import InstallPhase
@@ -26,6 +25,7 @@ class OffshoreSubstationInstallation(InstallPhase):
     vessel and feeder barge.
     """
 
+    #:
     expected_config = {
         "num_substations": "int",
         "oss_install_vessel": "dict | str",
@@ -67,6 +67,7 @@ class OffshoreSubstationInstallation(InstallPhase):
 
         self.config = self.initialize_library(config, **kwargs)
         self.extract_phase_kwargs(**kwargs)
+        self.extract_defaults()
 
         self.env = Environment(weather)
         self.init_logger(**kwargs)
@@ -146,7 +147,7 @@ class OffshoreSubstationInstallation(InstallPhase):
 
         name = oss_vessel_specs.get("name", "Heavy Lift Vessel")
         cost = oss_vessel_specs.get(
-            "day_rate", defaults["oss_vessel_day_rate"]
+            "day_rate", self.defaults["oss_vessel_day_rate"]
         )
 
         self.oss_vessel = Vessel(name, oss_vessel_specs)
@@ -175,7 +176,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             raise Exception("Feeder vessel is not defined.")
 
         name = feeder_specs.get("name", "OSS Feeder")
-        cost = feeder_specs.get("day_rate", defaults["feeder_day_rate"])
+        cost = feeder_specs.get("day_rate", self.defaults["feeder_day_rate"])
 
         _storage_specs = feeder_specs.get("storage_specs", None)
         if _storage_specs is None:

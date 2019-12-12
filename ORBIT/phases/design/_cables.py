@@ -434,7 +434,8 @@ class CableSystem(DesignPhase):
             except AttributeError:
                 sections = self.cable_lengths_by_type[name]
 
-            _temp[name]["cable_sections"] = list(Counter(sections).items())
+            sections = [(*el[:-1], el[-1]) for el in Counter(sections).items()]
+            _temp[name]["cable_sections"] = sections
             _temp[name]["linear_density"] = cable.linear_density
 
         return output

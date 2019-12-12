@@ -6,12 +6,6 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-import numpy as np
-
-from ORBIT import defaults
-from ORBIT.vessels import Vessel
-from ORBIT.simulation import Environment, VesselStorage
-from ORBIT.phases.install import InstallPhase
 from ORBIT.simulation.logic import (
     get_item_from_storage,
     prep_for_site_operations,
@@ -43,6 +37,7 @@ def solo_install_turbines(env, vessel, port, distance, number, **kwargs):
     """
 
     transit_time = vessel.transit_time(distance)
+    reequip_time = vessel.crane.reequip(**kwargs)
 
     transit = {
         "agent": vessel.name,
@@ -116,6 +111,17 @@ def solo_install_turbines(env, vessel, port, distance, number, **kwargs):
                         env, vessel, item_type="Nacelle", **kwargs
                     )
                 )
+
+                reequip = {
+                    "agent": vessel.name,
+                    "type": "Operations",
+                    "location": "Site",
+                    "duration": reequip_time,
+                    "action": "CraneReequip",
+                    **vessel.operational_limits,
+                }
+
+                yield env.process(env.task_handler(reequip))
 
                 # Install nacelle
                 yield env.process(

@@ -6,10 +6,13 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-import os
 from abc import ABC, abstractmethod
 
-from ORBIT.library import initialize_library, extract_library_data
+from ORBIT.library import (
+    initialize_library,
+    extract_library_data,
+    extract_library_specs,
+)
 
 
 class BasePhase(ABC):
@@ -61,6 +64,13 @@ class BasePhase(ABC):
         phase_name = kwargs.get("phase_name", None)
         if phase_name is not None:
             self.phase = phase_name
+
+    def extract_defaults(self):
+        """
+        Extracts the default data from the library.
+        """
+
+        self.defaults = extract_library_specs("defaults", "project")
 
     @abstractmethod
     def run(self):

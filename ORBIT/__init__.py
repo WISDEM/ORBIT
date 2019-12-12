@@ -6,7 +6,6 @@ __status__ = "Development"
 
 import os
 
-from ._defaults import defaults  # isort:skip
 from .manager import ProjectManager  # isort:skip
 
 
