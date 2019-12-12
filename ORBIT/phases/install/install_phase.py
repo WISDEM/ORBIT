@@ -16,7 +16,6 @@ import simpy
 import pandas as pd
 
 from ORBIT.phases import BasePhase
-from ORBIT._defaults import defaults
 from ORBIT.simulation.port import Port
 from ORBIT.simulation.exceptions import IncorrectLogLevel
 
@@ -259,7 +258,7 @@ class InstallPhase(BasePhase):
 
         name = self.config["port"].get("name", "Port")
         _key = "port_cost_per_month"
-        _cost = self.config["port"].get("monthly_rate", defaults[_key])
+        _cost = self.config["port"].get("monthly_rate", self.defaults[_key])
 
         _months = self.total_phase_time / HOURS_PER_MONTH
         _remaining = _months % 1

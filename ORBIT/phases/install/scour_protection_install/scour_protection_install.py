@@ -6,7 +6,6 @@ __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
 
-from ORBIT import defaults
 from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorageContainer
 from ORBIT.phases.install import InstallPhase
@@ -21,6 +20,7 @@ from .process import (
 class ScourProtectionInstallation(InstallPhase):
     """Scour protection installation simulation using a single vessel."""
 
+    #:
     expected_config = {
         "scour_protection_install_vessel": "dict | str",
         "site": {"distance": "int"},
@@ -61,6 +61,7 @@ class ScourProtectionInstallation(InstallPhase):
         ]["tonnes_per_substructure"]
 
         self.extract_phase_kwargs(**kwargs)
+        self.extract_defaults()
 
         self.env = Environment(weather)
         self.init_logger(**kwargs)
@@ -123,7 +124,7 @@ class ScourProtectionInstallation(InstallPhase):
             "name", "Scour Protection Install Vessel"
         )
         cost = scour_protection_specs["vessel_specs"].get(
-            "day_rate", defaults["scour_day_rate"]
+            "day_rate", self.defaults["scour_day_rate"]
         )
         self.agent_costs[name] = cost
 
@@ -201,9 +202,12 @@ def install_scour_protection(env, vessel, port, install_specs, **kwargs):
         Number of tonnes required to be installed at each substation
     """
 
-    port_to_site_distance, turbine_to_turbine_distance, turbines_to_install, rock_tonnes_per_sub = (
-        install_specs
-    )
+    (
+        port_to_site_distance,
+        turbine_to_turbine_distance,
+        turbines_to_install,
+        rock_tonnes_per_sub,
+    ) = install_specs
 
     turbine_to_turbine = vessel.transit_time(turbine_to_turbine_distance)
 

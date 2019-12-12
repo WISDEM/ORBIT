@@ -90,7 +90,6 @@ def install_turbine_blade(env, vessel, blade, **kwargs):
 
     Subprocesses:
 
-    - Reequip crane, ``vessel.crane.reequip()``
     - Lift blade, ``tasks.lift_turbine_blade()``
     - Attach blade, ``tasks.attach_turbine_blade()``
 
@@ -101,7 +100,6 @@ def install_turbine_blade(env, vessel, blade, **kwargs):
     tower : dict
     """
 
-    reequip_time = vessel.crane.reequip(**kwargs)
     lift_time = tasks.lift_turbine_blade(vessel, **kwargs)
     attach_time = tasks.attach_turbine_blade(vessel, **kwargs)
 
@@ -113,7 +111,6 @@ def install_turbine_blade(env, vessel, blade, **kwargs):
     }
 
     task_list = [
-        {"action": "CraneReequip", "duration": reequip_time, **_shared},
         {"action": "LiftBlade", "duration": lift_time, **_shared},
         {"action": "AttachBlade", "duration": attach_time, **_shared},
     ]

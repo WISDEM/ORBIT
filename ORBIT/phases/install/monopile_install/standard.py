@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 
-from ORBIT import defaults
 from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import InstallPhase
@@ -76,6 +75,7 @@ class MonopileInstallation(InstallPhase):
         self.env = Environment(weather)
         self.init_logger(**kwargs)
         self.extract_phase_kwargs(**kwargs)
+        self.extract_defaults()
 
         self.initialize_port()
         self.initialize_wtiv()
@@ -169,7 +169,7 @@ class MonopileInstallation(InstallPhase):
 
         name = wtiv_specs.get("name", "WTIV")
         cost = wtiv_specs["vessel_specs"].get(
-            "day_rate", defaults["wtiv_day_rate"]
+            "day_rate", self.defaults["wtiv_day_rate"]
         )
 
         self.wtiv = Vessel(name, wtiv_specs)
@@ -197,7 +197,7 @@ class MonopileInstallation(InstallPhase):
             raise Exception("Feeder Barge is not defined.")
 
         cost = feeder_specs["vessel_specs"].get(
-            "day_rate", defaults["feeder_day_rate"]
+            "day_rate", self.defaults["feeder_day_rate"]
         )
 
         _storage_specs = feeder_specs.get("storage_specs", None)

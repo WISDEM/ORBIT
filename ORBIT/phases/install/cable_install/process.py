@@ -497,10 +497,10 @@ def connect_cable_section_to_target(env, vessel, **kwargs):
 
 
 def lay_bury_full_array_cable_section(
-    env, vessel, cable_len_km, cable_mass_tonnes, **kwargs
+    env, vessel, cable_len_km, cable_mass_tonnes, strategy, **kwargs
 ):
     """
-    Subprocesses to lay and connect cable between turbines and offshore
+    Subprocesses to lay, bury, and connect cable between turbines and offshore
     substation.
 
     Parameters
@@ -513,8 +513,9 @@ def lay_bury_full_array_cable_section(
         Length of cable, in km.
     cable_mass_tonnes : int or float
         Mass of cable, tonnes.
-    simultaneous_lay_bury : bool
-        Indicator for simultaneous laying and burying of cable
+    strategy : str
+        One of "lay", "bury", "lay_bury" to indicate which of the two (or both)
+        processes will be completed in the subprocess.
     """
 
     # Position at site
@@ -526,15 +527,39 @@ def lay_bury_full_array_cable_section(
     # Lower cable
     yield env.process(lower_cable(env, vessel, **kwargs))
 
-    # Lay and bury cable between offshore substructure
-    yield env.process(
-        lay_bury_cable_section(
-            env, vessel, cable_len_km, cable_mass_tonnes, **kwargs
+    if strategy == "lay_bury":
+        yield env.process(
+            lay_bury_cable_section(
+                env, vessel, cable_len_km, cable_mass_tonnes, **kwargs
+            )
         )
-    )
-
-    # Complete the installation of the cable
+    elif strategy == "lay":
+        yield env.process(
+            lay_cable_section(
+                env, vessel, cable_len_km, cable_mass_tonnes, **kwargs
+            )
+        )
     yield env.process(connect_cable_section_to_target(env, vessel, **kwargs))
+
+
+def bury_full_cable_section(env, vessel, cable_len_km, **kwargs):
+    """
+    Subprocesses to bury cable between turbines and the offshore substation.
+
+    Parameters
+    ----------
+    env : simpy.Environment
+        Simulation environment.
+    vessel : Vessel
+        Cable laying vessel.
+    cable_len_km : int or float
+        Length of cable, in km.
+    """
+
+    # Position at site
+    yield env.process(position_onsite(env, vessel, **kwargs))
+
+    yield env.process(bury_cable_section(env, vessel, cable_len_km, **kwargs))
 
 
 def splice_cable_process(env, vessel, **kwargs):
@@ -612,3 +637,385 @@ def onshore_work(
 
     # Lower cable to seafloor
     yield env.process(lower_cable(env, vessel, **kwargs))
+
+
+def lay_array_cables(
+    env, vessel, port, num_cables, distance_to_site, strategy, **kwargs
+):
+    """
+    Simulation of the installation of array cables.
+    NOTE: This does not support cable splicing scenarios.
+
+    Parameters
+    ----------
+    env : Simpy.Environment
+        Simulation environment.
+    vessel : Vessel
+        Cable laying vessel.
+    port : Simpy.FilterStore
+        Simulation port object.
+    num_cables : int
+        Number of cable sections to be installed.
+    distance_to_site : int or float
+        Distance between port and offshore wind site.
+    strategy : str
+        One of "lay" or "lay_bury" to indicate if the cable will be buried
+        at the same time as laying it.
+
+    Raises
+    ------
+    Exception
+        Vessel is lost at sea if not at sea or at port.
+    """
+
+    while num_cables:
+        if vessel.at_port:
+            yield env.process(
+                get_carousel_from_port(env, vessel, port, **kwargs)
+            )
+            vessel.update_trip_data(deck=False, items=False)
+            yield env.process(
+                transport(env, vessel, distance_to_site, False, True, **kwargs)
+            )
+        elif vessel.at_site:
+            while vessel.carousel.section_lengths:
+
+                # Retrieve the cable section length and mass and install
+                _len = vessel.carousel.section_lengths.pop(0)
+                _mass = vessel.carousel.section_masses.pop(0)
+                _speed = vessel.carousel.section_bury_speeds.pop(0)
+                if _speed == -1:
+                    kw = {**kwargs}
+                else:
+                    kw = {**kwargs, "cable_bury_speed": _speed}
+
+                yield env.process(
+                    lay_bury_full_array_cable_section(
+                        env, vessel, _len, _mass, strategy, **kw
+                    )
+                )
+
+                num_cables -= 1
+
+            # Go back to port once the carousel is depleted.
+            yield env.process(
+                transport(env, vessel, distance_to_site, True, False, **kwargs)
+            )
+
+        else:
+            raise Exception("Vessel is lost at sea.")
+
+    _strategy = strategy.replace("_", " and ").replace("y", "ying")
+    env.logger.debug(
+        f"Array cable {_strategy} complete!",
+        extra={
+            "agent": vessel.name,
+            "time": env.now,
+            "type": "Status",
+            "action": "Complete",
+        },
+    )
+
+
+def bury_cables(
+    env, vessel, port, num_cables, distance_to_site, system, **kwargs
+):
+    """
+    Simulation of the burying of array cables.
+
+    .. note:: This shouldn't actually acrue any port time or costs because it's
+    not relying on the port for any operations other than going to/from site.
+
+    Parameters
+    ----------
+    env : Simpy.Environment
+        Simulation environment.
+    cable_vessel : Vessel
+        Cable laying vessel.
+    port : Simpy.FilterStore
+        Simulation port object.
+    num_cables : int
+        Number of cable sections to be installed.
+    distance_to_site : int or float
+        Distance between port and offshore wind site.
+
+    Raises
+    ------
+    Exception
+        Vessel is lost at sea if not at sea or at port.
+    """
+
+    while num_cables:
+        if vessel.at_port:
+            vessel.update_trip_data(deck=False, items=False)
+            yield env.process(
+                transport(env, vessel, distance_to_site, False, True, **kwargs)
+            )
+        elif vessel.at_site:
+            while vessel.carousel.section_lengths:
+
+                # Retrieve the cable section length and mass and install
+                _len = vessel.carousel.section_lengths.pop(0)
+                _speed = vessel.carousel.section_bury_speeds.pop(0)
+                if _speed == -1:
+                    kw = {**kwargs}
+                else:
+                    kw = {**kwargs, "cable_bury_speed": _speed}
+
+                yield env.process(
+                    bury_full_cable_section(env, vessel, _len, **kw)
+                )
+
+                num_cables -= 1
+
+            # Go back to port once the carousel is depleted.
+            yield env.process(
+                transport(env, vessel, distance_to_site, True, False, **kwargs)
+            )
+
+        else:
+            raise Exception("Vessel is lost at sea.")
+
+    env.logger.debug(
+        f"{system.title()} cable burying complete!",
+        extra={
+            "agent": vessel.name,
+            "time": env.now,
+            "type": "Status",
+            "action": "Complete",
+        },
+    )
+
+
+def install_trench(env, vessel, trench_length, **kwargs):
+    """
+    Simulation of the installation of array cables.
+    NOTE: This does not support cable splicing scenarios.
+
+    Parameters
+    ----------
+    env : Simpy.Environment
+        Simulation environment
+    trench_length : int or float
+        Distance between onshore substation and landfall, km.
+    """
+
+    yield env.process(dig_trench(env, vessel, trench_length, **kwargs))
+
+
+def lay_export_cables(
+    env,
+    vessel,
+    trench_vessel,
+    port,
+    cable_length,
+    num_sections,
+    distances,
+    strategy,
+    **kwargs,
+):
+    """
+    Simulation of the installation of export cables.
+
+    Parameters
+    ----------
+    env : Simpy.Environment
+        Simulation environment
+    vessel : Vessel
+        Cable laying vessel.
+    trench_vessel : Vessel
+        Trench digging operation.
+    port : Simpy.FilterStore
+        Simulation port object
+    cable_length : float
+        Length of a full cable section.
+    num_sections : int
+        Number of individual cable sections (could be spliced) to install to
+        connect the wind farm to its onshore interconnection point.
+    distances : SimpleNamespace
+        The collection of distances required for export cable installation:
+        site : int or float
+            Distance to site, km.
+        landfall : int or float
+            Distance between from the offshore substation and landfall, km.
+        beach : int or float
+            Distance between where a vessel anchors offshore and the landfall
+            site, km.
+        interconnection : int or float
+            Distance between landfall and the onshore substation, km.
+    strategy : str
+        One of "lay" or "lay_bury" to indicate if the export cable is being
+        laid only or laid and buried simultaneously.
+
+    Raises
+    ------
+    Exception
+        Vessel is lost at sea if not at sea or at port.
+    """
+
+    STRATEGY_MAP = {
+        "lay_bury": lay_bury_cable_section,
+        "lay": lay_cable_section,
+    }
+
+    yield env.process(
+        install_trench(
+            env=env,
+            vessel=trench_vessel,
+            trench_length=distances.interconnection,
+            **kwargs,
+        )
+    )
+
+    splice_required = False
+    new_start = True
+
+    while num_sections:  # floats aren't exact
+        if vessel.at_port:
+            yield env.process(
+                get_carousel_from_port(env, vessel, port, **kwargs)
+            )
+            vessel.update_trip_data(deck=False, items=False)
+            yield env.process(
+                transport(env, vessel, distances.site, False, True, **kwargs)
+            )
+        elif vessel.at_site:
+            while vessel.carousel.section_lengths:
+
+                # Retrieve the cable section length and mass and install
+                _len = vessel.carousel.section_lengths.pop(0)
+                _mass = vessel.carousel.section_masses.pop(0)
+                num_sections -= 1
+
+                if new_start:
+                    _pct_to_install = (
+                        distances.beach + distances.interconnection
+                    ) / _len
+                    remaining_connection_len = cable_length
+                    # TODO: Need error handling here to allow for a splice in
+                    # the middle of onshore OR user needs to ensure the vessel
+                    # can actually fit the full length
+                    yield env.process(
+                        onshore_work(
+                            env,
+                            vessel,
+                            distances.beach,
+                            distances.interconnection,
+                            _mass * _pct_to_install,
+                            **kwargs,
+                        )
+                    )
+                    new_start = False
+
+                    # Keep track of what's left overall
+                    remaining_connection_len -= _len * _pct_to_install
+
+                    # Keep track of what's left in the cable section
+                    _len_remaining = _len * (1 - _pct_to_install)
+                    _mass_remaining = _mass * (1 - _pct_to_install)
+
+                    # If there is cable still left in the section, install it
+                    if round(_len_remaining, 10) > 0:
+                        yield env.process(
+                            STRATEGY_MAP[strategy](
+                                env,
+                                vessel,
+                                _len_remaining,
+                                _mass_remaining,
+                                **kwargs,
+                            )
+                        )
+                        remaining_connection_len -= _len_remaining
+
+                        # If an individual connection is complete, then finish
+                        # the individual installation; otherwise return to port
+                        # for the remaing cable
+                        if round(remaining_connection_len, 10) == 0:
+                            yield env.process(
+                                position_onsite(env, vessel, **kwargs)
+                            )
+                            yield env.process(
+                                connect_cable_section_to_target(
+                                    env, vessel, **kwargs
+                                )
+                            )
+                            new_start = True
+                        else:
+                            splice_required = True
+                            yield env.process(
+                                transport(
+                                    env,
+                                    vessel,
+                                    distances.site,
+                                    True,
+                                    False,
+                                    **kwargs,
+                                )
+                            )
+                    else:
+                        splice_required = True
+                        yield env.process(
+                            transport(
+                                env,
+                                vessel,
+                                distances.site,
+                                True,
+                                False,
+                                **kwargs,
+                            )
+                        )
+
+                elif splice_required:
+                    yield env.process(
+                        splice_cable_process(env, vessel, **kwargs)
+                    )
+                    yield env.process(
+                        STRATEGY_MAP[strategy](
+                            env, vessel, _len, _mass, **kwargs
+                        )
+                    )
+                    remaining_connection_len -= _len
+
+                    if round(remaining_connection_len, 10) == 0:
+                        yield env.process(
+                            position_onsite(env, vessel, **kwargs)
+                        )
+                        yield env.process(
+                            connect_cable_section_to_target(
+                                env, vessel, **kwargs
+                            )
+                        )
+                        new_start = True
+                        splice_required = False
+
+                    else:
+                        # The carousel has no more cable because there aren't
+                        # incomplete sections unless the whole cable can't fit
+                        # on the carousel.
+                        splice_required = True  # enforcing that it stays True
+
+                    # go back to port
+                    yield env.process(
+                        transport(
+                            env, vessel, distances.site, True, False, **kwargs
+                        )
+                    )
+
+            # go back to port
+            yield env.process(
+                transport(env, vessel, distances.site, True, False, **kwargs)
+            )
+
+        else:
+            raise Exception("Vessel is lost at sea.")
+
+    _strategy = strategy.replace("_", " and ").replace("y", "ying")
+    env.logger.debug(
+        f"Export cable {_strategy} complete!",
+        extra={
+            "agent": vessel.name,
+            "time": env.now,
+            "type": "Status",
+            "action": "Complete",
+        },
+    )

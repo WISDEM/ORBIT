@@ -17,8 +17,6 @@ from ORBIT.simulation.exceptions import LibraryItemNotFoundError
 
 ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../.."))
 TEST_LIBRARY = os.path.join(ROOT, "data", "library")
-# /Users/rhammond/Documents/GitHub/ORBIT/tests/data/library
-# /Users/rhammond/Documents/GitHub/ORBIT/tests/data/library
 
 config_full_ring = {
     "site": {"depth": 20},

@@ -24,6 +24,7 @@ class Carousel:
     weight: float
     section_lengths: list
     section_masses: list
+    section_bury_speeds: list
     deck_space: int
 
 
@@ -99,23 +100,36 @@ class CarouselSystem:
             Array of cable section masses to be installed in tonnes.
         """
 
-        lengths = np.array(
+        length_speed = np.array(
             list(
                 itertools.chain.from_iterable(
-                    [length] * n
-                    for length, n in self.cables[cable_name]["cable_sections"]
+                    [[length, *_]] * n
+                    for length, *_, n in self.cables[cable_name][
+                        "cable_sections"
+                    ]
                 )
             )
         )
+        if length_speed.shape[1] == 1:
+            bury_speeds = np.full(length_speed.shape[0], -1)
+        else:
+            bury_speeds = length_speed[:, 1]
+
+        lengths = length_speed[:, 0]
 
         masses = np.round_(
             lengths * self.cables[cable_name]["linear_density"], 10
         )
 
-        return lengths, masses
+        return lengths, masses, bury_speeds
 
     def _create_cable_carousel_with_splice(
-        self, max_length, cable_index, section_lengths, section_masses
+        self,
+        max_length,
+        cable_index,
+        section_lengths,
+        section_masses,
+        section_bury_speeds,
     ):
         """
         Creates a `Carousel` of spliced cables with only a single cable section
@@ -126,16 +140,19 @@ class CarouselSystem:
         name = f"Carousel {cable_index}-{j}"
         section_lengths = section_lengths.tolist()
         section_masses = section_masses.tolist()
+        section_bury_speeds = section_bury_speeds.tolist()
 
         while section_lengths:
             remaining_length = section_lengths.pop(0)
             remaining_mass = section_masses.pop(0)
+            speed = section_bury_speeds.pop(0)
+
             while remaining_length:
                 length = min(max_length, remaining_length)
                 pct = length / remaining_length
                 mass = remaining_mass * pct
                 self.carousels[name] = Carousel(
-                    name, length, mass, [length], [mass], 1
+                    name, length, mass, [length], [mass], [speed], 1
                 )
 
                 j += 1
@@ -144,7 +161,12 @@ class CarouselSystem:
                 remaining_mass -= mass
 
     def _create_cable_carousel_without_splice(
-        self, max_length, cable_index, section_lengths, section_masses
+        self,
+        max_length,
+        cable_index,
+        section_lengths,
+        section_masses,
+        section_bury_speeds,
     ):
         """
         Creates carousels of unspliced cables with only a single cable type on
@@ -177,6 +199,7 @@ class CarouselSystem:
                 section_masses[: max_sections_ix + 1].sum(),
                 section_lengths[: max_sections_ix + 1].tolist(),
                 section_masses[: max_sections_ix + 1].tolist(),
+                section_bury_speeds[: max_sections_ix + 1].tolist(),
                 1,
             )
 
@@ -184,6 +207,7 @@ class CarouselSystem:
             name = f"Carousel {cable_index}-{j}"
             section_lengths = section_lengths[max_sections_ix + 1 :]
             section_masses = section_masses[max_sections_ix + 1 :]
+            section_bury_speeds = section_bury_speeds[max_sections_ix + 1 :]
 
     def _create_cable_carousel(self, cable_name, max_length, cable_index):
         """
@@ -200,14 +224,14 @@ class CarouselSystem:
             type of cable.
         """
 
-        section_lengths, section_masses = self._create_section_list(cable_name)
-        if (section_lengths > max_length).sum() > 0:
+        lengths, masses, bury_speeds = self._create_section_list(cable_name)
+        if (lengths > max_length).sum() > 0:
             self._create_cable_carousel_with_splice(
-                max_length, cable_index, section_lengths, section_masses
+                max_length, cable_index, lengths, masses, bury_speeds
             )
         else:
             self._create_cable_carousel_without_splice(
-                max_length, cable_index, section_lengths, section_masses
+                max_length, cable_index, lengths, masses, bury_speeds
             )
 
     def create_carousels(self):

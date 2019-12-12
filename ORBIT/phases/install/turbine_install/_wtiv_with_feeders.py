@@ -39,6 +39,7 @@ def install_turbine_components_from_queue(
     """
 
     transit_time = wtiv.transit_time(distance)
+    reequip_time = wtiv.crane.reequip(**kwargs)
 
     transit = {
         "agent": wtiv.name,
@@ -99,6 +100,17 @@ def install_turbine_components_from_queue(
                 yield env.process(
                     install_nacelle(env, wtiv, nacelle, **kwargs)
                 )
+
+                reequip = {
+                    "agent": wtiv.name,
+                    "type": "Operations",
+                    "location": "Site",
+                    "duration": reequip_time,
+                    "action": "CraneReequip",
+                    **wtiv.operational_limits,
+                }
+
+                yield env.process(env.task_handler(reequip))
 
                 # Install turbine blades
                 for _ in range(3):

@@ -61,18 +61,30 @@ def test_logger_creation():
     director = SampleInstallPhase(base_config, log_level="DEBUG")
     assert director.logger.level == 10
 
+    director.config = director.initialize_library(base_config)
+    director.extract_defaults()
+
     director.run(until=10)
     assert isinstance(director.logs, pd.DataFrame)
 
 
 def test_run():
     director = SampleInstallPhase(base_config, log_level="INFO")
+
+    director.config = director.initialize_library(base_config)
+    director.extract_defaults()
+
     director.run(until=10)
+
     assert director.env.now == 10
 
 
 def test_logger():
     director = SampleInstallPhase(base_config, log_level="INFO")
+
+    director.config = director.initialize_library(base_config)
+    director.extract_defaults()
+
     director.logger.info(
         "Test Info Log", extra={"time": 0, "agent": "test_vessel"}
     )
@@ -86,6 +98,10 @@ def test_logger():
 
 def test_comma_escape():
     director = SampleInstallPhase(base_config, log_level="INFO")
+
+    director.config = director.initialize_library(base_config)
+    director.extract_defaults()
+
     director.logger.info(
         "Test, Comma",
         extra={"time": 0, "location": "City, State", "agent": "test_vessel"},

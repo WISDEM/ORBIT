@@ -11,4 +11,4 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from .crane import Crane
 from .jacksys import JackingSys
-from .carousel import CarouselSystem
+from .carousel import Carousel, CarouselSystem
