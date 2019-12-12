@@ -1,0 +1,9 @@
+/** Custom CSS override settings **/
+
+@import 'theme.css';
+
+body {
+    .wy-nav-content {
+        max-width: 90% !important;
+    }
+}
