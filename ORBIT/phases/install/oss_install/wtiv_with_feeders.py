@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import simpy
-
 from ORBIT.vessels import Vessel, tasks
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import InstallPhase
@@ -146,7 +145,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             raise Exception("OSS installation vessel is not defined.")
 
         name = oss_vessel_specs.get("name", "Heavy Lift Vessel")
-        cost = oss_vessel_specs.get(
+        cost = oss_vessel_specs["vessel_specs"].get(
             "day_rate", self.defaults["oss_vessel_day_rate"]
         )
 
@@ -176,7 +175,9 @@ class OffshoreSubstationInstallation(InstallPhase):
             raise Exception("Feeder vessel is not defined.")
 
         name = feeder_specs.get("name", "OSS Feeder")
-        cost = feeder_specs.get("day_rate", self.defaults["feeder_day_rate"])
+        cost = feeder_specs["vessel_specs"].get(
+            "day_rate", self.defaults["feeder_day_rate"]
+        )
 
         _storage_specs = feeder_specs.get("storage_specs", None)
         if _storage_specs is None:
