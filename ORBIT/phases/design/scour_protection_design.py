@@ -99,14 +99,14 @@ class ScourProtectionDesign(DesignPhase):
 
     def compute_scour_protection_tonnes_to_install(self):
         """
-        Computes the amount of scour that needs to be installed at a
-        substructure.
+        Computes the amount of scour protection material that needs to be
+        installed around a fixed substructure.
 
         Terms:
-         * :math:`S =` scour protection height
-         * :math:`D =` monopile diameter
-         * :math:`r =` radius of scour protection from the center of the monopile
-         * :math:`\\phi =` scour angle
+         * :math:`S =` Scour depth
+         * :math:`D =` Monopile diameter
+         * :math:`r =` Radius of scour protection from the center of the monopile
+         * :math:`\\phi =` Soil friction coefficient
 
         Assumptions:
          * :math:`r = \\frac{D}{2} + \\frac{S}{\\tan(\\phi)}`
