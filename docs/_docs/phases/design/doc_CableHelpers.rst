@@ -6,17 +6,20 @@ For details of the code implementation, please see the
 
 Overview
 --------
+
 This overview provides the :class:`Cable` class, :class:`Plant` class, and
 :class:`CableSystem` parent class.
 
 
 Cable
 -----
+
 The cable class calculates a provided cable's power rating for determining the
 maximum number of turbines that can be supported by a string of cable.
 
 Character Impedance (:math:`\Omega`)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. math:: Z_0 = \sqrt{\frac{R + 2 \pi f L}{G + j 2 \pi f C}}
 
 | :math:`R=` :py:attr:`ac_resistance`
@@ -28,6 +31,7 @@ Character Impedance (:math:`\Omega`)
 
 Power Factor
 ^^^^^^^^^^^^
+
 .. math::
    |P| &= \cos(\theta) \\
        &= \cos(\arctan(\frac{j Z_0}{Z_0}))
@@ -38,6 +42,7 @@ Power Factor
 
 Cable Power (:math:`MW`)
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. math::
    P = \sqrt{3} * V * I * |P|
 
@@ -48,6 +53,7 @@ Cable Power (:math:`MW`)
 
 Plant
 -----
+
 Calculates the wind farm specifications to be used for
 :doc:`array cable design phase <doc_ArraySystemDesign>`. The "data class"
 accepts either set distances between turbines and rows or calculates them
@@ -85,6 +91,7 @@ the :py:attr:`turbine_distance` from above.
 
 CableSystem
 -----------
+
 :py:class:`CableSystem` acts as the parent class for both
 :py:class:`ArrayDesignSystem` and :py:class:`ExportDesignSystem`. As such, it
 is not intended to be invoked on its own, however it provides some of the

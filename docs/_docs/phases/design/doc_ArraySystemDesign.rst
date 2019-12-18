@@ -7,13 +7,13 @@ For details of the code implementation, please see
 
 Overview
 ========
+
 Below is an overview of the whole process to create an array cabling
 system. In the following sections, each piece will be reviewed in
 greater detail. For more details on the helper classes used to support
 this design please see: :doc:`Cabling Helper Classes <doc_CableHelpers>`
 
 .. image:: ../../../images/process_diagrams/ArraySystemDesign.png
-
 
 As of the current version of the code there are two array cabling layouts that
 will be considered: grid and ring. In Fig 1 below we have a grid layout where
@@ -33,6 +33,7 @@ cabling system.
 
 Determine the strings
 =====================
+
 In order to create the minimum number of strings required to complete a
 "standardized" array cable layout we must first determine how many turbines
 can fit on a given cable type without overloading it and then how many turbines
@@ -40,6 +41,7 @@ can fit on a given string from the provided cable type(s).
 
 Maximum turbines per cable
 --------------------------
+
 The maximum number of turbines that can fit on each cable is determined by
 dividing each cable type's power rating by the a turbine's rated capacity  and
 rounding down to the nearest integer.
@@ -52,6 +54,7 @@ where
 
 Create the possible strings
 ---------------------------
+
 First we have to create a full string and determine how many full strings are
 required to connect the offshore substation to all of the turbines and if there
 are not an evenly divided number of turbines to use only full strings then will
@@ -63,6 +66,7 @@ utilize one partial string to keep use for the remainder. See below for more.
 
 How to compute a string
 ^^^^^^^^^^^^^^^^^^^^^^^
+
 A string can contain as many turbines as the largest sized cable can
 carry. To create a full string, starting from the smallest available string we
 continuously add cable sections until that cable's maximum is reached, and then
@@ -114,9 +118,9 @@ as follows:
 
 :py:attr:`partial_string` = ``["XLPE_400mm_36kV", "XLPE_400mm_36kV", "XLPE_400mm_36kV"]``
 
-
 Create the layout
 =================
+
 In all 3 of the cases below an x and y coordinate array will be created for the
 turbines where strings correspond to the rows of the array correspond to the
 columns. In the case where there are partial strings, their corresponding
@@ -124,6 +128,7 @@ positions in the array will be filled with ``None``.
 
 Ring
 ----
+
 For the ring layout we first calculate the radius for each turbine on a string
 using the :py:attr:`turbine_distance` and :py:attr:`substation_distance`,
 then we determine the angle that each string is located at to create an evenly
@@ -135,6 +140,7 @@ from the offshore substation located at (0, 0).
 
 Grid
 ----
+
 For the grid layout we first compute the evenly spaced grid of (x, y)
 coordinates of each turbine based off the :py:attr:`turbine_distance`,
 :py:attr:`row_distance`, and :py:attr:`substation_distance` with offshore
@@ -142,10 +148,12 @@ substation being located at (0, (:py:attr:`num_strings` - 1) * :py:attr:`row_dis
 
 Custom
 ------
+
 Coming soon!
 
 Create the section lengths
 ==========================
+
 To compute the distance between turbines in a string we take the norm of the
 difference between the subsequent turbines in a string. In this step an array
 of cable types is created that correspond to the cable sections starting from

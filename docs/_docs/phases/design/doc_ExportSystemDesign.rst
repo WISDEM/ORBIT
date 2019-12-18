@@ -6,6 +6,7 @@ For details of the code implementation, please see
 
 Overview
 --------
+
 For more details on the helper classes used to support
 this design please see: :doc:`Cabling Helper Classes <doc_CableHelpers>`,
 specifically :class:`Cable` and :class:`CableSystem`.
@@ -16,7 +17,6 @@ greater detail.
 
 .. image:: ../../../images/process_diagrams/ExportSystemDesign.png
 
-
 Determine the number of required export cables
 ----------------------------------------------
 To fully connect the windfarm we must determine the minimum required cables by
@@ -25,9 +25,9 @@ add any user defined redundnacy as can be seen below.
 
 :py:attr:`num_cables` :math:`\ =\ \lceil` :py:attr:`plant_capacity` :math:`/` :py:attr:`cable_power` :math:`\rceil\ +` :py:attr:`num_redundant`.
 
-
 Determine the length of a single export cable
 ---------------------------------------------
+
 To determine the total length of a single export cable the site depth, distance
 between the site and landfall and the distance to the interconnection point must
 be added, then add on any exclusions, which are given by a percentage of three

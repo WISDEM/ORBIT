@@ -8,6 +8,3 @@ Overview
 --------
 
 Coming soon!
-
-References
-----------
