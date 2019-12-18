@@ -67,7 +67,7 @@ class ArraySystemDesign(CableSystem):
     """
 
     expected_config = {
-        "site": {"depth": "str"},
+        "site": {"depth": "int | float"},
         "plant": {
             "layout": "str",
             "row_spacing": "int",
