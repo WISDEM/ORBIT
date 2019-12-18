@@ -14,20 +14,21 @@ import pytest
 from ORBIT.phases.design import ScourProtectionDesign
 
 config_min_defined = {
-    "substructure": {"diameter": 9},
+    "monopile": {"diameter": 9},
     "plant": {"num_turbines": 50},
     "scour_protection_design": {"cost_per_tonne": 400},
 }
 
 config_fully_defined = {
-    "substructure": {"diameter": 10},
+    "monopile": {"diameter": 10},
     "plant": {"num_turbines": 50},
     "scour_protection_design": {
-        "rock_density": 3.0,
+        "rock_density": 2300,
         "cost_per_tonne": 400,
         "design_time": 500,
         "soil_friction_angle": 33.0,
         "scour_depth_equilibrium": 1.2,
+        "scour_protection_depth": 0.3
     },
 }
 
@@ -57,8 +58,8 @@ def test_fully_defined_setup():
 @pytest.mark.parametrize(
     "config,expected",
     (
-        (config_fully_defined, 62.34313137791627),
-        (config_min_defined, 47000.85260861472),
+        (config_fully_defined, 1140.7175448023047),
+        (config_min_defined, 3851.762036413688),
     ),
 )
 def test_tonnes_per_substructure(config, expected):
