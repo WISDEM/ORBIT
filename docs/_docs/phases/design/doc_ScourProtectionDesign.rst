@@ -35,12 +35,12 @@ assumption and may be overridden by the user as follows:
    }
 
 The radius of the scour pit is then calculated using the soil friction
-coefficient (:math:`\phi`) and a simple geometric relationship:
+angle (:math:`\phi`) and a simple geometric relationship:
 
 :math:`r = \frac{D}{2} + \frac{S}{tan(\phi)}`
 
 The default value for :math:`\phi` is 33.5deg, representing the soil
-friction coefficient for medium density sand. The total volume of scour
+friction angle for medium density sand. The total volume of scour
 protection material is then calculated as follows,
 
 :math:`V = \pi * t * r^2`
@@ -58,7 +58,7 @@ Terms:
  * :math:`S =` Scour depth
  * :math:`D =` Monopile diameter
  * :math:`r =` Radius of scour protection from the center of the monopile
- * :math:`\phi =` Soil friction coefficient
+ * :math:`\phi =` Soil friction angle
 
 Default Assumptions:
  * :math:`\frac{S}{D} = 1.3`

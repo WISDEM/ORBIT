@@ -30,7 +30,7 @@ class ScourProtectionDesign(DesignPhase):
         Density of rocks used for scour protection in kg/(m^3).
     scour_depth : float
         Depth of the scour pit.
-    protection_depth : float, default: 1
+    protection_depth : float, default: 1m
         Depth of the scour protection.
 
     Other Attributes
@@ -77,25 +77,10 @@ class ScourProtectionDesign(DesignPhase):
         self.diameter = config["monopile"]["diameter"]
         self.num_turbines = config["plant"]["num_turbines"]
 
-        try:
-            self.phi = self._design["soil_friction_angle"]
-        except KeyError:
-            self.phi = 33.5
-
-        try:
-            self.equilibrium = self._design["scour_depth_equilibrium"]
-        except KeyError:
-            self.equilibrium = 1.3
-
-        try:
-            self.rock_density = self._design["rock_density"]
-        except KeyError:
-            self.rock_density = 2600
-
-        try:
-            self.protection_depth = self._design["scour_protection_depth"]
-        except KeyError:
-            self.protection_depth = 1
+        self.phi = self._design.get("soil_friction_angle", 33.5)
+        self.equilibrium = self._design.get("scour_depth_equilibrium", 1.3)
+        self.rock_density = self._design.get("rock_density", 2600)
+        self.protection_depth = self._design.get("scour_protection_depth", 1)
 
     def compute_scour_protection_tonnes_to_install(self):
         """
@@ -106,7 +91,7 @@ class ScourProtectionDesign(DesignPhase):
          * :math:`S =` Scour depth
          * :math:`D =` Monopile diameter
          * :math:`r =` Radius of scour protection from the center of the monopile
-         * :math:`\\phi =` Soil friction coefficient
+         * :math:`\\phi =` Soil friction angle
 
         Assumptions:
          * :math:`r = \\frac{D}{2} + \\frac{S}{\\tan(\\phi)}`
@@ -122,7 +107,9 @@ class ScourProtectionDesign(DesignPhase):
 
         r = self.diameter / 2 + self.scour_depth / np.tan(np.radians(self.phi))
 
-        volume = np.pi * (r ** 2) * self.protection_depth
+        volume = (
+            np.pi * self.protection_depth * (r ** 2 - (self.diameter / 2) ** 2)
+        )
 
         self.scour_protection_tonnes = self.rock_density * volume / 1000.0
 

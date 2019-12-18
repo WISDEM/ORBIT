@@ -58,8 +58,8 @@ def test_fully_defined_setup():
 @pytest.mark.parametrize(
     "config,expected",
     (
-        (config_fully_defined, 1194.9100180767286),
-        (config_min_defined, 4017.16688962519),
+        (config_fully_defined, 1140.7175448023047),
+        (config_min_defined, 3851.762036413688),
     ),
 )
 def test_tonnes_per_substructure(config, expected):
