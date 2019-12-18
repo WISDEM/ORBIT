@@ -7,39 +7,41 @@ For details of the code implementation, please see
 Overview
 --------
 
-For more details on the helper classes used to support
-this design please see: :doc:`Cabling Helper Classes <doc_CableHelpers>`,
-specifically :class:`Cable` and :class:`CableSystem`.
+Below is an overview of the process used to design an export cable system in
+ORBIT. For more detail on the helper classes used to support this design please
+see :doc:`Cabling Helper Classes <doc_CableHelpers>`, specifically
+:class:`Cable` and :class:`CableSystem`.
 
-Below is an overview of the whole process to create an export cabling
-system. In the following sections, each piece will be reviewed in
-greater detail.
+Number of Required Cables
+-------------------------
+
+The number of export cables required is calculated by dividing the windfarm's
+capacity by the configured export cable's power rating and adding any user
+defined redundnacy as seen below.
+
+:math:`num\_cables = \lceil\frac{plant\_capacity}{cable\_power}\rceil + num\_redundant`
+
+Export Cable length
+-------------------
+
+The total length of the export cables is calculated as the sum of the site
+depth, distance to landfall and distance to interconnection multiplied by the
+user defined :py:attr`percent_added_length` to account for any exclusions or
+geotechnical design considerations that make a straight line cable route
+impractical.
+
+:math:`length = (d + distance_\text{landfall} + distance_\text{interconnection} * (1 + length_\text{percent_added})`
+
+Design Result
+-------------
+
+The result of this design module (:py:attr:`design_result`) is a list of cable
+sections and their lengths and masses that represent the export cable system.
+This result can then be passed to the
+:doc:`export cable installation module <../install/export/doc_ExportCableInstall>`
+to simulate the installation of the system.
+
+Process Diagrams
+----------------
 
 .. image:: ../../../images/process_diagrams/ExportSystemDesign.png
-
-Determine the number of required export cables
-----------------------------------------------
-To fully connect the windfarm we must determine the minimum required cables by
-dividing the windfarm's capacity by an individual cable's power rating and then
-add any user defined redundnacy as can be seen below.
-
-:py:attr:`num_cables` :math:`\ =\ \lceil` :py:attr:`plant_capacity` :math:`/` :py:attr:`cable_power` :math:`\rceil\ +` :py:attr:`num_redundant`.
-
-Determine the length of a single export cable
----------------------------------------------
-
-To determine the total length of a single export cable the site depth, distance
-between the site and landfall and the distance to the interconnection point must
-be added, then add on any exclusions, which are given by a percentage of three
-above components. This can be seen below.
-
-:py:attr:`length` :math:`\ =\ ((` :py:attr:`depth` :math:`\ /\ `1000) +` :py:attr:`distance_to_landfall` :math:`+` :py:attr:`distance_to_interconnection` :math:`)\ *\ (1\ +` :py:attr:`percent_added_length` :math:`)`
-
-Using the length of a single export cable the mass of each cable can be
-computed from the the cable's :py:attr:`linear_density`. Using the length,
-mass, and number of cables a :py:attr:`design_result` can be exported and
-passed to the
-:doc:`export cable installation simulation <../install/export/doc_ExportCableInstall>`.
-
-References
-----------
