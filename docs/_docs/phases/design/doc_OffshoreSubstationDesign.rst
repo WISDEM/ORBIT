@@ -8,9 +8,9 @@ Overview
 --------
 
 The offshore substation design module in ORBIT is based on previous modeling
-efforts undertaken by NREL, [#maness2017]_. A detailed descriptioin of the
+efforts undertaken by NREL, [#maness2017]_. A detailed description of the
 model and its functionality can be found in the ORBIT technical
-`documentation <todo>`_.
+documentation (Coming soon!).
 
 References
 ----------
