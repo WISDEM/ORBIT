@@ -7,7 +7,6 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 
 import numpy as np
-
 from ORBIT.phases.design import DesignPhase
 
 
@@ -141,7 +140,7 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         mpt_cost_rate = self.config["substation_design"].get(
-            "mpt_cost_rate", 125000
+            "mpt_cost_rate", 12500
         )
 
         self.mpt_cost = self.mpt_rating * self.num_mpt * mpt_cost_rate

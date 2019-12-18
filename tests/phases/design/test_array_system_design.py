@@ -15,6 +15,9 @@ import pytest
 from ORBIT.phases.design import ArraySystemDesign, CustomArraySystemDesign
 from ORBIT.simulation.exceptions import LibraryItemNotFoundError
 
+_ = os.environ.pop("DATA_LIBRARY", None)
+
+
 ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../.."))
 TEST_LIBRARY = os.path.join(ROOT, "data", "library")
 
@@ -197,6 +200,7 @@ def test_missing_columns():
 
 
 def test_duplicate_turbine_coordinates():
+    _ = os.environ.pop("DATA_LIBRARY", None)
     array = CustomArraySystemDesign(
         config_duplicate_coordinates, library_path=TEST_LIBRARY
     )
@@ -206,6 +210,7 @@ def test_duplicate_turbine_coordinates():
 
 
 def test_incomplete_required_columns():
+    _ = os.environ.pop("DATA_LIBRARY", None)
     array = CustomArraySystemDesign(
         config_incomplete_required, library_path=TEST_LIBRARY
     )
@@ -215,6 +220,7 @@ def test_incomplete_required_columns():
 
 
 def test_incomplete_optional_columns():
+    _ = os.environ.pop("DATA_LIBRARY", None)
     array = CustomArraySystemDesign(
         config_incomplete_optional, library_path=TEST_LIBRARY
     )
@@ -224,6 +230,7 @@ def test_incomplete_optional_columns():
 
 
 def test_correct_turbines():
+    _ = os.environ.pop("DATA_LIBRARY", None)
     array = CustomArraySystemDesign(
         config_incorrect_turbines, library_path=TEST_LIBRARY
     )

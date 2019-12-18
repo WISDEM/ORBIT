@@ -80,21 +80,14 @@ def initialize_library(library_path):
         Absolute path to the project library.
     """
 
-    library_exists = "DATA_LIBRARY" in os.environ
+    if "DATA_LIBRARY" in os.environ:
+        return
+
     if library_path is None:
         library_path = default_library
 
     if not os.path.isdir(library_path):
         raise ValueError(f"Invalid library path.")
-
-    if library_exists and library_path != os.environ["DATA_LIBRARY"]:
-        message = (
-            f"Environment variable 'DATA_LIBRARY': "
-            f"{os.environ['DATA_LIBRARY']} will be changed to: {library_path}."
-        )
-        warnings.warn(message)
-    elif library_exists and library_path == os.environ["DATA_LIBRARY"]:
-        return
 
     os.environ["DATA_LIBRARY"] = library_path
     print(f"ORBIT library intialized at '{library_path}'")
