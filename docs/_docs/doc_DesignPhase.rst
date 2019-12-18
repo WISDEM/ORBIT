@@ -11,7 +11,6 @@ the model.
 
    phases/design/doc_MonopileDesign
    phases/design/doc_ScourProtectionDesign
-   phases/design/doc_CableHelpers
    phases/design/doc_ArraySystemDesign
    phases/design/doc_ExportSystemDesign
    phases/design/doc_OffshoreSubstationDesign

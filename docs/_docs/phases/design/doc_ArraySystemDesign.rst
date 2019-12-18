@@ -1,29 +1,24 @@
-#######################################
 Array Cabling System Design Methodology
-#######################################
+=======================================
 
 For details of the code implementation, please see
 :doc:`Array System Design API <api_ArraySystemDesign>`.
 
 Overview
-========
+--------
 
-Below is an overview of the whole process to create an array cabling
-system. In the following sections, each piece will be reviewed in
-greater detail. For more details on the helper classes used to support
-this design please see: :doc:`Cabling Helper Classes <doc_CableHelpers>`
+Below is an overview of the process used to design an array cable system in ORBIT.
+For more details on the helper classes used to support this design please see
+:doc:`Cabling Helper Classes <doc_CableHelpers>`.
 
-.. image:: ../../../images/process_diagrams/ArraySystemDesign.png
-
-As of the current version of the code there are two array cabling layouts that
-will be considered: grid and ring. In Fig 1 below we have a grid layout where
-there is a pre-determined distance between turbines on a string and turbines in
-a row and where there are only "full strings" being utilized. In Fig 2. we have
-a ring layout where the there is a predetermined distance between turbines on a
-string but the distance between rows of turbines is determined by evenly
-spacing strings around a circle and where there is a need to have a "partial
-string". The below sections will review the key steps in building out the array
-cabling system.
+As of the current version of the code there are three array cabling layouts
+that can be configured in ORBIT: grid, ring and custom. Figure 1 is an example
+of a grid layout featuring 7 "full-strings" and configured distances between
+turbines on a string and each row. Figure 2 is an example of a ring layout
+where the there is a predetermined distance between the first turbines on a
+string and the substation. This figure is also an example of a
+"partial string" that is needed to complete the layout. The next sections will
+go into more detail of the key steps in building out the array cabling system.
 
 +------------------------------------------------------------+---------------------------------------------------------------+
 | .. image:: ../../../images/examples/full_grid_example.png  | .. image:: ../../../images/examples/partial_ring_example.png  |
@@ -31,50 +26,37 @@ cabling system.
 |    Fig 1. Grid layout with no partial strings              |    Fig 2. Ring layout with 1 partial string                   |
 +------------------------------------------------------------+---------------------------------------------------------------+
 
-Determine the strings
-=====================
+Number of Strings
+-----------------
 
 In order to create the minimum number of strings required to complete a
 "standardized" array cable layout we must first determine how many turbines
-can fit on a given cable type without overloading it and then how many turbines
-can fit on a given string from the provided cable type(s).
+can fit on a given set of cable types without overloading them.
 
-Maximum turbines per cable
---------------------------
+Maximum Turbines per Cable
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The maximum number of turbines that can fit on each cable is determined by
-dividing each cable type's power rating by the a turbine's rated capacity  and
-rounding down to the nearest integer.
+dividing each cable type's power rating by the rated capacity of the turbine
+and rounding down to the nearest integer.
 
 :py:attr:`Cable.max_turbines` = :math:`\lfloor\frac{P}{turbine\_rating}\rfloor`,
 where
 
 | :math:`P` = :py:attr:`Cable.power`
-| :py:attr:`turbine_rating` = rated capacity of a single turbine
+| :py:attr:`turbine_rating` = rated capacity of turbine
 
-Create the possible strings
----------------------------
+Calculating a Complete String
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First we have to create a full string and determine how many full strings are
-required to connect the offshore substation to all of the turbines and if there
-are not an evenly divided number of turbines to use only full strings then will
-utilize one partial string to keep use for the remainder. See below for more.
-
-:py:attr:`num_full_strings` = :math:`\lfloor \frac{Plant.num\_turbines}{num\_turbines\_full\_string} \rfloor`
-
-:py:attr:`num_partial_strings` = :math:`Plant.num\_turbines \ \% \ num\_turbines\_full\_string`
-
-How to compute a string
-^^^^^^^^^^^^^^^^^^^^^^^
-
-A string can contain as many turbines as the largest sized cable can
-carry. To create a full string, starting from the smallest available string we
-continuously add cable sections until that cable's maximum is reached, and then
-repeat this for each of the next largest cables until the that cable's maximum
-is reached or the string's maximum is reached.
-
-For a partial string the main constraint is the remainder portion of the number
-of full strings required to fully connect the wind farm.
+Using the above calculation with the configured set of cables, the number of
+turbines in a "complete string" is determined by the maximum number of turbines
+on the highest capacity cable type. Starting from the smallest capacity cable
+available, cable sections (between turbines) are added until that cable's
+maximum is reached. This process is repeated for each of the next largest
+capacity cables until all cable types are maxed out. The number of cable
+sections added to the string in this process represents the maximum number of
+cables that can be added to each string.
 
 .. code-block:: py
    :name: string-computation
@@ -105,63 +87,63 @@ of full strings required to fully connect the wind farm.
            n = len(cable_layout)
 
 
-After running :py:func:`cable_layout` will be a list of cable sections starting
-from the offshore substation and ending at the last turbine on a string and
-will look like the following:
+After the above calculation is performed, :py:func:`cable_layout` will contain
+a list of cable sections starting from the offshore substation and ending at
+the last turbine on a string and will look like the following:
 
 :py:attr:`full_string` = ``["XLPE_630mm_36kV", "XLPE_630mm_36kV", "XLPE_400mm_36kV",``
 ``"XLPE_400mm_36kV", "XLPE_400mm_36kV", "XLPE_400mm_36kV"]``
 
-In the Fig 1. example there will be 7 of these full_strings. In the
-Fig 2. example there will be 6 these full strings and one partial string as
-as follows:
+In Figure 1, there are 7 of full strings. In the Figure 2 there are 7 full
+strings and 1 partial string:
 
 :py:attr:`partial_string` = ``["XLPE_400mm_36kV", "XLPE_400mm_36kV", "XLPE_400mm_36kV"]``
 
-Create the layout
-=================
+Number of Strings
+~~~~~~~~~~~~~~~~~
 
-In all 3 of the cases below an x and y coordinate array will be created for the
-turbines where strings correspond to the rows of the array correspond to the
-columns. In the case where there are partial strings, their corresponding
-positions in the array will be filled with ``None``.
+The number of full strings is calculated using the equation below,
+
+:py:attr:`num_full_strings` = :math:`\lfloor \frac{Plant.num\_turbines}{num\_turbines\_full\_string} \rfloor`
+
+and the number of partial strings (containing any remaining turbines) is
+calculated with the following equation.
+
+:py:attr:`num_partial_strings` = :math:`Plant.num\_turbines \ \% \ num\_turbines\_full\_string`
+
+Layouts
+-------
 
 Ring
-----
+~~~~
 
-For the ring layout we first calculate the radius for each turbine on a string
-using the :py:attr:`turbine_distance` and :py:attr:`substation_distance`,
-then we determine the angle that each string is located at to create an evenly
-spaced ring, such as that in Fig. 2. To compute the x-coordinates we then take
-the sine of the radians and multiply it by the radius array. Similarly,
-for the y-coordinates we take the cosine of the radians and multiple it by the
-radius array. An array is then populated with the (x, y) coordinates extending
-from the offshore substation located at (0, 0).
+For a ring layout, the :py:attr:`substation_distance` is used as the radius of
+the first row of turbines, spaced evenly around the ring. Subsequent turbines
+on a string are spaced using the :py:attr:`turbine_distance` attribute. An
+example of this layout can be seen above in Figure 2.
 
 Grid
-----
+~~~~
 
-For the grid layout we first compute the evenly spaced grid of (x, y)
-coordinates of each turbine based off the :py:attr:`turbine_distance`,
-:py:attr:`row_distance`, and :py:attr:`substation_distance` with offshore
+For the grid layout, an evenly spaced grid of (x, y) coordinates for each
+turbine is calculated based off the :py:attr:`turbine_distance`,
+:py:attr:`row_distance`, and :py:attr:`substation_distance` with the offshore
 substation being located at (0, (:py:attr:`num_strings` - 1) * :py:attr:`row_distance` / :py:attr:`num_strings`)
 
 Custom
-------
+~~~~~~
 
 Coming soon!
 
-Create the section lengths
-==========================
+Section Lengths
+---------------
 
-To compute the distance between turbines in a string we take the norm of the
-difference between the subsequent turbines in a string. In this step an array
-of cable types is created that correspond to the cable sections starting from
-the offshore substation.
+The distance between a turbine and it's subsequent connection determines the
+cable length that is required for the array system. These lengths are summed up
+and stored in the :py:attr:`design_result`, which can be utilized by the
+:doc:`array cable installation module <../install/array/doc_ArrayCableInstallation>`.
 
-Using the section lengths and cable sections a :py:attr:`design_result`
-can be exported and passed to the
-:doc:`array cable installation simulation <../install/array/doc_ArrayCableInstallation>`.
+Process Diagrams
+----------------
 
-References
-==========
+.. image:: ../../../images/process_diagrams/ArraySystemDesign.png
