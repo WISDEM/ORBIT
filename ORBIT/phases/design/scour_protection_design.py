@@ -1,6 +1,6 @@
-"""Provides the ScourProtectionDesign class"""
+"""Provides the `ScourProtectionDesign` class"""
 
-__author__ = "Rob Hammond"
+__author__ = ["Rob Hammond", "Jake Nunemaker"]
 __copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
@@ -12,8 +12,7 @@ from ORBIT.phases.design import DesignPhase
 
 class ScourProtectionDesign(DesignPhase):
     """
-    The design phase for the scouring protection used for fixed substructures.
-    For more information please refer to [1]_.
+    Calculates the necessary scour protection material for a fixed substructure.
 
     Parameters
     ----------
@@ -26,11 +25,13 @@ class ScourProtectionDesign(DesignPhase):
     phi : float, default: 33.5
         Soil friction angle. Default is for medium density sand.
     equilibrium : float, default: 1.3
-        Scour depth equilibrium (S).
+        Scour depth equilibrium, (S/D).
     rock_density : float, default: 2600
-        Density of rocks used for scouring protection in kg/(m^3).
+        Density of rocks used for scour protection in kg/(m^3).
     scour_depth : float
-        Height of the scour protection.
+        Depth of the scour pit.
+    protection_depth : float, default: 1
+        Depth of the scour protection.
 
     Other Attributes
     ----------------
@@ -47,7 +48,7 @@ class ScourProtectionDesign(DesignPhase):
     """
 
     expected_config = {
-        "substructure": {"diameter": "int | float"},
+        "monopile": {"diameter": "int | float"},
         "plant": {"num_turbines": "int"},
         "scour_protection_design": {
             "cost_per_tonne": "float",
@@ -55,6 +56,7 @@ class ScourProtectionDesign(DesignPhase):
             "design_time": "int | float (optional)",
             "soil_friction_angle": "float (optional)",
             "scour_depth_equilibrium": "float (optional)",
+            "scour_protection_depth": "int | float (optional)",
         },
     }
 
@@ -72,7 +74,7 @@ class ScourProtectionDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self._design = config["scour_protection_design"]
-        self.diameter = config["substructure"]["diameter"]
+        self.diameter = config["monopile"]["diameter"]
         self.num_turbines = config["plant"]["num_turbines"]
 
         try:
@@ -90,21 +92,24 @@ class ScourProtectionDesign(DesignPhase):
         except KeyError:
             self.rock_density = 2600
 
+        try:
+            self.protection_depth = self._design["scour_protection_depth"]
+        except KeyError:
+            self.protection_depth = 1
+
     def compute_scour_protection_tonnes_to_install(self):
         """
-        Computes the amount of scour that needs to be installed at a
-        substructure. For more information please refer to [1]_.
+        Computes the amount of scour protection material that needs to be
+        installed around a fixed substructure.
 
         Terms:
-         * :math:`S =` scour protection height
-         * :math:`D =` monopile diameter
-         * :math:`r =` radius of scour protection from the center of the monopile
-         * :math:`\\phi =` scour angle
+         * :math:`S =` Scour depth
+         * :math:`D =` Monopile diameter
+         * :math:`r =` Radius of scour protection from the center of the monopile
+         * :math:`\\phi =` Soil friction coefficient
 
         Assumptions:
-         * :math:`\\frac{S}{D} = 1.3`
          * :math:`r = \\frac{D}{2} + \\frac{S}{\\tan(\\phi)}`
-         * :math:`\\phi = 33.5` (scour angle for medium density sand)
 
         References
         ----------
@@ -117,7 +122,7 @@ class ScourProtectionDesign(DesignPhase):
 
         r = self.diameter / 2 + self.scour_depth / np.tan(np.radians(self.phi))
 
-        volume = np.pi * (r ** 2) * self.scour_depth
+        volume = np.pi * (r ** 2) * self.protection_depth
 
         self.scour_protection_tonnes = self.rock_density * volume / 1000.0
 
@@ -152,10 +157,11 @@ class ScourProtectionDesign(DesignPhase):
     @property
     def detailed_output(self):
         """
-        TODO: implement when detailed outputs required are defined
+        Returns detailed outputs of the design.
         """
 
-        raise NotImplementedError()
+        _out = {"tonnes_per_substructure": self.scour_protection_tonnes}
+        return _out
 
     @property
     def design_result(self):

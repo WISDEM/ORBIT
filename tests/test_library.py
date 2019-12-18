@@ -47,6 +47,7 @@ def test_initialize_library():
     library.initialize_library(None)
     assert os.environ["DATA_LIBRARY"]
 
+    _ = os.environ.pop("DATA_LIBRARY")
     library.initialize_library(LIB)
     assert os.environ["DATA_LIBRARY"] == LIB
 
