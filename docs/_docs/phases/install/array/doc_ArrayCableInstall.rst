@@ -2,12 +2,12 @@ Array Cabling System Installation Methodology
 =============================================
 
 For details of the code implementation, please see
-:doc:`Array Cable Installation API <api_ArrayCableInstallation>`.
+:doc:`Array Cable Installation API <api_ArrayCableInstall>`.
 
 Overview
 --------
 
-The `ArrayCableInstallation` module simulates the installation of array cable
+The ``ArrayCableInstallation`` module simulates the installation of array cable
 sections between turbines at site. This process one of the critical
 installation phases in the construction of a wind farm as testing and final
 commisioning of the turbines can't occur until it is complete.
@@ -48,6 +48,8 @@ For example,
 The installation of each section above will be modeled seperately. In the above
 example, only one cable was used, though there could be additional defined
 cables (with their own `cable_sections` key).
+
+.. _cable_strategies:
 
 Configuration
 -------------
