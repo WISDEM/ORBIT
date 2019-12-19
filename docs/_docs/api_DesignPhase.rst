@@ -1,4 +1,4 @@
-.. _design:
+.. _design_phases:
 
 Design Phases - ``ORBIT.phases.design``
 =============================================

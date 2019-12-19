@@ -21,9 +21,10 @@ installation, etc.). The modularity will allow for novel technologies or
 installation strategies to be easily introduced and compared with baseline
 methodologies as the industry develops.
 
-Available design phases can be found :ref:`here <design>` and installation
-phases can be found :ref:`here <install>`. A detailed description of the
-difference between design and installation phases will be presented later.
+Available design phases can be found :ref:`here <design_phases>` and
+installation phases can be found :ref:`here <install>`. A detailed description
+of the difference between design and installation phases will be presented
+later.
 
 Discrete Event Simulation
 -------------------------
