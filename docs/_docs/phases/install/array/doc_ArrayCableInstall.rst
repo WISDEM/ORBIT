@@ -23,10 +23,10 @@ Input Structure
 ---------------
 
 The design of the input data structure for this module allows the user to
-define site specific array cable configuration. For each cable type, a list
+define site specific array cable configurations. For each cable type, a list
 of cable sections can be defined. The installation vessel will install each
-section individually and the time to complete this is dynamic based on the
-length and the linear density of the cable, site depth, etc.
+section individually and the time to complete this operation is dynamic based
+on the length and the linear density of the cable, site depth, etc.
 
 For example,
 
@@ -91,6 +91,22 @@ default speed for the process.
 +------------------+--------------------------+------------+
 | Bury Cable       | ``cable_bury_speed``     | 0.5 km/hr  |
 +------------------+--------------------------+------------+
+
+Other operations in the installation process are determined by default values:
+
++-----------------+----------------------------+---------+
+|     Process     |            Key             | Default |
++=================+============================+=========+
+| Position Onsite | ``site_position_time``     | 2h      |
++-----------------+----------------------------+---------+
+| Prepare Cable   | ``cable_prep_time``        | 1h      |
++-----------------+----------------------------+---------+
+| Lower Cable     | ``cable_lower_time``       | 1h      |
++-----------------+----------------------------+---------+
+| Pull in Cable   | ``cable_pull_in_time``     | 5.5h    |
++-----------------+----------------------------+---------+
+| Test Cable      | ``cable_termination_time`` | 5.5h    |
++-----------------+----------------------------+---------+
 
 Configuration Examples
 ~~~~~~~~~~~~~~~~~~~~~~
