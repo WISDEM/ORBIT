@@ -20,10 +20,7 @@ Configuration
 -------------
 
 This module is simple to configure, as the main parameter considered is the
-``tonnes_per_substructure`` to install. The ``ScourProtectionDesign`` module
-provides an easy way to calculate the amount of rock to be installed.
-
-Currently ORBIT models the simplest installation method, involving "Side Stone
+``tonnes_per_substructure`` to install. Currently ORBIT models the simplest installation method, involving "Side Stone
 Installation Vessels" that dump loads of rocks next to the substructure without
 much ability to ensure that their payload is distributed evenly. A future
 version of ORBIT may expand this module to include more modern installation

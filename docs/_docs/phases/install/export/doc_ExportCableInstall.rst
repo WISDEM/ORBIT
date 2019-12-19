@@ -10,7 +10,7 @@ Overview
 The ``ExportCableInstallation`` module simulates the installation of the cables
 between the offshore substation and the grid connection. Many processes in this
 installation phase are similar to those in the array cable installation module,
-however the cable distances are often much greater.
+however the cable distances and process times are often much greater.
 
 Input Structure
 ---------------

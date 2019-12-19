@@ -8,9 +8,10 @@ Overview
 --------
 
 The ``ArrayCableInstallation`` module simulates the installation of array cable
-sections between turbines at site. This process one of the critical
-installation phases in the construction of a wind farm as testing and final
-commisioning of the turbines can't occur until it is complete.
+sections between turbines and the offshore substation at site. This process one
+of the critical installation phases in the construction of a wind farm as
+testing and final commisioning of the turbines can't occur until it is
+complete.
 
 The installation of cables offshore is a complex process, often very dependent
 on geotechnical parameters of the seabed along the cable route. Modeling all of
@@ -67,7 +68,7 @@ passed into the module:
 
    {
        'array_system': {
-           # 'strategy': 'lay'     # Vessel will lay the cable ont he seafloor
+           # 'strategy': 'lay'     # Vessel will lay the cable on the seafloor
            # 'strategy': 'bury'    # Vessel will perform the burying operations
            'strategy': 'lay_bury'  # Vessel will perform simultaneous lay/bury operations
 
