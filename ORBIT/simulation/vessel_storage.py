@@ -69,7 +69,6 @@ class VesselStorage(simpy.FilterStore):
         - name
         - weight (t)
         - deck_space (m2)
-        # TODO: Add more item attributes and flexibible definitions.
 
         Parameters
         ----------
@@ -215,7 +214,6 @@ class VesselStorageContainer(simpy.Container):
          - name
          - weight (t)
          - length (km)
-        # TODO: Add more item attributes and flexibible definitions.
 
         Parameters
         ----------

@@ -171,8 +171,6 @@ def pump_transition_piece_grout(**kwargs):
         Time required to pump grout at the interface (h).
     """
 
-    # TODO: Add check for 'pump' component?
-
     key = "grout_pump_time"
     grout_pump_time = kwargs.get(key, defaults[key])
 
@@ -193,8 +191,6 @@ def cure_transition_piece_grout(**kwargs):
     grout_cure_time : float
         Time required for the grout to cure (h).
     """
-
-    # TODO: Add check for 'pump' component?
 
     key = "grout_cure_time"
     grout_cure_time = kwargs.get(key, defaults[key])

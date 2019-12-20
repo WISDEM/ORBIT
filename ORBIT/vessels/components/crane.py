@@ -68,9 +68,6 @@ class Crane:
         """
         Calculates time taken to change crane equipment.
 
-        # TODO: Add in ability to take and store a dictionary of reequip times
-        for different types of equipment.
-
         Parameters
         ----------
         crane_reequip_time : int | float

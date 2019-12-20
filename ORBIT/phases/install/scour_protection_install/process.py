@@ -55,8 +55,6 @@ def get_scour_protection_from_port(env, vessel, port, **kwargs):
     Subprocesses:
      - Load rocks into vessel's storage (time and amount)
 
-    TODO: only load as much as is needed for the final trip to site.
-
     Parameters
     ----------
     env : simpy.Environment

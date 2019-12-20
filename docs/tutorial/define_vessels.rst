@@ -77,14 +77,13 @@ Changing Library Location
 -------------------------
 
 It is recommended that any proprietary vessel or cable files be located outside
-of the main repository. To accomplish this, library paths can be changed using
-environment variables.
+of the main repository. To accomplish this, the library path can be changed by
+passing in the ``"library_path"`` parameter.
 
 .. code-block::
 
-   # Python
-   # TODO:
+   # ProjectManager
+   project = ProjectManager(config, library_path="/User/path/to/library/")
 
-   # Jupyter
-   %env offshore_bos_cable_library=/new/path/to/library/vessels
-   %env offshore_bos_vessel_library=/other/path/to/library/cables
+   # Individual Phase
+   phase = MonopileInstallation(config, library_path="/User/path/to/library/")

@@ -77,10 +77,6 @@ def install_transition_piece(env, vessel, tp, **kwargs):
     tp : dict
     """
 
-    # TODO: Convert to routing function for different substructures
-    # TODO: Move reequip() into tasks?
-    # TODO: Move jacking_time() into tasks?
-
     reequip_time = vessel.crane.reequip(**kwargs)
     lower_tp_time = tasks.lower_transition_piece(vessel, **kwargs)
     site_depth = kwargs.get("site_depth", None)

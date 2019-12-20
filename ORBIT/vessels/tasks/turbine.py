@@ -113,8 +113,6 @@ def lift_turbine_blade(vessel, **kwargs):
     """
     Calculates time required to lift turbine blade to hub height.
 
-    # TODO: Add complexity of lift?
-
     Parameters
     ----------
     vessel : Vessel
@@ -211,8 +209,6 @@ def release_turbine_blade(**kwargs):
 def lift_tower(vessel, **kwargs):
     """
     Calculates time required to lift tower at site.
-
-    # TODO: Add complexity of lift?
 
     Parameters
     ----------

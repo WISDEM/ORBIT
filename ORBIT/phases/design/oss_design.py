@@ -7,6 +7,7 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 
 import numpy as np
+
 from ORBIT.phases.design import DesignPhase
 
 
@@ -186,7 +187,6 @@ class OffshoreSubstationDesign(DesignPhase):
     def calc_switchgear_cost(self):
         """
         Calculates the cost of the switchgear.
-        # TODO: Is Legacy switchgear cost per MPT or total cost value?
 
         Parameters
         ----------

@@ -601,9 +601,6 @@ def onshore_work(
     Processes to connect the export cable between the offshore
     substation and landfall.
 
-    TODO: Allow for splicing in the logic for the case where the onshore
-    substation is located very far from landfall.
-
     Parameters
     ----------
     env : simpy.Environment
@@ -892,9 +889,7 @@ def lay_export_cables(
                         distances.beach + distances.interconnection
                     ) / _len
                     remaining_connection_len = cable_length
-                    # TODO: Need error handling here to allow for a splice in
-                    # the middle of onshore OR user needs to ensure the vessel
-                    # can actually fit the full length
+
                     yield env.process(
                         onshore_work(
                             env,

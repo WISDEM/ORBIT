@@ -13,5 +13,3 @@ from ORBIT.vessels import Vessel
 from tests.vessels import WTIV_SPECS, FEEDER_SPECS
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.simulation.logic import get_list_of_items_from_port
-
-# TODO: Write tests for port logic statements.

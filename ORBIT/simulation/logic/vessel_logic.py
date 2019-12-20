@@ -82,13 +82,13 @@ def get_item_from_storage(
     try:
         item = vessel.storage.get_item(item_rule).value
 
-    except ItemNotFound:
+    except ItemNotFound as e:
         env.logger.debug(
             "Item not found.",
             extra={"agent": vessel.name, "time": env.now, "type": "Status"},
         )
-        # TODO: Custom exception for bad directions
-        raise Exception()
+
+        raise e
 
     time, action = release_map(item_type, **kwargs)
 

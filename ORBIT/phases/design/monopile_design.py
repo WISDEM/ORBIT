@@ -477,8 +477,6 @@ class MonopileDesign(DesignPhase):
         Calculates the thrust coefficient using rated windspeed.
         Source: Frohboese & Schmuck (2010)
 
-        # TODO: Rework to include regime past rated windspeed.
-
         Parameters
         ----------
         rated_windspeed : int | float
@@ -493,9 +491,6 @@ class MonopileDesign(DesignPhase):
         ct = min(
             [3.5 * (2 * rated_windspeed + 3.5) / (rated_windspeed ** 2), 1]
         )
-
-        # ct = 7 / rated_windspeed
-        # Simplified version. Appears to be less conservative.
 
         return ct
 

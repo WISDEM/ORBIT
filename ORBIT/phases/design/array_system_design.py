@@ -303,9 +303,6 @@ class ArraySystemDesign(CableSystem):
         complete the array cabling.
         """
 
-        # TODO: verify that we need to account for water depth.
-        # Check if the custom cable lengths were provided in the csv and
-        # create them using distance * exclusion + 2 * depth otherwise.
         if getattr(self, "sections_cable_lengths", np.zeros(1)).sum() == 0:
             self.sections_cable_lengths = (
                 self.sections_distance * self.exclusion
@@ -340,7 +337,6 @@ class ArraySystemDesign(CableSystem):
         """
         Adds the offshore substation(s) to the plot.
 
-        TODO: make proper reference
         Colors are a selection of the colorblind pallette from Bokeh:
         https://github.com/bokeh/bokeh/blob/master/bokeh/palettes.py#L1938-L1940
 

@@ -17,7 +17,3 @@ from ORBIT.simulation.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
 )
-
-# TODO: Write tests for vessel logic statements.
-# Will likely involve simplifying several methods so they can be more easily
-# tested at a unit level.

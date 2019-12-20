@@ -108,7 +108,6 @@ class ExportSystemDesign(CableSystem):
         Calculates the total distance an export cable must travel.
         """
 
-        # TODO: verify that we need to account for depth (seems unlikely)
         added_length = 1.0 + self._design.get("percent_added_length", 0.0)
         self.length = round(
             (
