@@ -13,19 +13,19 @@ conditions, scour protection is a necessary step to reduce the effects of
 hydrodynamic scour development around the substructure. ORBIT models the
 installation of a rock layer installed at a diameter surrounding the
 substructure base. This process is not typically a significant cost driver for
-the project, but the installation time and associated costs aren't negligble
-and is often an important step to consider.
+the project, but the installation time and associated costs are significant
+enough that they should not be ignored when computing BOS costs.
 
 Configuration
 -------------
 
 This module is simple to configure, as the main parameter considered is the
-``tonnes_per_substructure`` to install. Currently ORBIT models the simplest installation method, involving "Side Stone
-Installation Vessels" that dump loads of rocks next to the substructure without
-much ability to ensure that their payload is distributed evenly. A future
-version of ORBIT may expand this module to include more modern installation
-approaches using a "Fall Pipe Vessel" that allow for an even distrubution of
-scour protection material.
+``tonnes_per_substructure`` to install. Currently ORBIT models the simplest
+installation method, involving "Side Stone Installation Vessels" that dump
+loads of rocks next to the substructure without much ability to ensure that
+their payload is distributed evenly. A future version of ORBIT may expand this
+module to include more modern installation approaches using a "Fall Pipe
+Vessel" that allow for an even distrubution of scour protection material.
 
 Example
 ~~~~~~~

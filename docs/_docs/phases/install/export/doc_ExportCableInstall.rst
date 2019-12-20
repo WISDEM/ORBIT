@@ -32,6 +32,11 @@ block below.
        }
    }
 
+.. note::
+
+   The above data structure can be input directly by the user, or can be a
+   result of running the ``ExportSystemDesign`` module.
+
 Configuration
 -------------
 
@@ -41,29 +46,6 @@ different installation methods available.
 
 Processes
 ---------
-
-Offshore Processes
-~~~~~~~~~~~~~~~~~~
-
-The offshore installation process utilize the same configurable speeds as the
-array system installation:
-
-+------------------+--------------------------+------------+
-| Strategy         | Key                      | Default    |
-+==================+==========================+============+
-| Lay/Bury Cable   | ``cable_lay_bury_speed`` | 0.3 km/hr  |
-+------------------+--------------------------+------------+
-| Lay Cable        | ``cable_lay_speed``      | 1 km/hr    |
-+------------------+--------------------------+------------+
-| Bury Cable       | ``cable_bury_speed``     | 0.5 km/hr  |
-+------------------+--------------------------+------------+
-
-.. note::
-
-   The cable lengths for an export system are typically much longer than the
-   array system and thhere is the possibility that a cable splice will be
-   needed. The time for splicing a cable can be configured by the user using
-   the ``cable_splice_time`` key, which defaults to 48h.
 
 Onshore Processes
 ~~~~~~~~~~~~~~~~~
@@ -88,6 +70,29 @@ inputs.
 
 A detailed description of these processes is provided in the ORBIT technical
 documentation.
+
+Offshore Processes
+~~~~~~~~~~~~~~~~~~
+
+The offshore installation process utilize the same configurable speeds as the
+array system installation:
+
++------------------+--------------------------+------------+
+| Strategy         | Key                      | Default    |
++==================+==========================+============+
+| Lay/Bury Cable   | ``cable_lay_bury_speed`` | 0.3 km/hr  |
++------------------+--------------------------+------------+
+| Lay Cable        | ``cable_lay_speed``      | 1 km/hr    |
++------------------+--------------------------+------------+
+| Bury Cable       | ``cable_bury_speed``     | 0.5 km/hr  |
++------------------+--------------------------+------------+
+
+.. note::
+
+   The cable lengths for an export system are typically much longer than the
+   array system and thhere is the possibility that a cable splice will be
+   needed. The time for splicing a cable can be configured by the user using
+   the ``cable_splice_time`` key, which defaults to 48h.
 
 Configuration Examples
 ~~~~~~~~~~~~~~~~~~~~~~

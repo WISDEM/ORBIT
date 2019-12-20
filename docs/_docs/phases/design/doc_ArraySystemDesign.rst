@@ -49,14 +49,13 @@ where
 Calculating a Complete String
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using the above calculation with the configured set of cables, the number of
-turbines in a "complete string" is determined by the maximum number of turbines
-on the highest capacity cable type. Starting from the smallest capacity cable
-available, cable sections (between turbines) are added until that cable's
-maximum is reached. This process is repeated for each of the next largest
-capacity cables until all cable types are maxed out. The number of cable
-sections added to the string in this process represents the maximum number of
-cables that can be added to each string.
+The number of turbines that can fit on a string is determined by the user
+configured cable types of the system. Starting from the smallest capacity cable
+available, turbines are added to the string until that cable's maximum power
+capacity is reached. This process is repeated for each of the next largest
+capacity cables until all cable types have reached their maximum capacity. The
+number of cable sections added to the string in this process represents the
+maximum number of cables that can be added to each string.
 
 .. code-block:: py
    :name: string-computation

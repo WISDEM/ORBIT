@@ -8,17 +8,19 @@ Overview
 --------
 
 The ``ArrayCableInstallation`` module simulates the installation of array cable
-sections between turbines and the offshore substation at site. This process one
-of the critical installation phases in the construction of a wind farm as
-testing and final commisioning of the turbines can't occur until it is
+sections between turbines and the offshore substation at site. This process is
+one of the critical installation phases in the construction of a wind farm as
+testing and final commissioning of the turbines can't occur until it is
 complete.
 
-The installation of cables offshore is a complex process, often very dependent
-on geotechnical parameters of the seabed along the cable route. Modeling all of
-these considerations is outside of the scope of ORBIT, but this module was
-designed to be able to explore the impacts of the major design choices. The
-following sections detail the different installation methods that are available
-and in what circumstances they are applicable.
+The installation of cables offshore is a complex process that depends on the
+geotechnical parameters of the seabed along the cable route. Detailed
+geotechnical data is typically not publicly available for all potential
+offshore wind sites in the U.S., and as such, ORBIT was designed to allow a
+user to investigate the impact of seabed conditions indirectly without
+requiring detailed descriptions of the seabed. This is primarily done by
+adjusting the cable burial speed, with harder or rockier soils requiring a
+slower (and ultimately more expensive) burial speed.
 
 Input Structure
 ---------------
@@ -27,7 +29,9 @@ The design of the input data structure for this module allows the user to
 define site specific array cable configurations. For each cable type, a list
 of cable sections can be defined. The installation vessel will install each
 section individually and the time to complete this operation is dynamic based
-on the length and the linear density of the cable, site depth, etc.
+on the length and the linear density of the cable, site depth, etc. A user can
+also define multiple cable types that comprise an individual string of
+turbines.
 
 For example,
 
@@ -49,6 +53,11 @@ For example,
 The installation of each section above will be modeled seperately. In the above
 example, only one cable was used, though there could be additional defined
 cables (with their own `cable_sections` key).
+
+.. note::
+
+   The above data structure can be input directly by the user, or can be a
+   result of running the ``ArraySystemDesign`` module.
 
 .. _cable_strategies:
 
@@ -83,7 +92,8 @@ Processes
 
 The speed at which a vessel can perform the operations of each installation
 strategy is determined by the vessel properties, passed kwargs or the
-default speed for the process.
+default speed for the process. This is the primary mechanism that a user can
+adjust cable installation times for different seabed conditions.
 
 +------------------+--------------------------+------------+
 | Strategy         | Key                      | Default    |
