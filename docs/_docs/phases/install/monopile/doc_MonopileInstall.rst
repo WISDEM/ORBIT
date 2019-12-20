@@ -17,8 +17,6 @@ the substructure components or it can be configured to include feeder barges
 that transport the components to site. Process diagrams detailing the vessel
 logistics for these two installation strategies can be seen below.
 
-.. # TODO: Add diagrams in here.
-
 .. note::
 
    For both installation strategies the WTIV performs all of the on site

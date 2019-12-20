@@ -1,4 +1,4 @@
-.. _design:
+.. _design_phases:
 
 Design Phases - ``ORBIT.phases.design``
 =============================================
@@ -11,10 +11,10 @@ trends but are not intended to be used for actual designs.
    :maxdepth: 2
 
    phases/design/api_ProjectDevelopment
-   phases/design/api_JacketDesign
    phases/design/api_MonopileDesign
    phases/design/api_ScourProtectionDesign
-   phases/design/api_CableHelpers
    phases/design/api_ArraySystemDesign
    phases/design/api_ExportSystemDesign
    phases/design/api_OffshoreSubstationDesign
+
+..    phases/design/api_JacketDesign

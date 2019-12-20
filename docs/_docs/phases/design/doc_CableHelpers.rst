@@ -6,17 +6,19 @@ For details of the code implementation, please see the
 
 Overview
 --------
+
 This overview provides the :class:`Cable` class, :class:`Plant` class, and
 :class:`CableSystem` parent class.
 
-
 Cable
 -----
+
 The cable class calculates a provided cable's power rating for determining the
 maximum number of turbines that can be supported by a string of cable.
 
 Character Impedance (:math:`\Omega`)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. math:: Z_0 = \sqrt{\frac{R + 2 \pi f L}{G + j 2 \pi f C}}
 
 | :math:`R=` :py:attr:`ac_resistance`
@@ -27,7 +29,8 @@ Character Impedance (:math:`\Omega`)
 | :math:`C=` :py:attr:`capacitance`
 
 Power Factor
-^^^^^^^^^^^^
+~~~~~~~~~~~~
+
 .. math::
    |P| &= \cos(\theta) \\
        &= \cos(\arctan(\frac{j Z_0}{Z_0}))
@@ -37,7 +40,8 @@ Power Factor
 | :math:`Z_0=` the real portion of :py:attr:`character_impedance`
 
 Cable Power (:math:`MW`)
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. math::
    P = \sqrt{3} * V * I * |P|
 
@@ -45,9 +49,9 @@ Cable Power (:math:`MW`)
 | :math:`I=` :py:attr:`current_capacity`
 | :math:`|P|=` :py:attr:`power_factor`
 
-
 Plant
 -----
+
 Calculates the wind farm specifications to be used for
 :doc:`array cable design phase <doc_ArraySystemDesign>`. The "data class"
 accepts either set distances between turbines and rows or calculates them
@@ -73,25 +77,24 @@ based off of the number of rotor diameters specified, for example:
                 rotor_diameter * config["plant"]["row_spacing"] / 1000.0
             )
 
-
 where :py:attr:`config` is the configuration dictionary passed to the
 :doc:`array cable design phase <api_ArraySystemDesign>`
 
-Unlike for both the turbine and row distance, for the x-portion of the distance
-from the first turbine in each string to the substation,
-:py:attr:`substation_distance`, we set this to either the provided distance or
-the :py:attr:`turbine_distance` from above.
-
+The cable section length for the first turbine in each string is calculated as
+the distance to the substation, ``substation_distance``.
 
 CableSystem
 -----------
+
 :py:class:`CableSystem` acts as the parent class for both
 :py:class:`ArrayDesignSystem` and :py:class:`ExportDesignSystem`. As such, it
-is not intended to be invoked on its own, however it provides some of the
-shared frameworks for both cabling system.
+is not intended to be invoked on its own, however it provides the shared
+frameworks for both cabling system.
 
-Of note, :py:class:`CableSystem` offers the cabling initialization and most of
-the output properties such as :py:attr:`cable_lengths_by_type`,
-:py:attr:`total_cable_lengths_by_type`, :py:attr:`cost_by_type`,
-:py:attr:`total_phase_cost`, :py:attr:`total_phase_time`,
-:py:attr:`detailed_output`, and most importantly :py:attr:`design_result`.
+.. note::
+
+   :py:class:`CableSystem` offers the cabling initialization and most of
+   the output properties such as :py:attr:`cable_lengths_by_type`,
+   :py:attr:`total_cable_lengths_by_type`, :py:attr:`cost_by_type`,
+   :py:attr:`total_phase_cost`, :py:attr:`total_phase_time`,
+   :py:attr:`detailed_output`, and most importantly :py:attr:`design_result`.

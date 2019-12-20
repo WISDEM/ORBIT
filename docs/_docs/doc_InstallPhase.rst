@@ -11,8 +11,9 @@ available in the model.
 
    phases/install/monopile/doc_MonopileInstall
    phases/install/scour/doc_ScourProtectionInstall
-   phases/install/jacket/doc_JacketInstall
    phases/install/turbine/doc_TurbineInstall
    phases/install/array/doc_ArrayCableInstall
    phases/install/export/doc_ExportCableInstall
    phases/install/oss/doc_OffshoreSubstationInstall
+
+..    phases/install/jacket/doc_JacketInstall

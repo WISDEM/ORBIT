@@ -9,10 +9,10 @@ the model.
 .. toctree::
    :maxdepth: 1
 
-   phases/design/doc_JacketDesign
    phases/design/doc_MonopileDesign
    phases/design/doc_ScourProtectionDesign
-   phases/design/doc_CableHelpers
    phases/design/doc_ArraySystemDesign
    phases/design/doc_ExportSystemDesign
    phases/design/doc_OffshoreSubstationDesign
+
+..    phases/design/doc_JacketDesign

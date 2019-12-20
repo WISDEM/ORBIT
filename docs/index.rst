@@ -46,4 +46,7 @@ studied.
 
 License
 -------
-`Add License`
+
+Apache 2.0. Please see the
+`repository <https://github.com/WISDEM/ORBIT/blob/master/LICENSE>`_ for
+license information.
