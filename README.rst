@@ -3,7 +3,7 @@ ORBIT
 
 Offshore Renewables Balance of System and Installation Tool
 
-:Version: 0.2.0
+:Version: 0.3.0
 :Authors: `Jake Nunemaker <https://github.nrel.gov/jnunemak>`_, `Matt Shields <https://github.nrel.gov/mshields>`_, `Rob Hammond <https://github.nrel.gov/rhammond>`_
 
 This package is currently in a development state and it is only recommended for
