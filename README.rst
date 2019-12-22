@@ -4,12 +4,10 @@ ORBIT
 Offshore Renewables Balance of system and Installation Tool
 
 :Version: 0.3.0
-:Authors: Jake Nunemaker, Matt Shields, Rob Hammond
+:Authors: `Jake Nunemaker <https://www.linkedin.com/in/jake-nunemaker/>`_, `Matt Shields <https://www.linkedin.com/in/matt-shields-834a6b66/>`_, `Rob Hammond <https://www.linkedin.com/in/rob-hammond-33583756/>`_
 
-.. warning::
-
-   This package is currently in a development state and it is only recommended
-   for preliminary analysis.
+This package is currently in a development state and it is only recommended for
+preliminary analysis.
 
 Installation
 ------------
