@@ -11,12 +11,12 @@ Authors
 - Rob Hammond (NREL)
 - Patrick Duffy (NREL)
 
-Contributors
-------------
+.. Contributors
+.. ------------
 
-Any open source contributors.
+.. Any open source contributors.
 
-Reviewers
----------
+.. Reviewers
+.. ---------
 
-Any reviewers if they want credit.
+.. Any reviewers if they want credit.
