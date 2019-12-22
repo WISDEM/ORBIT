@@ -20,8 +20,8 @@ from ORBIT.vessels.tasks import defaults
 from ORBIT.phases.install import ScourProtectionInstallation
 
 config = {
-    "scour_protection_install_vessel": "scour",
-    "scour_protection": {"tonnes_per_substructure": 65000},
+    "scour_protection_install_vessel": "example_scour_protection_vessel",
+    "scour_protection": {"tonnes_per_substructure": 2000},
     "plant": {"num_turbines": 50, "turbine_spacing": 5},
     "site": {"depth": 40, "turbine_spacing": 50, "distance": 30},
     "turbine": {"rotor_diameter": 154},
