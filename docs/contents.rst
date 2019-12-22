@@ -1,0 +1,26 @@
+.. _contents:
+
+=======================
+Documentation for ORBIT
+=======================
+
+Contents:
+=========
+
+.. toctree::
+   :maxdepth: 2
+
+   index
+   source/intro/index
+   source/tutorial/index
+   source/api
+   source/methods
+   source/publications/index
+   source/team
+
+
+Indices and search page
+=======================
+
+* :ref:`genindex`
+* :ref:`search`
