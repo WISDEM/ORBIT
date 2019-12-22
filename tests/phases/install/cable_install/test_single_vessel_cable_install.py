@@ -21,9 +21,9 @@ from ORBIT.phases.install import ExportCableInstallation as ExpInstall
 
 config = {
     "port": {"num_cranes": 1},
-    "array_cable_lay_vessel": "cable_lay_vessel",
-    "export_cable_lay_vessel": "cable_lay_vessel",
-    "trench_dig_vessel": "trench_dig_vessel",
+    "array_cable_lay_vessel": "example_cable_lay_vessel",
+    "export_cable_lay_vessel": "example_cable_lay_vessel",
+    "trench_dig_vessel": "example_trench_dig_vessel",
     "site": {
         "distance": 50,
         "depth": 20,

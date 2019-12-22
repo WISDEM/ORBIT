@@ -13,7 +13,6 @@ import pytest
 
 from tests.data import test_weather
 from ORBIT.vessels import tasks
-from tests.vessels import SCOUR_PROTECTION
 from ORBIT.vessels.tasks._defaults import defaults
 
 

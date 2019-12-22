@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import simpy
+
 from ORBIT.vessels import Vessel, tasks
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import InstallPhase
@@ -146,7 +147,7 @@ class OffshoreSubstationInstallation(InstallPhase):
 
         name = oss_vessel_specs.get("name", "Heavy Lift Vessel")
         cost = oss_vessel_specs["vessel_specs"].get(
-            "day_rate", self.defaults["oss_vessel_day_rate"]
+            "day_rate", self.defaults["heavy_lift_vessel_day_rate"]
         )
 
         self.oss_vessel = Vessel(name, oss_vessel_specs)

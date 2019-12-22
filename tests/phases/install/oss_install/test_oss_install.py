@@ -16,8 +16,8 @@ from ORBIT.vessels.tasks import defaults
 from ORBIT.phases.install import OffshoreSubstationInstallation
 
 config = {
-    "oss_install_vessel": WTIV_SPECS,
-    "feeder": FEEDER_SPECS,
+    "oss_install_vessel": "example_heavy_lift_vessel",
+    "feeder": "example_feeder",
     "num_feeders": 1,
     "num_substations": 1,
     "port": {"monthly_rate": 100000, "num_cranes": 1},
@@ -171,7 +171,11 @@ def test_for_efficiencies():
     sim = OffshoreSubstationInstallation(config)
     sim.run()
 
-    assert 0 <= sim.detailed_output["Example WTIV_operational_efficiency"] <= 1
+    assert (
+        0
+        <= sim.detailed_output["Heavy Lift Vessel_operational_efficiency"]
+        <= 1
+    )
 
     assert 0 <= sim.detailed_output["Feeder 0_operational_efficiency"] <= 1
     assert 0 <= sim.detailed_output["Feeder 0_cargo_weight_utilization"] <= 1
