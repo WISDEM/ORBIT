@@ -22,10 +22,10 @@
       List of authors and contributors.
 
 ORBIT
------
+=====
 
 Overview
-========
+--------
 
 The Offshore Renewables Balance of system and Installation Tool (ORBIT) is a
 model developed by the National Renewable Energy Lab (NREL) to study

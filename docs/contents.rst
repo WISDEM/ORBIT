@@ -11,12 +11,12 @@ Contents:
    :maxdepth: 2
 
    index
-   intro/index
-   tutorial/index
-   api
-   methods
-   publications/index
-   team
+   source/intro/index
+   source/tutorial/index
+   source/api
+   source/methods
+   source/publications/index
+   source/team
 
 
 Indices and search page
