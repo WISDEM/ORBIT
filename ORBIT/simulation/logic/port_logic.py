@@ -9,16 +9,12 @@ __email__ = "jake.nunemaker@nrel.gov"
 from types import SimpleNamespace
 
 from ORBIT.vessels import tasks
-from ORBIT.simulation.exceptions import VesselCapacityError
+from ORBIT.simulation.exceptions import FastenTimeNotFound, VesselCapacityError
 
 
 def vessel_fasten_time(item, **kwargs):
     """
     Retrieves the amount of time it takes to fasten an item to a vessel.
-
-    TODO: abstract this out of port.py to the tasks package into a base task.
-        Ideally this could also become a dictionary lookup or something similar
-        instead of a large if/elif/else statement.
 
     Parameters
     ----------
@@ -63,8 +59,7 @@ def vessel_fasten_time(item, **kwargs):
         fasten_time += lift_time
 
     else:
-        # TODO: Write custom exception.
-        raise Exception()
+        raise FastenTimeNotFound(item["type"])
 
     return fasten_time
 
@@ -111,7 +106,6 @@ def get_list_of_items_from_port(env, vessel, items, port, **kwargs):
             while True and port.items:
                 buffer = []
                 for item_rule in items:
-                    # TODO: Add in operational limits for port cranes
                     item = port.get_item(item_rule).value
                     buffer.append(item)
 
@@ -171,10 +165,7 @@ def get_list_of_items_from_port(env, vessel, items, port, **kwargs):
                 else:
                     for item in buffer:
                         vessel.storage.put_item(item)
-                        # TODO: I think we'll need to circle back to port
-                        # logistics at some point to sort out of some of the
-                        # quirks for storing pieces of information for later
-                        # use relating to what is being loaded on the vessel
+
                         if item["type"] == "Carousel":
                             vessel.carousel = SimpleNamespace(**item)
                         env.logger.debug(

@@ -361,3 +361,24 @@ class VesselCapacityError(Exception):
 
     def __str__(self):
         return self.message
+
+
+class FastenTimeNotFound(Exception):
+    """Error for an item that doesn't have a defined fasten time."""
+
+    def __init__(self, item):
+        """
+        Creates an instance of FastenTimeNotFound
+
+        Parameters
+        ----------
+        item : str
+            Item name
+        """
+
+        self.item = item
+
+        self.message = f"Unknown fasten time for item type '{item}'."
+
+    def __str__(self):
+        return self.message

@@ -398,9 +398,15 @@ class CableSystem(DesignPhase):
     @property
     def detailed_output(self):
         """
-        TODO: implement when detailed outputs required are defined
+        Returns detailed design outputs.
         """
-        raise NotImplementedError()
+
+        _output = {
+            "length": self.total_cable_length_by_type,
+            "cost": self.cost_by_type,
+        }
+
+        return _output
 
     @property
     def design_result(self):

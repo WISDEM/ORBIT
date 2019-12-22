@@ -15,8 +15,6 @@ def drop_rocks(**kwargs):
     """
     Returns the time it takes to drop rocks around a turbine.
 
-    # TODO: Add component requirement?
-
     Parameters
     ----------
     drop_rocks_time : float
@@ -37,8 +35,6 @@ def drop_rocks(**kwargs):
 def load_rocks(**kwargs):
     """
     Returns the time it takes to load rocks at port.
-
-    # TODO: Add component requirement?
 
     Parameters
     ----------

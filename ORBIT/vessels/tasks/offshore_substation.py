@@ -16,9 +16,6 @@ def lift_topside(vessel, **kwargs):
     """
     Calculates time required to lift topside at site.
 
-    # TODO: Add complexity of lift?
-    # TODO: Add check for crane tonnage capacity.
-
     Parameters
     ----------
     vessel : Vessel

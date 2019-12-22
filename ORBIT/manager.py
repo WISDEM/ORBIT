@@ -356,11 +356,10 @@ class ProjectManager:
 
         return phase_class
 
-    def _check_keys(self, expected, config):
+    @classmethod
+    def _check_keys(cls, expected, config):
         """
         Basic recursive key check.
-
-        # TODO: Needs to be tested. Expand this to Cerberus/TypedDict/etc.?
 
         Parameters
         ----------
@@ -386,7 +385,7 @@ class ProjectManager:
                 continue
 
             elif isinstance(v, dict):
-                _m = self._check_keys(v, c)
+                _m = cls._check_keys(v, c)
                 missing.extend(_m)
 
         return missing

@@ -41,7 +41,7 @@ repos:
     - id: pytest
       name: pytest
       stages: [commit]
-      entry: pytest --tb=line -n 4 --deselect=setup.py tests/
+      entry: pytest --tb=line --deselect=setup.py tests/
       language: system
       types: [python]
 

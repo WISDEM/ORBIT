@@ -172,8 +172,6 @@ class Vessel:
         for operations.
         """
 
-        # TODO: It would be better to explicitly call the crane limits in the
-        # processes themselves when appropriate.
         crane = getattr(self, "crane", None)
         if crane is None:
             max_windspeed = self._transport_specs["max_windspeed"]

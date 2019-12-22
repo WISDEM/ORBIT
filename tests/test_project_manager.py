@@ -314,3 +314,44 @@ def test_find_key_match():
     for f in fails:
 
         assert TestProjectManager.find_key_match(f) is None
+
+
+# Tests for key checking.
+
+expected_config = {
+    "param1": "str",
+    "param2": {"param3": "int | float", "param4": "str (optional)"},
+    "param5 (variable)": "int",
+}
+
+
+def test_good_config():
+
+    config = deepcopy(expected_config)
+    missing = ProjectManager._check_keys(expected_config, config)
+    assert len(missing) == 0
+
+
+def test_missing_key():
+
+    config = deepcopy(expected_config)
+    _ = config.pop("param1")
+    missing = ProjectManager._check_keys(expected_config, config)
+    assert len(missing) == 1
+
+
+def test_optional():
+
+    config = deepcopy(expected_config)
+    _ = config["param2"].pop("param4")
+    missing = ProjectManager._check_keys(expected_config, config)
+    assert len(missing) == 0
+
+
+def test_variable_key():
+
+    config = deepcopy(expected_config)
+    _ = config.pop("param5 (variable)")
+
+    missing = ProjectManager._check_keys(expected_config, config)
+    assert len(missing) == 0

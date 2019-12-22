@@ -334,8 +334,8 @@ def tow_plow(distance, **kwargs):
 
 def pull_winch(distance, **kwargs):
     """
-    Calculates time required to tow the plow to the landfall site.
-    # TODO: Looks like this docstring was copied over from tow_plow.
+    Calculates time required to pull the cable onshore and into the previously
+    dug trench.
 
     Parameters
     ----------
