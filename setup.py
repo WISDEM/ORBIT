@@ -40,6 +40,8 @@ setup(
             "pytest",
             "pytest-cov",
             "pytest-xdist",
+            "sphinx",
+            "sphinx-rtd-theme"
         ]
     },
     test_suite="pytest",

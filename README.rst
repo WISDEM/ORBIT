@@ -3,8 +3,9 @@ ORBIT
 
 Offshore Renewables Balance of system and Installation Tool
 
-:Version: 0.3.0
+:Version: 0.3.1
 :Authors: `Jake Nunemaker <https://www.linkedin.com/in/jake-nunemaker/>`_, `Matt Shields <https://www.linkedin.com/in/matt-shields-834a6b66/>`_, `Rob Hammond <https://www.linkedin.com/in/rob-hammond-33583756/>`_
+:Documentation: `ORBIT Read the Docs <https://orbit-nrel.readthedocs.io/en/latest/>`_
 
 This package is currently in a development state and it is only recommended for
 preliminary analysis.
@@ -12,39 +13,8 @@ preliminary analysis.
 Installation
 ------------
 
-Dependencies
-~~~~~~~~~~~~
-
-ORBIT requires:
-
-- Python 3.7+
-- SimPy (pip only)
-- NumPy
-- SciPy
-- pandas
-- Matplotlib
-
-Additional packages needed for development:
-
-- black (pip only)
-- isort (pip only)
-- pre-commit (pip only)
-- pytest (``conda install -c conda-forge pre-commit``)
-- pytest-xdist (pip only)
-- pytest-cov (pip only)
-
-Additional packages needed to build documentation:
-
-- sphinx
-- sphinx_rtd_theme (pip only)
-
-Additional packages for easy iteration and running of code:
-
-- jupyterlab (``conda install -c conda-forge jupyterlab``)
-
-
 Environment Setup
------------------
+~~~~~~~~~~~~~~~~~
 
 A couple of notes before you get started:
  - It is assumed that you will be using the terminal on MacOS/Linux or the
@@ -56,6 +26,36 @@ A couple of notes before you get started:
    to get started. An alternative setup that doesn't rely on Anaconda for
    setting up an environment can be followed
    `here <https://realpython.com/python-virtual-environments-a-primer/#managing-virtual-environments-with-virtualenvwrapper>`_.
+
+
+Dependencies
+~~~~~~~~~~~~
+
+- Python 3.7+
+- SimPy
+- NumPy
+- SciPy
+- pandas
+- Matplotlib
+
+Development
+~~~~~~~~~~~
+
+- black
+- isort
+- pre-commit
+- pytest
+- pytest-xdist
+- pytest-cov
+- sphinx
+- sphinx-rtd-theme
+
+
+Recommended packages for easy iteration and running of code:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- jupyterlab
+
 
 Instructions
 ~~~~~~~~~~~~
@@ -77,16 +77,9 @@ Instructions
         conda activate <environment_name>
         conda deactivate <environment_name>
 
-4. (Optional) Install the dependencies to your newly created conda environment using
-   ``conda install <package>`` unless they are listed as "(pip only)", in which
-   case use ``pip install <package>``.
-    In general, when using the Anaconda suite it is best to find the conda
-    specific installation command.
-    When installing, be sure to use all lowercase letters in
-    ``... install <package>`` unless otherwise noted.
-5. Clone the repository:
+4. Clone the repository:
    ``git clone https://github.nrel.gov/OffshoreAnalysis/ORBIT-dev.git``
-6. Navigate to the top level of the repository
+5. Navigate to the top level of the repository
    (``<path-to-ORBIT>/ORBIT/``) and install ORBIT as an editable package
    with following command.
 
@@ -95,5 +88,11 @@ Instructions
        # Note the "." at the end
        pip install -e .
 
-       # OR if you are you going to be contributing to the code use
+       # OR if you are you going to be contributing to the code or building documentation
        pip install -e '.[dev]'
+6. (Development only) Install the pre-commit hooks to autoformat code and
+   check that tests pass.
+
+    .. code-block:: console
+
+        pre-commit install
