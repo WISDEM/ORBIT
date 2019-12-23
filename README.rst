@@ -48,7 +48,7 @@ Development
 - pytest-xdist
 - pytest-cov
 - sphinx
-- sphinx_rtd_theme
+- sphinx-rtd-theme
 
 
 Recommended packages for easy iteration and running of code:
