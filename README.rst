@@ -90,3 +90,9 @@ Instructions
 
        # OR if you are you going to be contributing to the code or building documentation
        pip install -e '.[dev]'
+6. (Development only) Install the pre-commit hooks to autoformat code and
+   check that tests pass.
+
+    .. code-block:: console
+
+        pre-commit install
