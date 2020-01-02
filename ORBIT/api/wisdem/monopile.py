@@ -7,8 +7,9 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import os
-import openmdao.api as om
+
 import yaml
+import openmdao.api as om
 
 import ORBIT
 from ORBIT import ProjectManager
@@ -22,14 +23,14 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
     """Offshore Renewables Balance of system and Installation Tool."""
 
     phases = {
-        'design_phases': [
+        'design': [
             "ArraySystemDesign",
             "ExportSystemDesign",
             "OffshoreSubstationDesign",
             "ScourProtectionDesign"
         ],
 
-        'install_phases': [
+        'install': [
             "MonopileInstallation",
             "ScourProtectionInstallation",
             "TurbineInstallation",
@@ -85,7 +86,9 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_input('transition_piece_deck_space', 0., desc='Deck space required to transport a transition piece. Defaults to 0 in order to not be a constraint on installation.')
 
         # Outputs
-        self.add_output('bos_costs', 0.0, units='USD', desc='Total balance of system cost.')
+        # Totals
+        self.add_output('bos_cost', 0.0, units='USD', desc='Total balance of system cost.')
+        self.add_output('installation_time', 0.0, units='h', desc='Total balance of system installation time.')
 
 
     def compile_orbit_config_file(self, inputs, outputs, discrete_inputs, discrete_outputs):
@@ -213,6 +216,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
             ]
         }
 
+        self._orbit_config = config
         return config
 
     def compute(self, inputs, outputs, discrete_inputs, discrete_outputs):
@@ -224,11 +228,19 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         project = ProjectManager(config)
         project.run_project()
 
-        outputs['bos_costs'] = sum([v for k, v in project.phase_costs.items()])
-
+        outputs['bos_cost'] = sum([v for _, v in project.phase_costs.items()])
+        outputs['installation_time'] = sum(
+            [v for k, v in project.phase_times.items()
+             if k in self.phases['install']]
+        )
 
 if __name__ == "__main__":
 
     prob = om.Problem()
     prob.model = OrbitWisdemMonopile()
     prob.setup()
+
+    prob.run_driver()
+
+    prob.model.list_inputs()
+    prob.model.list_outputs()
