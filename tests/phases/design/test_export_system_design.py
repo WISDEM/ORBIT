@@ -22,7 +22,7 @@ config = {
     "plant": {"num_turbines": 50},
     "turbine": {"turbine_rating": 7},
     "export_system_design": {
-        "cables": "XLPE_300mm_33kV",
+        "cables": "XLPE_500mm_132kV",
         "percent_redundant": 0.0,
         "percent_added_length": 0.01,
     },
@@ -45,7 +45,7 @@ def test_number_cables():
     export = ExportSystemDesign(config)
     export.run()
 
-    assert export.num_cables == 11
+    assert export.num_cables == 3
 
 
 def test_cable_length():
@@ -74,8 +74,8 @@ def test_total_cable():
     length = 0.02 + 3 + 30
     length += length * 0.01
     mass = length * export.cable.linear_density
-    assert export.total_mass == pytest.approx(mass * 11, abs=1e-10)
-    assert export.total_length == pytest.approx(length * 11, abs=1e-10)
+    assert export.total_mass == pytest.approx(mass * 3, abs=1e-10)
+    assert export.total_length == pytest.approx(length * 3, abs=1e-10)
 
 
 def test_cables_property():

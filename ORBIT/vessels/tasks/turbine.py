@@ -35,7 +35,7 @@ def lift_nacelle(vessel, **kwargs):
 
     hub_height = kwargs.get("hub_height", None)
     crane_rate = crane.crane_rate(**kwargs)
-    nacelle_lift_time = hub_height / crane_rate
+    nacelle_lift_time = float(hub_height) / crane_rate
 
     return nacelle_lift_time
 
@@ -132,7 +132,7 @@ def lift_turbine_blade(vessel, **kwargs):
 
     hub_height = kwargs.get("hub_height", None)
     crane_rate = crane.crane_rate(**kwargs)
-    blade_lift_time = hub_height / crane_rate
+    blade_lift_time = float(hub_height) / crane_rate
 
     return blade_lift_time
 
@@ -229,7 +229,7 @@ def lift_tower(vessel, **kwargs):
 
     hub_height = kwargs.get("hub_height", None)
     crane_rate = crane.crane_rate(**kwargs)
-    tower_lift_time = hub_height / crane_rate
+    tower_lift_time = float(hub_height) / crane_rate
 
     return tower_lift_time
 
