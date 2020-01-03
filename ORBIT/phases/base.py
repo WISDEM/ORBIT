@@ -88,8 +88,6 @@ class BasePhase(ABC):
         """
 
         missing = []
-        print(expected)
-        print(config)
 
         for k, v in expected.items():
 
