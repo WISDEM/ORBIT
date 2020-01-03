@@ -72,8 +72,8 @@ class ExportSystemDesign(CableSystem):
             setattr(self, "".join(("_", name)), config["site"][name])
         self._depth = config["site"]["depth"]
         self._plant_capacity = (
-            config["plant"]["num_turbines"]
-            * config["turbine"]["turbine_rating"]
+            self.config["plant"]["num_turbines"]
+            * self.config["turbine"]["turbine_rating"]
         )
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
         self._distance_to_interconnection = config["site"][

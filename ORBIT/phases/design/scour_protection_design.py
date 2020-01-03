@@ -73,9 +73,10 @@ class ScourProtectionDesign(DesignPhase):
         """
 
         config = self.initialize_library(config, **kwargs)
-        self._design = config["scour_protection_design"]
-        self.diameter = config["monopile"]["diameter"]
-        self.num_turbines = config["plant"]["num_turbines"]
+        self.config = self.validate_config(config)
+        self._design = self.config["scour_protection_design"]
+        self.diameter = self.config["monopile"]["diameter"]
+        self.num_turbines = self.config["plant"]["num_turbines"]
 
         self.phi = self._design.get("soil_friction_angle", 33.5)
         self.equilibrium = self._design.get("scour_depth_equilibrium", 1.3)

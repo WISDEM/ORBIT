@@ -13,6 +13,7 @@ from ORBIT.phases.design import MonopileDesign
 
 base = {
     "site": {"depth": 50, "mean_windspeed": 9},
+    "plant": {"num_turbines": 20},
     "turbine": {
         "rotor_diameter": 150,
         "hub_height": 110,

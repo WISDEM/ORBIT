@@ -34,7 +34,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         "site": {"distance": "float", "depth": "int"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float",
+            "monthly_rate": "float (optional)",
             "name": "str (optional)",
         },
         "offshore_substation_topside": {
@@ -65,7 +65,8 @@ class OffshoreSubstationInstallation(InstallPhase):
             Expects columns 'max_waveheight' and 'max_windspeed'.
         """
 
-        self.config = self.initialize_library(config, **kwargs)
+        config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
         self.extract_phase_kwargs(**kwargs)
         self.extract_defaults()
 
