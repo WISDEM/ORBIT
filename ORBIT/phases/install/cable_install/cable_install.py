@@ -107,7 +107,8 @@ class CableInstallation(InstallPhase):
         """
 
         self._system = system.lower()
-        self.config = self.initialize_library(config, **kwargs)
+        config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
         self.strategy = config[f"{self._system}_system"]["strategy"].lower()
         if self.strategy not in ("lay", "bury", "lay_bury"):
             raise ValueError(

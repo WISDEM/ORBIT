@@ -278,6 +278,7 @@ class CableSystem(DesignPhase):
         """
 
         config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
 
         self.cable_type = cable_type.lower()
         if self.cable_type not in ("array", "export"):

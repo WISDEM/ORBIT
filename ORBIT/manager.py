@@ -29,11 +29,7 @@ from ORBIT.phases.install import (
     ScourProtectionInstallation,
     OffshoreSubstationInstallation,
 )
-from ORBIT.simulation.exceptions import (
-    MissingKeys,
-    PhaseNotFound,
-    WeatherProfileError,
-)
+from ORBIT.simulation.exceptions import PhaseNotFound, WeatherProfileError
 
 
 class ProjectManager:
@@ -323,10 +319,6 @@ class ProjectManager:
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
 
-        missing = self._check_keys(_class.expected_config, _config)
-        if missing:
-            raise MissingKeys(missing)
-
         kwargs = _config.pop("kwargs", {})
         phase = _class(_config, weather=weather, phase_name=name, **kwargs)
         phase.run()
@@ -362,40 +354,6 @@ class ProjectManager:
 
         return phase_class
 
-    @classmethod
-    def _check_keys(cls, expected, config):
-        """
-        Basic recursive key check.
-
-        Parameters
-        ----------
-        expected : dict
-            Expected config.
-        config : dict
-            Possible phase_config.
-        """
-
-        missing = []
-
-        for k, v in expected.items():
-            if isinstance(k, str) and "variable" in k:
-                continue
-
-            if isinstance(v, str) and "optional" in v:
-                continue
-
-            c = config.get(k, None)
-
-            if c is None:
-                missing.append(k)
-                continue
-
-            elif isinstance(v, dict):
-                _m = cls._check_keys(v, c)
-                missing.extend(_m)
-
-        return missing
-
     def run_all_design_phases(self, phase_list):
         """
         Runs multiple design phases and adds '.design_result' to self.config.
@@ -417,10 +375,6 @@ class ProjectManager:
 
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
-
-        missing = self._check_keys(_class.expected_config, _config)
-        if missing:
-            raise MissingKeys(missing)
 
         phase = _class(_config)
         phase.run()

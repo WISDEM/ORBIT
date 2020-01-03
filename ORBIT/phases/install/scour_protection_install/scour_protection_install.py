@@ -55,7 +55,8 @@ class ScourProtectionInstallation(InstallPhase):
             Optional user-defined inputs.
         """
 
-        self.config = self.initialize_library(config, **kwargs)
+        config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
         self.scour_protection_tonnes_to_install = self.config[
             "scour_protection"
         ]["tonnes_per_substructure"]

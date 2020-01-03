@@ -7,12 +7,14 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from abc import ABC, abstractmethod
+from copy import deepcopy
 
 from ORBIT.library import (
     initialize_library,
     extract_library_data,
     extract_library_specs,
 )
+from ORBIT.simulation.exceptions import MissingInputs
 
 
 class BasePhase(ABC):
@@ -71,6 +73,73 @@ class BasePhase(ABC):
         """
 
         self.defaults = extract_library_specs("defaults", "project")
+
+    @classmethod
+    def _check_keys(cls, expected, config):
+        """
+        Basic recursive key check.
+
+        Parameters
+        ----------
+        expected : dict
+            Expected config.
+        config : dict
+            Possible phase_config.
+        """
+
+        missing = []
+        print(expected)
+        print(config)
+
+        for k, v in expected.items():
+
+            if isinstance(k, str) and "variable" in k:
+                continue
+
+            if isinstance(v, str) and "optional" in v:
+                continue
+
+            if isinstance(v, dict):
+                c = config.get(k, {})
+                if not isinstance(c, dict):
+                    raise TypeError(f"'{k}' must be type 'dict'.")
+
+                _m = cls._check_keys(v, c)
+                m = [f"{k}.{i}" for i in _m]
+                missing.extend(m)
+                continue
+
+            c = config.get(k, None)
+            if c is None:
+                missing.append(k)
+
+        return missing
+
+    def validate_config(self, config):
+        """
+        Validates `config` against `self.expected_config`.
+
+        Parameters
+        ----------
+        config : dict
+            Input config.
+
+        Raises
+        ------
+        MissingInputs
+        """
+
+        expected = deepcopy(getattr(self, "expected_config", None))
+        if expected is None:
+            raise AttributeError(f"'expected_config' not set for '{self}'.")
+
+        missing = self._check_keys(expected, config)
+
+        if missing:
+            raise MissingInputs(missing)
+
+        else:
+            return config
 
     @abstractmethod
     def run(self):
