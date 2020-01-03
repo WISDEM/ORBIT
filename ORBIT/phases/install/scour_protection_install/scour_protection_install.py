@@ -32,7 +32,7 @@ class ScourProtectionInstallation(InstallPhase):
         "turbine": {"rotor_diameter": "int"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float",
+            "monthly_rate": "float (optional)",
             "name": "str (optional)",
         },
         "scour_protection": {"tonnes_per_substructure": "float"},

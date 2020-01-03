@@ -41,7 +41,7 @@ class TurbineInstallation(InstallPhase):
         "plant": {"num_turbines": "int"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float",
+            "monthly_rate": "float (optional)",
             "name": "str (optional)",
         },
         "turbine": {
