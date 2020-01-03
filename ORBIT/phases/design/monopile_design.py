@@ -71,7 +71,8 @@ class MonopileDesign(DesignPhase):
         config : dict
         """
 
-        self.config = self.initialize_library(config, **kwargs)
+        config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
         self._outputs = {}
 
     def run(self):

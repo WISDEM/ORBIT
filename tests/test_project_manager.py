@@ -12,8 +12,9 @@ import pytest
 
 from ORBIT import ProjectManager
 from tests.data import test_weather
-from ORBIT.manager import MissingKeys, PhaseNotFound, WeatherProfileError
+from ORBIT.manager import PhaseNotFound, WeatherProfileError
 from tests.vessels import WTIV_SPECS
+from ORBIT.simulation.exceptions import MissingInputs
 
 SPECIFIC_WTIV = deepcopy(WTIV_SPECS)
 SPECIFIC_WTIV["name"] = "Phase Specific WTIV"
@@ -68,7 +69,7 @@ def test_exceptions():
     incomplete_config = deepcopy(config)
     _ = incomplete_config["site"].pop("depth")
 
-    with pytest.raises(MissingKeys):
+    with pytest.raises(MissingInputs):
         project = ProjectManager(incomplete_config)
         project.run_project()
 
@@ -279,7 +280,7 @@ def test_design_phases():
 
 def test_find_key_match():
     class SpecificTurbineInstallation:
-        pass
+        expected_config = {}
 
     TestProjectManager = deepcopy(ProjectManager)
     TestProjectManager._install_phases.append(SpecificTurbineInstallation)
@@ -314,44 +315,3 @@ def test_find_key_match():
     for f in fails:
 
         assert TestProjectManager.find_key_match(f) is None
-
-
-# Tests for key checking.
-
-expected_config = {
-    "param1": "str",
-    "param2": {"param3": "int | float", "param4": "str (optional)"},
-    "param5 (variable)": "int",
-}
-
-
-def test_good_config():
-
-    config = deepcopy(expected_config)
-    missing = ProjectManager._check_keys(expected_config, config)
-    assert len(missing) == 0
-
-
-def test_missing_key():
-
-    config = deepcopy(expected_config)
-    _ = config.pop("param1")
-    missing = ProjectManager._check_keys(expected_config, config)
-    assert len(missing) == 1
-
-
-def test_optional():
-
-    config = deepcopy(expected_config)
-    _ = config["param2"].pop("param4")
-    missing = ProjectManager._check_keys(expected_config, config)
-    assert len(missing) == 0
-
-
-def test_variable_key():
-
-    config = deepcopy(expected_config)
-    _ = config.pop("param5 (variable)")
-
-    missing = ProjectManager._check_keys(expected_config, config)
-    assert len(missing) == 0

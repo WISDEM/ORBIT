@@ -42,7 +42,8 @@ class ProjectDevelopment(DesignPhase):
         config : dict
         """
 
-        self.config = self.initialize_library(config, **kwargs)
+        config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
         self._outputs = {}
 
         self.defaults = extract_library_specs("defaults", "project")
@@ -59,7 +60,8 @@ class ProjectDevelopment(DesignPhase):
         - :py:meth:`.boem_review`
         - :py:meth:`.design_install_plan_development`
         """
-        dev_specs = self.config["project_development"]
+
+        dev_specs = self.config.get("project_development", {})
 
         self.site_auction(**dev_specs)
         self.site_assessment_plan_development(**dev_specs)

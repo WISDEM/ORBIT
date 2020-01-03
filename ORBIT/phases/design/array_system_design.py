@@ -102,7 +102,7 @@ class ArraySystemDesign(CableSystem):
         """
 
         super().__init__(config, "array", **kwargs)
-        self.config = config
+
         self.exclusion = 1 + self.config["array_system_design"].get(
             "average_exclusion_percent", 0.0
         )

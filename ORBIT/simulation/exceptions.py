@@ -164,25 +164,6 @@ class InsufficientAmount(Exception):
         return self.message
 
 
-class MissingConfigDefinition(Exception):
-    """Error for missing configuration definition."""
-
-    def __init__(self, key):
-        """
-        Creates an instance of MissingConfigDefinition.
-
-        Parameters
-        ----------
-        key : str
-            Missing key in self.config.
-        """
-
-        self.message = f"'{key}' is missing in the input configuration."
-
-    def __str__(self):
-        return self.message
-
-
 class PhaseNotFound(Exception):
     """Exception for missing Phase"""
 
@@ -203,12 +184,12 @@ class PhaseNotFound(Exception):
         return self.message
 
 
-class MissingKeys(Exception):
-    """Exception for missing keys"""
+class MissingInputs(Exception):
+    """Exception for missing input parameters."""
 
     def __init__(self, k):
         """
-        Creates an instance of MissingKeys.
+        Creates an instance of MissingInputs.
 
         Parameters
         ----------
@@ -217,7 +198,7 @@ class MissingKeys(Exception):
         """
 
         self.keys = k
-        self.message = f"'{self.keys}' are missing in config."
+        self.message = f"Input(s) '{self.keys}' missing in config."
 
     def __str__(self):
         return self.message
