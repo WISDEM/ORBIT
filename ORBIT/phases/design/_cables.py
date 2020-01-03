@@ -28,7 +28,7 @@ class Cable:
     rated_voltage : float
         Cable rated line-to-line voltage, :math:`kV`.
     ac_resistance : float
-        Cable resistance for AC current, :math:`\\frac{\Omega}{km}`.
+        Cable resistance for AC current, (ohms/km).
     inductance : float
         Cable inductance, :math:`\\frac{MHz}{km}`.
     capacitance : float
@@ -38,7 +38,7 @@ class Cable:
     cost_per_km : int
         Cable cost per kilometer, :math:`\\frac{USD}{km}`.
     char_impedance : float
-        Characteristic impedance of equivalent cable circuit, :math:`\Omega`.
+        Characteristic impedance of equivalent cable circuit, (ohms).
     power_factor : float
         Power factor of AC current in cable, no units.
     cable_power : float
@@ -91,7 +91,7 @@ class Cable:
 
     def calc_char_impedance(self):
         """
-        Calculate characteristic impedance of cable, :math:`\Omega`.
+        Calculate characteristic impedance of cable.
         """
 
         conductance = 1 / self.ac_resistance

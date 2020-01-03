@@ -13,31 +13,13 @@ import openmdao.api as om
 
 import ORBIT
 from ORBIT import ProjectManager
-from ORBIT.library import loader
+from ORBIT.library import export_library_specs
 
-filepath = os.path.abspath(os.path.join(ORBIT.ROOT, '..', 'library', 'defaults', 'project.yaml'))
-DEFAULTS = yaml.load(open(filepath, "r"), Loader=loader)
+DEFAULTS = extract_library_specs("defaults", "project")
 
 
 class OrbitWisdemMonopile(om.ExplicitComponent):
-    """Offshore Renewables Balance of system and Installation Tool."""
-
-    phases = {
-        'design': [
-            "ArraySystemDesign",
-            "ExportSystemDesign",
-            "OffshoreSubstationDesign",
-            "ScourProtectionDesign"
-        ],
-
-        'install': [
-            "MonopileInstallation",
-            "ScourProtectionInstallation",
-            "TurbineInstallation",
-            "ArrayCableInstallation",
-            "ExportCableInstallation",
-        ]
-    }
+    """ORBIT-WISDEM Monopile API"""
 
     def setup(self):
         """
@@ -56,6 +38,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_discrete_input('site_distance', 40., desc='Distance from site to installation port.')
         self.add_discrete_input('site_distance_to_landfall', 50., desc='Distance from site to landfall for export cable.')
         self.add_discrete_input('site_distance_to_interconnection', 3., desc='Distance from landfall to interconnection.')
+        self.add_discrete_input('site_mean_windspeed', 9., desc='Mean windspeed of the site.')
 
         # Plant
         self.add_discrete_input('plant_num_turbines', 60, desc='Number of turbines.')
@@ -65,6 +48,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
 
         # Turbine
         self.add_discrete_input('turbine_rating', 8., desc='Rated capacity of a turbine.')
+        self.add_discrete_input('turbine_rated_windspeed', 11., desc='Rated windspeed of the turbine.')
         self.add_input('turbine_hub_height', 100., units='m', desc='Turbine hub height.')
         self.add_input('turbine_rotor_diameter', 130, units='m', desc='Turbine rotor diameter.')
         self.add_input('tower_weight', 400., units='t', desc='Weight of the total tower.')
@@ -89,6 +73,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         # Totals
         self.add_output('bos_cost', 0.0, units='USD', desc='Total balance of system cost.')
         self.add_output('installation_time', 0.0, units='h', desc='Total balance of system installation time.')
+        self.add_output('installation_cost', 0.0, units='USD', desc='Total balance of system installation cost.')
 
 
     def compile_orbit_config_file(self, inputs, outputs, discrete_inputs, discrete_outputs):
@@ -112,7 +97,8 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
                 'distance': discrete_inputs['site_distance'],
                 'distance_to_landfall': discrete_inputs['site_distance_to_landfall'],
                 'distance_to_beach': 0,
-                'distance_to_interconnection': discrete_inputs['site_distance_to_interconnection']
+                'distance_to_interconnection': discrete_inputs['site_distance_to_interconnection'],
+                'mean_windspeed': discrete_inputs['site_mean_windspeed']
             },
             
             'plant': {
@@ -133,6 +119,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
                 'hub_height': inputs['turbine_hub_height'],
                 'rotor_diameter': inputs['turbine_rotor_diameter'],
                 'turbine_rating': discrete_inputs['turbine_rating'],
+                'rated_windspeed': discrete_inputs['turbine_rated_windspeed'],
                 'tower': {
                     'type': 'Tower',
                     'deck_space': inputs['tower_deck_space'],
@@ -200,9 +187,10 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
             
             # Phases
             'design_phases': [
-                'ScourProtectionDesign',
-                'ArraySystemDesign',
-                'ExportSystemDesign',
+                "MonopileDesign",
+                "ScourProtectionDesign",
+                "ArraySystemDesign",
+                "ExportSystemDesign",
                 "OffshoreSubstationDesign"
             ],
             
@@ -231,7 +219,11 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         outputs['bos_cost'] = sum([v for _, v in project.phase_costs.items()])
         outputs['installation_time'] = sum(
             [v for k, v in project.phase_times.items()
-             if k in self.phases['install']]
+             if k in self._orbit_config['install_phases']]
+        )
+        outputs['installation_cost'] = sum(
+            [v for k, v in project.phase_costs.items()
+             if k in self._orbit_config['install_phases']]
         )
 
 if __name__ == "__main__":
