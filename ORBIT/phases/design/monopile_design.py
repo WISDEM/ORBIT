@@ -18,6 +18,7 @@ class MonopileDesign(DesignPhase):
 
     expected_config = {
         "site": {"depth": "float", "mean_windspeed": "float"},
+        "plant": {"num_turbines": "int"},
         "turbine": {
             "rotor_diameter": "float",
             "hub_height": "float",
@@ -40,6 +41,8 @@ class MonopileDesign(DesignPhase):
             "turb_length_scale": "float (optional)",
             "design_time": "float (optional)",
             "design_cost": "float (optional)",
+            "monopile_steel_cost": "float (optional)",
+            "tp_steel_cost": "float (optional)",
         },
     }
 
@@ -73,6 +76,7 @@ class MonopileDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
+        self.extract_defaults()
         self._outputs = {}
 
     def run(self):
@@ -248,8 +252,11 @@ class MonopileDesign(DesignPhase):
     def total_phase_cost(self):
         """Returns total phase cost in $USD."""
 
-        phase_cost = self.config["monopile_design"].get("design_cost", 0.0)
-        return phase_cost
+        _design = self.config.get("monopile_design", {})
+        design_cost = _design.get("design_cost", 0.0)
+        material_cost = sum([v for _, v in self.material_cost.items()])
+
+        return design_cost + material_cost
 
     @property
     def total_phase_time(self):
@@ -263,6 +270,56 @@ class MonopileDesign(DesignPhase):
         """Returns detailed phase information."""
 
         return {}
+
+    @property
+    def material_cost(self):
+        """Returns the material cost of the monopile and transition piece."""
+
+        if not self._outputs:
+            raise Exception("Has MonopileDesign been ran yet?")
+
+        num_turbines = self.config["plant"]["num_turbines"]
+        mono_weight = self._outputs["monopile"]["weight"] * num_turbines
+        tp_weight = self._outputs["transition_piece"]["weight"] * num_turbines
+
+        out = {
+            "monopile": mono_weight * self.monopile_steel_cost,
+            "transition_piece": tp_weight * self.tp_steel_cost,
+        }
+
+        return out
+
+    @property
+    def monopile_steel_cost(self):
+        """Returns the cost of monopile steel (USD/t) fully fabricated."""
+
+        _design = self.config.get("monopile_design", {})
+        _key = "monopile_steel_cost"
+
+        try:
+            cost = _design.get(_key, self.defaults[_key])
+
+        except KeyError:
+            raise Exception("Cost of monopile steel not found.")
+
+        return cost
+
+    @property
+    def tp_steel_cost(self):
+        """
+        Returns the cost of transition piece steel (USD/t) fully fabricated.
+        """
+
+        _design = self.config.get("monopile_design", {})
+        _key = "tp_steel_cost"
+
+        try:
+            cost = _design.get(_key, self.defaults[_key])
+
+        except KeyError:
+            raise Exception("Cost of transition piece steel not found.")
+
+        return cost
 
     @staticmethod
     def pile_mass(Dp, tp, Lt, **kwargs):
