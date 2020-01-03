@@ -111,3 +111,60 @@ the ``'monopile'`` sub dictionary for the user:
    additional site level information (eg. ``turbine.rotor_diameter``) is added
    to the required configuration when the ``MonopileDesign`` phase is added to
    the phase list.
+
+Overriding Values from a Design Phase
+-------------------------------------
+
+In the example above, the ``MonopileDesign`` phase will produce the input
+parameters ``'monopile'`` and ``'transition_piece'``. It is also possible to
+supply some of the values for these designs if known and let ``MonopileDesign``
+fill in the rest. For example, if the user knows the dimensions of the monopile
+but not the transition piece, the ``'monopile'`` dictionary can be added to the
+project config above:
+
+.. code-block:: python
+
+   config {
+
+       'turbine': {
+           'hub_height': 130,
+           'rotor_diameter': 154,  # <-- Additional input from MonopileDesign
+           'rated_windspeed': 11
+       },
+
+       'monopile': {               # <-- 'monopile' isn't required but can be
+           'type': 'Monopile',     #     added to include known project parameters.
+           'weight': 800,          #     Other inputs produced by MonopileDesign will
+           'length': 100           #     be added to the config.
+       },
+
+       ...
+
+       'monopile_design': {
+           'design_time': 'float (optional)',
+           ...
+       },
+
+       'design_phases': ['MonopileDesign'],
+       'install_phases': ['MonopileInstallation']
+   }
+
+   project = ProjectManager(config)
+   project.run_project()
+
+   project.config
+
+   >>>
+
+   {
+
+   ...
+
+       'monopile': {
+           'type': 'Monopile',
+           'weight': 800,
+           'length': 100,
+           'diameter': 8.512,      # <-- Additional inputs added by MonopileDesign
+           'deck_space': 36.245    #
+       },
+   }

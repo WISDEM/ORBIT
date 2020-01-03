@@ -113,12 +113,12 @@ class ProjectManager:
         design_phases = self.config.get("design_phases", [])
         install_phases = self.config.get("install_phases", [])
 
-        self.run_all_design_phases(design_phases)
-
         if isinstance(design_phases, str):
             design_phases = [design_phases]
         if isinstance(install_phases, str):
             install_phases = [install_phases]
+
+        self.run_all_design_phases(design_phases)
 
         if isinstance(install_phases, list):
             self.run_multiple_phases_in_serial(install_phases)
@@ -196,7 +196,7 @@ class ProjectManager:
         return {**install, **design}
 
     @classmethod
-    def merge_dicts(cls, left, right, add_keys=True):
+    def merge_dicts(cls, left, right, overwrite=True, add_keys=True):
         """
         Merges two dicts (right into left) with an option to add keys of right.
 
@@ -221,9 +221,15 @@ class ProjectManager:
                 and isinstance(new[k], dict)
                 and isinstance(right[k], collections.Mapping)
             ):
-                new[k] = cls.merge_dicts(new[k], right[k], add_keys=add_keys)
+                new[k] = cls.merge_dicts(
+                    new[k], right[k], overwrite=overwrite, add_keys=add_keys
+                )
             else:
-                new[k] = right[k]
+                if overwrite or k not in new:
+                    new[k] = right[k]
+
+                else:
+                    continue
 
         return new
 
@@ -422,10 +428,12 @@ class ProjectManager:
         self.phase_costs[name] = phase.total_phase_cost
         self.phase_times[name] = phase.total_phase_time
         self.design_results = self.merge_dicts(
-            self.design_results, phase.design_result
+            self.design_results, phase.design_result, overwrite=False
         )
 
-        self.config = self.merge_dicts(self.config, phase.design_result)
+        self.config = self.merge_dicts(
+            self.config, phase.design_result, overwrite=False
+        )
 
     def run_multiple_phases_in_serial(self, phase_list):
         """
