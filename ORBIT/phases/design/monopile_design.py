@@ -249,6 +249,7 @@ class MonopileDesign(DesignPhase):
 
         return self._outputs
 
+    @property
     def total_phase_cost(self):
         """Returns total phase cost in $USD."""
 

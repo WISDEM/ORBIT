@@ -13,9 +13,6 @@ import openmdao.api as om
 
 import ORBIT
 from ORBIT import ProjectManager
-from ORBIT.library import export_library_specs
-
-DEFAULTS = extract_library_specs("defaults", "project")
 
 
 class OrbitWisdemMonopile(om.ExplicitComponent):
@@ -25,7 +22,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         """
         """
         # Inputs
-        self.add_discrete_input('weather_file', 'block_island', desc='Weather file to use for installation times.')
+        # self.add_discrete_input('weather_file', 'block_island', desc='Weather file to use for installation times.')
 
         # Vessels
         self.add_discrete_input('wtiv', 'example_wtiv', desc='Vessel configuration to use for installation of foundations and turbines.')
@@ -49,6 +46,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         # Turbine
         self.add_discrete_input('turbine_rating', 8., desc='Rated capacity of a turbine.')
         self.add_discrete_input('turbine_rated_windspeed', 11., desc='Rated windspeed of the turbine.')
+        self.add_discrete_input('turbine_capex', 1100, desc='Turbine CAPEX')
         self.add_input('turbine_hub_height', 100., units='m', desc='Turbine hub height.')
         self.add_input('turbine_rotor_diameter', 130, units='m', desc='Turbine rotor diameter.')
         self.add_input('tower_weight', 400., units='t', desc='Weight of the total tower.')
@@ -59,7 +57,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_input('blade_deck_space', 0., desc='Deck space required to transport a blade. Defaults to 0 in order to not be a constraint on installation.')
 
         # Port
-        self.add_discrete_input('port_cost_per_month', DEFAULTS['port_cost_per_month'], desc='Monthly port costs.')
+        self.add_discrete_input('port_cost_per_month', 2e6, desc='Monthly port costs.')
 
         # Monopile
         self.add_input('monopile_length', 100., units='m', desc='Length of monopile.')
@@ -69,11 +67,16 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_input('transition_piece_weight', 250., units='t', desc='Weight of an individual transition piece.')
         self.add_input('transition_piece_deck_space', 0., desc='Deck space required to transport a transition piece. Defaults to 0 in order to not be a constraint on installation.')
 
+        # Other
+        self.add_discrete_input('commissioning', 0.01, "Commissioning percent.")
+        self.add_discrete_input('decommissioning', 0.15, "Decommissioning percent.")
+
         # Outputs
         # Totals
-        self.add_output('bos_cost', 0.0, units='USD', desc='Total balance of system cost.')
+        self.add_output('bos_capex', 0.0, units='USD', desc='Total BOS CAPEX not including commissioning or decommissioning.')
+        self.add_output('total_capex', 0.0, units='USD', desc='Total BOS CAPEX including commissioning and decommissioning.')
         self.add_output('installation_time', 0.0, units='h', desc='Total balance of system installation time.')
-        self.add_output('installation_cost', 0.0, units='USD', desc='Total balance of system installation cost.')
+        self.add_output('installation_capex', 0.0, units='USD', desc='Total balance of system installation cost.')
 
 
     def compile_orbit_config_file(self, inputs, outputs, discrete_inputs, discrete_outputs):
@@ -177,6 +180,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
             },
             
             "substation_design": {},
+            "monopile_design": {},
             
             # Phase Specific
             "OffshoreSubstationInstallation": {
@@ -184,6 +188,11 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
                 "feeder": "example_heavy_feeder",
                 "num_feeders": 1
             },
+
+            # Other
+            "commissioning": discrete_inputs["commissioning"],
+            "decomissioning": discrete_inputs["decommissioning"],
+            "turbine_capex": discrete_inputs["turbine_capex"],
             
             # Phases
             'design_phases': [
@@ -213,18 +222,14 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
                                                 discrete_inputs,
                                                 discrete_outputs)
 
+        weather = 
         project = ProjectManager(config)
         project.run_project()
 
-        outputs['bos_cost'] = sum([v for _, v in project.phase_costs.items()])
-        outputs['installation_time'] = sum(
-            [v for k, v in project.phase_times.items()
-             if k in self._orbit_config['install_phases']]
-        )
-        outputs['installation_cost'] = sum(
-            [v for k, v in project.phase_costs.items()
-             if k in self._orbit_config['install_phases']]
-        )
+        outputs['bos_capex'] = project.bos_capex
+        outputs['total_capex'] = project.total_capex
+        outputs['installation_time'] = project.installation_time
+        outputs['installation_capex'] = project.installation_capex
 
 if __name__ == "__main__":
 

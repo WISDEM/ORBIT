@@ -8,6 +8,7 @@ import re
 import datetime as dt
 import collections.abc as collections
 from math import ceil
+from itertools import product
 
 import pandas as pd
 
@@ -153,6 +154,8 @@ class ProjectManager:
             config = cls.merge_dicts(config, d.expected_config)
             config = cls.remove_keys(config, d.output_config)
 
+        config["commissioning"] = "float (optional, default: 0.01)"
+        config["decommissioning"] = "float (optional, default: 0.15)"
         config["design_phases"] = [*design_phases.keys()]
         config["install_phases"] = [*install_phases.keys()]
 
@@ -523,6 +526,133 @@ class ProjectManager:
             }
 
         return dates
+
+    @property
+    def installation_time(self):
+        """
+        Returns sum of installation module times. This does not consider
+        overlaps if phase dates are supplied.
+        """
+
+        res = sum(
+            [
+                v
+                for k, v in self.phase_times.items()
+                if k in self.config["install_phases"]
+            ]
+        )
+        return res
+
+    @property
+    def project_days(self):
+        """
+        Returns days elapsed during installation phases accounting for
+        overlapping phases.
+        """
+
+        dates = self.phase_dates
+        starts = [d["start"] for _, d in dates.items()]
+        ends = [d["end"] for _, d in dates.items()]
+        return max([self._diff_dates_long(*p) for p in product(starts, ends)])
+
+    def _diff_dates_long(self, a, b):
+        """Returns the difference of two dates in `self.date_format_long`."""
+
+        if not isinstance(a, dt.datetime):
+            a = dt.datetime.strptime(a, self.date_format_long)
+
+        if not isinstance(b, dt.datetime):
+            b = dt.datetime.strptime(b, self.date_format_long)
+
+        return abs((a - b).days)
+
+    @property
+    def total_capex(self):
+        """
+        Returns total BOS CAPEX including commissioning and decommissioning.
+        """
+
+        return self.bos_capex + self.commissioning + self.decommissioning
+
+    @property
+    def installation_capex(self):
+        """
+        Returns installation related CAPEX.
+        """
+
+        res = sum(
+            [
+                v
+                for k, v in self.phase_costs.items()
+                if k in self.config["install_phases"]
+            ]
+        )
+        return res
+
+    @property
+    def bos_capex(self):
+        """
+        Returns BOS CAPEX not including commissioning and decommissioning.
+        """
+
+        return sum([v for _, v in self.phase_costs.items()])
+
+    @property
+    def commissioning(self):
+        """
+        Returns the cost of commissioning based on the configured phases.
+        Defaults to 1% of total BOS CAPEX.
+        """
+
+        _comm = self.config.get("commissioning", 0.0)
+        if (_comm < 0.0) or (_comm > 1.0):
+            raise ValueError("'commissioning' must be between 0 and 1")
+
+        total = self.bos_capex + self.turbine_capex
+
+        comm = total * _comm
+        return comm
+
+    @property
+    def decommissioning(self):
+        """
+        Returns the cost of decommissioning based on the configured
+        installation phases. Defaults to 15% of installation CAPEX.
+        """
+
+        _decomm = self.config.get("decommissioning", 0.0)
+        if (_decomm < 0.0) or (_decomm > 1.0):
+            raise ValueError("'decommissioning' must be between 0 and 1")
+
+        try:
+            decomm = self.installation_capex * _decomm
+
+        except KeyError:
+            return 0.0
+
+        return decomm
+
+    @property
+    def turbine_capex(self):
+        """
+        Returns the total turbine CAPEX.
+        """
+
+        _capex = self.config.get("turbine_capex", 0.0)
+        try:
+            num_turbines = self.config["plant"]["num_turbines"]
+            rating = self.config["turbine"]["turbine_rating"]
+
+        except KeyError:
+            print(
+                f"Turbine CAPEX not included in commissioning. Required "
+                f"parameters 'plant.num_turbines' or 'turbine.turbine_rating' "
+                f"not found."
+            )
+            return 0.0
+
+        capex = _capex * num_turbines * rating * 1000
+        return capex
 
     def export_configuration(self, file_name):
         """
