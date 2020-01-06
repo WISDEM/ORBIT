@@ -19,8 +19,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
     """ORBIT-WISDEM Monopile API"""
 
     def setup(self):
-        """
-        """
+        """"""
         # Inputs
         # self.add_discrete_input('weather_file', 'block_island', desc='Weather file to use for installation times.')
 
@@ -80,9 +79,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
 
 
     def compile_orbit_config_file(self, inputs, outputs, discrete_inputs, discrete_outputs):
-        """
-
-        """
+        """"""
 
         config = {
             # Vessels
@@ -222,7 +219,6 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
                                                 discrete_inputs,
                                                 discrete_outputs)
 
-        weather = 
         project = ProjectManager(config)
         project.run_project()
 
