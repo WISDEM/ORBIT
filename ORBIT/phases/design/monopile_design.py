@@ -262,7 +262,8 @@ class MonopileDesign(DesignPhase):
     def total_phase_time(self):
         """Returns total phase time in hours."""
 
-        phase_time = self.config["monopile_design"].get("design_time", 0.0)
+        _design = self.config.get("monopile_design", {})
+        phase_time = _design.get("design_time", 0.0)
         return phase_time
 
     @property
