@@ -5,6 +5,8 @@ __copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
+from math import ceil
+
 import numpy as np
 
 from ORBIT.phases.design import DesignPhase
@@ -60,7 +62,7 @@ class ScourProtectionDesign(DesignPhase):
         },
     }
 
-    output_config = {"scour_protection": {"tonnes_per_substructure": "float"}}
+    output_config = {"scour_protection": {"tonnes_per_substructure": "int"}}
 
     def __init__(self, config, **kwargs):
         """
@@ -112,7 +114,7 @@ class ScourProtectionDesign(DesignPhase):
             np.pi * self.protection_depth * (r ** 2 - (self.diameter / 2) ** 2)
         )
 
-        self.scour_protection_tonnes = self.rock_density * volume / 1000.0
+        self.scour_protection_tonnes = ceil(self.rock_density * volume / 1000.0)
 
     def run(self):
         """
@@ -161,7 +163,7 @@ class ScourProtectionDesign(DesignPhase):
         -------
         output : dict
              - ``scour_protection`` :`dict`
-                - ``tonnes_per_substructure`` : `float`
+                - ``tonnes_per_substructure`` : `int`
         """
 
         output = {
