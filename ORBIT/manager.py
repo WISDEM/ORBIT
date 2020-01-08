@@ -7,6 +7,7 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 import re
 import datetime as dt
 import collections.abc as collections
+from copy import deepcopy
 from math import ceil
 
 import pandas as pd
@@ -71,6 +72,7 @@ class ProjectManager:
         """
 
         initialize_library(library_path)
+        config = deepcopy(config)
         config = extract_library_data(
             config,
             additional_keys=[
