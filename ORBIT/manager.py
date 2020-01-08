@@ -71,13 +71,14 @@ class ProjectManager:
         """
 
         initialize_library(library_path)
-        self.config = extract_library_data(
+        config = extract_library_data(
             config,
             additional_keys=[
                 *config.get("design_phases", []),
                 *config.get("install_phases", []),
             ],
         )
+        self.config = self.resolve_project_capacity(config)
 
         self.weather = weather
         self.phase_times = {}
@@ -157,6 +158,61 @@ class ProjectManager:
         config["install_phases"] = [*install_phases.keys()]
 
         return config
+
+    @staticmethod
+    def resolve_project_capacity(config):
+        """
+        Resolves the relationship between 'project_capacity', 'num_turbines'
+        and 'turbine_rating' and verifies that input and calculated values
+        match. Adds missing values that can be calculated to the 'config'.
+
+        Parameters
+        ----------
+        config : dict
+        """
+
+        try:
+            project_capacity = config["plant"]["capacity"]
+        except KeyError:
+            project_capacity = None
+
+        try:
+            turbine_rating = config["turbine"]["turbine_rating"]
+        except KeyError:
+            turbine_rating = None
+
+        try:
+            num_turbines = config["plant"]["num_turbines"]
+        except KeyError:
+            num_turbines = None
+
+        if all((project_capacity, turbine_rating, num_turbines)):
+            if project_capacity != (turbine_rating * num_turbines):
+                raise AttributeError(
+                    f"Input and calculated project capacity don't match."
+                )
+
+            return config
+
+        else:
+            if all((project_capacity, turbine_rating)):
+                config["plant"]["num_turbines"] = ceil(
+                    project_capacity / turbine_rating
+                )
+
+            elif all((project_capacity, num_turbines)):
+                _rating = project_capacity / num_turbines
+                try:
+                    config["turbine"]["turbine_rating"] = _rating
+
+                except KeyError:
+                    config["turbine"] = {"turbine_rating": _rating}
+
+            elif all((num_turbines, turbine_rating)):
+                _capacity = turbine_rating * num_turbines
+                config["plant"]["capacity"] = _capacity
+
+            return config
 
     @classmethod
     def find_key_match(cls, target):
