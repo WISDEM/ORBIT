@@ -1,7 +1,7 @@
 """Provides the `ScourProtectionDesign` class"""
 
 __author__ = ["Rob Hammond", "Jake Nunemaker"]
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 

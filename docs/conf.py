@@ -18,7 +18,7 @@ import ORBIT
 
 # -- Project information -----------------------------------------------------
 project = "ORBIT"
-copyright = "2019, National Renewable Energy Lab"
+copyright = "2020, National Renewable Energy Lab"
 author = "Jake Nunemaker, Matt Shields, Rob Hammond"
 release = ORBIT.__version__
 

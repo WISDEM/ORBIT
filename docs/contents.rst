@@ -16,6 +16,7 @@ Contents:
    source/api
    source/methods
    source/publications/index
+   source/changelog
    source/team
 
 

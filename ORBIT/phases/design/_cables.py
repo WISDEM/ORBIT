@@ -1,7 +1,7 @@
 """Provides the base `Cable`, `Plant`, and `CableSystem` classes."""
 
 __author__ = ["Matt Shields", "Rob Hammond"]
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
