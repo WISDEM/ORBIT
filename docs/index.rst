@@ -18,6 +18,9 @@
    :ref:`Publications <publications>`
       Publications related to ORBIT.
 
+   :ref:`Changelog <changelog>`
+      ORBIT Changelog
+
    :ref:`Team <team>`
       List of authors and contributors.
 
