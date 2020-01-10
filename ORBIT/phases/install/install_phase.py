@@ -247,7 +247,9 @@ class InstallPhase(BasePhase):
                 cost_per_hour = np.NaN
 
             sub = df.loc[df["agent"] == agent]
-            self._df.loc[sub.index, "cost"] = sub["duration"] * cost_per_hour
+            self._df.loc[sub.index, "cost"] = (
+                sub["duration"].astype(float) * cost_per_hour
+            )
 
     def append_port_costs(self):
         """
