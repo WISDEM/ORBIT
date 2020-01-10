@@ -147,7 +147,7 @@ class Vessel:
             Time required to travel 'distance' (h).
         """
 
-        transit_time = float(distance) / self.transit_speed
+        transit_time = distance / self.transit_speed
 
         return transit_time
 

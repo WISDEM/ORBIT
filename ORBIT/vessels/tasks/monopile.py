@@ -34,7 +34,7 @@ def upend_monopile(vessel, length, **kwargs):
         raise MissingComponent(vessel, "crane", "Upend Monopile")
 
     crane_rate = crane.crane_rate(**kwargs)
-    mono_upend_time = float(length) / crane_rate
+    mono_upend_time = length / crane_rate
 
     return mono_upend_time
 

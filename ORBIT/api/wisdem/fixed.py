@@ -15,8 +15,8 @@ import ORBIT
 from ORBIT import ProjectManager
 
 
-class OrbitWisdemMonopile(om.ExplicitComponent):
-    """ORBIT-WISDEM Monopile API"""
+class OrbitWisdemFixed(om.ExplicitComponent):
+    """ORBIT-WISDEM Fixed Substructure API"""
 
     def setup(self):
         """"""
@@ -30,11 +30,11 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_discrete_input('oss_install_vessel', 'example_heavy_lift_vessel', desc='Vessel configuration to use for installation of offshore substations.')
 
         # Site
-        self.add_discrete_input('site_depth', 40., desc='Site depth.')
-        self.add_discrete_input('site_distance', 40., desc='Distance from site to installation port.')
-        self.add_discrete_input('site_distance_to_landfall', 50., desc='Distance from site to landfall for export cable.')
-        self.add_discrete_input('site_distance_to_interconnection', 3., desc='Distance from landfall to interconnection.')
-        self.add_discrete_input('site_mean_windspeed', 9., desc='Mean windspeed of the site.')
+        self.add_input('site_depth', 40., units='m', desc='Site depth.')
+        self.add_input('site_distance', 40., units='km', desc='Distance from site to installation port.')
+        self.add_input('site_distance_to_landfall', 50., units='km', desc='Distance from site to landfall for export cable.')
+        self.add_input('site_distance_to_interconnection', 3., units='km', desc='Distance from landfall to interconnection.')
+        self.add_input('site_mean_windspeed', 9., units='m/s', desc='Mean windspeed of the site.')
 
         # Plant
         self.add_discrete_input('plant_num_turbines', 60, desc='Number of turbines.')
@@ -43,9 +43,9 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_input('plant_substation_distance', 1, units='km', desc='Distance from first turbine in string to substation.')
 
         # Turbine
-        self.add_discrete_input('turbine_rating', 8., desc='Rated capacity of a turbine.')
-        self.add_discrete_input('turbine_rated_windspeed', 11., desc='Rated windspeed of the turbine.')
-        self.add_discrete_input('turbine_capex', 1100, desc='Turbine CAPEX')
+        self.add_input('turbine_rating', 8., units='MW', desc='Rated capacity of a turbine.')
+        self.add_input('turbine_rated_windspeed', 11., units='m/s', desc='Rated windspeed of the turbine.')
+        self.add_input('turbine_capex', 1100, units='USD/kW', desc='Turbine CAPEX')
         self.add_input('turbine_hub_height', 100., units='m', desc='Turbine hub height.')
         self.add_input('turbine_rotor_diameter', 130, units='m', desc='Turbine rotor diameter.')
         self.add_input('tower_weight', 400., units='t', desc='Weight of the total tower.')
@@ -56,7 +56,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_input('blade_deck_space', 0., desc='Deck space required to transport a blade. Defaults to 0 in order to not be a constraint on installation.')
 
         # Port
-        self.add_discrete_input('port_cost_per_month', 2e6, desc='Monthly port costs.')
+        self.add_input('port_cost_per_month', 2e6, units='USD/mo', desc='Monthly port costs.')
 
         # Monopile
         self.add_input('monopile_length', 100., units='m', desc='Length of monopile.')
@@ -67,8 +67,8 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
         self.add_input('transition_piece_deck_space', 0., desc='Deck space required to transport a transition piece. Defaults to 0 in order to not be a constraint on installation.')
 
         # Other
-        self.add_discrete_input('commissioning', 0.01, "Commissioning percent.")
-        self.add_discrete_input('decommissioning', 0.15, "Decommissioning percent.")
+        self.add_input('commissioning_pct', 0.01, desc="Commissioning percent.")
+        self.add_input('decommissioning_pct', 0.15, desc="Decommissioning percent.")
 
         # Outputs
         # Totals
@@ -93,65 +93,65 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
             
             # Site/plant
             'site': {
-                'depth': discrete_inputs['site_depth'],
-                'distance': discrete_inputs['site_distance'],
-                'distance_to_landfall': discrete_inputs['site_distance_to_landfall'],
+                'depth': float(inputs['site_depth']),
+                'distance': float(inputs['site_distance']),
+                'distance_to_landfall': float(inputs['site_distance_to_landfall']),
                 'distance_to_beach': 0,
-                'distance_to_interconnection': discrete_inputs['site_distance_to_interconnection'],
-                'mean_windspeed': discrete_inputs['site_mean_windspeed']
+                'distance_to_interconnection': float(inputs['site_distance_to_interconnection']),
+                'mean_windspeed': float(inputs['site_mean_windspeed'])
             },
             
             'plant': {
                 'layout': 'grid',
                 'num_turbines': discrete_inputs['plant_num_turbines'],
-                'row_spacing': inputs['plant_row_spacing'],
-                'turbine_spacing': inputs['plant_turbine_spacing'],
-                'substation_distance': inputs['plant_substation_distance']
+                'row_spacing': float(inputs['plant_row_spacing']),
+                'turbine_spacing': float(inputs['plant_turbine_spacing']),
+                'substation_distance': float(inputs['plant_substation_distance'])
             },
             
             'port': {
                 'num_cranes': 1,
-                'monthly_rate': discrete_inputs['port_cost_per_month']
+                'monthly_rate': float(inputs['port_cost_per_month'])
             },
             
             # Turbine + components
             'turbine': {
-                'hub_height': inputs['turbine_hub_height'],
-                'rotor_diameter': inputs['turbine_rotor_diameter'],
-                'turbine_rating': discrete_inputs['turbine_rating'],
-                'rated_windspeed': discrete_inputs['turbine_rated_windspeed'],
+                'hub_height': float(inputs['turbine_hub_height']),
+                'rotor_diameter': float(inputs['turbine_rotor_diameter']),
+                'turbine_rating': float(inputs['turbine_rating']),
+                'rated_windspeed': float(inputs['turbine_rated_windspeed']),
                 'tower': {
                     'type': 'Tower',
-                    'deck_space': inputs['tower_deck_space'],
-                    'weight': inputs['tower_weight']
+                    'deck_space': float(inputs['tower_deck_space']),
+                    'weight': float(inputs['tower_weight'])
                 },
                 
                 'nacelle': {
                     'type': 'Nacelle',
-                    'deck_space': inputs['nacelle_deck_space'],
-                    'weight': inputs['nacelle_weight']
+                    'deck_space': float(inputs['nacelle_deck_space']),
+                    'weight': float(inputs['nacelle_weight'])
                 },
                 
                 'blade': {
                     'type': 'Blade',
-                    'deck_space': inputs['blade_deck_space'],
-                    'weight': inputs['blade_weight']
+                    'deck_space': float(inputs['blade_deck_space']),
+                    'weight': float(inputs['blade_weight'])
                 }
             },
 
             # Substructure components
             'monopile': {
                 'type': 'Monopile',
-                'length': inputs['monopile_length'],
-                'diameter': inputs['monopile_diameter'],
-                'deck_space': inputs['monopile_deck_space'],
-                'weight': inputs['monopile_weight']
+                'length': float(inputs['monopile_length']),
+                'diameter': float(inputs['monopile_diameter']),
+                'deck_space': float(inputs['monopile_deck_space']),
+                'weight': float(inputs['monopile_weight'])
             },
             
             'transition_piece': {
                 'type': 'Transition Piece',
-                'deck_space': inputs['transition_piece_deck_space'],
-                'weight': inputs['transition_piece_weight']
+                'deck_space': float(inputs['transition_piece_deck_space']),
+                'weight': float(inputs['transition_piece_weight'])
             },
             
             'scour_protection_design': {
@@ -187,9 +187,9 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
             },
 
             # Other
-            "commissioning": discrete_inputs["commissioning"],
-            "decomissioning": discrete_inputs["decommissioning"],
-            "turbine_capex": discrete_inputs["turbine_capex"],
+            "commissioning": float(inputs["commissioning_pct"]),
+            "decomissioning": float(inputs["decommissioning_pct"]),
+            "turbine_capex": float(inputs["turbine_capex"]),
             
             # Phases
             'design_phases': [
@@ -230,7 +230,7 @@ class OrbitWisdemMonopile(om.ExplicitComponent):
 if __name__ == "__main__":
 
     prob = om.Problem()
-    prob.model = OrbitWisdemMonopile()
+    prob.model = OrbitWisdemFixed()
     prob.setup()
 
     prob.run_driver()
