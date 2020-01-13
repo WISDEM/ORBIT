@@ -11,22 +11,11 @@ import copy
 import numpy as np
 import pytest
 
+from ORBIT.library import initialize_library, extract_library_specs
 from ORBIT.phases.design import ExportSystemDesign
 
-config = {
-    "site": {
-        "depth": 20,
-        "distance_to_interconnection": 3,
-        "distance_to_landfall": 30,
-    },
-    "plant": {"num_turbines": 50},
-    "turbine": {"turbine_rating": 7},
-    "export_system_design": {
-        "cables": "XLPE_300mm_33kV",
-        "percent_redundant": 0.0,
-        "percent_added_length": 0.01,
-    },
-}
+initialize_library(pytest.library)
+config = extract_library_specs("config", "export_design")
 
 
 def test_export_system_creation():

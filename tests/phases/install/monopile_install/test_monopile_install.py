@@ -7,36 +7,26 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from copy import deepcopy
+from itertools import product
 
 import pytest
 
 from tests.data import test_weather
-from tests.vessels import WTIV_SPECS
+from ORBIT.library import initialize_library, extract_library_specs
 from ORBIT.vessels.tasks import defaults
 from ORBIT.phases.install import MonopileInstallation
 
-config = {
-    "wtiv": WTIV_SPECS,
-    "site": {"depth": 40, "distance": 50},
-    "plant": {"num_turbines": 20},
-    "turbine": {"hub_height": 100},
-    "port": {"num_cranes": 1, "monthly_rate": 100000},
-    "monopile": {
-        "type": "Monopile",
-        "length": 50,
-        "diameter": 10,
-        "deck_space": 500,
-        "weight": 350,
-    },
-    "transition_piece": {
-        "type": "Transition Piece",
-        "deck_space": 250,
-        "weight": 350,
-    },
-}
+initialize_library(pytest.library)
+config_wtiv = extract_library_specs("config", "single_wtiv_mono_install")
+config_wtiv_feeder = extract_library_specs("config", "multi_wtiv_mono_install")
+config_wtiv_multi_feeder = deepcopy(config_wtiv_feeder)
+config_wtiv_multi_feeder["num_feeders"] = 2
 
 
-def test_creation():
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_creation(config):
 
     sim = MonopileInstallation(config, print_logs=False)
     assert sim.config == config
@@ -44,26 +34,37 @@ def test_creation():
     assert sim.env.logger
 
 
-def test_port_creation():
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_port_creation(config):
 
     sim = MonopileInstallation(config, print_logs=False)
     assert sim.port
     assert sim.port.crane.capacity == config["port"]["num_cranes"]
 
 
-@pytest.mark.parametrize("wtiv", [(WTIV_SPECS), ("example_wtiv")])
-def test_vessel_creation(wtiv):
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_vessel_creation(config):
 
-    _config = deepcopy(config)
-    _config["wtiv"] = wtiv
-
-    sim = MonopileInstallation(_config, print_logs=False)
+    sim = MonopileInstallation(config, print_logs=False)
     assert sim.wtiv
     assert sim.wtiv.jacksys
     assert sim.wtiv.crane
 
+    if config.get("feeder", None) is not None:
+        assert len(sim.feeders) == config["num_feeders"]
 
-def test_monopile_creation():
+        for feeder in sim.feeders:
+            assert feeder.jacksys
+
+
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_monopile_creation(config):
 
     sim = MonopileInstallation(config, print_logs=False)
     assert sim.num_monopiles == config["plant"]["num_turbines"]
@@ -77,57 +78,101 @@ def test_monopile_creation():
     assert sim.num_monopiles == tp
 
 
-def test_logger_creation():
+@pytest.mark.parametrize(
+    "config,log_level,expected",
+    [
+        [config, *logs]
+        for config, logs in product(
+            (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+            (("INFO", 20), ("DEBUG", 10)),
+        )
+    ],
+)
+def test_logger_creation(config, log_level, expected):
 
-    sim = MonopileInstallation(config, log_level="INFO")
-    assert sim.env.logger.level == 20
-
-    sim = MonopileInstallation(config, log_level="DEBUG")
-    assert sim.env.logger.level == 10
+    sim = MonopileInstallation(config, log_level=log_level)
+    assert sim.env.logger.level == expected
 
 
-def test_full_run():
+@pytest.mark.parametrize(
+    "weather,config",
+    product(
+        (None, test_weather),
+        (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ),
+)
+def test_full_run(weather, config):
 
-    sim = MonopileInstallation(config, log_level="INFO")
+    sim = MonopileInstallation(config, weather=weather, log_level="INFO")
     sim.run()
 
     complete = float(sim.logs["time"].max())
 
     assert complete > 0
 
-    sim = MonopileInstallation(config, weather=test_weather, log_level="INFO")
-    sim.run()
 
-    with_weather = float(sim.logs["time"].max())
+@pytest.mark.parametrize(
+    "weather,config",
+    product(
+        (None, test_weather),
+        (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ),
+)
+def test_for_complete_logging(weather, config):
 
-    assert with_weather >= complete
-
-
-def test_for_complete_logging():
-
-    sim = MonopileInstallation(config, log_level="INFO")
+    sim = MonopileInstallation(config, weather=weather, log_level="INFO")
     sim.run()
 
     df = sim.phase_dataframe.copy()
-    df = df.loc[~df["agent"].isin(["Port"])]
+    df = df.loc[~df["agent"].isin(["Port", "Test Port"])]
     df = df.assign(shift=(df["time"] - df["time"].shift(1)))
 
-    assert (df["duration"] - df["shift"]).max() < 1e-9
+    for vessel in df["agent"].unique():
+        _df = df[df["agent"] == vessel].copy()
+        _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
+        assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
 
-def test_for_efficiencies():
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_for_efficiencies(config):
 
     sim = MonopileInstallation(config)
     sim.run()
 
     assert 0 <= sim.detailed_output["Example WTIV_operational_efficiency"] <= 1
-    assert (
-        0 <= sim.detailed_output["Example WTIV_cargo_weight_utilization"] <= 1
-    )
-    assert 0 <= sim.detailed_output["Example WTIV_deck_space_utilization"] <= 1
+    if sim.feeders is None:
+        assert (
+            0
+            <= sim.detailed_output["Example WTIV_cargo_weight_utilization"]
+            <= 1
+        )
+        assert (
+            0
+            <= sim.detailed_output["Example WTIV_deck_space_utilization"]
+            <= 1
+        )
+    else:
+        for feeder in sim.feeders:
+            name = feeder.name
+            assert (
+                0 <= sim.detailed_output[f"{name}_operational_efficiency"] <= 1
+            )
+            assert (
+                0
+                <= sim.detailed_output[f"{name}_cargo_weight_utilization"]
+                <= 1
+            )
+            assert (
+                0 <= sim.detailed_output[f"{name}_deck_space_utilization"] <= 1
+            )
 
 
-def test_kwargs():
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_kwargs(config):
 
     sim = MonopileInstallation(config, log_level="INFO", print_logs=False)
     sim.run()
@@ -182,7 +227,10 @@ def test_kwargs():
         assert True
 
 
-def test_grout_kwargs():
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_grout_kwargs(config):
 
     sim = MonopileInstallation(
         config,

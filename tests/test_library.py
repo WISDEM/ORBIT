@@ -40,20 +40,18 @@ config = {
     "install_phases": ["MonopileInstallation", "TurbineInstallation"],
 }
 
-LIB = os.path.abspath(os.path.join(os.path.abspath(__file__), "../data"))
-
 
 def test_initialize_library():
     library.initialize_library(None)
     assert os.environ["DATA_LIBRARY"]
 
     _ = os.environ.pop("DATA_LIBRARY")
-    library.initialize_library(LIB)
-    assert os.environ["DATA_LIBRARY"] == LIB
+    library.initialize_library(pytest.library)
+    assert os.environ["DATA_LIBRARY"] == pytest.library
 
 
 def test_extract_library_specs_fail():
-    library.initialize_library(LIB)
+    library.initialize_library(pytest.library)
     with pytest.raises(LibraryItemNotFoundError):
         library.extract_library_specs("turbine", "unknown.yaml")
 

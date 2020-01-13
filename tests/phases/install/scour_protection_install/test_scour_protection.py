@@ -16,17 +16,12 @@ import copy
 import pytest
 
 from tests.data import test_weather
+from ORBIT.library import initialize_library, extract_library_specs
 from ORBIT.vessels.tasks import defaults
 from ORBIT.phases.install import ScourProtectionInstallation
 
-config = {
-    "scour_protection_install_vessel": "example_scour_protection_vessel",
-    "scour_protection": {"tonnes_per_substructure": 2000},
-    "plant": {"num_turbines": 50, "turbine_spacing": 5},
-    "site": {"depth": 40, "turbine_spacing": 50, "distance": 30},
-    "turbine": {"rotor_diameter": 154},
-    "port": {"num_cranes": 1, "monthly_rate": 100000},
-}
+initialize_library(pytest.library)
+config = extract_library_specs("config", "scour_protection_install")
 
 
 def test_simulation_creation():
