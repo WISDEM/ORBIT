@@ -8,6 +8,8 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import numpy as np
 import simpy
+from copy import deepcopy
+from math import ceil
 
 from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorage
@@ -50,6 +52,7 @@ class TurbineInstallation(InstallPhase):
                 "type": "Tower",
                 "deck_space": "float",
                 "weight": "float",
+                "sections": "int (optional)"
             },
             "nacelle": {
                 "type": "Nacelle",
@@ -239,14 +242,25 @@ class TurbineInstallation(InstallPhase):
         Initializes turbine components at port.
         """
 
-        component_list = [
-            self.config["turbine"]["tower"],
+        tower = deepcopy(self.config["turbine"]["tower"])
+        num_sections = tower.get('sections', 1)
+
+        section = {'type': 'Tower Section'}
+        for k in ['length', 'deck_space', 'weight']:
+            try:
+                section[k] = ceil(tower.get(k) / num_sections)
+
+            except TypeError:
+                pass
+
+        self.component_list = [
+            *np.repeat(section, num_sections),
             self.config["turbine"]["nacelle"],
             *np.repeat(self.config["turbine"]["blade"], 3),
         ]
 
         for _ in range(self.num_turbines):
-            for item in component_list:
+            for item in self.component_list:
                 self.port.put(item)
 
     def initialize_queue(self):

@@ -19,7 +19,7 @@ from ORBIT.phases.install.turbine_install._common import (
 )
 
 
-def solo_install_turbines(env, vessel, port, distance, number, **kwargs):
+def solo_install_turbines(env, vessel, port, distance, component_list, number, **kwargs):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
     turbine installation process.
@@ -32,12 +32,15 @@ def solo_install_turbines(env, vessel, port, distance, number, **kwargs):
         Vessel object that represents the WTIV.
     distance : int | float
         Distance between port and site (km).
+    component_list : dict
+        Turbine components to retrieve and install.
     number : int
         Total turbine component sets to install.
     """
 
     transit_time = vessel.transit_time(distance)
     reequip_time = vessel.crane.reequip(**kwargs)
+    tower_sections = len([v for v in component_list.values() if v['type'] == 'Tower Section'])
 
     transit = {
         "agent": vessel.name,
@@ -47,14 +50,6 @@ def solo_install_turbines(env, vessel, port, distance, number, **kwargs):
         "duration": transit_time,
         **vessel.transit_limits,
     }
-
-    component_list = [
-        ("type", "Tower"),
-        ("type", "Nacelle"),
-        ("type", "Blade"),
-        ("type", "Blade"),
-        ("type", "Blade"),
-    ]
 
     n = 0
     while n < number:
@@ -90,20 +85,22 @@ def solo_install_turbines(env, vessel, port, distance, number, **kwargs):
         if vessel.at_site:
 
             if vessel.storage.items:
-                # Prep for monopile install
+                # Prep for turbine install
                 yield env.process(
                     prep_for_site_operations(env, vessel, **kwargs)
                 )
 
-                # Get tower
-                tower = yield env.process(
-                    get_item_from_storage(
-                        env, vessel, item_type="Tower", **kwargs
-                    )
-                )
 
-                # Install tower
-                yield env.process(install_tower(env, vessel, tower, **kwargs))
+                for _ in range(tower_sections):
+                    # Get tower section
+                    tower = yield env.process(
+                        get_item_from_storage(
+                            env, vessel, item_type="Tower", **kwargs
+                        )
+                    )
+
+                    # Install tower
+                    yield env.process(install_tower(env, vessel, tower, **kwargs))
 
                 # Get turbine nacelle
                 nacelle = yield env.process(
