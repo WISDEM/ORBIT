@@ -1,7 +1,7 @@
 """Provides the process logic for scour protection installation."""
 
 __author__ = "Rob Hammond"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 

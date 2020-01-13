@@ -1,7 +1,7 @@
 """Provides the base `InstallPhase` class."""
 
 __author__ = ["Jake Nunemaker", "Rob Hammond"]
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = ["Jake Nunemaker", "Rob Hammond"]
 __email__ = ["jake.nunemaker@nrel.gov", "robert.hammond@nrel.gov"]
 
@@ -247,7 +247,9 @@ class InstallPhase(BasePhase):
                 cost_per_hour = np.NaN
 
             sub = df.loc[df["agent"] == agent]
-            self._df.loc[sub.index, "cost"] = sub["duration"] * cost_per_hour
+            self._df.loc[sub.index, "cost"] = (
+                sub["duration"].astype(float) * cost_per_hour
+            )
 
     def append_port_costs(self):
         """

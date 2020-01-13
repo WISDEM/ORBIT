@@ -1,7 +1,7 @@
 """Provides the cable laying subprocess functions."""
 
 __author__ = "Rob Hammond"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __credits__ = ["Jake Nunemaker", "Matt Shields"]
 # __version__ = "0.0.1"
 __maintainer__ = "Rob Hammond"

@@ -3,7 +3,7 @@ Provides a testing framework for the `ScourProtectionInstallation`.
 """
 
 __author__ = "Rob Hammond"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __credits__ = ["Jake Nunemaker"]
 __version__ = "0.0.1"
 __maintainer__ = "Rob Hammond"

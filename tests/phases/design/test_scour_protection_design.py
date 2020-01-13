@@ -1,7 +1,7 @@
 """Tests for the `ScourProtectionDesign` class."""
 
 __author__ = "Rob Hammond"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
@@ -58,15 +58,15 @@ def test_fully_defined_setup():
 @pytest.mark.parametrize(
     "config,expected",
     (
-        (config_fully_defined, 1140.7175448023047),
-        (config_min_defined, 3851.762036413688),
+        (config_fully_defined, 1141),
+        (config_min_defined, 3852),
     ),
 )
 def test_tonnes_per_substructure(config, expected):
     scour = ScourProtectionDesign(config)
     scour.run()
 
-    assert scour.scour_protection_tonnes == pytest.approx(expected, rel=1e-6)
+    assert scour.scour_protection_tonnes == expected
 
 
 @pytest.mark.parametrize("config", (config_fully_defined, config_min_defined))

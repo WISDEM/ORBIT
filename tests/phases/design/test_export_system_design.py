@@ -1,7 +1,7 @@
 """Tests for the `ExportSystemDesign` class."""
 
 __author__ = "Rob Hammond"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
@@ -41,8 +41,7 @@ def test_cable_length():
     export = ExportSystemDesign(config)
     export.run()
 
-    length = 0.02 + 3 + 30
-    length += length * 0.01
+    length = (0.02 + 3 + 30) * 1.01
     assert export.length == length
 
 
@@ -50,8 +49,7 @@ def test_cable_mass():
     export = ExportSystemDesign(config)
     export.run()
 
-    length = 0.02 + 3 + 30
-    length += length * 0.01
+    length = (0.02 + 3 + 30) * 1.01
     mass = length * export.cable.linear_density
     assert export.mass == mass
 
@@ -80,7 +78,6 @@ def test_cable_lengths_property():
     export = ExportSystemDesign(config)
     export.run()
 
-    cable_len = export.length
     cable_name = export.cable.name
     assert (
         export.cable_lengths_by_type[cable_name] == export.length

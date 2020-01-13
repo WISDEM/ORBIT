@@ -1,5 +1,5 @@
 __author__ = "Jake Nunemaker"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
@@ -278,3 +278,74 @@ def test_find_key_match():
     for f in fails:
 
         assert TestProjectManager.find_key_match(f) is None
+
+
+def test_resolve_project_capacity():
+
+    # Missing turbine rating
+    config1 = {"plant": {"capacity": 600, "num_turbines": 40}}
+
+    out1 = ProjectManager.resolve_project_capacity(config1)
+    assert out1["plant"]["capacity"] == config1["plant"]["capacity"]
+    assert out1["plant"]["num_turbines"] == config1["plant"]["num_turbines"]
+    assert out1["turbine"]["turbine_rating"] == 15
+
+    # Missing plant capacity
+    config2 = {
+        "plant": {"num_turbines": 40},
+        "turbine": {"turbine_rating": 15},
+    }
+
+    out2 = ProjectManager.resolve_project_capacity(config2)
+    assert out2["plant"]["capacity"] == 600
+    assert out2["plant"]["num_turbines"] == config2["plant"]["num_turbines"]
+    assert (
+        out2["turbine"]["turbine_rating"]
+        == config2["turbine"]["turbine_rating"]
+    )
+
+    # Missing number of turbines
+    config3 = {"plant": {"capacity": 600}, "turbine": {"turbine_rating": 15}}
+
+    out3 = ProjectManager.resolve_project_capacity(config3)
+    assert out3["plant"]["capacity"] == config3["plant"]["capacity"]
+    assert out3["plant"]["num_turbines"] == 40
+    assert (
+        out3["turbine"]["turbine_rating"]
+        == config3["turbine"]["turbine_rating"]
+    )
+
+    # Test for float precision
+    config4 = {
+        "plant": {"capacity": 600, "num_turbines": 40},
+        "turbine": {"turbine_rating": 15.0},
+    }
+
+    out4 = ProjectManager.resolve_project_capacity(config4)
+    assert out4["plant"]["capacity"] == config4["plant"]["capacity"]
+    assert out4["plant"]["num_turbines"] == config4["plant"]["num_turbines"]
+    assert (
+        out4["turbine"]["turbine_rating"]
+        == config4["turbine"]["turbine_rating"]
+    )
+
+    # Non matching calculated value
+    config5 = {
+        "plant": {"capacity": 700, "num_turbines": 40},
+        "turbine": {"turbine_rating": 15.0},
+    }
+
+    with pytest.raises(AttributeError):
+        out5 = ProjectManager.resolve_project_capacity(config5)
+
+    # Test for not enough information
+    config6 = {"plant": {"capacity": 600}}
+
+    out6 = ProjectManager.resolve_project_capacity(config6)
+    assert out6["plant"]["capacity"] == config6["plant"]["capacity"]
+
+    with pytest.raises(KeyError):
+        turbine_rating = out6["turbine"]["turbine_rating"]
+
+    with pytest.raises(KeyError):
+        num_turbines = out6["plant"]["num_turbines"]

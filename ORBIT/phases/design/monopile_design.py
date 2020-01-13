@@ -1,7 +1,7 @@
 """Provides the `MonopileDesign` class."""
 
 __author__ = "Jake Nunemaker"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
@@ -249,6 +249,7 @@ class MonopileDesign(DesignPhase):
 
         return self._outputs
 
+    @property
     def total_phase_cost(self):
         """Returns total phase cost in $USD."""
 
@@ -262,7 +263,8 @@ class MonopileDesign(DesignPhase):
     def total_phase_time(self):
         """Returns total phase time in hours."""
 
-        phase_time = self.config["monopile_design"].get("design_time", 0.0)
+        _design = self.config.get("monopile_design", {})
+        phase_time = _design.get("design_time", 0.0)
         return phase_time
 
     @property

@@ -1,10 +1,12 @@
 """Provides the `ScourProtectionInstallation` class."""
 
 __author__ = "Rob Hammond"
-__copyright__ = "Copyright 2019, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
+
+from math import ceil
 
 from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorageContainer
@@ -35,7 +37,7 @@ class ScourProtectionInstallation(InstallPhase):
             "monthly_rate": "float (optional)",
             "name": "str (optional)",
         },
-        "scour_protection": {"tonnes_per_substructure": "float"},
+        "scour_protection": {"tonnes_per_substructure": "int"},
     }
 
     phase = "Scour Protection Installation"
@@ -57,9 +59,9 @@ class ScourProtectionInstallation(InstallPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.scour_protection_tonnes_to_install = self.config[
-            "scour_protection"
-        ]["tonnes_per_substructure"]
+        self.scour_protection_tonnes_to_install = ceil(
+            self.config["scour_protection"]["tonnes_per_substructure"]
+        )
 
         self.extract_phase_kwargs(**kwargs)
         self.extract_defaults()
@@ -192,14 +194,14 @@ def install_scour_protection(env, vessel, port, install_specs, **kwargs):
         Simulation environment.
     port : simpy.FilterStore
         Port simulation object.
-    port_to_site_distance : int or float
+    port_to_site_distance : int | float
         Distance (km) between site and the port.
-    turbine_to_turbine_distance : int or float
+    turbine_to_turbine_distance : int | float
         Distance between any two turbines.
         For now this assumes it traverses an edge and not a diagonal.
     turbines_to_install : int
         Number of turbines where scouring protection must be installed.
-    rock_tonnes_per_sub : int or float
+    rock_tonnes_per_sub : int
         Number of tonnes required to be installed at each substation
     """
 
