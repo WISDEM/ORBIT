@@ -26,7 +26,12 @@ config = {
     "plant": {"num_turbines": 10},
     "turbine": {
         "hub_height": 100,
-        "tower": {"type": "Tower", "deck_space": 100, "weight": 400},
+        "tower": {
+            "type": "Tower",
+            "deck_space": 100,
+            "weight": 400,
+            "length": 100,
+        },
         "nacelle": {"type": "Nacelle", "deck_space": 200, "weight": 400},
         "blade": {"type": "Blade", "deck_space": 100, "weight": 100},
     },
@@ -246,7 +251,7 @@ def test_duplicate_phase_simulations():
 
     assert df.loc[("MonopileInstallation_1", "DriveMonopile")] == 5
     assert df.loc[("MonopileInstallation_2", "DriveMonopile")] == 5
-    assert df.loc[("TurbineInstallation", "AttachTower")] == 10
+    assert df.loc[("TurbineInstallation", "AttachTowerSection")] == 10
 
 
 def test_design_phases():
