@@ -13,13 +13,15 @@ from ORBIT.simulation.logic import (
 )
 from ORBIT.simulation.exceptions import ItemNotFound
 from ORBIT.phases.install.turbine_install._common import (
-    install_tower,
     install_nacelle,
+    install_tower_section,
     install_turbine_blade,
 )
 
 
-def solo_install_turbines(env, vessel, port, distance, component_list, number, **kwargs):
+def solo_install_turbines(
+    env, vessel, port, distance, component_list, number, **kwargs
+):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
     turbine installation process.
@@ -40,7 +42,9 @@ def solo_install_turbines(env, vessel, port, distance, component_list, number, *
 
     transit_time = vessel.transit_time(distance)
     reequip_time = vessel.crane.reequip(**kwargs)
-    tower_sections = len([v for v in component_list.values() if v['type'] == 'Tower Section'])
+    tower_sections = len(
+        [v for v in component_list if v["type"] == "Tower Section"]
+    )
 
     transit = {
         "agent": vessel.name,
@@ -51,6 +55,17 @@ def solo_install_turbines(env, vessel, port, distance, component_list, number, *
         **vessel.transit_limits,
     }
 
+    reequip = {
+        "agent": vessel.name,
+        "type": "Operations",
+        "location": "Site",
+        "duration": reequip_time,
+        "action": "CraneReequip",
+        **vessel.operational_limits,
+    }
+
+    rule_list = [("type", v["type"]) for v in component_list]
+
     n = 0
     while n < number:
         if vessel.at_port:
@@ -58,7 +73,7 @@ def solo_install_turbines(env, vessel, port, distance, component_list, number, *
                 # Get turbine components
                 yield env.process(
                     get_list_of_items_from_port(
-                        env, vessel, component_list, port, **kwargs
+                        env, vessel, rule_list, port, **kwargs
                     )
                 )
 
@@ -90,17 +105,21 @@ def solo_install_turbines(env, vessel, port, distance, component_list, number, *
                     prep_for_site_operations(env, vessel, **kwargs)
                 )
 
-
-                for _ in range(tower_sections):
+                for i in range(tower_sections):
                     # Get tower section
-                    tower = yield env.process(
+                    section = yield env.process(
                         get_item_from_storage(
-                            env, vessel, item_type="Tower", **kwargs
+                            env, vessel, item_type="Tower Section", **kwargs
                         )
                     )
 
-                    # Install tower
-                    yield env.process(install_tower(env, vessel, tower, **kwargs))
+                    # Install tower section
+                    height = section["length"] * (i + 1)
+                    yield env.process(
+                        install_tower_section(
+                            env, vessel, section, height, **kwargs
+                        )
+                    )
 
                 # Get turbine nacelle
                 nacelle = yield env.process(
@@ -109,21 +128,12 @@ def solo_install_turbines(env, vessel, port, distance, component_list, number, *
                     )
                 )
 
-                reequip = {
-                    "agent": vessel.name,
-                    "type": "Operations",
-                    "location": "Site",
-                    "duration": reequip_time,
-                    "action": "CraneReequip",
-                    **vessel.operational_limits,
-                }
-
-                yield env.process(env.task_handler(reequip))
-
                 # Install nacelle
                 yield env.process(
                     install_nacelle(env, vessel, nacelle, **kwargs)
                 )
+
+                yield env.process(env.task_handler(reequip))
 
                 # Install turbine blades
                 for _ in range(3):

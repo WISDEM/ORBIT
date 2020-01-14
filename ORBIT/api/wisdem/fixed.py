@@ -49,6 +49,8 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         self.add_input('turbine_hub_height', 100., units='m', desc='Turbine hub height.')
         self.add_input('turbine_rotor_diameter', 130, units='m', desc='Turbine rotor diameter.')
         self.add_input('tower_weight', 400., units='t', desc='Weight of the total tower.')
+        self.add_input('tower_length', 100, units='m', desc='Total tower length.')
+        self.add_discrete_input('num_tower_sections', 1, desc='Number of tower sections.')
         self.add_input('tower_deck_space', 0., desc='Deck space required to transport the tower. Defaults to 0 in order to not be a constraint on installation.')
         self.add_input('nacelle_weight', 500., units='t', desc='Weight of the rotor nacelle assembly (RNA).')
         self.add_input('nacelle_deck_space', 0., desc='Deck space required to transport the rotor nacelle assembly (RNA). Defaults to 0 in order to not be a constraint on installation.')
@@ -123,7 +125,9 @@ class OrbitWisdemFixed(om.ExplicitComponent):
                 'tower': {
                     'type': 'Tower',
                     'deck_space': float(inputs['tower_deck_space']),
-                    'weight': float(inputs['tower_weight'])
+                    'weight': float(inputs['tower_weight']),
+                    'length': float(inputs['tower_length']),
+                    'sections': discrete_inputs['num_tower_sections']
                 },
                 
                 'nacelle': {
