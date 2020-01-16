@@ -119,9 +119,9 @@ class CableInstallation(InstallPhase):
         self.config = self.validate_config(config)
         self.strategy = config[f"{self._system}_system"]["strategy"].lower()
         if self.strategy not in ("lay", "bury", "simultaneous", "separate"):
-            raise ValueError(
-                f"{self._system.title()} system strategy must be one of "
-                '"lay", "bury", "separate, or "simultaneous".'
+            self.strategy = "separate"
+            print(
+                "Invalid strategy provided, `separate` lay and burial processes will be used."
             )
 
         self.extract_phase_kwargs(**kwargs)

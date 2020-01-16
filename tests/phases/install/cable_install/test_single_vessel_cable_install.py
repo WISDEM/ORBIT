@@ -81,15 +81,27 @@ def test_creation(CableInstall, weather):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,weather", itertools.product(installs, weather)
+    "CableInstall,weather,strategy",
+    itertools.product(installs, weather, strategies),
 )
-def test_vessel_creation(CableInstall, weather):
-    sim = CableInstall(config, weather=weather, log_level="INFO")
+def test_vessel_creation(CableInstall, weather, strategy):
+    _config = deepcopy(config)
+    _config["array_system"]["strategy"] = strategy
+    _config["export_system"]["strategy"] = strategy
 
-    assert sim.cable_lay_vessel
-    assert sim.cable_lay_vessel.storage.deck_space == 0
-    assert sim.cable_lay_vessel.at_port
-    assert not sim.cable_lay_vessel.at_site
+    sim = CableInstall(_config, weather=weather, log_level="INFO")
+
+    if strategy in ("lay", "simultaneous", "separate"):
+        assert sim.cable_lay_vessel
+        assert sim.cable_lay_vessel.storage.deck_space == 0
+        assert sim.cable_lay_vessel.at_port
+        assert not sim.cable_lay_vessel.at_site
+
+    if strategy in ("bury", "separate"):
+        assert sim.cable_bury_vessel
+        assert sim.cable_bury_vessel.storage.deck_space == 0
+        assert sim.cable_bury_vessel.at_port
+        assert not sim.cable_bury_vessel.at_site
 
 
 @pytest.mark.parametrize(
