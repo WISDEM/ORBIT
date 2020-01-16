@@ -22,7 +22,9 @@ from ORBIT.phases.install import ExportCableInstallation as ExpInstall
 config = {
     "port": {"num_cranes": 1},
     "array_cable_lay_vessel": "example_cable_lay_vessel",
+    "array_cable_bury_vessel": "example_cable_lay_vessel",
     "export_cable_lay_vessel": "example_cable_lay_vessel",
+    "export_cable_bury_vessel": "example_cable_lay_vessel",
     "trench_dig_vessel": "example_trench_dig_vessel",
     "site": {
         "distance": 50,
@@ -34,7 +36,7 @@ config = {
     "plant": {"layout": "grid", "turbine_spacing": 5, "num_turbines": 40},
     "turbine": {"rotor_diameter": 154, "turbine_rating": 9},
     "array_system": {
-        "strategy": "lay_bury",
+        "strategy": "simultaneous",
         "cables": {
             "XLPE_400mm_36kV": {
                 "cable_sections": [(0.81, 28)],
@@ -52,7 +54,7 @@ config = {
         },
     },
     "export_system": {
-        "strategy": "lay_bury",
+        "strategy": "simultaneous",
         "cables": {
             "XLPE_300mm_36kV": {
                 "cable_sections": [(33.3502, 10)],
@@ -64,7 +66,7 @@ config = {
 
 installs = (ArrInstall, ExpInstall)
 weather = (None, test_weather)
-strategies = ("lay_bury", "lay", "bury")
+strategies = ("simultaneous", "separate", "lay", "bury")
 
 
 @pytest.mark.parametrize(
@@ -128,7 +130,8 @@ def test_full_run_completes(CableInstall, strategy, weather):
     sim = CableInstall(strategy_config, weather=weather, log_level="DEBUG")
     sim.run()
 
-    assert float(sim.logs[sim.logs.action == "Complete"]["time"]) > 0
+    for t in sim.logs[sim.logs.action == "Complete"]["time"]:
+        assert float(t) > 0
 
 
 @pytest.mark.parametrize(
@@ -269,7 +272,7 @@ def test_kwargs_for_array_install():
 def test_kwargs_for_export_install():
 
     new_export_system = {
-        "strategy": "lay_bury",
+        "strategy": "simultaneous",
         "cables": {
             "XLPE_300mm_36kV": {
                 "cable_sections": [(88.02, 10)],
