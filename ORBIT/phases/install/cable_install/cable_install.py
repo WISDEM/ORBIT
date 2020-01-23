@@ -117,7 +117,9 @@ class CableInstallation(InstallPhase):
         self._system = system.lower()
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.strategy = config[f"{self._system}_system"]["strategy"].lower()
+        self.strategy = config[f"{self._system}_system"].get(
+            "strategy", "separate"
+        )
         if self.strategy not in ("lay", "bury", "simultaneous", "separate"):
             self.strategy = "separate"
             print(
@@ -211,7 +213,7 @@ class ArrayCableInstallation(CableInstallation):
         "site": {"distance": "int | float"},
         "plant": {"num_turbines": "int"},
         "array_system": {
-            "strategy": "str",
+            "strategy": "str (optional)",
             "cables": {
                 "name (variable)": {
                     "linear_density": "int | float",
@@ -306,7 +308,7 @@ class ExportCableInstallation(CableInstallation):
             "distance_to_interconnection": "float",
         },
         "export_system": {
-            "strategy": "str",
+            "strategy": "str (optional)",
             "cables": {
                 "name (variable)": {
                     "linear_density": "int | float",
