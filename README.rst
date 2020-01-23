@@ -38,6 +38,7 @@ Dependencies
 - SciPy
 - pandas
 - Matplotlib
+- OpenMDAO (>=2.0)
 
 Development
 ~~~~~~~~~~~

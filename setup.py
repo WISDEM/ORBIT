@@ -29,6 +29,7 @@ setup(
         "simpy",
         "pyyaml",
         "geopy",
+        "openmdao>= 2.0",
     ],
     extras_require={
         "dev": [
@@ -41,7 +42,7 @@ setup(
             "pytest-cov",
             "pytest-xdist",
             "sphinx",
-            "sphinx-rtd-theme"
+            "sphinx-rtd-theme",
         ]
     },
     test_suite="pytest",
