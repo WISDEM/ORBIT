@@ -49,6 +49,6 @@ repos:
       name: pytest-cov
       stages: [commit]
       language: system
-      entry: pytest --cov=ORBIT --tb=no --ignore=*setup.py --cov-fail-under=80 -n 4
+      entry: pytest --cov=ORBIT --tb=no --ignore=*setup.py --cov-fail-under=80
       types: [python]
       pass_filenames: false
