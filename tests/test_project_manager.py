@@ -209,7 +209,7 @@ def test_duplicate_phase_simulations():
 
     assert df.loc[("MonopileInstallation_1", "DriveMonopile")] == 5
     assert df.loc[("MonopileInstallation_2", "DriveMonopile")] == 5
-    assert df.loc[("TurbineInstallation", "AttachTower")] == 10
+    assert df.loc[("TurbineInstallation", "AttachTowerSection")] == 10
 
 
 def test_design_phases():

@@ -77,7 +77,9 @@ def test_turbine_creation(config):
     sim = TurbineInstallation(config, print_logs=False)
     assert sim.num_turbines == config["plant"]["num_turbines"]
 
-    t = len([item for item in sim.port.items if item["type"] == "Tower"])
+    t = len(
+        [item for item in sim.port.items if item["type"] == "Tower Section"]
+    )
     assert sim.num_turbines == t
 
     n = len([item for item in sim.port.items if item["type"] == "Nacelle"])
@@ -152,7 +154,9 @@ def test_for_complete_installation(config):
     sim = TurbineInstallation(config, log_level="INFO", print_logs=False)
     sim.run()
 
-    installed_towers = len(sim.logs.loc[sim.logs["action"] == "AttachTower"])
+    installed_towers = len(
+        sim.logs.loc[sim.logs["action"] == "AttachTowerSection"]
+    )
     assert installed_towers == sim.num_turbines
 
     installed_nacelles = len(
@@ -214,9 +218,9 @@ def test_kwargs(config):
     baseline = sim.total_phase_time
 
     keywords = [
-        "tower_fasten_time",
-        "tower_release_time",
-        "tower_attach_time",
+        "tower_section_fasten_time",
+        "tower_section_release_time",
+        "tower_section_attach_time",
         "nacelle_fasten_time",
         "nacelle_release_time",
         "nacelle_attach_time",
@@ -251,3 +255,34 @@ def test_kwargs(config):
 
     else:
         assert True
+
+
+@pytest.mark.parametrize(
+    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+)
+def test_multiple_tower_sections(config):
+
+    sim = TurbineInstallation(config, log_level="INFO", print_logs=False)
+    sim.run()
+    baseline = len(sim.logs.loc[sim.logs["action"] == "AttachTowerSection"])
+
+    two_sections = deepcopy(config)
+    two_sections["turbine"]["tower"]["sections"] = 2
+
+    sim2 = TurbineInstallation(
+        two_sections, log_level="INFO", print_logs=False
+    )
+    sim2.run()
+    new = len(sim2.logs.loc[sim2.logs["action"] == "AttachTowerSection"])
+
+    assert new == 2 * baseline
+
+    df = sim2.phase_dataframe.copy()
+    df = df.loc[~df["agent"].isin(["Port"])]
+
+    for vessel in df["agent"].unique():
+
+        vl = df[df["agent"] == vessel].copy()
+        vl = vl.assign(shift=(vl["time"] - vl["time"].shift(1)))
+
+        assert (vl["shift"] - vl["duration"]).abs().max() < 1e-9

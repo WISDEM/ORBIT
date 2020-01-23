@@ -29,11 +29,11 @@ from ORBIT.vessels.tasks import (  # cabling tasks; scour protection tasks; mono
     test_cable,
     lower_cable,
     raise_cable,
-    fasten_tower,
+    fasten_tower_section,
     splice_cable,
     lift_carousel,
     pull_in_cable,
-    release_tower,
+    release_tower_section,
     drive_monopile,
     fasten_nacelle,
     fasten_topside,
@@ -95,8 +95,8 @@ jacksys_required_tasks = (lower_monopile, lower_transition_piece)
             (release_nacelle, "nacelle_release_time"),
             (fasten_turbine_blade, "blade_fasten_time"),
             (release_turbine_blade, "blade_release_time"),
-            (fasten_tower, "tower_fasten_time"),
-            (release_tower, "tower_release_time"),
+            (fasten_tower_section, "tower_section_fasten_time"),
+            (release_tower_section, "tower_section_release_time"),
             (fasten_topside, "topside_fasten_time"),
             (release_topside, "topside_release_time"),
         )
@@ -135,7 +135,7 @@ def test_distance_functions(fn, key, speed):
 
 @pytest.mark.parametrize(
     "fn",
-    (upend_monopile, lower_monopile, drive_monopile, lower_transition_piece,),
+    (upend_monopile, lower_monopile, drive_monopile, lower_transition_piece),
 )
 def test_time_with_vessel_component(fn):
     try:

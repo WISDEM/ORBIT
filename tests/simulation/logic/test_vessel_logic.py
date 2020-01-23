@@ -38,10 +38,7 @@ installations = [
     ScourProtectionInstallation,
 ]
 installations = [ArrayCableInstallation, ExportCableInstallation]
-install_configs = [
-    "array_cable_install",
-    "export_cable_install",
-]
+install_configs = ["array_cable_install", "export_cable_install"]
 
 item_map = {}
 
@@ -60,7 +57,7 @@ def get_vessel(simulation):
     (
         ("Monopile", "ReleaseMonopile"),
         ("Transition Piece", "ReleaseTP"),
-        ("Tower", "ReleaseTower"),
+        ("Tower Section", "ReleaseTowerSection"),
         ("Nacelle", "ReleaseNacelle"),
         ("Blade", "ReleaseBlade"),
         ("Topside", "ReleaseTopside"),

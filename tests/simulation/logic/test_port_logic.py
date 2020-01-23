@@ -15,7 +15,7 @@ from ORBIT.simulation.logic.port_logic import vessel_fasten_time
 item_list = [
     "Blade",
     "Nacelle",
-    "Tower",
+    "Tower Section",
     "Monopile",
     "Transition Piece",
     "Scour Protection",
