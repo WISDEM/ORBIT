@@ -12,10 +12,10 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="ORBIT-dev",
+    name="ORBIT",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description="ORBIT Development Repo",
+    description="Offshore Renewables Balance of system and Installation Tool",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.7",
