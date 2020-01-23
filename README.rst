@@ -80,7 +80,7 @@ Instructions
         conda deactivate <environment_name>
 
 4. Clone the repository:
-   ``git clone https://github.nrel.gov/OffshoreAnalysis/ORBIT-dev.git``
+   ``git clone https://github.com/WISDEM/ORBIT.git``
 5. Navigate to the top level of the repository
    (``<path-to-ORBIT>/ORBIT/``) and install ORBIT as an editable package
    with following command.
