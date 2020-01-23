@@ -1,3 +1,4 @@
 *.ipynb linguist-vendored
 *.csv linguist-vendored
 *.txt linguist-vendored
+ORBIT/_version.py export-subst

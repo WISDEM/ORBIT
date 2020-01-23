@@ -4,17 +4,17 @@ import os
 
 from setuptools import setup
 
+import versioneer
+
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
-with open(os.path.join(ROOT, "VERSION")) as version_file:
-    __version__ = version_file.read().strip()
-
 setup(
     name="ORBIT-dev",
-    version=__version__,
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description="ORBIT Development Repo",
     classifiers=[
         "Development Status :: 4 - Beta",
