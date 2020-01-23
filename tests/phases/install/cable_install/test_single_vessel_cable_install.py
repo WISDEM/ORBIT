@@ -25,9 +25,10 @@ config_export = extract_library_specs("config", "export_cable_install")
 
 installs = ((ArrInstall, config_array), (ExpInstall, config_export))
 weather = (None, test_weather)
-strategies = ("lay_bury", "lay", "bury")
+strategies = ("simultaneous", "separate", "lay", "bury")
 strategies_keys = (
-    ("lay_bury", "cable_lay_bury_speed"),
+    ("simultaneous", "cable_lay_bury_speed"),
+    ("separate", "cable_lay_speed|cable_bury_speed"),
     ("lay", "cable_lay_speed"),
     ("bury", "cable_bury_speed"),
 )
@@ -53,13 +54,35 @@ def test_creation(CableInstall, config, weather):
 @pytest.mark.parametrize(
     "weather", weather, ids=["no_weather", "test_weather"]
 )
-def test_vessel_creation(CableInstall, config, weather):
-    sim = CableInstall(config, weather=weather, log_level="INFO")
+@pytest.mark.parametrize("strategy", strategies)
+def test_vessel_creation(CableInstall, config, weather, strategy):
 
-    assert sim.cable_lay_vessel
-    assert sim.cable_lay_vessel.storage.deck_space == 0
-    assert sim.cable_lay_vessel.at_port
-    assert not sim.cable_lay_vessel.at_site
+    print(config.keys())
+
+    _config = deepcopy(config)
+    try:
+        _config["array_system"]["strategy"] = strategy
+    except KeyError:
+        pass
+
+    try:
+        _config["export_system"]["strategy"] = strategy
+    except KeyError:
+        pass
+
+    sim = CableInstall(_config, weather=weather, log_level="INFO")
+
+    if strategy in ("lay", "simultaneous", "separate"):
+        assert sim.cable_lay_vessel
+        assert sim.cable_lay_vessel.storage.deck_space == 0
+        assert sim.cable_lay_vessel.at_port
+        assert not sim.cable_lay_vessel.at_site
+
+    if strategy in ("bury", "separate"):
+        assert sim.cable_bury_vessel
+        assert sim.cable_bury_vessel.storage.deck_space == 0
+        assert sim.cable_bury_vessel.at_port
+        assert not sim.cable_bury_vessel.at_site
 
 
 @pytest.mark.parametrize(
@@ -98,7 +121,7 @@ def test_logger_creation(CableInstall, config, weather, log_level, expected):
     "weather", weather, ids=["no_weather", "test_weather"]
 )
 @pytest.mark.parametrize(
-    "strategy", strategies, ids=["lay_bury", "lay", "bury"]
+    "strategy", strategies, ids=["simultaneous", "separate", "lay", "bury"]
 )
 def test_full_run_completes(CableInstall, config, weather, strategy):
     strategy_config = deepcopy(config)
@@ -110,7 +133,8 @@ def test_full_run_completes(CableInstall, config, weather, strategy):
     sim = CableInstall(strategy_config, weather=weather, log_level="DEBUG")
     sim.run()
 
-    assert float(sim.logs[sim.logs.action == "Complete"]["time"]) > 0
+    for t in sim.logs[sim.logs.action == "Complete"]["time"]:
+        assert float(t) > 0
 
 
 @pytest.mark.parametrize(
@@ -171,7 +195,9 @@ def test_for_array_install_efficiencies(CableInstall, config):
     "CableInstall,config", installs, ids=["array", "export"]
 )
 @pytest.mark.parametrize(
-    "strategy,key", strategies_keys, ids=["lay_bury", "lay", "bury"]
+    "strategy,key",
+    strategies_keys,
+    ids=["simultaneous", "separate", "lay", "bury"],
 )
 def test_strategy_kwargs(CableInstall, config, strategy, key):
     strategy_config = deepcopy(config)
@@ -184,12 +210,13 @@ def test_strategy_kwargs(CableInstall, config, strategy, key):
     sim.run()
     baseline = sim.total_phase_time
 
-    kwargs = {key: defaults[key] * 0.1}
-    sim = CableInstall(strategy_config, log_level="DEBUG", **kwargs)
-    sim.run()
-    updated = sim.total_phase_time
+    for _key in key.split("|"):
+        kwargs = {_key: defaults[_key] * 0.1}
+        sim = CableInstall(strategy_config, log_level="DEBUG", **kwargs)
+        sim.run()
+        updated = sim.total_phase_time
 
-    assert updated > baseline
+        assert updated > baseline
 
 
 def test_kwargs_for_array_install():
@@ -237,7 +264,7 @@ def test_kwargs_for_array_install():
 def test_kwargs_for_export_install():
 
     new_export_system = {
-        "strategy": "lay_bury",
+        "strategy": "simultaneous",
         "cables": {
             "XLPE_300mm_36kV": {
                 "cable_sections": [(1000, 1)],

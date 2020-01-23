@@ -1,5 +1,5 @@
-array_cable_lay_vessel: test_cable_lay_vessel
 export_cable_lay_vessel: test_cable_lay_vessel
+export_cable_bury_vessel: test_cable_lay_vessel
 export_system:
   cables:
     XLPE_500mm_132kV:
@@ -7,7 +7,7 @@ export_system:
       - - 33.3502
         - 10
       linear_density: 50.0
-  strategy: lay_bury
+  strategy: separate
 plant:
   layout: grid
   num_turbines: 40
