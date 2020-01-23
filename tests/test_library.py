@@ -22,8 +22,8 @@ config = {
         "nacelle": {"type": "Nacelle", "deck_space": 200, "weight": 400},
         "blade": {"type": "Blade", "deck_space": 100, "weight": 100},
     },
-    "MonopileInstallation": {"wtiv": "example_wtiv"},
-    "TurbineInstallation": {"wtiv": "example_wtiv"},
+    "MonopileInstallation": {"wtiv": "test_wtiv"},
+    "TurbineInstallation": {"wtiv": "test_wtiv"},
     "port": {"num_cranes": 1, "monthly_rate": 10000},
     "monopile": {
         "type": "Monopile",

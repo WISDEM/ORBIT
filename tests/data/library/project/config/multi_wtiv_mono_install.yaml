@@ -1,4 +1,4 @@
-feeder: example_feeder
+feeder: test_feeder
 monopile:
   deck_space: 500
   diameter: 10
@@ -21,4 +21,4 @@ transition_piece:
   weight: 350
 turbine:
   hub_height: 100
-wtiv: example_wtiv
+wtiv: test_wtiv

@@ -33,10 +33,13 @@ strategies_keys = (
     ("bury", "cable_bury_speed"),
 )
 
-setup_by_type_weather = [(*i, w) for i, w in product(installs, weather)]
 
-
-@pytest.mark.parametrize("CableInstall,config,weather", setup_by_type_weather)
+@pytest.mark.parametrize(
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
 def test_creation(CableInstall, config, weather):
     sim = CableInstall(config, weather=weather, print_logs=False)
 
@@ -45,7 +48,12 @@ def test_creation(CableInstall, config, weather):
     assert sim.env.logger
 
 
-@pytest.mark.parametrize("CableInstall,config,weather", setup_by_type_weather)
+@pytest.mark.parametrize(
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
 def test_vessel_creation(CableInstall, config, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
 
@@ -55,7 +63,12 @@ def test_vessel_creation(CableInstall, config, weather):
     assert not sim.cable_lay_vessel.at_site
 
 
-@pytest.mark.parametrize("CableInstall,config,weather", setup_by_type_weather)
+@pytest.mark.parametrize(
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
 def test_carousel_system_creation(CableInstall, config, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
 
@@ -66,13 +79,13 @@ def test_carousel_system_creation(CableInstall, config, weather):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,config,weather,log_level,expected",
-    (
-        (*s, *l)
-        for s, l in product(
-            setup_by_type_weather, (("INFO", 20), ("DEBUG", 10))
-        )
-    ),
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
+@pytest.mark.parametrize(
+    "log_level,expected", (("INFO", 20), ("DEBUG", 10)), ids=["info", "debug"]
 )
 def test_logger_creation(CableInstall, config, weather, log_level, expected):
     sim = CableInstall(config, weather=weather, log_level=log_level)
@@ -80,10 +93,15 @@ def test_logger_creation(CableInstall, config, weather, log_level, expected):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,config,strategy,weather",
-    ((*i, s, w) for i, s, w in product(installs, strategies, weather)),
+    "CableInstall,config", installs, ids=["array", "export"]
 )
-def test_full_run_completes(CableInstall, config, strategy, weather):
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
+@pytest.mark.parametrize(
+    "strategy", strategies, ids=["lay_bury", "lay", "bury"]
+)
+def test_full_run_completes(CableInstall, config, weather, strategy):
     strategy_config = deepcopy(config)
     if "array_system" in strategy_config:
         strategy_config["array_system"]["strategy"] = strategy
@@ -96,7 +114,12 @@ def test_full_run_completes(CableInstall, config, strategy, weather):
     assert float(sim.logs[sim.logs.action == "Complete"]["time"]) > 0
 
 
-@pytest.mark.parametrize("CableInstall,config,weather", setup_by_type_weather)
+@pytest.mark.parametrize(
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
 def test_full_run_is_valid(CableInstall, config, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
     sim.run()
@@ -104,7 +127,9 @@ def test_full_run_is_valid(CableInstall, config, weather):
     assert n_complete == sim.num_sections
 
 
-@pytest.mark.parametrize("weather", (None, test_weather))
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+)
 def test_trench_install_creation(weather):
     sim = ExpInstall(config_export, weather=weather, print_logs=False)
     sim.run()
@@ -112,7 +137,12 @@ def test_trench_install_creation(weather):
     assert "DigTrench" in sim.phase_dataframe.action.tolist()
 
 
-@pytest.mark.parametrize("CableInstall,config,weather", setup_by_type_weather)
+@pytest.mark.parametrize(
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "weather", weather, ids=["no_weather", "test_weather"]
+)
 def test_full_run_logging(CableInstall, config, weather):
     sim = CableInstall(config, weather=weather, log_level="INFO")
     sim.run()
@@ -125,7 +155,9 @@ def test_full_run_logging(CableInstall, config, weather):
     assert (df.duration - df["shift"]).max() == pytest.approx(0, abs=1e-9)
 
 
-@pytest.mark.parametrize("CableInstall,config", installs)
+@pytest.mark.parametrize(
+    "CableInstall,config", installs, ids=["array", "export"]
+)
 def test_for_array_install_efficiencies(CableInstall, config):
 
     sim = CableInstall(config)
@@ -137,8 +169,10 @@ def test_for_array_install_efficiencies(CableInstall, config):
 
 
 @pytest.mark.parametrize(
-    "CableInstall,config,strategy,key",
-    ((*i, *s) for i, s in product(installs, strategies_keys)),
+    "CableInstall,config", installs, ids=["array", "export"]
+)
+@pytest.mark.parametrize(
+    "strategy,key", strategies_keys, ids=["lay_bury", "lay", "bury"]
 )
 def test_strategy_kwargs(CableInstall, config, strategy, key):
     strategy_config = deepcopy(config)

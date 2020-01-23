@@ -79,6 +79,7 @@ def test_cable_not_found():
         (config_full_grid, 10, 0, 4, 0),
         (config_partial_grid, 12, 1, 4, 1),
     ),
+    ids=["full_ring", "partial_ring", "full_grid", "partial_grid"],
 )
 def test_string_creation(
     config,
@@ -123,6 +124,7 @@ def test_max_turbines_per_cable(turbine_rating, expected):
         (config_full_grid, (10, 4), 0),
         (config_partial_grid, (13, 4), 3),
     ),
+    ids=["full_ring", "partial_ring", "full_grid", "partial_grid"],
 )
 def test_grid_creation(config, shape, num_null):
     array = ArraySystemDesign(config)
@@ -149,6 +151,7 @@ def test_grid_creation(config, shape, num_null):
         (config_full_grid, 53.29),
         (config_partial_grid, 77.0),
     ),
+    ids=["full_ring", "partial_ring", "full_grid", "partial_grid"],
 )
 def test_total_cable_length(config, total_length):
     array = ArraySystemDesign(config)

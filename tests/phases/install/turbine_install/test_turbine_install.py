@@ -24,7 +24,9 @@ config_wtiv_multi_feeder["num_feeders"] = 2
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_creation(config):
 
@@ -35,7 +37,9 @@ def test_creation(config):
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_port_creation(config):
 
@@ -45,7 +49,9 @@ def test_port_creation(config):
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_vessel_creation(config):
 
@@ -62,7 +68,9 @@ def test_vessel_creation(config):
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_turbine_creation(config):
 
@@ -80,14 +88,12 @@ def test_turbine_creation(config):
 
 
 @pytest.mark.parametrize(
-    "config,log_level,expected",
-    [
-        [config, *logs]
-        for config, logs in product(
-            (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-            (("INFO", 20), ("DEBUG", 10)),
-        )
-    ],
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+)
+@pytest.mark.parametrize(
+    "log_level,expected", (("INFO", 20), ("DEBUG", 10)), ids=["info", "debug"]
 )
 def test_logger_creation(config, log_level, expected):
 
@@ -96,13 +102,14 @@ def test_logger_creation(config, log_level, expected):
 
 
 @pytest.mark.parametrize(
-    "weather,config",
-    product(
-        (None, test_weather),
-        (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ),
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
-def test_full_run(weather, config):
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+)
+def test_full_run(config, weather):
 
     sim = TurbineInstallation(config, weather=weather, log_level="INFO")
     sim.run()
@@ -113,11 +120,12 @@ def test_full_run(weather, config):
 
 
 @pytest.mark.parametrize(
-    "weather,config",
-    product(
-        (None, test_weather),
-        (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ),
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+)
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
 )
 def test_for_complete_logging(weather, config):
 
@@ -135,7 +143,9 @@ def test_for_complete_logging(weather, config):
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_for_complete_installation(config):
 
@@ -155,7 +165,9 @@ def test_for_complete_installation(config):
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_for_efficiencies(config):
 
@@ -191,7 +203,9 @@ def test_for_efficiencies(config):
 
 
 @pytest.mark.parametrize(
-    "config", (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder)
+    "config",
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
+    ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 def test_kwargs(config):
 

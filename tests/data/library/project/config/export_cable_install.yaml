@@ -1,5 +1,5 @@
-array_cable_lay_vessel: example_cable_lay_vessel
-export_cable_lay_vessel: example_cable_lay_vessel
+array_cable_lay_vessel: test_cable_lay_vessel
+export_cable_lay_vessel: test_cable_lay_vessel
 export_system:
   cables:
     XLPE_500mm_132kV:
@@ -20,7 +20,7 @@ site:
   distance_to_beach: 0.0
   distance_to_interconnection: 3
   distance_to_landfall: 30
-trench_dig_vessel: example_trench_dig_vessel
+trench_dig_vessel: test_trench_dig_vessel
 turbine:
   rotor_diameter: 154
   turbine_rating: 9

@@ -18,4 +18,4 @@ transition_piece:
   weight: 350
 turbine:
   hub_height: 100
-wtiv: example_wtiv
+wtiv: test_wtiv

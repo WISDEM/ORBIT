@@ -1,4 +1,4 @@
-feeder: example_feeder
+feeder: test_feeder
 num_feeders: 1
 plant:
   num_turbines: 20
@@ -23,4 +23,4 @@ turbine:
     deck_space: 100
     type: Tower
     weight: 400
-wtiv: example_wtiv
+wtiv: test_wtiv

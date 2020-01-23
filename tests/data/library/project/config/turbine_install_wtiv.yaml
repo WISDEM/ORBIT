@@ -20,4 +20,4 @@ turbine:
     deck_space: 100
     type: Tower
     weight: 400
-wtiv: example_wtiv
+wtiv: test_wtiv

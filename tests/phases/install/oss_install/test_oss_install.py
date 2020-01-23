@@ -19,11 +19,17 @@ from ORBIT.phases.install import OffshoreSubstationInstallation
 initialize_library(pytest.library)
 config_single = extract_library_specs("config", "oss_install")
 config_multi = extract_library_specs("config", "oss_install")
-WTIV_SPECS = extract_library_specs("wtiv", "example_wtiv")
-FEEDER_SPECS = extract_library_specs("feeder", "example_feeder")
+config_multi["num_feeders"] = 2
+
+WTIV_SPECS = extract_library_specs("wtiv", "test_wtiv")
+FEEDER_SPECS = extract_library_specs("feeder", "test_feeder")
 
 
-@pytest.mark.parametrize("config", (config_single, config_multi))
+@pytest.mark.parametrize(
+    "config",
+    (config_single, config_multi),
+    ids=["single_feeder", "multi_feeder"],
+)
 def test_creation(config):
 
     sim = OffshoreSubstationInstallation(config)
@@ -32,7 +38,11 @@ def test_creation(config):
     assert sim.env.logger
 
 
-@pytest.mark.parametrize("config", (config_single, config_multi))
+@pytest.mark.parametrize(
+    "config",
+    (config_single, config_multi),
+    ids=["single_feeder", "multi_feeder"],
+)
 def test_port_creation(config):
 
     sim = OffshoreSubstationInstallation(config)
@@ -44,9 +54,12 @@ def test_port_creation(config):
     "oss_vessel, feeder",
     [
         (WTIV_SPECS, FEEDER_SPECS),  # Passing in dictionaries
-        ("example_wtiv", "example_feeder")  # Passing in vessel names to be
-        # pulled from vessel library
+        (
+            "test_wtiv",
+            "test_feeder",
+        ),  # Passing names to be pulled from library
     ],
+    ids=["dictionary", "names"],
 )
 def test_vessel_creation(oss_vessel, feeder):
 
@@ -78,13 +91,12 @@ def test_component_creation():
 
 
 @pytest.mark.parametrize(
-    "config,log_level,expected",
-    [
-        [config, *logs]
-        for config, logs in product(
-            (config_single, config_multi), (("INFO", 20), ("DEBUG", 10))
-        )
-    ],
+    "config",
+    (config_single, config_multi),
+    ids=["single_feeder", "multi_feeder"],
+)
+@pytest.mark.parametrize(
+    "log_level,expected", (("INFO", 20), ("DEBUG", 10)), ids=["info", "debug"]
 )
 def test_logger_creation(config, log_level, expected):
 
@@ -93,10 +105,14 @@ def test_logger_creation(config, log_level, expected):
 
 
 @pytest.mark.parametrize(
-    "weather,config",
-    product((None, test_weather), (config_single, config_multi)),
+    "config",
+    (config_single, config_multi),
+    ids=["single_feeder", "multi_feeder"],
 )
-def test_full_run(weather, config):
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+)
+def test_full_run(config, weather):
 
     sim = OffshoreSubstationInstallation(
         config, weather=weather, log_level="INFO"
@@ -109,8 +125,12 @@ def test_full_run(weather, config):
 
 
 @pytest.mark.parametrize(
-    "weather,config",
-    product((None, test_weather), (config_single, config_multi)),
+    "config",
+    (config_single, config_multi),
+    ids=["single_feeder", "multi_feeder"],
+)
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
 )
 def test_for_complete_logging(weather, config):
 
@@ -128,7 +148,11 @@ def test_for_complete_logging(weather, config):
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
 
-@pytest.mark.parametrize("config", (config_single, config_multi))
+@pytest.mark.parametrize(
+    "config",
+    (config_single, config_multi),
+    ids=["single_feeder", "multi_feeder"],
+)
 def test_for_efficiencies(config):
 
     sim = OffshoreSubstationInstallation(config)

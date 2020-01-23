@@ -59,13 +59,17 @@ def test_scour_protection_creation():
         )
 
 
-@pytest.mark.parametrize("level,expected", (("INFO", 20), ("DEBUG", 10)))
+@pytest.mark.parametrize(
+    "level,expected", (("INFO", 20), ("DEBUG", 10)), ids=["info", "debug"]
+)
 def test_logger_creation(level, expected):
     sim = ScourProtectionInstallation(config, log_level=level)
     assert sim.env.logger.level == expected
 
 
-@pytest.mark.parametrize("weather", (None, test_weather))
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+)
 def test_full_run_completes(weather):
     sim = ScourProtectionInstallation(
         config, weather=weather, log_level="DEBUG"
@@ -76,7 +80,9 @@ def test_full_run_completes(weather):
     assert complete > 0
 
 
-@pytest.mark.parametrize("weather", (None, test_weather))
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+)
 def test_full_run_is_valid(weather):
     sim = ScourProtectionInstallation(
         config, weather=weather, log_level="INFO"
@@ -90,7 +96,9 @@ def test_full_run_is_valid(weather):
         assert df[df.action == action].shape[0] == sim.num_turbines
 
 
-@pytest.mark.parametrize("weather", (None, test_weather))
+@pytest.mark.parametrize(
+    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+)
 def test_full_run_logging(weather):
     sim = ScourProtectionInstallation(
         config, weather=weather, log_level="INFO"

@@ -8,13 +8,13 @@ import pytest
 from ORBIT.library import extract_library_specs
 from ORBIT.vessels import Vessel
 
-wtiv = extract_library_specs("wtiv", "example_wtiv")
-feeder = extract_library_specs("feeder", "example_feeder")
+wtiv = extract_library_specs("wtiv", "test_wtiv")
+feeder = extract_library_specs("feeder", "test_feeder")
 scour_protection = extract_library_specs(
-    "scour_protection_install_vessel", "example_scour_protection_vessel"
+    "scour_protection_install_vessel", "test_scour_protection_vessel"
 )
 cable_lay = extract_library_specs(
-    "array_cable_lay_vessel", "example_cable_lay_vessel"
+    "array_cable_lay_vessel", "test_cable_lay_vessel"
 )
 
 

@@ -1,4 +1,4 @@
-feeder: example_feeder
+feeder: test_feeder
 num_feeders: 2
 num_substations: 2
 offshore_substation_substructure:
@@ -10,7 +10,7 @@ offshore_substation_topside:
   deck_space: 200
   type: Topside
   weight: 400
-oss_install_vessel: example_heavy_lift_vessel
+oss_install_vessel: test_heavy_lift_vessel
 port:
   monthly_rate: 100000
   num_cranes: 1

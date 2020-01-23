@@ -1,7 +1,7 @@
 MonopileInstallation:
   site:
     distance: 500
-  wtiv: example_phase_specific_wtiv
+  wtiv: test_phase_specific_wtiv
 install_phases:
 - MonopileInstallation
 - TurbineInstallation
@@ -37,4 +37,4 @@ turbine:
     deck_space: 100
     type: Tower
     weight: 400
-wtiv: example_wtiv
+wtiv: test_wtiv
