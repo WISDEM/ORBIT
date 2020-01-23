@@ -10,7 +10,6 @@ __email__ = "robert.hammond@nrel.gov"
 
 
 from copy import deepcopy
-from itertools import product
 
 import pytest
 

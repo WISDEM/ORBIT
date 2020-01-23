@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from copy import deepcopy
-from itertools import product
 
 import pytest
 
