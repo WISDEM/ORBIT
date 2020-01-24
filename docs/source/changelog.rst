@@ -3,6 +3,16 @@
 ORBIT Changelog
 ===============
 
+0.3.3
+-----
+
+- Added configuration for multiple tower sections in ``TurbineInstallation``.
+- Added configuration for seperate lay/burial in ``ArrayCableInstallation`` and
+  ``ExportCableInstallation``.
+- Overhauled test suite and associated library.
+- Bugfix in ``CableCarousel``.
+- Expanded WISDEM Fixed API.
+
 0.3.2
 -----
 
