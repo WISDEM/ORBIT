@@ -18,7 +18,7 @@ def get_test_library_path():
     str
         Path to <path>/tests/data/library.
     """
-    repository = "ORBIT-dev"
+    repository = "ORBIT"
     root = os.path.split(os.path.abspath(os.path.basename(__file__)))[0]
     cutoff = root.index(repository) + len(repository)
     repository = root[:cutoff]
