@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from collections import Counter, namedtuple
 
 import numpy as np
+from marmot import Agent
 
 from ORBIT.vessels.tasks import defaults
 
@@ -16,10 +17,8 @@ from .components import Crane, JackingSys
 Trip = namedtuple("Trip", "cargo_weight deck_space items")
 
 
-class Vessel:
+class Vessel(Agent):
     """Base Vessel Class"""
-
-    name = None
 
     def __init__(self, name, vessel_specs):
         """
@@ -31,7 +30,7 @@ class Vessel:
             Nested dictionary containing vessel specifications.
         """
 
-        self.name = name
+        super().__init__(name)
         self.extract_vessel_specs(vessel_specs)
 
     def extract_vessel_specs(self, vessel_specs):

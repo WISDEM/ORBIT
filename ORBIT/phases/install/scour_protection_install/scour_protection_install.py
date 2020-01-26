@@ -8,9 +8,9 @@ __email__ = "robert.hammond@nrel.gov"
 
 from math import ceil
 
-from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorageContainer
 from ORBIT.phases.install import InstallPhase
+from ORBIT.phases.install._core import Vessel
 
 from .process import (
     transport,

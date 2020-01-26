@@ -12,7 +12,6 @@ import simpy
 import pytest
 
 from tests.data import test_weather
-from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import (
     TurbineInstallation,
@@ -27,6 +26,7 @@ from ORBIT.simulation.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
 )
+from ORBIT.phases.install._core import Vessel
 from ORBIT.simulation.logic.vessel_logic import release_map
 
 installations = [

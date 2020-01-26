@@ -8,7 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 
-from ORBIT.vessels import Vessel, tasks
+from ORBIT.vessels import tasks
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import InstallPhase
 from ORBIT.simulation.logic import (
@@ -16,6 +16,7 @@ from ORBIT.simulation.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
 )
+from ORBIT.phases.install._core import Vessel
 from ORBIT.phases.install.monopile_install._common import install_monopile
 
 

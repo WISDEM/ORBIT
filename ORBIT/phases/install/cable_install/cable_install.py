@@ -11,10 +11,9 @@ __email__ = "robert.hammond@nrel.gov"
 import itertools
 from types import SimpleNamespace
 
-from ORBIT.vessels import Vessel
 from ORBIT.simulation import Environment, VesselStorageContainer
 from ORBIT.phases.install import InstallPhase
-from ORBIT.vessels.components import Carousel, CarouselSystem
+from ORBIT.phases.install._core import Vessel, Carousel, CarouselSystem
 
 from .process import (
     bury_cables,

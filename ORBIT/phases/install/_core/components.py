@@ -1,15 +1,169 @@
-"""Provides the `CarouselSystem` and `Carousel` class."""
+"""Provides the `Crane` class."""
 
-__author__ = "Rob Hammond"
+__author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
-__maintainer__ = "Rob Hammond"
-__email__ = "robert.hammond@nrel.gov"
+__maintainer__ = "Jake Nunemaker"
+__email__ = "jake.nunemaker@nrel.gov"
 
 
 import itertools
 from dataclasses import dataclass
 
 import numpy as np
+
+from ORBIT.vessels.tasks._defaults import defaults
+
+
+class Crane:
+    """Base Crane Class"""
+
+    def __init__(self, crane_specs):
+        """
+        Creates an instance of Crane.
+
+        Parameters
+        ----------
+        crane_specs : dict
+            Dictionary containing crane system specifications.
+        """
+
+        self.extract_crane_specs(crane_specs)
+
+    def extract_crane_specs(self, crane_specs):
+        """
+        Extracts and defines crane specifications.
+
+        Parameters
+        ----------
+        crane_specs : dict
+            Dictionary of crane specifications.
+        """
+
+        # Physical Dimensions
+        self.boom_length = crane_specs.get("boom_length", None)
+        self.radius = crane_specs.get("radius", None)
+
+        # Operational Parameters
+        self.max_lift = crane_specs.get("max_lift", None)
+        self.max_hook_height = crane_specs.get("max_hook_height", None)
+        self.max_windspeed = crane_specs.get("max_windspeed", 99)
+
+    @staticmethod
+    def crane_rate(**kwargs):
+        """
+        Calculates minimum crane rate based on current wave height equation
+        from DNV standards for offshore lifts.
+
+        Parameters
+        ----------
+        wave_height : int | float
+            Significant wave height (m).
+
+        Returns
+        -------
+        crane_rate : float
+            Hoist speed of crane (m/hr).
+        """
+
+        wave_height = kwargs.get("wave_height", 2)
+        return 0.6 * wave_height * 3600
+
+    @staticmethod
+    def reequip(**kwargs):
+        """
+        Calculates time taken to change crane equipment.
+
+        Parameters
+        ----------
+        crane_reequip_time : int | float
+            Time required to change crane equipment (h).
+
+        Returns
+        -------
+        reequip_time : float
+            Time required to change crane equipment (h).
+        """
+
+        _key = "crane_reequip_time"
+        duration = kwargs.get(_key, defaults[_key])
+
+        return duration
+
+
+class JackingSys:
+    """Base Jacking System Class"""
+
+    def __init__(self, jacksys_specs):
+        """
+        Creates an instance of JackingSys.
+
+        Parameters
+        ----------
+        jacksys_specs : dict
+            Dictionary containing jacking system specifications.
+        """
+
+        self.extract_jacksys_specs(jacksys_specs)
+
+    def extract_jacksys_specs(self, jacksys_specs):
+        """
+        Extracts and defines jacking system specifications.
+
+        Parameters
+        ----------
+        jacksys_specs : dict
+            Dictionary containing jacking system specifications.
+        """
+
+        # Physical Dimensions
+        self.num_legs = jacksys_specs.get("num_legs", None)
+        self.leg_length = jacksys_specs.get("leg_length", None)
+        self.air_gap = jacksys_specs.get("air_gap", None)
+        self.leg_pen = jacksys_specs.get("leg_pen", None)
+
+        # Operational Parameters
+        self.max_depth = jacksys_specs.get("max_depth", None)
+        self.max_extension = jacksys_specs.get("max_extension", None)
+        self.speed_below_depth = jacksys_specs.get("speed_below_depth", None)
+        self.speed_above_depth = jacksys_specs.get("speed_above_depth", None)
+
+    def jacking_time(self, extension, depth):
+        """
+        Calculates jacking time for a given depth.
+
+        Parameters
+        ----------
+        extension : int | float
+            Height to jack-up to or jack-down from (m).
+        depth : int | float
+            Depth at jack-up location (m).
+
+        Returns
+        -------
+        extension_time : float
+            Time required to jack-up to given extension (h).
+        """
+
+        if extension > self.max_extension:
+            raise Exception(
+                "{} extension is greater than {} maximum"
+                "".format(extension, self.max_extension)
+            )
+
+        elif depth > self.max_depth:
+            raise Exception(
+                "{} is beyond the operating depth {}"
+                "".format(depth, self.max_depth)
+            )
+
+        elif depth > extension:
+            raise Exception("Extension must be greater than depth")
+
+        else:
+            return (
+                depth / self.speed_below_depth
+                + (extension - depth) / self.speed_above_depth
+            ) / 60
 
 
 @dataclass

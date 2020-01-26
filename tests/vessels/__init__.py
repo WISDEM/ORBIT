@@ -6,7 +6,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 import pytest
 
 from ORBIT.library import extract_library_specs
-from ORBIT.vessels import Vessel
+from ORBIT.phases.install._core import Vessel
 
 wtiv = extract_library_specs("wtiv", "test_wtiv")
 feeder = extract_library_specs("feeder", "test_feeder")
