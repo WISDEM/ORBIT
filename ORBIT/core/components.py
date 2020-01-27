@@ -10,21 +10,19 @@ import itertools
 from dataclasses import dataclass
 
 import numpy as np
-
-from ORBIT.vessels.tasks._defaults import defaults
-
 import simpy
 
-from ORBIT.simulation.exceptions import (
+from ORBIT.core.exceptions import (
     ItemNotFound,
     DeckSpaceExceeded,
     InsufficientAmount,
     CargoWeightExceeded,
     ItemPropertyNotDefined,
 )
-
+from ORBIT.vessels.tasks._defaults import defaults
 
 # TODO: __str__ methods for Components
+
 
 class Crane:
     """Base Crane Class"""
@@ -449,13 +447,13 @@ class VesselStorage(simpy.FilterStore):
     def current_cargo_weight(self):
         """Returns current cargo weight in tons."""
 
-        return sum([item["weight"] for item in self.items])
+        return sum([item.weight for item in self.items])
 
     @property
     def current_deck_space(self):
         """Returns current deck space used in m2."""
 
-        return sum([item["deck_space"] for item in self.items])
+        return sum([item.deck_space for item in self.items])
 
     def put_item(self, item):
         """
@@ -474,23 +472,24 @@ class VesselStorage(simpy.FilterStore):
             Dictionary of item properties.
         """
 
-        if any(x not in item.keys() for x in self.required_keys):
-            raise ItemPropertyNotDefined(item, self.required_keys)
+        # if any(x not in item.keys() for x in self.required_keys):
+        #     raise ItemPropertyNotDefined(item, self.required_keys)
 
-        if self.current_deck_space + item["deck_space"] > self.max_deck_space:
+        if self.current_deck_space + item.deck_space > self.max_deck_space:
             raise DeckSpaceExceeded(
                 self.max_deck_space, self.current_deck_space, item
             )
 
-        if self.current_cargo_weight + item["weight"] > self.max_cargo_weight:
+        if self.current_cargo_weight + item.weight > self.max_cargo_weight:
             raise CargoWeightExceeded(
                 self.max_cargo_weight, self.current_cargo_weight, item
             )
 
         self.put(item)
 
-    def get_item(self, rule):
+    def get_item(self, _type):
         """
+        TODO:
         Checks self.items for an item satisfying 'rule'. Returns item if found,
         otherwise returns an error.
 
@@ -505,26 +504,22 @@ class VesselStorage(simpy.FilterStore):
         response :
         """
 
-        _key, _value = rule
-
         target = None
-        for item in self.items:
-            try:
-                if item[_key] == _value:
-                    target = item
-
-            except KeyError:
-                pass
+        for i in self.items:
+            if isinstance(i, _type):
+                target = i
+                break
 
         if not target:
-            raise ItemNotFound(rule)
+            raise ItemNotFound(_type)
 
         else:
             res = self.get(lambda x: x == target)
-            return res
+            return res.value
 
-    def any_remaining(self, rule):
+    def any_remaining(self, _type):
         """
+        TODO:
         Checks self.items for any items satisfying 'rule'. Returns True/False.
         Used to trigger vessel release if empty without having to wait for next
         self.get_item() iteration.
@@ -541,16 +536,11 @@ class VesselStorage(simpy.FilterStore):
             Indicates if any items in self.items satisfy 'rule'.
         """
 
-        _key, _value = rule
-
         target = None
-        for item in self.items:
-            try:
-                if item[_key] == _value:
-                    target = item
-
-            except KeyError:
-                pass
+        for i in self.items:
+            if isinstance(i, _type):
+                target = i
+                break
 
         if target:
             return True

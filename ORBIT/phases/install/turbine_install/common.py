@@ -7,9 +7,105 @@ A reconstruction of turbine related tasks using Marmot.
 """
 
 
-from ORBIT.vessels.tasks import defaults
-
 from marmot import process
+
+from ORBIT.core import Cargo
+from ORBIT.core._defaults import process_times as pt
+
+
+class TowerSection(Cargo):
+    """"""
+
+    def __init__(self, length=None, weight=None, deck_space=None, **kwargs):
+        """
+        Creates an instance of `TowerSection`.
+        """
+
+        self.name = "Tower Section"
+        self.length = length
+        self.weight = weight
+        self.deck_space = deck_space
+
+    @staticmethod
+    def fasten(**kwargs):
+        """Returns time required to fasten a tower section at port."""
+
+        key = "tower_section_fasten_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Fasten Tower Section", time
+
+    @staticmethod
+    def release(**kwargs):
+        """Returns time required to release tower section from fastenings."""
+
+        key = "tower_section_release_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Release Tower Section", time
+
+
+class Nacelle(Cargo):
+    """"""
+
+    def __init__(self, weight=None, deck_space=None, **kwargs):
+        """
+        Creates an instance of `Nacelle`.
+        """
+
+        self.name = "Nacelle"
+        self.weight = weight
+        self.deck_space = deck_space
+
+    @staticmethod
+    def fasten(**kwargs):
+        """Returns time required to fasten a nacelle at port."""
+
+        key = "nacelle_fasten_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Fasten Nacelle", time
+
+    @staticmethod
+    def release(**kwargs):
+        """Returns time required to release nacelle from fastenings."""
+
+        key = "nacelle_release_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Release Nacelle", time
+
+
+class Blade(Cargo):
+    """"""
+
+    def __init__(self, length=None, weight=None, deck_space=None, **kwargs):
+        """
+        Creates an instance of `Blade`.
+        """
+
+        self.name = "Blade"
+        self.length = length
+        self.weight = weight
+        self.deck_space = deck_space
+
+    @staticmethod
+    def fasten(**kwargs):
+        """Returns time required to fasten a blade at port."""
+
+        key = "blade_fasten_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Fasten Blade", time
+
+    @staticmethod
+    def release(**kwargs):
+        """Returns time required to release blade from fastenings."""
+
+        key = "blade_release_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Release Blade", time
 
 
 @process
@@ -57,53 +153,9 @@ def attach_nacelle(vessel, constraints={}, **kwargs):
 
     crane = vessel.crane
     key = "nacelle_attach_time"
-    attach_time = kwargs.get(key, defaults[key])
+    attach_time = kwargs.get(key, pt[key])
 
     yield vessel.task("Attach Nacelle", attach_time, constraints=constraints)
-
-
-@process
-def fasten_nacelle(vessel, constraints={}, **kwargs):
-    """
-    Returns time required to fasten a nacelle at port.
-
-    Parameters
-    ----------
-    nacelle_fasten_time : int | float
-        Time required to fasten a nacelle.
-
-    Returns
-    -------
-    nacelle_fasten_time : float
-        Time required to fasten nacelle (h).
-    """
-
-    key = "nacelle_fasten_time"
-    fasten_time = kwargs.get(key, defaults[key])
-
-    yield vessel.task("Fasten Nacelle", fasten_time, constraints={})
-
-
-@process
-def release_nacelle(vessel, contraints={}, **kwargs):
-    """
-    Returns time required to release nacelle from fastenings.
-
-    Parameters
-    ----------
-    nacelle_release_time : int | float
-        Time required to release nacelle.
-
-    Returns
-    -------
-    nacelle_release_time : float
-        Time required to release nacelle (h).
-    """
-
-    key = "nacelle_release_time"
-    release_time = kwargs.get(key, defaults[key])
-
-    yield vessel.task("Release Nacelle", release_time, constraints={})
 
 
 @process
@@ -151,7 +203,7 @@ def attach_turbine_blade(vessel, constraints={}, **kwargs):
 
     crane = vessel.crane
     key = "blade_attach_time"
-    attach_time = kwargs.get(key, defaults[key])
+    attach_time = kwargs.get(key, pt[key])
 
     yield vessel.task("Attach Blade", attach_time, constraints=constraints)
 
@@ -173,7 +225,7 @@ def fasten_turbine_blade(vessel, constraints={}, **kwargs):
     """
 
     key = "blade_fasten_time"
-    fasten_time = kwargs.get(key, defaults[key])
+    fasten_time = kwargs.get(key, pt[key])
 
     yield vessel.task("Fasten Blade", fasten_time, constraints=constraints)
 
@@ -195,7 +247,7 @@ def release_turbine_blade(vessel, constraints={}, **kwargs):
     """
 
     key = "blade_release_time"
-    release_time = kwargs.get(key, defaults[key])
+    release_time = kwargs.get(key, pt[key])
 
     yield vessel.task("Release Blade", release_time, constraints=constraints)
 
@@ -244,50 +296,81 @@ def attach_tower_section(vessel, constraints={}, **kwargs):
 
     crane = vessel.crane
     key = "tower_section_attach_time"
-    attach_time = kwargs.get(key, defaults[key])
+    attach_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Attach Tower Section", attach_time, constraints=constraints)
-
-
-@process
-def fasten_tower_section(vessel, constraints={}, **kwargs):
-    """
-    Returns time required to fasten a tower section at port.
-
-    Parameters
-    ----------
-    section_fasten_time : int | float
-        Time required to fasten a tower section (h).
-
-    Returns
-    -------
-    section_fasten_time : float
-        Time required to fasten tower section (h).
-    """
-
-    key = "tower_section_fasten_time"
-    fasten_time = kwargs.get(key, defaults[key])
-
-    yield vessel.task("Fasten Tower Section", fasten_time, constraints=constraints)
+    yield vessel.task(
+        "Attach Tower Section", attach_time, constraints=constraints
+    )
 
 
 @process
-def release_tower_section(vessel, constraints={}, **kwargs):
+def install_tower_section(vessel, section, height, **kwargs):
     """
-    Returns time required to release tower section from fastenings.
+    Process logic for installing a tower at site.
+
+    Subprocesses:
+
+    - Lift tower,  ``tasks.lift_tower()``
+    - Attach tower, ``tasks.attach_tower()``
 
     Parameters
     ----------
-    tower_section_release_time : int | float
-        Time required to release tower section (h).
+    vessel : Vessel
+    tower : dict
+    """
+    yield lift_tower_section(
+        vessel, height, constraints=vessel.operational_limits, **kwargs
+    )
 
-    Returns
-    -------
-    section_release_time : float
-        Time required to release tower section (h).
+    yield attach_tower_section(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )
+
+
+@process
+def install_nacelle(vessel, nacelle, **kwargs):
+    """
+    Process logic for installing a nacelle on a pre-installed tower.
+
+    Subprocesses:
+
+    - Lift nacelle, ``tasks.lift_nacelle()``
+    - Attach nacelle, ``tasks.attach_nacelle()``
+
+    Parameters
+    ----------
+    vessel : Vessel
+    tower : dictå
     """
 
-    key = "tower_section_release_time"
-    release_time = kwargs.get(key, defaults[key])
+    yield lift_nacelle(vessel, constraints=vessel.operational_limits, **kwargs)
 
-    yield vessel.task("Release Tower Section", release_time, constraints=constraints)
+    yield attach_nacelle(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )
+
+
+@process
+def install_turbine_blade(vessel, blade, **kwargs):
+    """
+    Process logic for installing a turbine blade on a pre-installed tower and
+    nacelle assembly.
+
+    Subprocesses:
+
+    - Lift blade, ``tasks.lift_turbine_blade()``
+    - Attach blade, ``tasks.attach_turbine_blade()``
+
+    Parameters
+    ----------
+    vessel : Vessel
+    tower : dict
+    """
+
+    yield lift_turbine_blade(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )
+
+    yield attach_turbine_blade(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )

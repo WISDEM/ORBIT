@@ -58,7 +58,7 @@ class Vessel(Agent):
 
         super().__init__(name)
         self.config = config
-        self.extract_vessel_specs()
+        # self.extract_vessel_specs()
 
     @property
     def crane(self):
@@ -83,10 +83,9 @@ class Vessel(Agent):
         # TODO: Add storage.setter type check?
         if self._storage:
             return self._storage
-        
+
         else:
             return MissingComponent(self, "Vessel Storage")
-
 
     def extract_vessel_specs(self):
         """
@@ -98,7 +97,7 @@ class Vessel(Agent):
         self.extract_crane_specs()
         self.extract_storage_specs()
 
-        # TODO: 
+        # TODO:
         # cable_lay_specs = vessel_specs.get("cable_lay_specs", None)
         # if cable_lay_specs:
         #     self.extract_cable_lay_specs(cable_lay_specs)
@@ -112,17 +111,17 @@ class Vessel(Agent):
     def extract_transport_specs(self):
         """Extracts and defines transport related specifications."""
 
-        transport_specs = self.config.get("transport_specs", None)
-        self.transit_speed = transport_specs.get("transit_speed", None)
+        self._transport_specs = self.config.get("transport_specs", None)
+        self.transit_speed = self._transport_specs.get("transit_speed", None)
 
     def extract_crane_specs(self):
         """
         TODO:
         """
 
-        crane_specs = self.config.get("crane_specs", None)
-        if crane_specs:
-            self._crane = Crane(crane_specs)
+        self._crane_specs = self.config.get("crane_specs", None)
+        if self._crane_specs:
+            self._crane = Crane(self._crane_specs)
 
         else:
             self._crane = None
@@ -132,23 +131,22 @@ class Vessel(Agent):
         TODO:
         """
 
-        jacksys_specs = self.config.get("jacksys_specs", None)
-        if jacksys_specs:
-            self._jacksys = JackingSys(jacksys_specs)
+        self._jacksys_specs = self.config.get("jacksys_specs", None)
+        if self._jacksys_specs:
+            self._jacksys = JackingSys(self._jacksys_specs)
 
         else:
             self._jacksys = None
-
 
     def extract_storage_specs(self):
         """
         Extracts and defines storage system specifications.
         """
 
-        storage_specs = self.config.get("storage_specs", None)
-        if storage_specs:
+        self._storage_specs = self.config.get("storage_specs", None)
+        if self._storage_specs:
             self.trip_data = []
-            self._storage = VesselStorage(self.env, **storage_specs)
+            self._storage = VesselStorage(self.env, **self._storage_specs)
 
         else:
             self._storage = None
@@ -255,11 +253,7 @@ class Vessel(Agent):
 
         _cargo = storage.current_cargo_weight if cargo else np.NaN
         _deck = storage.current_deck_space if deck else np.NaN
-        _items = (
-            dict(Counter(i["type"] for i in storage.items))
-            if items
-            else np.NaN
-        )
+        _items = dict(Counter(i for i in storage.items)) if items else np.NaN
 
         trip = Trip(cargo_weight=_cargo, deck_space=_deck, items=_items)
 

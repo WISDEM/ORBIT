@@ -9,11 +9,10 @@ __email__ = ["jake.nunemaker@nrel.gov", "robert.hammond@nrel.gov"]
 from abc import abstractmethod
 
 import simpy
-
-from ORBIT.phases import BasePhase
-from ORBIT.simulation.port import Port
-
 from marmot import Environment
+
+from ORBIT.core import Port
+from ORBIT.phases import BasePhase
 
 
 class InstallPhase(BasePhase):
@@ -50,19 +49,19 @@ class InstallPhase(BasePhase):
         Initializes a Port object with N number of cranes.
         """
 
-        # TODO: 
+        # TODO:
         cranes = self.config["port"]["num_cranes"]
 
         self.port = Port(self.env)
         self.port.crane = simpy.Resource(self.env, cranes)
-        self.logger.debug(
-            "PORT INITIALIZED",
-            extra={"time": self.env.now, "agent": "Director"},
-        )
+        # self.logger.debug(
+        #     "PORT INITIALIZED",
+        #     extra={"time": self.env.now, "agent": "Director"},
+        # )
 
     def run(self, until=None):
         """
-        TODO: 
+        TODO:
         Runs the simulation on self.env.
 
         Parameters
@@ -95,7 +94,7 @@ class InstallPhase(BasePhase):
         """
         Adds the phase information to the 'phase' column.
         """
-        # TODO: 
+        # TODO:
 
         self._df["phase"] = self.phase
 
@@ -159,7 +158,7 @@ class InstallPhase(BasePhase):
     def total_phase_cost(self):
         """Returns total phase cost in $USD."""
 
-        # TODO: 
+        # TODO:
         df = self.logs.loc[self.logs["level"] == "INFO"]
 
         if any(df["cost"].isnull()):
@@ -172,7 +171,7 @@ class InstallPhase(BasePhase):
     def total_phase_time(self):
         """Returns total phase time in hours."""
 
-        # TODO: 
+        # TODO:
         df = self.logs.loc[self.logs["level"] == "INFO"]
 
         if any(df["time"].isnull()):
