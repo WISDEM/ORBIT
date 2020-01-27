@@ -11,7 +11,7 @@ import simpy
 from ORBIT.simulation import Environment, VesselStorage
 from ORBIT.phases.install import InstallPhase
 from ORBIT.simulation.logic import shuttle_items_to_queue
-from ORBIT.phases.install._core import Vessel
+from ORBIT.core import Vessel
 from ORBIT.phases.install.monopile_install._single_wtiv import (
     solo_install_monopiles,
 )

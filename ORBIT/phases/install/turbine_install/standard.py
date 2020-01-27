@@ -12,10 +12,11 @@ from math import ceil
 import numpy as np
 import simpy
 
-from ORBIT.simulation import Environment, VesselStorage
+from marmot import Environment
+
 from ORBIT.phases.install import InstallPhase
 from ORBIT.simulation.logic import shuttle_items_to_queue
-from ORBIT.phases.install._core import Vessel
+from ORBIT.core import Vessel
 from ORBIT.phases.install.turbine_install._single_wtiv import (
     solo_install_turbines,
 )
@@ -75,25 +76,26 @@ class TurbineInstallation(InstallPhase):
 
         Parameters
         ----------
+        TODO:
         config : dict
             Simulation specific configuration.
-        weather : pd.DataFrame (optional)
+        weather : np.ndarray
             Weather profile at site.
             Expects columns 'max_waveheight' and 'max_windspeed'.
         """
 
+        super().__init__(weather, **kwargs)
+
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.env = Environment(weather)
-        self.init_logger(**kwargs)
-        self.extract_phase_kwargs(**kwargs)
         self.extract_defaults()
+        # self.extract_phase_kwargs(**kwargs)
 
-        self.initialize_port()
+        # self.initialize_port()
         self.initialize_wtiv()
 
-        self.num_turbines = self.config["plant"]["num_turbines"]
-        self.initialize_turbines()
+        # self.num_turbines = self.config["plant"]["num_turbines"]
+        # self.initialize_turbines()
 
         self.setup_simulation(**kwargs)
 
@@ -106,11 +108,11 @@ class TurbineInstallation(InstallPhase):
         if self.config.get("num_feeders", None):
             self.initialize_feeders()
             self.initialize_queue()
-            self.setup_simulation_with_feeders(**kwargs)
+            # self.setup_simulation_with_feeders(**kwargs)
 
         else:
             self.feeders = None
-            self.setup_simulation_without_feeders(**kwargs)
+            # self.setup_simulation_without_feeders(**kwargs)
 
     def setup_simulation_without_feeders(self, **kwargs):
         """
@@ -179,27 +181,17 @@ class TurbineInstallation(InstallPhase):
         """
 
         wtiv_specs = self.config.get("wtiv", None)
-
-        if wtiv_specs is None:
-            raise Exception("WTIV is not defined.")
-
         name = wtiv_specs.get("name", "WTIV")
-        cost = wtiv_specs["vessel_specs"].get(
-            "day_rate", self.defaults["wtiv_day_rate"]
-        )
+        # cost = wtiv_specs["vessel_specs"].get(
+        #     "day_rate", self.defaults["wtiv_day_rate"]
+        # )
 
-        self.wtiv = Vessel(name, wtiv_specs)
+        wtiv = Vessel(name, wtiv_specs)
+        wtiv.at_port = True
+        wtiv.at_site = False
 
-        _storage_specs = wtiv_specs.get("storage_specs", None)
-        if _storage_specs is None:
-            raise Exception("Storage specifications must be set for WTIV.")
-
-        self.wtiv.storage = VesselStorage(self.env, **_storage_specs)
-
-        self.wtiv.at_port = True
-        self.wtiv.at_site = False
-
-        self.agent_costs[name] = cost
+        self.env.register(wtiv)
+        self.wtiv = wtiv
 
     def initialize_feeders(self):
         """
@@ -209,31 +201,21 @@ class TurbineInstallation(InstallPhase):
         number = self.config.get("num_feeders", None)
         feeder_specs = self.config.get("feeder", None)
 
-        if feeder_specs is None:
-            raise Exception("Feeder Barge is not defined.")
-
-        cost = feeder_specs["vessel_specs"].get(
-            "day_rate", self.defaults["feeder_day_rate"]
-        )
-
-        _storage_specs = feeder_specs.get("storage_specs", None)
-        if _storage_specs is None:
-            raise Exception(
-                "Storage specifications must be set in feeder_specs."
-            )
+        # cost = feeder_specs["vessel_specs"].get(
+        #     "day_rate", self.defaults["feeder_day_rate"]
+        # )
 
         self.feeders = []
         for n in range(number):
+            # TODO: Add in option for named feeders.
             name = "Feeder {}".format(n)
             feeder = Vessel(name, feeder_specs)
-            feeder.storage = VesselStorage(self.env, **_storage_specs)
 
             feeder.at_port = True
             feeder.at_site = False
 
+            self.env.register(feeder)
             self.feeders.append(feeder)
-
-            self.agent_costs[name] = cost
 
     def initialize_turbines(self):
         """
