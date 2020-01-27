@@ -13,7 +13,7 @@ from types import SimpleNamespace
 
 from ORBIT.simulation import Environment, VesselStorageContainer
 from ORBIT.phases.install import InstallPhase
-from ORBIT.phases.install._core import Vessel, Carousel, CarouselSystem
+from ORBIT.core import Vessel, Carousel, CarouselSystem
 
 from .process import (
     bury_cables,

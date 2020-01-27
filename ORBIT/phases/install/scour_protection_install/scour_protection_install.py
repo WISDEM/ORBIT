@@ -10,7 +10,7 @@ from math import ceil
 
 from ORBIT.simulation import Environment, VesselStorageContainer
 from ORBIT.phases.install import InstallPhase
-from ORBIT.phases.install._core import Vessel
+from ORBIT.core import Vessel
 
 from .process import (
     transport,

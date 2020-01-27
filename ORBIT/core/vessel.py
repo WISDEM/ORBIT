@@ -8,128 +8,181 @@ __email__ = "jake.nunemaker@nrel.gov"
 from collections import Counter, namedtuple
 
 import numpy as np
-from marmot import Agent
+from marmot import Agent, le
 
 from ORBIT.vessels.tasks import defaults
 
-from .components import Crane, JackingSys
+from .components import Crane, JackingSys, VesselStorage
 
 Trip = namedtuple("Trip", "cargo_weight deck_space items")
+
+
+class MissingComponent(Exception):
+    """Error for a missing component on a vessel."""
+
+    def __init__(self, vessel, component):
+        """
+        Creates an instance of MissingComponent.
+
+        Parameters
+        ----------
+        vessel : Vessel
+        component : str
+            Missing required component.
+        """
+
+        self.vessel = vessel
+        self.component = component
+
+        self.message = (
+            f"{vessel} is missing required component(s) '{component}'."
+        )
+
+    def __str__(self):
+
+        return self.message
 
 
 class Vessel(Agent):
     """Base Vessel Class"""
 
-    def __init__(self, name, vessel_specs):
+    def __init__(self, name, config):
         """
         Creates an instance of Vessel.
 
         Parameters
         ----------
-        vessel_specs : dict
+        specs : dict
             Nested dictionary containing vessel specifications.
         """
 
         super().__init__(name)
-        self.extract_vessel_specs(vessel_specs)
+        self.config = config
+        self.extract_vessel_specs()
 
-    def extract_vessel_specs(self, vessel_specs):
+    @property
+    def crane(self):
+        # TODO: Add crane.setter type check?
+        if self._crane:
+            return self._crane
+
+        else:
+            raise MissingComponent(self, "Crane")
+
+    @property
+    def jacksys(self):
+        # TODO: Add jacksys.setter type check?
+        if self._jacksys:
+            return self._jacksys
+
+        else:
+            raise MissingComponent(self, "Jacking System")
+
+    @property
+    def storage(self):
+        # TODO: Add storage.setter type check?
+        if self._storage:
+            return self._storage
+        
+        else:
+            return MissingComponent(self, "Vessel Storage")
+
+
+    def extract_vessel_specs(self):
         """
-        Extracts and defines vessel specifications.
-
-        Parameters
-        ----------
-        vessel_specs : dict
-            Nested dictionary containing vessel specifications.
-        """
-
-        transport_specs = vessel_specs.get("transport_specs", None)
-        if transport_specs:
-            self._transport_specs = transport_specs
-            self.extract_transport_specs(transport_specs)
-
-        jacksys_specs = vessel_specs.get("jacksys_specs", None)
-        if jacksys_specs:
-            self._jacksys_specs = jacksys_specs
-            self.jacksys = JackingSys(jacksys_specs)
-
-        crane_specs = vessel_specs.get("crane_specs", None)
-        if crane_specs:
-            self._crane_specs = crane_specs
-            self.crane = Crane(crane_specs)
-
-        storage_specs = vessel_specs.get("storage_specs", None)
-        if storage_specs:
-            self.trip_data = []
-            self._storage_specs = storage_specs
-            self.extract_storage_specs(storage_specs)
-
-        cable_lay_specs = vessel_specs.get("cable_lay_specs", None)
-        if cable_lay_specs:
-            self.extract_cable_lay_specs(cable_lay_specs)
-
-        scour_protection_specs = vessel_specs.get(
-            "scour_protection_install_specs", None
-        )
-        if scour_protection_specs:
-            self.extract_scour_protection_specs(scour_protection_specs)
-
-    def extract_transport_specs(self, transport_specs):
-        """
-        Extracts and defines transport related specifications.
-
-        Parameters
-        ----------
-        transport_specs : dict
-            Dictionary containing transport related specifications.
+        Extracts vessel specifications from self.config.
         """
 
+        self.extract_transport_specs()
+        self.extract_jacksys_specs()
+        self.extract_crane_specs()
+        self.extract_storage_specs()
+
+        # TODO: 
+        # cable_lay_specs = vessel_specs.get("cable_lay_specs", None)
+        # if cable_lay_specs:
+        #     self.extract_cable_lay_specs(cable_lay_specs)
+
+        # scour_protection_specs = vessel_specs.get(
+        #     "scour_protection_install_specs", None
+        # )
+        # if scour_protection_specs:
+        #     self.extract_scour_protection_specs(scour_protection_specs)
+
+    def extract_transport_specs(self):
+        """Extracts and defines transport related specifications."""
+
+        transport_specs = self.config.get("transport_specs", None)
         self.transit_speed = transport_specs.get("transit_speed", None)
 
-    def extract_storage_specs(self, storage_specs):
+    def extract_crane_specs(self):
+        """
+        TODO:
+        """
+
+        crane_specs = self.config.get("crane_specs", None)
+        if crane_specs:
+            self._crane = Crane(crane_specs)
+
+        else:
+            self._crane = None
+
+    def extract_jacksys_specs(self):
+        """
+        TODO:
+        """
+
+        jacksys_specs = self.config.get("jacksys_specs", None)
+        if jacksys_specs:
+            self._jacksys = JackingSys(jacksys_specs)
+
+        else:
+            self._jacksys = None
+
+
+    def extract_storage_specs(self):
         """
         Extracts and defines storage system specifications.
-
-        Parameters
-        ----------
-        storage_specs : dict
-            Dictionary containing storage system specifications.
         """
 
-        self.max_deck_space = storage_specs.get("max_deck_space", None)
-        self.max_deck_load = storage_specs.get("max_deck_load", None)
-        self.max_cargo = storage_specs.get("max_cargo", None)
+        storage_specs = self.config.get("storage_specs", None)
+        if storage_specs:
+            self.trip_data = []
+            self._storage = VesselStorage(self.env, **storage_specs)
 
-    def extract_cable_lay_specs(self, cable_lay_specs):
-        """
-        Extracts and defines cable lay system specifications.
+        else:
+            self._storage = None
 
-        Parameters
-        ----------
-        cable_lay_specs : dict
-            Dictionary containing cable lay system specifications.
-        """
+    # def extract_cable_lay_specs(self, cable_lay_specs):
+    #     """
+    #     Extracts and defines cable lay system specifications.
 
-        self.cable_lay_speed = cable_lay_specs.get(
-            "cable_lay_speed", defaults["cable_lay_speed"]
-        )
-        self.max_cable_diameter = cable_lay_specs.get(
-            "max_cable_diameter", None
-        )
+    #     Parameters
+    #     ----------
+    #     cable_lay_specs : dict
+    #         Dictionary containing cable lay system specifications.
+    #     """
 
-    def extract_scour_protection_specs(self, scour_protection_specs):
-        """
-        Extracts and defines scour protection installation specifications.
+    #     self.cable_lay_speed = cable_lay_specs.get(
+    #         "cable_lay_speed", defaults["cable_lay_speed"]
+    #     )
+    #     self.max_cable_diameter = cable_lay_specs.get(
+    #         "max_cable_diameter", None
+    #     )
 
-        Parameters
-        ----------
-        scour_protection_specs : dict
-            Dictionary containing scour protection installation specifications.
-        """
+    # def extract_scour_protection_specs(self, scour_protection_specs):
+    #     """
+    #     Extracts and defines scour protection installation specifications.
 
-        self.scour_protection_install_speed = scour_protection_specs.get(
-            "scour_protection_install_speed", 10
-        )
+    #     Parameters
+    #     ----------
+    #     scour_protection_specs : dict
+    #         Dictionary containing scour protection installation specifications.
+    #     """
+
+    #     self.scour_protection_install_speed = scour_protection_specs.get(
+    #         "scour_protection_install_speed", 10
+    #     )
 
     def transit_time(self, distance):
         """
@@ -153,13 +206,13 @@ class Vessel(Agent):
     @property
     def transit_limits(self):
         """
-        Returns dictionary with 'max_windspeed' and 'max_waveheight'
+        TODO: Returns dictionary with 'max_windspeed' and 'max_waveheight'
         for transit.
         """
 
         _dict = {
-            "max_windspeed": self._transport_specs["max_windspeed"],
-            "max_waveheight": self._transport_specs["max_waveheight"],
+            "windspeed": le(self._transport_specs["max_windspeed"]),
+            "waveheight": le(self._transport_specs["max_waveheight"]),
         }
 
         return _dict
@@ -167,7 +220,7 @@ class Vessel(Agent):
     @property
     def operational_limits(self):
         """
-        Returns dictionary with 'max_windspeed' and 'max_waveheight'
+        TODO: Returns dictionary with 'max_windspeed' and 'max_waveheight'
         for operations.
         """
 
@@ -179,8 +232,8 @@ class Vessel(Agent):
             max_windspeed = self._crane_specs["max_windspeed"]
 
         _dict = {
-            "max_windspeed": max_windspeed,
-            "max_waveheight": self._transport_specs["max_waveheight"],
+            "max_windspeed": le(max_windspeed),
+            "max_waveheight": le(self._transport_specs["max_waveheight"]),
         }
 
         return _dict

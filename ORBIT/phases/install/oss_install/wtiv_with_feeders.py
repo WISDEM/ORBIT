@@ -16,7 +16,7 @@ from ORBIT.simulation.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
 )
-from ORBIT.phases.install._core import Vessel
+from ORBIT.core import Vessel
 from ORBIT.phases.install.monopile_install._common import install_monopile
 
 
