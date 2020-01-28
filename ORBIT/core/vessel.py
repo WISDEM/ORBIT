@@ -200,7 +200,7 @@ class Vessel(Agent):
         action, time = item.release()
         yield self.task(action, time, constraints=self.transit_limits)
 
-        if release:
+        if release and self.storage.any_remaining(_type) is False:
             vessel.release.succeed()
 
         return item

@@ -8,7 +8,6 @@ they are related to.
 """
 
 
-from .monopile import *
 from ._exceptions import MissingComponent
 from .cable_laying import *
 from .scour_protection import *

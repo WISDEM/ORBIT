@@ -11,7 +11,7 @@ from math import ceil
 
 import numpy as np
 import simpy
-from marmot import Environment, process
+from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import (
@@ -508,3 +508,5 @@ def install_turbine_components_from_queue(
         "Transit", transit_time, constraints=wtiv.transit_limits
     )
     wtiv.at_port = True
+
+    wtiv.submit_debug_log(message="Turbine installation complete!")

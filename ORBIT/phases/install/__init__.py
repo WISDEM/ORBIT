@@ -9,5 +9,5 @@ from .install_phase import InstallPhase  # isort:skip
 # from .oss_install import OffshoreSubstationInstallation
 # from .cable_install import ArrayCableInstallation, ExportCableInstallation
 from .turbine_install import TurbineInstallation
-# from .monopile_install import MonopileInstallation
+from .monopile_install import MonopileInstallation
 # from .scour_protection_install import ScourProtectionInstallation
