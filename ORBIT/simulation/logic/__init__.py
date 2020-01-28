@@ -6,9 +6,6 @@ __maintainer__ = ["Jake Nunemaker", "Rob Hammond"]
 __email__ = ["jake.nunemaker@nrel.gov" "robert.hammond@nrel.gov"]
 
 
-from .port_logic import get_list_of_items_from_port
 from .vessel_logic import (
-    get_item_from_storage,
     shuttle_items_to_queue,
-    prep_for_site_operations,
 )

@@ -25,13 +25,13 @@ from ORBIT.phases.design import (
 )
 from ORBIT.phases.install import (
     TurbineInstallation,
-    MonopileInstallation,
-    ArrayCableInstallation,
-    ExportCableInstallation,
-    ScourProtectionInstallation,
-    OffshoreSubstationInstallation,
+    # MonopileInstallation,
+    # ArrayCableInstallation,
+    # ExportCableInstallation,
+    # ScourProtectionInstallation,
+    # OffshoreSubstationInstallation,
 )
-from ORBIT.simulation.exceptions import PhaseNotFound, WeatherProfileError
+from ORBIT.core.exceptions import PhaseNotFound, WeatherProfileError
 
 
 class ProjectManager:
@@ -50,12 +50,12 @@ class ProjectManager:
     ]
 
     _install_phases = [
-        MonopileInstallation,
+        # MonopileInstallation,
         TurbineInstallation,
-        OffshoreSubstationInstallation,
-        ArrayCableInstallation,
-        ExportCableInstallation,
-        ScourProtectionInstallation,
+        # OffshoreSubstationInstallation,
+        # ArrayCableInstallation,
+        # ExportCableInstallation,
+        # ScourProtectionInstallation,
     ]
 
     def __init__(self, config, library_path=None, weather=None):

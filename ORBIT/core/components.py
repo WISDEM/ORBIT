@@ -506,7 +506,7 @@ class VesselStorage(simpy.FilterStore):
 
         target = None
         for i in self.items:
-            if isinstance(i, _type):
+            if i.type == _type:
                 target = i
                 break
 
@@ -538,7 +538,7 @@ class VesselStorage(simpy.FilterStore):
 
         target = None
         for i in self.items:
-            if isinstance(i, _type):
+            if i.type == _type:
                 target = i
                 break
 

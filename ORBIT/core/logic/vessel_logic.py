@@ -84,7 +84,7 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
     yield vessel.task("Jackup", jackup_time, constraints=vessel.transit_limits)
 
     if survey_required:
-        survey_time = tasks.rov_survey(**kwargs)
+        survey_time = pt["rov_survey_time"]
         yield vessel.task(
             "RovSurvey", survey_time, constraints=vessel.transit_limits
         )

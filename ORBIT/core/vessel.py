@@ -8,7 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from collections import Counter, namedtuple
 
 import numpy as np
-from marmot import Agent, le
+from marmot import Agent, le, process
 
 from ORBIT.vessels.tasks import defaults
 
@@ -181,6 +181,29 @@ class Vessel(Agent):
     #     self.scour_protection_install_speed = scour_protection_specs.get(
     #         "scour_protection_install_speed", 10
     #     )
+
+    @process
+    def get_item_from_storage(self, item, vessel=None, release=False, **kwargs):
+        """
+
+        """
+
+        if vessel is None:
+            vessel = self
+
+        try:
+            item = vessel.storage.get_item(item)
+
+        except ItemNotFound as e:
+            self.submit_debug_log(message="Item not found.")
+
+        action, time = item.release()
+        yield self.task(action, time, constraints=self.transit_limits)
+
+        if release and vessel.storage.any_remaining(item) is False:
+            vessel.release.succeed()
+
+        return item
 
     def transit_time(self, distance):
         """

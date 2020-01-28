@@ -39,7 +39,7 @@ import yaml
 import pandas as pd
 from yaml import Dumper
 
-from ORBIT.simulation.exceptions import LibraryItemNotFoundError
+from ORBIT.core.exceptions import LibraryItemNotFoundError
 
 ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../.."))
 default_library = os.path.join(ROOT, "library")

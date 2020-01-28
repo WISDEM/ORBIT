@@ -136,9 +136,9 @@ class TurbineInstallation(InstallPhase):
             self.wtiv,
             port=self.port,
             distance=site_distance,
-            component_list=self.type_list,
-            number=self.num_turbines,
+            turbines=self.num_turbines,
             tower_sections=self.num_sections,
+            num_blades=3,
             site_depth=site_depth,
             hub_height=hub_height,
             **kwargs,
@@ -189,12 +189,10 @@ class TurbineInstallation(InstallPhase):
 
         wtiv_specs = self.config.get("wtiv", None)
         name = wtiv_specs.get("name", "WTIV")
-        # cost = wtiv_specs["vessel_specs"].get(
-        #     "day_rate", self.defaults["wtiv_day_rate"]
-        # )
 
         wtiv = Vessel(name, wtiv_specs)
         self.env.register(wtiv)
+
         wtiv.extract_vessel_specs()
         wtiv.at_port = True
         wtiv.at_site = False
@@ -208,10 +206,6 @@ class TurbineInstallation(InstallPhase):
         number = self.config.get("num_feeders", None)
         feeder_specs = self.config.get("feeder", None)
 
-        # cost = feeder_specs["vessel_specs"].get(
-        #     "day_rate", self.defaults["feeder_day_rate"]
-        # )
-
         self.feeders = []
         for n in range(number):
             # TODO: Add in option for named feeders.
@@ -219,11 +213,10 @@ class TurbineInstallation(InstallPhase):
 
             feeder = Vessel(name, feeder_specs)
             self.env.register(feeder)
-            self.extract_phase_kwargs()
 
+            feeder.extract_vessel_specs()
             feeder.at_port = True
             feeder.at_site = False
-
             self.feeders.append(feeder)
 
     def initialize_turbines(self):
@@ -249,6 +242,7 @@ class TurbineInstallation(InstallPhase):
         component_list = [
             *np.repeat(section, self.num_sections),
             nacelle,
+            # TODO: Add in configuration for number of blades.
             *np.repeat(blade, 3),
         ]
 
@@ -257,8 +251,6 @@ class TurbineInstallation(InstallPhase):
         for _ in range(self.num_turbines):
             for item in component_list:
                 self.port.put(item)
-
-        self.type_list = [a.__class__ for a in component_list]
 
     def initialize_queue(self):
         """
@@ -297,7 +289,7 @@ class TurbineInstallation(InstallPhase):
 
 @process
 def solo_install_turbines(
-    vessel, port, distance, component_list, number, tower_sections, **kwargs
+    vessel, port, distance, turbines, tower_sections, num_blades, **kwargs
 ):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
@@ -318,8 +310,14 @@ def solo_install_turbines(
     transit_time = vessel.transit_time(distance)
     reequip_time = vessel.crane.reequip(**kwargs)
 
+    component_list = [
+        *np.repeat("TowerSection", tower_sections),
+        "Nacelle",
+        *np.repeat("Blade", num_blades)
+    ]
+
     n = 0
-    while n < number:
+    while n < turbines:
         if vessel.at_port:
             try:
                 # Get turbine components
@@ -351,8 +349,8 @@ def solo_install_turbines(
 
                 for i in range(tower_sections):
                     # Get tower section
-                    section = yield get_item_from_storage(
-                        vessel, TowerSection, **kwargs
+                    section = yield vessel.get_item_from_storage(
+                        "TowerSection", **kwargs
                     )
 
                     # Install tower section
@@ -362,8 +360,8 @@ def solo_install_turbines(
                     )
 
                 # Get turbine nacelle
-                nacelle = yield get_item_from_storage(
-                    vessel, Nacelle, **kwargs
+                nacelle = yield vessel.get_item_from_storage(
+                    "Nacelle", **kwargs
                 )
 
                 # Install nacelle
@@ -372,9 +370,9 @@ def solo_install_turbines(
 
                 # Install turbine blades
                 yield vessel.task("Reequip", reequip_time)
-                for _ in range(3):
-                    blade = yield get_item_from_storage(
-                        vessel, Blade, **kwargs
+                for _ in range(num_blades):
+                    blade = yield vessel.get_item_from_storage(
+                        "Blade", **kwargs
                     )
 
                     yield install_turbine_blade(vessel, blade, **kwargs)
