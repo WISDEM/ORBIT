@@ -13,47 +13,6 @@ from ORBIT.core.exceptions import ItemNotFound
 
 
 @process
-def get_item_from_storage(
-    vessel, item, action_vessel=None, release=False, **kwargs
-):
-    """
-    Generic item retrieval process.
-    Subprocesses:
-    - release 'item'
-
-    Parameters
-    ----------
-    item : str
-        Hook to find 'item' in 'vessel.storage' with attr {'type': 'item'}.
-    vessel : Vessel
-        Vessel to pick monopile from.
-    action_vessel : Vessel (optional)
-        If defined, the logging statement uses this vessel.
-    release : bool (optional)
-        If True, triggers vessel.release.succeed() when vessel.storage is empty.
-        Used for WTIV + Feeder strategy to signal when feeders can leave.
-    """
-
-    if action_vessel is None:
-        action_vessel = vessel
-
-    try:
-        item = vessel.storage.get_item(item)
-
-    except ItemNotFound as e:
-        vessel.submit_debug_log(message="Item not found")
-        raise e
-
-    action, time = item.release()
-    yield vessel.task(action, time, constraints=vessel.transit_limits)
-
-    if release and vessel.storage.any_remaining(item) is False:
-        vessel.release.succeed()
-
-    return item
-
-
-@process
 def prep_for_site_operations(vessel, survey_required=False, **kwargs):
     """
     Performs preperation process at site.
@@ -90,145 +49,91 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
         )
 
 
-# TODO:
-# def shuttle_items_to_queue(
-#     env, vessel, port, queue, distance, items, **kwargs
-# ):
-#     """
-#     Shuttles a list of items from port to queue.
+@process
+def shuttle_items_to_queue(
+    vessel, port, queue, distance, items, **kwargs
+):
+    """
+    Shuttles a list of items from port to queue.
 
-#     Parameters
-#     ----------
-#     env : Environemt
-#     vessel : Vessel
-#     port : Port
-#     queue : simpy.Resource
-#         Queue object to shuttle to.
-#     distance : int | float
-#         Distance between port and site (km).
-#     items : list
-#         List of components stored as tuples to shuttle.
-#         - ('key', 'value')
-#     """
+    Parameters
+    ----------
+    env : Environemt
+    vessel : Vessel
+    port : Port
+    queue : simpy.Resource
+        Queue object to shuttle to.
+    distance : int | float
+        Distance between port and site (km).
+    items : list
+        List of components stored as tuples to shuttle.
+        - ('key', 'value')
+    """
 
-#     transit_time = vessel.transit_time(distance)
+    transit_time = vessel.transit_time(distance)
 
-#     transit = {
-#         "agent": vessel.name,
-#         "location": "At Sea",
-#         "type": "Operations",
-#         "action": "Transit",
-#         "duration": transit_time,
-#         **vessel.transit_limits,
-#     }
+    while True:
 
-#     while True:
+        if vessel.at_port:
+            vessel.submit_debug_log(message=f"{vessel} is at port.")
 
-#         if vessel.at_port:
-#             env.logger.debug(
-#                 "{} is at port.".format(vessel.name),
-#                 extra={
-#                     "agent": vessel.name,
-#                     "time": env.now,
-#                     "type": "Status",
-#                 },
-#             )
+            if not port.items:
+                vessel.submit_debug_log(message="No items at port. Shutting down.")
+                break
 
-#             if not port.items:
-#                 env.logger.debug(
-#                     "No items at port. Shutting down.",
-#                     extra={
-#                         "agent": vessel.name,
-#                         "time": env.now,
-#                         "type": "Status",
-#                     },
-#                 )
-#                 break
+            # Get list of items
+            try:
+                yield get_list_of_items_from_port(
+                    vessel, port, items, **kwargs
+                )
 
-#             # Get list of items
-#             try:
-#                 yield env.process(
-#                     get_list_of_items_from_port(
-#                         env, vessel, items, port, **kwargs
-#                     )
-#                 )
+            except ItemNotFound:
+                # If no items are at port and vessel.storage.items is empty,
+                # the job is done
+                if not vessel.storage.items:
+                    vessel.submit_debug_log(message="Items not found. Shutting down.")
+                    break
 
-#             except ItemNotFound:
-#                 # If no items are at port and vessel.storage.items is empty,
-#                 # the job is done
-#                 if not vessel.storage.items:
-#                     env.logger.debug(
-#                         "Item not found. Shutting down.",
-#                         extra={
-#                             "agent": vessel.name,
-#                             "time": env.now,
-#                             "type": "Status",
-#                         },
-#                     )
-#                     break
+            # Transit to site
+            vessel.update_trip_data()
+            vessel.at_port = False
+            yield vessel.task(
+                "Transit", transit_time, constraints=vessel.transit_limits
+            )
+            vessel.at_site = True
 
-#             # Transit to site
-#             vessel.update_trip_data()
-#             vessel.at_port = False
-#             yield env.process(env.task_handler(transit))
-#             vessel.at_site = True
+        if vessel.at_site:
+            vessel.submit_debug_log(message=f"{vessel} is at site.")
 
-#         if vessel.at_site:
-#             env.logger.debug(
-#                 "{} is at site.".format(vessel.name),
-#                 extra={
-#                     "agent": vessel.name,
-#                     "time": env.now,
-#                     "type": "Status",
-#                 },
-#             )
+            # Join queue to be active feeder at site
+            with queue.request() as req:
+                queue_start = vessel.env.now
+                yield req
 
-#             # Join queue to be active feeder at site
-#             with queue.request() as req:
-#                 queue_start = env.now
-#                 yield req
+                queue_time = vessel.env.now - queue_start
+                if queue_time > 0:
+                    vessel.submit_action_log("Queue", queue_time, location="Site")
 
-#                 queue_time = env.now - queue_start
-#                 if queue_time > 0:
-#                     env.logger.info(
-#                         "",
-#                         extra={
-#                             "agent": vessel.name,
-#                             "time": env.now,
-#                             "type": "Delay",
-#                             "action": "Queue",
-#                             "duration": queue_time,
-#                             "location": "Site",
-#                         },
-#                     )
+                queue.vessel = vessel
+                active_start = vessel.env.now
+                queue.activate.succeed()
 
-#                 queue.vessel = vessel
-#                 active_start = env.now
-#                 queue.activate.succeed()
+                # Released by WTIV when objects are depleted
+                vessel.release = vessel.env.event()
+                yield vessel.release
+                active_time = vessel.env.now - active_start
 
-#                 # Released by WTIV when objects are depleted
-#                 vessel.release = env.event()
-#                 yield vessel.release
-#                 active_time = env.now - active_start
-#                 env.logger.info(
-#                     "",
-#                     extra={
-#                         "agent": vessel.name,
-#                         "time": env.now,
-#                         "type": "Operations",
-#                         "action": "ActiveFeeder",
-#                         "duration": active_time,
-#                         "location": "Site",
-#                     },
-#                 )
+                vessel.submit_action_log("ActiveFeeder", active_time, location="Site")
 
-#                 queue.vessel = None
-#                 queue.activate = env.event()
+                queue.vessel = None
+                queue.activate = vessel.env.event()
 
-#             # Transit back to port
-#             vessel.at_site = False
-#             yield env.process(env.task_handler(transit))
-#             vessel.at_port = True
+            # Transit back to port
+            vessel.at_site = False
+            yield vessel.task(
+                "Transit", transit_time, constraints=vessel.transit_limits
+            )
+            vessel.at_port = True
 
 
 @process

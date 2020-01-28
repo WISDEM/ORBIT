@@ -7,7 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from .vessel_logic import (  # shuttle_items_to_queue
-    get_item_from_storage,
     prep_for_site_operations,
     get_list_of_items_from_port,
+    shuttle_items_to_queue
 )

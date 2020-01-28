@@ -10,9 +10,8 @@ from collections import Counter, namedtuple
 import numpy as np
 from marmot import Agent, le, process
 
-from ORBIT.vessels.tasks import defaults
-
-from .components import Crane, JackingSys, VesselStorage
+from ORBIT.core.exceptions import ItemNotFound
+from ORBIT.core.components import Crane, JackingSys, VesselStorage
 
 Trip = namedtuple("Trip", "cargo_weight deck_space items")
 
@@ -183,7 +182,7 @@ class Vessel(Agent):
     #     )
 
     @process
-    def get_item_from_storage(self, item, vessel=None, release=False, **kwargs):
+    def get_item_from_storage(self, _type, vessel=None, release=False, **kwargs):
         """
 
         """
@@ -192,15 +191,16 @@ class Vessel(Agent):
             vessel = self
 
         try:
-            item = vessel.storage.get_item(item)
+            item = vessel.storage.get_item(_type)
 
         except ItemNotFound as e:
             self.submit_debug_log(message="Item not found.")
+            raise e
 
         action, time = item.release()
         yield self.task(action, time, constraints=self.transit_limits)
 
-        if release and vessel.storage.any_remaining(item) is False:
+        if release:
             vessel.release.succeed()
 
         return item
