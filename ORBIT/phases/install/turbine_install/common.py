@@ -21,7 +21,6 @@ class TowerSection(Cargo):
         Creates an instance of `TowerSection`.
         """
 
-        self.name = "Tower Section"
         self.length = length
         self.weight = weight
         self.deck_space = deck_space
@@ -53,7 +52,6 @@ class Nacelle(Cargo):
         Creates an instance of `Nacelle`.
         """
 
-        self.name = "Nacelle"
         self.weight = weight
         self.deck_space = deck_space
 
@@ -84,7 +82,6 @@ class Blade(Cargo):
         Creates an instance of `Blade`.
         """
 
-        self.name = "Blade"
         self.length = length
         self.weight = weight
         self.deck_space = deck_space
