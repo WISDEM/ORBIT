@@ -506,7 +506,7 @@ class ProjectManager:
             else:
                 weather = None
 
-            cost, time, df = self.run_install_phase(name, weather)
+            cost, time, df = self.run_install_phase(name, weather, **kwargs)
             if df is None:
                 continue
 
@@ -541,7 +541,7 @@ class ProjectManager:
             else:
                 weather = None
 
-            cost, time, df = self.run_install_phase(name, weather)
+            cost, time, df = self.run_install_phase(name, weather, **kwargs)
             if df is None:
                 continue
 
