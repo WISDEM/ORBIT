@@ -2,7 +2,7 @@
 
 import os
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 import versioneer
 
@@ -20,7 +20,7 @@ setup(
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["ORBIT"],
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=[
         "numpy",
         "matplotlib",
