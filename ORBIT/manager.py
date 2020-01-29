@@ -92,7 +92,7 @@ class ProjectManager:
         self.design_results = {}
         self.detailed_outputs = {}
 
-    def run_project(self):
+    def run_project(self, **kwargs):
         """
         Main project run method.
 
@@ -119,13 +119,13 @@ class ProjectManager:
         if isinstance(install_phases, str):
             install_phases = [install_phases]
 
-        self.run_all_design_phases(design_phases)
+        self.run_all_design_phases(design_phases, **kwargs)
 
         if isinstance(install_phases, list):
-            self.run_multiple_phases_in_serial(install_phases)
+            self.run_multiple_phases_in_serial(install_phases, **kwargs)
 
         elif isinstance(install_phases, dict):
-            self.run_multiple_phases_overlapping(install_phases)
+            self.run_multiple_phases_overlapping(install_phases, **kwargs)
 
     @classmethod
     def compile_input_dict(cls, phases):
@@ -356,7 +356,7 @@ class ProjectManager:
 
         return phase_config
 
-    def run_install_phase(self, name, weather):
+    def run_install_phase(self, name, weather, **kwargs):
         """
         Compiles the phase specific configuration input dictionary for input
         'name', checks the input against _class.expected_config and runs the
@@ -378,12 +378,29 @@ class ProjectManager:
             Total phase dataframe.
         """
 
+        _catch = kwargs.get("catch_exceptions", False)
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
 
         kwargs = _config.pop("kwargs", {})
-        phase = _class(_config, weather=weather, phase_name=name, **kwargs)
-        phase.run()
+
+        if _catch:
+            try:
+                phase = _class(
+                    _config, weather=weather, phase_name=name, **kwargs
+                )
+                phase.run()
+
+            except Exception as e:
+                print(f"\n\t - {name}: {e}")
+                self.phase_costs[name] = e.__class__.__name__
+                self.phase_times[name] = e.__class__.__name__
+
+                return None, None, None
+
+        else:
+            phase = _class(_config, weather=weather, phase_name=name, **kwargs)
+            phase.run()
 
         self._phases[name] = phase
 
@@ -391,9 +408,11 @@ class ProjectManager:
         cost = phase.total_phase_cost
         df = phase.phase_dataframe
 
+        self.phase_costs[name] = cost
+        self.phase_times[name] = time
         self.detailed_outputs[name] = phase.detailed_output
 
-        return time, cost, df
+        return cost, time, df
 
     def get_phase_class(self, phase):
         """
@@ -418,15 +437,15 @@ class ProjectManager:
 
         return phase_class
 
-    def run_all_design_phases(self, phase_list):
+    def run_all_design_phases(self, phase_list, **kwargs):
         """
         Runs multiple design phases and adds '.design_result' to self.config.
         """
 
         for name in phase_list:
-            self.run_design_phase(name)
+            self.run_design_phase(name, **kwargs)
 
-    def run_design_phase(self, name):
+    def run_design_phase(self, name, **kwargs):
         """
         Runs a design phase defined by 'name' and merges the '.design_result'
         into self.config.
@@ -437,11 +456,24 @@ class ProjectManager:
             Name of design phase that partially matches a key in `phase_dict`.
         """
 
+        _catch = kwargs.get("catch_exceptions", False)
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
 
-        phase = _class(_config)
-        phase.run()
+        if _catch:
+            try:
+                phase = _class(_config)
+                phase.run()
+
+            except Exception as e:
+                print(f"\n\t - {name}: {e}")
+                self.phase_costs[name] = e.__class__.__name__
+                self.phase_times[name] = e.__class__.__name__
+                return
+
+        else:
+            phase = _class(_config)
+            phase.run()
 
         self._phases[name] = phase
 
@@ -455,7 +487,7 @@ class ProjectManager:
             self.config, phase.design_result, overwrite=False
         )
 
-    def run_multiple_phases_in_serial(self, phase_list):
+    def run_multiple_phases_in_serial(self, phase_list, **kwargs):
         """
         Runs multiple phases listed in self.config['install_phases'] in serial.
 
@@ -474,17 +506,17 @@ class ProjectManager:
             else:
                 weather = None
 
-            time, cost, df = self.run_install_phase(name, weather)
+            cost, time, df = self.run_install_phase(name, weather)
+            if df is None:
+                continue
 
-            self.phase_times[name] = time
-            self.phase_costs[name] = cost
+            else:
+                df["time"] = df["time"] + _start
+                self._output_dfs[name] = df
 
-            df["time"] = df["time"] + _start
-            self._output_dfs[name] = df
+                _start = ceil(_start + time)
 
-            _start = ceil(_start + time)
-
-    def run_multiple_phases_overlapping(self, phase_dict):
+    def run_multiple_phases_overlapping(self, phase_dict, **kwargs):
         """
         Runs multiple phases with defined start days in
         self.config['install_phases'].
@@ -509,13 +541,13 @@ class ProjectManager:
             else:
                 weather = None
 
-            time, cost, df = self.run_install_phase(name, weather)
+            cost, time, df = self.run_install_phase(name, weather)
+            if df is None:
+                continue
 
-            self.phase_times[name] = time
-            self.phase_costs[name] = cost
-
-            df["time"] = df["time"] + (start - _zero).days * 24
-            self._output_dfs[name] = df
+            else:
+                df["time"] = df["time"] + (start - _zero).days * 24
+                self._output_dfs[name] = df
 
     def get_weather_profile(self, start):
         """

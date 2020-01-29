@@ -3,6 +3,13 @@
 ORBIT Changelog
 ===============
 
+0.3.4
+-----
+
+- Added configuration to ``ProjectManager`` that allows exceptions to be caught
+  within individual modules and allows the project as a whole to continue.
+- Fixed installation process when installing from GitHub.
+
 0.3.3
 -----
 
