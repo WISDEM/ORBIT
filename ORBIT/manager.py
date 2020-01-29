@@ -9,6 +9,7 @@ import datetime as dt
 import collections.abc as collections
 from copy import deepcopy
 from math import ceil
+from numbers import Number
 from itertools import product
 
 import pandas as pd
@@ -633,7 +634,7 @@ class ProjectManager:
             [
                 v
                 for k, v in self.phase_times.items()
-                if k in self.config["install_phases"]
+                if k in self.config["install_phases"] and isinstance(v, Number)
             ]
         )
         return res
@@ -679,7 +680,7 @@ class ProjectManager:
             [
                 v
                 for k, v in self.phase_costs.items()
-                if k in self.config["install_phases"]
+                if k in self.config["install_phases"] and isinstance(v, Number)
             ]
         )
         return res
