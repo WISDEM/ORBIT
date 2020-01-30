@@ -199,27 +199,24 @@ class ProjectManager:
                     f"Input and calculated project capacity don't match."
                 )
 
-            return config
-
         else:
             if all((project_capacity, turbine_rating)):
-                config["plant"]["num_turbines"] = ceil(
-                    project_capacity / turbine_rating
-                )
+                num_turbines = ceil(project_capacity / turbine_rating)
+                config["plant"]["num_turbines"] = num_turbines
 
             elif all((project_capacity, num_turbines)):
-                _rating = project_capacity / num_turbines
+                turbine_rating = project_capacity / num_turbines
                 try:
-                    config["turbine"]["turbine_rating"] = _rating
+                    config["turbine"]["turbine_rating"] = turbine_rating
 
                 except KeyError:
-                    config["turbine"] = {"turbine_rating": _rating}
+                    config["turbine"] = {"turbine_rating": turbine_rating}
 
             elif all((num_turbines, turbine_rating)):
-                _capacity = turbine_rating * num_turbines
-                config["plant"]["capacity"] = _capacity
+                project_capacity = turbine_rating * num_turbines
+                config["plant"]["capacity"] = project_capacity
 
-            return config
+        return config
 
     @classmethod
     def find_key_match(cls, target):
@@ -577,6 +574,18 @@ class ProjectManager:
         return profile
 
     @property
+    def capacity(self):
+        """Returns project capacity in MW."""
+
+        try:
+            capacity = self.config["plant"]["capacity"]
+
+        except KeyError:
+            capacity = None
+
+        return capacity
+
+    @property
     def project_dataframe(self):
         """Returns total project schedule in DataFrame format."""
 
@@ -671,6 +680,20 @@ class ProjectManager:
         return self.bos_capex + self.commissioning + self.decommissioning
 
     @property
+    def total_capex_per_kw(self):
+        """
+        Returns total BOS CAPEX/kW including commissioning and decommissioning.
+        """
+
+        try:
+            capex = self.total_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
+
+    @property
     def installation_capex(self):
         """
         Returns installation related CAPEX.
@@ -686,12 +709,40 @@ class ProjectManager:
         return res
 
     @property
+    def installation_capex_per_kw(self):
+        """
+        Returns installation related CAPEX/kW.
+        """
+
+        try:
+            capex = self.installation_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
+
+    @property
     def bos_capex(self):
         """
         Returns BOS CAPEX not including commissioning and decommissioning.
         """
 
         return sum([v for _, v in self.phase_costs.items()])
+
+    @property
+    def bos_capex_per_kw(self):
+        """
+        Returns BOS CAPEX/kW not including commissioning and decommissioning.
+        """
+
+        try:
+            capex = self.bos_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def commissioning(self):
@@ -708,6 +759,20 @@ class ProjectManager:
 
         comm = total * _comm
         return comm
+
+    @property
+    def commissioning_per_kw(self):
+        """
+        Returns the cost of commissioning per kW.
+        """
+
+        try:
+            capex = self.commissioning / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def decommissioning(self):
@@ -727,6 +792,20 @@ class ProjectManager:
             return 0.0
 
         return decomm
+
+    @property
+    def decommissioning_per_kw(self):
+        """
+        Returns the cost of decommissioning per kW.
+        """
+
+        try:
+            capex = self.decommissioning / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def turbine_capex(self):
@@ -749,6 +828,15 @@ class ProjectManager:
 
         capex = _capex * num_turbines * rating * 1000
         return capex
+
+    @property
+    def turbine_capex_per_kw(self):
+        """
+        Returns the turbine CAPEX/kW.
+        """
+
+        _capex = self.config.get("turbine_capex", None)
+        return _capex
 
     def export_configuration(self, file_name):
         """
