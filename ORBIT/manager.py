@@ -672,6 +672,24 @@ class ProjectManager:
         return abs((a - b).days)
 
     @property
+    def phase_costs_per_kw(self):
+        """
+        Returns phase costs in CAPEX/kW.
+        """
+
+        _dict = {}
+        for k, capex in self.phase_costs.items():
+
+            try:
+                _dict[k] = capex / (self.capacity * 1000)
+
+            except TypeError:
+                pass
+
+        return _dict
+
+
+    @property
     def total_capex(self):
         """
         Returns total BOS CAPEX including commissioning and decommissioning.
