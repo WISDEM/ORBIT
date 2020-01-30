@@ -324,8 +324,6 @@ def install_transition_piece(vessel, tp, **kwargs):
 
         yield pump_transition_piece_grout(vessel, constraints=vessel.operational_limits, **kwargs)
         yield cure_transition_piece_grout(vessel, constraints=vessel.transit_limits)
-        grout_pump_time = tasks.pump_transition_piece_grout(**kwargs)
-        grout_cure_time = tasks.cure_transition_piece_grout(**kwargs)
 
     else:
         raise Exception(

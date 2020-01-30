@@ -159,56 +159,60 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
         if queue_time > 0:
             vessel.submit_action_log("Queue", queue_time)
 
-        while True and port.items:
-            buffer = []
-            for i in items:
-                item = port.get_item(i)
-                buffer.append(item)
+        if port.items:
+            while True:
+                buffer = []
+                for i in items:
+                    item = port.get_item(i)
+                    buffer.append(item)
 
-            # Calculate deck space and weight of one complete turbine
-            total_deck_space = sum([item.deck_space for item in buffer])
-            proposed_deck_space = (
-                vessel.storage.current_deck_space + total_deck_space
-            )
+                # Calculate deck space and weight of one complete turbine
+                total_deck_space = sum([item.deck_space for item in buffer])
+                proposed_deck_space = (
+                    vessel.storage.current_deck_space + total_deck_space
+                )
 
-            total_weight = sum([item.weight for item in buffer])
-            proposed_weight = (
-                vessel.storage.current_cargo_weight + total_weight
-            )
+                total_weight = sum([item.weight for item in buffer])
+                proposed_weight = (
+                    vessel.storage.current_cargo_weight + total_weight
+                )
 
-            if proposed_deck_space > vessel.storage.max_deck_space:
-                vessel.submit_debug_log(message="Full")
+                if proposed_deck_space > vessel.storage.max_deck_space:
+                    vessel.submit_debug_log(message="Full")
 
-                for item in buffer:
-                    port.put(item)
+                    for item in buffer:
+                        port.put(item)
 
-                if vessel.storage.current_cargo_weight > 0:
-                    break
+                    if vessel.storage.current_cargo_weight > 0:
+                        break
+
+                    else:
+                        raise VesselCapacityError(vessel, items)
+
+                elif proposed_weight > vessel.storage.max_cargo_weight:
+                    vessel.submit_debug_log(message="Full")
+
+                    for item in buffer:
+                        port.put(item)
+
+                    if vessel.storage.current_cargo_weight > 0:
+                        break
+
+                    else:
+                        raise VesselCapacityError(vessel, items)
 
                 else:
-                    raise VesselCapacityError(vessel, items)
+                    for item in buffer:
+                        action, time = item.fasten()
+                        vessel.storage.put_item(item)
+                        yield vessel.task(
+                            action, time, constraints=vessel.transit_limits
+                        )
 
-            elif proposed_weight > vessel.storage.max_cargo_weight:
-                vessel.submit_debug_log(message="Full")
+                        # if item["type"] == "Carousel":
+                        #     vessel.carousel = SimpleNamespace(**item)
 
-                for item in buffer:
-                    port.put(item)
+                        # vessel.submit_debug_log(message=f"{item['type']} Retrieved")
 
-                if vessel.storage.current_cargo_weight > 0:
-                    break
-
-                else:
-                    raise VesselCapacityError(vessel, items)
-
-            else:
-                for item in buffer:
-                    action, time = item.fasten()
-                    yield vessel.task(
-                        action, time, constraints=vessel.transit_limits
-                    )
-                    vessel.storage.put_item(item)
-
-                    # if item["type"] == "Carousel":
-                    #     vessel.carousel = SimpleNamespace(**item)
-
-                    # vessel.submit_debug_log(message=f"{item['type']} Retrieved")
+        else:
+            raise ItemNotFound(items)
