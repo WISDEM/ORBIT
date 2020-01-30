@@ -3,6 +3,11 @@
 ORBIT Changelog
 ===============
 
+0.3.5
+-----
+
+- Added 'per kW' properties to ``ProjectManager`` CAPEX results.
+
 0.3.4
 -----
 
