@@ -78,6 +78,7 @@ class CargoWeightExceeded(Exception):
         self.item = item
 
         if isinstance(item, dict):
+            # TODO: Revise now that items are treated as instances.
             self.message = (
                 f"'{self.item['type']}' will exceed maximum cargo weight."
             )

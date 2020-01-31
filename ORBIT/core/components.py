@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import numpy as np
 import simpy
 
+from ORBIT.core._defaults import process_times as pt
 from ORBIT.core.exceptions import (
     ItemNotFound,
     DeckSpaceExceeded,
@@ -19,7 +20,6 @@ from ORBIT.core.exceptions import (
     CargoWeightExceeded,
     ItemPropertyNotDefined,
 )
-from ORBIT.vessels.tasks._defaults import defaults
 
 # TODO: __str__ methods for Components
 
@@ -95,7 +95,7 @@ class Crane:
         """
 
         _key = "crane_reequip_time"
-        duration = kwargs.get(_key, defaults[_key])
+        duration = kwargs.get(_key, pt[_key])
 
         return duration
 
@@ -547,3 +547,43 @@ class VesselStorage(simpy.FilterStore):
 
         else:
             return False
+
+
+class ScourProtectionStorage(simpy.Container):
+    """Scour Protection Storage Class"""
+
+    required_keys = ["weight"]
+
+    def __init__(self, env, max_cargo, **kwargs):
+        """
+        Creates an instance of VesselStorage.
+
+        Parameters
+        ----------
+        env : simpy.Environment
+            SimPy environment that simulation runs on.
+        max_cargo : int | float
+            Maximum weight the storage system can carry (t).
+        """
+
+        self.max_cargo_weight = max_cargo
+        super().__init__(env, self.max_cargo_weight)
+
+        # Only needed for port interactions
+        # self.max_deck_space = 1
+        # self.max_deck_load = max_deck_load
+
+    @property
+    def current_cargo_weight(self):
+        """
+        Returns current cargo weight in tonnes.
+        NOTE: Only necessary to interact with port.
+        """
+
+        return self.level
+
+    @property
+    def available_capacity(self):
+        """Returns available cargo capacity."""
+
+        return self.max_cargo_weight - self.current_cargo_weight

@@ -10,8 +10,13 @@ from collections import Counter, namedtuple
 import numpy as np
 from marmot import Agent, le, process
 
+from ORBIT.core.components import (
+    Crane,
+    JackingSys,
+    VesselStorage,
+    ScourProtectionStorage,
+)
 from ORBIT.core.exceptions import ItemNotFound
-from ORBIT.core.components import Crane, JackingSys, VesselStorage
 
 Trip = namedtuple("Trip", "cargo_weight deck_space items")
 
@@ -86,6 +91,15 @@ class Vessel(Agent):
         else:
             return MissingComponent(self, "Vessel Storage")
 
+    @property
+    def rock_storage(self):
+        # TODO: Add storage.setter type check?
+        if self._rock_storage:
+            return self._rock_storage
+
+        else:
+            raise MissingComponent(self, "Scour Protection Storage")
+
     def extract_vessel_specs(self):
         """
         Extracts vessel specifications from self.config.
@@ -95,22 +109,17 @@ class Vessel(Agent):
         self.extract_jacksys_specs()
         self.extract_crane_specs()
         self.extract_storage_specs()
+        self.extract_scour_protection_specs()
 
         # TODO:
         # cable_lay_specs = vessel_specs.get("cable_lay_specs", None)
         # if cable_lay_specs:
         #     self.extract_cable_lay_specs(cable_lay_specs)
 
-        # scour_protection_specs = vessel_specs.get(
-        #     "scour_protection_install_specs", None
-        # )
-        # if scour_protection_specs:
-        #     self.extract_scour_protection_specs(scour_protection_specs)
-
     def extract_transport_specs(self):
         """Extracts and defines transport related specifications."""
 
-        self._transport_specs = self.config.get("transport_specs", None)
+        self._transport_specs = self.config.get("transport_specs", {})
         self.transit_speed = self._transport_specs.get("transit_speed", None)
 
     def extract_crane_specs(self):
@@ -118,7 +127,7 @@ class Vessel(Agent):
         TODO:
         """
 
-        self._crane_specs = self.config.get("crane_specs", None)
+        self._crane_specs = self.config.get("crane_specs", {})
         if self._crane_specs:
             self._crane = Crane(self._crane_specs)
 
@@ -130,7 +139,7 @@ class Vessel(Agent):
         TODO:
         """
 
-        self._jacksys_specs = self.config.get("jacksys_specs", None)
+        self._jacksys_specs = self.config.get("jacksys_specs", {})
         if self._jacksys_specs:
             self._jacksys = JackingSys(self._jacksys_specs)
 
@@ -142,7 +151,7 @@ class Vessel(Agent):
         Extracts and defines storage system specifications.
         """
 
-        self._storage_specs = self.config.get("storage_specs", None)
+        self._storage_specs = self.config.get("storage_specs", {})
         if self._storage_specs:
             self.trip_data = []
             self._storage = VesselStorage(self.env, **self._storage_specs)
@@ -167,22 +176,39 @@ class Vessel(Agent):
     #         "max_cable_diameter", None
     #     )
 
-    # def extract_scour_protection_specs(self, scour_protection_specs):
-    #     """
-    #     Extracts and defines scour protection installation specifications.
+    def extract_scour_protection_specs(self):
+        """
+        Extracts and defines scour protection installation specifications.
 
-    #     Parameters
-    #     ----------
-    #     scour_protection_specs : dict
-    #         Dictionary containing scour protection installation specifications.
-    #     """
+        Parameters
+        ----------
+        scour_protection_specs : dict
+            Dictionary containing scour protection installation specifications.
+        """
 
-    #     self.scour_protection_install_speed = scour_protection_specs.get(
-    #         "scour_protection_install_speed", 10
-    #     )
+        self._sp_specs = self.config.get("scour_protection_install_specs", {})
+
+        _capacity = self._sp_specs.get("max_cargo_weight", None)
+        if _capacity is None:
+            capacity = self._storage_specs.get("max_cargo", None)
+
+        else:
+            capacity = _capacity
+
+        if capacity:
+            self._rock_storage = ScourProtectionStorage(self.env, capacity)
+
+        else:
+            self._rock_storage = None
+
+        self.scour_protection_install_speed = self._sp_specs.get(
+            "scour_protection_install_speed", 10
+        )
 
     @process
-    def get_item_from_storage(self, _type, vessel=None, release=False, **kwargs):
+    def get_item_from_storage(
+        self, _type, vessel=None, release=False, **kwargs
+    ):
         """
 
         """
@@ -204,6 +230,26 @@ class Vessel(Agent):
             vessel.release.succeed()
 
         return item
+
+    @process
+    def transit(self, distance, **kwargs):
+        """
+        Generic transit task.
+
+        Parameters
+        ----------
+        distance : int | float
+            Distance to transit for.
+        """
+
+        time = self.transit_time(distance)
+        yield self.task(
+            "Transit",
+            time,
+            constraints=self.transit_limits,
+            suspendable=True,
+            **kwargs,
+        )
 
     def transit_time(self, distance):
         """

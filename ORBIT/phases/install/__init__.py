@@ -7,7 +7,8 @@ __email__ = ["jake.nunemaker@nrel.gov" "robert.hammond@nrel.gov"]
 
 from .install_phase import InstallPhase  # isort:skip
 from .oss_install import OffshoreSubstationInstallation
+
 # from .cable_install import ArrayCableInstallation, ExportCableInstallation
 from .turbine_install import TurbineInstallation
 from .monopile_install import MonopileInstallation
-# from .scour_protection_install import ScourProtectionInstallation
+from .scour_protection_install import ScourProtectionInstallation

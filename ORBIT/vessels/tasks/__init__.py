@@ -10,4 +10,3 @@ they are related to.
 
 from ._exceptions import MissingComponent
 from .cable_laying import *
-from .scour_protection import *

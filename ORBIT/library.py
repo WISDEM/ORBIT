@@ -256,7 +256,7 @@ PATH_LIBRARY = {
     "export_cable_lay_vessel": "vessels",
     "export_cable_bury_vessel": "vessels",
     "oss_install_vessel": "vessels",
-    "scour_protection_install_vessel": "vessels",
+    "spi_vessel": "vessels",
     "trench_dig_vessel": "vessels",
     "feeder": "vessels",
     "wtiv": "vessels",
