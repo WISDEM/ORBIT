@@ -223,7 +223,7 @@ class Vessel(Agent):
             self.submit_debug_log(message="Item not found.")
             raise e
 
-        action, time = item.release()
+        action, time = item.release(**kwargs)
         yield self.task(action, time, constraints=self.transit_limits)
 
         if release and vessel.storage.any_remaining(_type) is False:

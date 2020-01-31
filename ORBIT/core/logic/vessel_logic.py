@@ -34,7 +34,7 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
     site_depth = kwargs.get("site_depth", None)
     extension = kwargs.get("extension", site_depth + 10)
 
-    position_time = pt["site_position_time"]
+    position_time = kwargs.get("site_position_time", pt["site_position_time"])
     jackup_time = vessel.jacksys.jacking_time(extension, site_depth)
 
     yield vessel.task(
@@ -43,16 +43,14 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
     yield vessel.task("Jackup", jackup_time, constraints=vessel.transit_limits)
 
     if survey_required:
-        survey_time = pt["rov_survey_time"]
+        survey_time = kwargs.get("rov_survey_time", pt["rov_survey_time"])
         yield vessel.task(
             "RovSurvey", survey_time, constraints=vessel.transit_limits
         )
 
 
 @process
-def shuttle_items_to_queue(
-    vessel, port, queue, distance, items, **kwargs
-):
+def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
     """
     Shuttles a list of items from port to queue.
 
@@ -78,7 +76,9 @@ def shuttle_items_to_queue(
             vessel.submit_debug_log(message=f"{vessel} is at port.")
 
             if not port.items:
-                vessel.submit_debug_log(message="No items at port. Shutting down.")
+                vessel.submit_debug_log(
+                    message="No items at port. Shutting down."
+                )
                 break
 
             # Get list of items
@@ -91,7 +91,9 @@ def shuttle_items_to_queue(
                 # If no items are at port and vessel.storage.items is empty,
                 # the job is done
                 if not vessel.storage.items:
-                    vessel.submit_debug_log(message="Items not found. Shutting down.")
+                    vessel.submit_debug_log(
+                        message="Items not found. Shutting down."
+                    )
                     break
 
             # Transit to site
@@ -112,7 +114,9 @@ def shuttle_items_to_queue(
 
                 queue_time = vessel.env.now - queue_start
                 if queue_time > 0:
-                    vessel.submit_action_log("Queue", queue_time, location="Site")
+                    vessel.submit_action_log(
+                        "Queue", queue_time, location="Site"
+                    )
 
                 queue.vessel = vessel
                 active_start = vessel.env.now
@@ -123,7 +127,9 @@ def shuttle_items_to_queue(
                 yield vessel.release
                 active_time = vessel.env.now - active_start
 
-                vessel.submit_action_log("ActiveFeeder", active_time, location="Site")
+                vessel.submit_action_log(
+                    "ActiveFeeder", active_time, location="Site"
+                )
 
                 queue.vessel = None
                 queue.activate = vessel.env.event()
@@ -203,7 +209,7 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
 
                 else:
                     for item in buffer:
-                        action, time = item.fasten()
+                        action, time = item.fasten(**kwargs)
                         vessel.storage.put_item(item)
                         yield vessel.task(
                             action, time, constraints=vessel.transit_limits

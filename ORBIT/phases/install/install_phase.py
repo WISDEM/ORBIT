@@ -8,6 +8,7 @@ __email__ = ["jake.nunemaker@nrel.gov", "robert.hammond@nrel.gov"]
 
 from abc import abstractmethod
 
+import numpy as np
 import simpy
 from marmot import Environment
 
@@ -171,17 +172,11 @@ class InstallPhase(BasePhase):
     def total_phase_time(self):
         """Returns total phase time in hours."""
 
-        # TODO:
-        df = self.logs.loc[self.logs["level"] == "INFO"]
-
-        if any(df["time"].isnull()):
+        times = [a["time"] for a in self.env.actions]
+        if any(np.isnan(times)):
             raise ValueError(f"Missing values in 'time' column.")
 
-        time = df["time"].max()
-        if np.isnan(time):
-            time = 0.0
-
-        return time
+        return max(times)
 
     @property
     @abstractmethod
