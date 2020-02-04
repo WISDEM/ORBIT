@@ -1,5 +1,5 @@
 """
-Testing framework for the `ExportCableInstallation` class.
+Testing framework for the `ArrayCableInstallation` class.
 """
 
 __author__ = ["Rob Hammond", "Jake Nunemaker"]
@@ -16,13 +16,13 @@ import pytest
 from tests.data import test_weather
 from ORBIT.library import initialize_library, extract_library_specs
 from ORBIT.core._defaults import process_times as pt
-from ORBIT.phases.install import ExportCableInstallation
+from ORBIT.phases.install import ArrayCableInstallation
 
 initialize_library(pytest.library)
 
-base_config = extract_library_specs("config", "export_cable_install")
+base_config = extract_library_specs("config", "array_cable_install")
 simul_config = deepcopy(base_config)
-_ = simul_config.pop("export_cable_bury_vessel")
+_ = simul_config.pop("array_cable_bury_vessel")
 
 
 @pytest.mark.parametrize(
@@ -30,13 +30,8 @@ _ = simul_config.pop("export_cable_bury_vessel")
 )
 def test_simulation_setup(config):
 
-    sim = ExportCableInstallation(config)
+    sim = ArrayCableInstallation(config)
     assert sim.env
-    assert sim.cable
-    assert sim.cable.linear_density
-
-    actions = [a["action"] for a in sim.env.actions]
-    assert "Onshore Construction" in actions
 
 
 @pytest.mark.parametrize(
@@ -44,11 +39,11 @@ def test_simulation_setup(config):
 )
 def test_vessel_initialization(config):
 
-    sim = ExportCableInstallation(config)
+    sim = ArrayCableInstallation(config)
     assert sim.install_vessel
     assert sim.install_vessel.cable_storage
 
-    if config.get("export_cable_bury_vessel", None):
+    if config.get("array_cable_bury_vessel", None):
         assert sim.bury_vessel
 
 
@@ -60,7 +55,7 @@ def test_vessel_initialization(config):
 )
 def test_for_complete_logging(config, weather):
 
-    sim = ExportCableInstallation(config, weather=weather)
+    sim = ArrayCableInstallation(config, weather=weather)
     sim.run()
 
     df = pd.DataFrame(sim.env.actions)
@@ -72,23 +67,9 @@ def test_for_complete_logging(config, weather):
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
 
-# TODO: Remove?
-# @pytest.mark.parametrize(
-#     "CableInstall,config", installs, ids=["array", "export"]
-# )
-# def test_for_array_install_efficiencies(CableInstall, config):
-
-#     sim = CableInstall(config)
-#     sim.run()
-
-#     vessel = sim.cable_lay_vessel.name
-#     assert 0 <= sim.detailed_output[f"{vessel}_operational_efficiency"] <= 1
-#     assert 0 <= sim.detailed_output[f"{vessel}_cargo_weight_utilization"] <= 1
-
-
 def test_simultaneous_speed_kwargs():
 
-    sim = ExportCableInstallation(simul_config)
+    sim = ArrayCableInstallation(simul_config)
     sim.run()
     baseline = sim.total_phase_time
 
@@ -97,7 +78,7 @@ def test_simultaneous_speed_kwargs():
 
     kwargs = {key: val}
 
-    sim = ExportCableInstallation(simul_config, **kwargs)
+    sim = ArrayCableInstallation(simul_config, **kwargs)
     sim.run()
 
     assert sim.total_phase_time > baseline
@@ -105,7 +86,7 @@ def test_simultaneous_speed_kwargs():
 
 def test_separate_speed_kwargs():
 
-    sim = ExportCableInstallation(base_config)
+    sim = ArrayCableInstallation(base_config)
     sim.run()
     df = pd.DataFrame(sim.env.actions)
 
@@ -117,7 +98,7 @@ def test_separate_speed_kwargs():
         "cable_bury_speed": pt["cable_bury_speed"] * 0.1,
     }
 
-    new = ExportCableInstallation(base_config, **kwargs)
+    new = ArrayCableInstallation(base_config, **kwargs)
     new.run()
     df = pd.DataFrame(new.env.actions)
 
@@ -130,31 +111,17 @@ def test_separate_speed_kwargs():
 
 def test_kwargs_for_export_install():
 
-    new_export_system = {
-        "cable": {"linear_density": 50.0, "length": 1000, "number": 1}
-    }
-    new_site = {"distance": 50}
-
-    new_config = deepcopy(base_config)
-    new_config["export_system"] = new_export_system
-    new_config["site"] = new_site
-
-    sim = ExportCableInstallation(new_config)
+    sim = ArrayCableInstallation(base_config)
     sim.run()
     baseline = sim.total_phase_time
 
     keywords = [
-        "onshore_construction_time",
         "cable_load_time",
         "site_position_time",
         "cable_prep_time",
         "cable_lower_time",
         "cable_pull_in_time",
         "cable_termination_time",
-        "cable_splice_time",
-        "tow_plow_speed",
-        "pull_winch_speed",
-        "cable_raise_time",
     ]
 
     failed = []
@@ -174,7 +141,7 @@ def test_kwargs_for_export_install():
         else:
             kwargs = {kw: default + 2}
 
-        new_sim = ExportCableInstallation(new_config, **kwargs)
+        new_sim = ArrayCableInstallation(base_config, **kwargs)
         new_sim.run()
         new_time = new_sim.total_phase_time
 

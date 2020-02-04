@@ -4,6 +4,8 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from copy import deepcopy
+
 from marmot import process
 
 from ORBIT.core import Vessel
@@ -14,13 +16,13 @@ from ORBIT.core.exceptions import InsufficientCable
 from .common import SimpleCable as Cable
 from .common import (
     lay_cable,
+    bury_cable,
     prep_cable,
     test_cable,
     lower_cable,
     pull_in_cable,
     lay_bury_cable,
     load_cable_on_vessel,
-    bury_cable
 )
 
 
@@ -75,7 +77,7 @@ class ArrayCableInstallation(InstallPhase):
         self.initialize_burial_vessel()
 
         self.cable_data = [
-            (Cable(data["linear_density"]), data["cable_sections"])
+            (Cable(data["linear_density"]), deepcopy(data["cable_sections"]))
             for _, data in self.config["array_system"]["cables"].items()
         ]
 
@@ -124,7 +126,9 @@ class ArrayCableInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """Returns detailed outputs."""
+        """
+        TODO:
+        Returns detailed outputs."""
 
         outputs = {
             **self.agent_efficiencies,
@@ -172,6 +176,9 @@ def install_array_cables(
                     length, num_sections, *speed = sections.pop(0)
 
                 except IndexError:
+                    vessel.at_site = False
+                    yield vessel.transit(distance, **kwargs)
+                    vessel.at_port = True
                     break
 
                 for _ in range(num_sections):
@@ -207,7 +214,9 @@ def install_array_cables(
                     yield test_cable(vessel, **kwargs)
 
         # Transit back to port
+        vessel.at_site = False
         yield vessel.transit(distance, **kwargs)
+        vessel.at_port = True
 
     if burial_vessel is None:
         vessel.submit_debug_log(
