@@ -17,9 +17,7 @@ from ORBIT.core.exceptions import (
     ItemNotFound,
     DeckSpaceExceeded,
     InsufficientCable,
-    InsufficientAmount,
     CargoWeightExceeded,
-    ItemPropertyNotDefined,
 )
 
 # TODO: __str__ methods for Components
@@ -639,7 +637,7 @@ class CableCarousel(simpy.Container):
     def load_cable(self, cable, length=None):
         """"""
 
-        if self.cable:
+        if self.cable and self.cable != cable:
             raise AttributeError("Carousel already has a cable type.")
 
         self.cable = cable

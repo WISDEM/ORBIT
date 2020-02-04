@@ -6,14 +6,13 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from math import ceil
 
-import simpy
 from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import position_onsite
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
-from ORBIT.core.exceptions import ItemNotFound, InsufficientCable
+from ORBIT.core.exceptions import InsufficientCable
 
 from .common import SimpleCable as Cable
 from .common import (
@@ -39,15 +38,14 @@ class ExportCableInstallation(InstallPhase):
             "distance_to_interconnection": "int | float (optional)",
         },
         "export_cable_install_vessel": "str | dict",
-        "export_cable_bury_vessel": "str | dict",
+        "export_cable_bury_vessel": "str | dict (optional)",
         "site": {"distance": "int | float"},
         "export_system": {
-            "strategy": "str (optional)",
             "cable": {
                 "linear_density": "int | float",
                 "length": "int | float",
                 "number": "int (optional)",
-            },
+            }
         },
     }
 
@@ -57,12 +55,10 @@ class ExportCableInstallation(InstallPhase):
 
         Parameters
         ----------
-        TODO:
         config : dict
             Simulation specific configuration.
-        weather : pd.DataFrame (optional)
-            Weather profile at site.
-            Expects columns 'max_waveheight' and 'max_windspeed'.
+        weather : np.ndarray
+            Hourly weather profile at site.
         """
 
         super().__init__(weather, **kwargs)
@@ -76,26 +72,34 @@ class ExportCableInstallation(InstallPhase):
         self.setup_simulation(**kwargs)
 
     def setup_simulation(self, **kwargs):
-        """"""
+        """
+        Setup method for the ExportCableInstallation phase.
+        - Extracts key inputs
+        - Performs onshore infrastructure construction
+        - Routes to specific setup scripts based on configured strategy.
+        """
 
         system = self.config["export_system"]
         self.cable = Cable(system["cable"]["linear_density"])
         self.length = system["cable"]["length"]
         self.number = system["cable"].get("number", 1)
-        self.strategy = system.get("strategy", "separate")
+
+        self.initialize_installation_vessel()
+        self.initialize_burial_vessel()
 
         # Perform onshore construction
         self.onshore_construction(**kwargs)
 
         # Perform cable installation
-        if self.strategy == "separate":
-            self.setup_separate(**kwargs)
-
-        elif self.strategy == "simultaneous":
-            self.setup_simultaneous(**kwargs)
-
-        else:
-            raise ValueError(f"Strategy '{self.strategy}' not recognized.")
+        install_export_cables(
+            self.install_vessel,
+            length=self.length,
+            cable=self.cable,
+            number=self.number,
+            distances=self.distances,
+            burial_vessel=self.bury_vessel,
+            **kwargs,
+        )
 
     def extract_distances(self):
         """Extracts distances from input configuration or default values."""
@@ -120,47 +124,6 @@ class ExportCableInstallation(InstallPhase):
             "trench": trench,
             "interconnection": interconnection,
         }
-
-    def setup_separate(self, **kwargs):
-        """
-        Sets up simulation with separate lay/burial vessels.
-        - Initializes installation vessel
-        - Initializes burial vessel
-        - Initiates `install_export_cables()` with `burial_vessel` defined as
-          `self.bury_vessel`
-        """
-
-        self.initialize_installation_vessel()
-        self.initialize_burial_vessel()
-
-        install_export_cables(
-            self.install_vessel,
-            length=self.length,
-            cable=self.cable,
-            number=self.number,
-            distances=self.distances,
-            burial_vessel=self.bury_vessel,
-            **kwargs,
-        )
-
-    def setup_simultaneous(self, **kwargs):
-        """
-        Sets up simulation with simultaneous lay/burial process.
-        - Initializes installation vessel
-        - Initiates `install_export_cables()` with `burial_vessl` set to None
-        """
-
-        self.initialize_installation_vessel()
-
-        install_export_cables(
-            self.install_vessel,
-            length=self.length,
-            cable=self.cable,
-            number=self.number,
-            distances=self.distances,
-            burial_vessel=False,
-            **kwargs,
-        )
 
     def onshore_construction(self, **kwargs):
         """
@@ -213,6 +176,10 @@ class ExportCableInstallation(InstallPhase):
 
         # Vessel name and costs
         vessel_specs = self.config.get("export_cable_bury_vessel", None)
+        if vessel_specs is None:
+            self.bury_vessel = None
+            return
+
         name = vessel_specs.get("name", "Export Cable Burial Vessel")
 
         vessel = Vessel(name, vessel_specs)
@@ -260,6 +227,10 @@ def install_export_cables(
             and pull-in cable (km).
         interconnection : int | float
             Distance between landfall and the onshore substation (km).
+    burial_vessel : Vessel
+        Optional configuration for burial vessel. If configured, the
+        installation vessel only lays the cable on the seafloor and this
+        vessel will bury them at the end of the simulation.
     """
 
     for _ in range(number):
@@ -307,10 +278,12 @@ def install_export_cables(
         yield vessel.transit(distances["site"])
 
     if burial_vessel is None:
-        vessel.submit_debug_log(message="Cable lay/burial process completed!")
+        vessel.submit_debug_log(
+            message="Export cable lay/burial process completed!"
+        )
 
     else:
-        vessel.submit_debug_log(message="Cable lay process completed!")
+        vessel.submit_debug_log(message="Export cable lay process completed!")
         bury_export_cables(burial_vessel, length, number, **kwargs)
 
 
@@ -332,4 +305,4 @@ def bury_export_cables(vessel, length, number, **kwargs):
     for _ in range(number):
         yield bury_cable(vessel, length, **kwargs)
 
-    vessel.submit_debug_log(message="Cable burial process completed!")
+    vessel.submit_debug_log(message="Export cable burial process completed!")
