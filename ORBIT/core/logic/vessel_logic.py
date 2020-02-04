@@ -37,9 +37,7 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
     position_time = kwargs.get("site_position_time", pt["site_position_time"])
     jackup_time = vessel.jacksys.jacking_time(extension, site_depth)
 
-    yield vessel.task(
-        "PositionOnsite", position_time, constraints=vessel.transit_limits
-    )
+    yield position_onsite(vessel, **kwargs)
     yield vessel.task("Jackup", jackup_time, constraints=vessel.transit_limits)
 
     if survey_required:
@@ -47,6 +45,24 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
         yield vessel.task(
             "RovSurvey", survey_time, constraints=vessel.transit_limits
         )
+
+
+@process
+def position_onsite(vessel, **kwargs):
+    """
+    Task representing time required to position `vessel` onsite.
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Performing vessel. Requires configured `transit_limits`.
+    """
+
+    position_time = kwargs.get("site_position_time", pt["site_position_time"])
+
+    yield vessel.task(
+        "Position Onsite", position_time, constraints=vessel.transit_limits
+    )
 
 
 @process

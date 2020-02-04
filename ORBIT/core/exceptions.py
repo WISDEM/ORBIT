@@ -143,6 +143,31 @@ class InsufficientAmount(Exception):
         return self.message
 
 
+class InsufficientCable(Exception):
+    """
+    Error raised when a Carousel doesn't have enough cable for next section.
+    """
+
+    def __init__(self, current_amount, amount_requested):
+        """
+        Creates an instance of InsufficientAmount.
+
+        Parameters
+        ----------
+        current_amount : int | float
+            Current length of cable.
+        amount_requested : dict or str
+            Amount of cable needed
+        """
+
+        self.current = current_amount
+        self.requested = amount_requested
+        self.message = f"Not enough cable on carousel."
+
+    def __str__(self):
+        return self.message
+
+
 class PhaseNotFound(Exception):
     """Exception for missing Phase"""
 

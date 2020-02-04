@@ -16,6 +16,7 @@ from ORBIT.core._defaults import process_times as pt
 from ORBIT.core.exceptions import (
     ItemNotFound,
     DeckSpaceExceeded,
+    InsufficientCable,
     InsufficientAmount,
     CargoWeightExceeded,
     ItemPropertyNotDefined,
@@ -552,9 +553,7 @@ class VesselStorage(simpy.FilterStore):
 class ScourProtectionStorage(simpy.Container):
     """Scour Protection Storage Class"""
 
-    required_keys = ["weight"]
-
-    def __init__(self, env, max_cargo, **kwargs):
+    def __init__(self, env, max_weight, **kwargs):
         """
         Creates an instance of VesselStorage.
 
@@ -562,28 +561,111 @@ class ScourProtectionStorage(simpy.Container):
         ----------
         env : simpy.Environment
             SimPy environment that simulation runs on.
-        max_cargo : int | float
+        max_weight : int | float
             Maximum weight the storage system can carry (t).
         """
 
-        self.max_cargo_weight = max_cargo
-        super().__init__(env, self.max_cargo_weight)
+        self.max_weight = max_weight
+        super().__init__(env, self.max_weight)
 
         # Only needed for port interactions
         # self.max_deck_space = 1
         # self.max_deck_load = max_deck_load
 
-    @property
-    def current_cargo_weight(self):
-        """
-        Returns current cargo weight in tonnes.
-        NOTE: Only necessary to interact with port.
-        """
+    # @property
+    # def current_cargo_weight(self):
+    #     """
+    #     Returns current cargo weight in tonnes.
+    #     """
 
-        return self.level
+    #     return self.level
 
     @property
     def available_capacity(self):
         """Returns available cargo capacity."""
 
-        return self.max_cargo_weight - self.current_cargo_weight
+        return self.max_weight - self.level
+
+
+class CableCarousel(simpy.Container):
+    """Cable Storage Class"""
+
+    def __init__(self, env, max_weight, **kwargs):
+        """
+        Creates an instance of CableCarousel.
+
+        Parameters
+        ----------
+        env : simpy.Environment
+            SimPy environment that simulation runs on.
+        max_weight : int | float
+            Maximum weight the storage system can carry (t).
+        """
+
+        self.cable = None
+        self.max_weight = max_weight
+        super().__init__(env)
+
+    @property
+    def available_weight(self):
+        """Returns available cargo weight capacity."""
+
+        return self.max_weight - self.current_weight
+
+    @property
+    def current_weight(self):
+        """Returns current cargo weight"""
+
+        try:
+            weight = self.level * self.cable.linear_density
+            return weight
+
+        except AttributeError:
+            return 0
+
+    def available_length(self, cable):
+        """Returns available length capacity based on input linear density."""
+
+        return self.available_weight / cable.linear_density
+
+    def reset(self):
+        """Resets self.cable and """
+
+        if self.level != 0.0:
+            _ = self.get(self.level)
+
+        self.cable = None
+
+    def load_cable(self, cable, length=None):
+        """"""
+
+        if self.cable:
+            raise AttributeError("Carousel already has a cable type.")
+
+        self.cable = cable
+        if length is None:
+            # Load maximum amount
+            length = self.available_length(self.cable)
+            self.put(length)
+
+        else:
+            # Load length of cable
+            proposed = length * cable.linear_density
+            if proposed > self.available_weight:
+                raise ValueError(
+                    f"Length {length} of {cable} can't be loaded."
+                )
+
+            self.put(length)
+
+    def get_cable(self, length):
+        """"""
+
+        if self.cable is None:
+            raise AttributeError("Carousel doesn't have any cable.")
+
+        if length > self.level:
+            raise InsufficientCable(self.level, length)
+
+        else:
+            return self.get(length).amount

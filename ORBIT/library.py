@@ -251,9 +251,9 @@ PATH_LIBRARY = {
     # default data
     "defaults": "defaults",
     # vessels
-    "array_cable_lay_vessel": "vessels",
+    "array_cable_install_vessel": "vessels",
     "array_cable_bury_vessel": "vessels",
-    "export_cable_lay_vessel": "vessels",
+    "export_cable_install_vessel": "vessels",
     "export_cable_bury_vessel": "vessels",
     "oss_install_vessel": "vessels",
     "spi_vessel": "vessels",

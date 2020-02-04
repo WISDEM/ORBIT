@@ -13,6 +13,7 @@ from marmot import Agent, le, process
 from ORBIT.core.components import (
     Crane,
     JackingSys,
+    CableCarousel,
     VesselStorage,
     ScourProtectionStorage,
 )
@@ -93,12 +94,21 @@ class Vessel(Agent):
 
     @property
     def rock_storage(self):
-        # TODO: Add storage.setter type check?
+        # TODO: Add rock_storage.setter type check?
         if self._rock_storage:
             return self._rock_storage
 
         else:
             raise MissingComponent(self, "Scour Protection Storage")
+
+    @property
+    def cable_storage(self):
+        # TODO: Add cable_storage.setter type check?
+        if self._cable_storage:
+            return self._cable_storage
+
+        else:
+            raise MissingComponent(self, "Cable Storage")
 
     def extract_vessel_specs(self):
         """
@@ -109,12 +119,8 @@ class Vessel(Agent):
         self.extract_jacksys_specs()
         self.extract_crane_specs()
         self.extract_storage_specs()
+        self.extract_cable_storage_specs()
         self.extract_scour_protection_specs()
-
-        # TODO:
-        # cable_lay_specs = vessel_specs.get("cable_lay_specs", None)
-        # if cable_lay_specs:
-        #     self.extract_cable_lay_specs(cable_lay_specs)
 
     def extract_transport_specs(self):
         """Extracts and defines transport related specifications."""
@@ -159,22 +165,17 @@ class Vessel(Agent):
         else:
             self._storage = None
 
-    # def extract_cable_lay_specs(self, cable_lay_specs):
-    #     """
-    #     Extracts and defines cable lay system specifications.
+    def extract_cable_storage_specs(self):
+        """
+        Extracts and defines cable storage system specifications.
+        """
 
-    #     Parameters
-    #     ----------
-    #     cable_lay_specs : dict
-    #         Dictionary containing cable lay system specifications.
-    #     """
-
-    #     self.cable_lay_speed = cable_lay_specs.get(
-    #         "cable_lay_speed", defaults["cable_lay_speed"]
-    #     )
-    #     self.max_cable_diameter = cable_lay_specs.get(
-    #         "max_cable_diameter", None
-    #     )
+        self._cable_storage_specs = self.config.get("cable_storage", {})
+        if self._cable_storage_specs:
+            self.trip_data = []
+            self._cable_storage = CableCarousel(
+                self.env, **self._cable_storage_specs
+            )
 
     def extract_scour_protection_specs(self):
         """
@@ -186,6 +187,7 @@ class Vessel(Agent):
             Dictionary containing scour protection installation specifications.
         """
 
+        # TODO: Require a specific vessel configuration
         self._sp_specs = self.config.get("scour_protection_install_specs", {})
 
         _capacity = self._sp_specs.get("max_cargo_weight", None)
@@ -291,12 +293,12 @@ class Vessel(Agent):
         for operations.
         """
 
-        crane = getattr(self, "crane", None)
-        if crane is None:
-            max_windspeed = self._transport_specs["max_windspeed"]
-
-        else:
+        try:
+            crane = getattr(self, "crane")
             max_windspeed = self._crane_specs["max_windspeed"]
+
+        except MissingComponent as e:
+            max_windspeed = self._transport_specs["max_windspeed"]
 
         _dict = {
             "max_windspeed": le(max_windspeed),
