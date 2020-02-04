@@ -233,12 +233,9 @@ def load_material(vessel, weight, constraints={}, **kwargs):
         Dictionary of item properties.
     """
 
-    if (
-        vessel.rock_storage.level + weight
-        > vessel.rock_storage.max_cargo_weight
-    ):
+    if vessel.rock_storage.level + weight > vessel.rock_storage.max_weight:
         raise CargoWeightExceeded(
-            vessel.rock_storage.max_cargo_weight,
+            vessel.rock_storage.max_weight,
             vessel.rock_storage.level,
             "Scour Protection",
         )

@@ -14,7 +14,7 @@ import pytest
 
 from ORBIT.library import initialize_library, extract_library_specs
 from ORBIT.phases.design import ArraySystemDesign, CustomArraySystemDesign
-from ORBIT.simulation.exceptions import LibraryItemNotFoundError
+from ORBIT.core.exceptions import LibraryItemNotFoundError
 
 initialize_library(pytest.library)
 

@@ -9,4 +9,4 @@ __email__ = "jake.nunemaker@nrel.gov"
 from .port import Port
 from .cargo import Cargo
 from .vessel import Vessel
-from .components import Crane, Carousel, JackingSys, CarouselSystem
+from .components import Crane, JackingSys
