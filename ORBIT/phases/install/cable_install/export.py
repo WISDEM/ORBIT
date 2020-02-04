@@ -241,7 +241,7 @@ def install_export_cables(
         yield load_cable_on_vessel(vessel, cable, **kwargs)
 
         # At Landfall
-        yield landfall_tasks(vessel, distances["trench"])
+        yield landfall_tasks(vessel, distances["trench"], **kwargs)
 
         while remaining > 0:
             if splice_required:

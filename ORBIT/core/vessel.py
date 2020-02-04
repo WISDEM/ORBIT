@@ -301,8 +301,8 @@ class Vessel(Agent):
             max_windspeed = self._transport_specs["max_windspeed"]
 
         _dict = {
-            "max_windspeed": le(max_windspeed),
-            "max_waveheight": le(self._transport_specs["max_waveheight"]),
+            "windspeed": le(max_windspeed),
+            "waveheight": le(self._transport_specs["max_waveheight"]),
         }
 
         return _dict

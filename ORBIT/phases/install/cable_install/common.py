@@ -231,6 +231,7 @@ def bury_cable(vessel, distance, **kwargs):
         "Bury Cable",
         bury_time,
         constraints=vessel.operational_limits,
+        suspendable=True,
         **kwargs,
     )
 
