@@ -16,7 +16,14 @@ from ORBIT.core._defaults import process_times as pt
 class Monopile(Cargo):
     """"""
 
-    def __init__(self, length=None, diameter=None, weight=None, deck_space=None, **kwargs):
+    def __init__(
+        self,
+        length=None,
+        diameter=None,
+        weight=None,
+        deck_space=None,
+        **kwargs,
+    ):
         """
         Creates an instance of `Monopile`.
         """
@@ -74,6 +81,7 @@ class TransitionPiece(Cargo):
 
         return "Release Transition Piece", time
 
+
 @process
 def upend_monopile(vessel, length, constraints={}, **kwargs):
     """
@@ -118,7 +126,6 @@ def lower_monopile(vessel, constraints={}, **kwargs):
         Time required to lower monopile (h).
     """
 
-
     depth = kwargs.get("site_depth", None)
     rate = vessel.crane.crane_rate(**kwargs)
 
@@ -149,10 +156,10 @@ def drive_monopile(vessel, constraints={}, **kwargs):
         Time required to drive monopile to 'drive_length' (h).
     """
 
+    _ = vessel.crane
+
     mono_embed_len = kwargs.get("mono_embed_len", pt["mono_embed_len"])
-    mono_drive_rate = kwargs.get(
-        "mono_drive_rate", pt["mono_drive_rate"]
-    )
+    mono_drive_rate = kwargs.get("mono_drive_rate", pt["mono_drive_rate"])
 
     drive_time = mono_embed_len / mono_drive_rate
 
@@ -271,9 +278,18 @@ def install_monopile(vessel, monopile, **kwargs):
 
     reequip_time = vessel.crane.reequip(**kwargs)
 
-    yield lower_monopile(vessel, constraints=vessel.operational_limits, **kwargs)
-    yield vessel.task("Crane Reequip", reequip_time, constraints=vessel.transit_limits, **kwargs)
-    yield drive_monopile(vessel, constraints=vessel.operational_limits, **kwargs)
+    yield lower_monopile(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )
+    yield vessel.task(
+        "Crane Reequip",
+        reequip_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )
+    yield drive_monopile(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )
 
 
 @process
@@ -314,16 +330,29 @@ def install_transition_piece(vessel, tp, **kwargs):
     extension = kwargs.get("extension", site_depth + 10)
     jackdown_time = vessel.jacksys.jacking_time(extension, site_depth)
 
-    yield vessel.task("Crane Reequip", reequip_time, constraints=vessel.transit_limits, **kwargs)
-    yield lower_transition_piece(vessel, constraints=vessel.operational_limits, **kwargs)
-    
+    yield vessel.task(
+        "Crane Reequip",
+        reequip_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )
+    yield lower_transition_piece(
+        vessel, constraints=vessel.operational_limits, **kwargs
+    )
+
     if connection is "bolted":
-        yield bolt_transition_piece(vessel, constraints=vessel.operational_limits, **kwargs)
+        yield bolt_transition_piece(
+            vessel, constraints=vessel.operational_limits, **kwargs
+        )
 
     elif connection is "grouted":
 
-        yield pump_transition_piece_grout(vessel, constraints=vessel.operational_limits, **kwargs)
-        yield cure_transition_piece_grout(vessel, constraints=vessel.transit_limits)
+        yield pump_transition_piece_grout(
+            vessel, constraints=vessel.operational_limits, **kwargs
+        )
+        yield cure_transition_piece_grout(
+            vessel, constraints=vessel.transit_limits
+        )
 
     else:
         raise Exception(
@@ -331,4 +360,6 @@ def install_transition_piece(vessel, tp, **kwargs):
             "not recognized. Must be 'bolted' or 'grouted'."
         )
 
-    yield vessel.task("Jackdown", jackdown_time, constraints=vessel.transit_limits, **kwargs)
+    yield vessel.task(
+        "Jackdown", jackdown_time, constraints=vessel.transit_limits, **kwargs
+    )
