@@ -9,6 +9,32 @@ __email__ = "jake.nunemaker@nrel.gov"
 import os
 
 
+class MissingComponent(Exception):
+    """Error for a missing component on a vessel."""
+
+    def __init__(self, vessel, component):
+        """
+        Creates an instance of MissingComponent.
+
+        Parameters
+        ----------
+        vessel : Vessel
+        component : str
+            Missing required component.
+        """
+
+        self.vessel = vessel
+        self.component = component
+
+        self.message = (
+            f"{vessel} is missing required component(s) '{component}'."
+        )
+
+    def __str__(self):
+
+        return self.message
+
+
 class ItemNotFound(Exception):
     """Error for when no items in list satisfy rule"""
 

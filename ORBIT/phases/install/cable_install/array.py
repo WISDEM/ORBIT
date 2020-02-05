@@ -18,10 +18,10 @@ from .common import (
     lay_cable,
     bury_cable,
     prep_cable,
-    test_cable,
     lower_cable,
     pull_in_cable,
     lay_bury_cable,
+    terminate_cable,
     load_cable_on_vessel,
 )
 
@@ -197,7 +197,7 @@ def install_array_cables(
                     yield position_onsite(vessel, **kwargs)
                     yield prep_cable(vessel, **kwargs)
                     yield pull_in_cable(vessel, **kwargs)
-                    yield test_cable(vessel, **kwargs)
+                    yield terminate_cable(vessel, **kwargs)
                     yield lower_cable(vessel, **kwargs)
 
                     # Cable laying procedure
@@ -211,7 +211,7 @@ def install_array_cables(
                     # Post cable laying procedure (at substructure 2)
                     yield prep_cable(vessel, **kwargs)
                     yield pull_in_cable(vessel, **kwargs)
-                    yield test_cable(vessel, **kwargs)
+                    yield terminate_cable(vessel, **kwargs)
 
         # Transit back to port
         vessel.at_site = False

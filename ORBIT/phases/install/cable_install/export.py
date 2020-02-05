@@ -18,11 +18,11 @@ from .common import SimpleCable as Cable
 from .common import (
     lay_cable,
     bury_cable,
-    test_cable,
     pull_in_cable,
     landfall_tasks,
     lay_bury_cable,
     splice_process,
+    terminate_cable,
     load_cable_on_vessel,
 )
 
@@ -272,7 +272,7 @@ def install_export_cables(
         # At Site
         yield position_onsite(vessel, **kwargs)
         yield pull_in_cable(vessel, **kwargs)
-        yield test_cable(vessel, **kwargs)
+        yield terminate_cable(vessel, **kwargs)
 
         # Transit back to port
         yield vessel.transit(distances["site"])

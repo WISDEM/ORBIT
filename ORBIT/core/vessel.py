@@ -17,35 +17,9 @@ from ORBIT.core.components import (
     VesselStorage,
     ScourProtectionStorage,
 )
-from ORBIT.core.exceptions import ItemNotFound
+from ORBIT.core.exceptions import ItemNotFound, MissingComponent
 
 Trip = namedtuple("Trip", "cargo_weight deck_space items")
-
-
-class MissingComponent(Exception):
-    """Error for a missing component on a vessel."""
-
-    def __init__(self, vessel, component):
-        """
-        Creates an instance of MissingComponent.
-
-        Parameters
-        ----------
-        vessel : Vessel
-        component : str
-            Missing required component.
-        """
-
-        self.vessel = vessel
-        self.component = component
-
-        self.message = (
-            f"{vessel} is missing required component(s) '{component}'."
-        )
-
-    def __str__(self):
-
-        return self.message
 
 
 class Vessel(Agent):
@@ -95,6 +69,7 @@ class Vessel(Agent):
     @property
     def rock_storage(self):
         # TODO: Add rock_storage.setter type check?
+
         if self._rock_storage:
             return self._rock_storage
 
@@ -176,6 +151,9 @@ class Vessel(Agent):
             self._cable_storage = CableCarousel(
                 self.env, **self._cable_storage_specs
             )
+
+        else:
+            self._cable_storage = None
 
     def extract_scour_protection_specs(self):
         """

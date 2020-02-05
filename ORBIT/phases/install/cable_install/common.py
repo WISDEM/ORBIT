@@ -64,7 +64,7 @@ def landfall_tasks(vessel, trench_length, **kwargs):
     yield pull_winch(vessel, trench_length, **kwargs)
     yield prep_cable(vessel, **kwargs)
     yield pull_in_cable(vessel, **kwargs)
-    yield test_cable(vessel, **kwargs)
+    yield terminate_cable(vessel, **kwargs)
     yield lower_cable(vessel, **kwargs)
 
 
@@ -133,7 +133,7 @@ def pull_in_cable(vessel, **kwargs):
 
 
 @process
-def test_cable(vessel, **kwargs):
+def terminate_cable(vessel, **kwargs):
     """
     Task representing time required to terminate and test cable connection.
 

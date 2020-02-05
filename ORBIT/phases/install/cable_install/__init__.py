@@ -6,4 +6,5 @@ __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
 from .array import ArrayCableInstallation
+from .common import SimpleCable
 from .export import ExportCableInstallation
