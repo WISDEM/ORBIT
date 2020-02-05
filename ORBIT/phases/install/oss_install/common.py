@@ -12,8 +12,8 @@ from ORBIT.core import Cargo
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install.monopile_install.common import (
     bolt_transition_piece,
+    cure_transition_piece_grout,
     pump_transition_piece_grout,
-    cure_transition_piece_grout
 )
 
 
@@ -48,7 +48,7 @@ class Topside(Cargo):
 
 
 class Jacket(Cargo):
-    # TODO: 
+    # TODO:
     pass
 
 
@@ -94,6 +94,8 @@ def attach_topside(vessel, constraints={}, **kwargs):
         Time required to attach topside (h).
     """
 
+    _ = vessel.crane
+
     key = "topside_attach_time"
     attach_time = kwargs.get(key, pt[key])
 
@@ -125,17 +127,28 @@ def install_topside(vessel, topside, **kwargs):
     extension = kwargs.get("extension", site_depth + 10)
     jackdown_time = vessel.jacksys.jacking_time(extension, site_depth)
 
-    yield vessel.task("Crane Reequip", reequip_time, constraints=vessel.transit_limits, **kwargs)
+    yield vessel.task(
+        "Crane Reequip",
+        reequip_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )
     yield lift_topside(vessel, constraints=vessel.operational_limits)
     yield attach_topside(vessel, constraints=vessel.operational_limits)
-  
+
     if connection is "bolted":
-        yield bolt_transition_piece(vessel, constraints=vessel.operational_limits, **kwargs)
+        yield bolt_transition_piece(
+            vessel, constraints=vessel.operational_limits, **kwargs
+        )
 
     elif connection is "grouted":
 
-        yield pump_transition_piece_grout(vessel, constraints=vessel.operational_limits, **kwargs)
-        yield cure_transition_piece_grout(vessel, constraints=vessel.transit_limits)
+        yield pump_transition_piece_grout(
+            vessel, constraints=vessel.operational_limits, **kwargs
+        )
+        yield cure_transition_piece_grout(
+            vessel, constraints=vessel.transit_limits
+        )
 
     else:
         raise Exception(
@@ -143,4 +156,6 @@ def install_topside(vessel, topside, **kwargs):
             "not recognized. Must be 'bolted' or 'grouted'."
         )
 
-    yield vessel.task("Jackdown", jackdown_time, constraints=vessel.transit_limits, **kwargs)
+    yield vessel.task(
+        "Jackdown", jackdown_time, constraints=vessel.transit_limits, **kwargs
+    )
