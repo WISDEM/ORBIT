@@ -13,8 +13,11 @@ import pytest
 from ORBIT import ProjectManager
 from tests.data import test_weather
 from ORBIT.library import initialize_library, extract_library_specs
-from ORBIT.manager import PhaseNotFound, WeatherProfileError
-from ORBIT.simulation.exceptions import MissingInputs
+from ORBIT.core.exceptions import (
+    MissingInputs,
+    PhaseNotFound,
+    WeatherProfileError,
+)
 
 initialize_library(pytest.library)
 config = extract_library_specs("config", "project_manager")
