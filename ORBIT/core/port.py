@@ -29,28 +29,33 @@ class Port(simpy.FilterStore):
 
     def get_item(self, _type):
         """
-        TODO:
-        Checks self.items for an item satisfying 'rule'. Returns item if found,
-        otherwise returns an error.
+        Checks self.items for an item satisfying `item.type = _type`, otherwise
+        returns `ItemNotFound`.
 
         Parameters
         ----------
-        rule : tuple
-            Tuple defining the rule to filter items by.
-            - ('key': 'value')
+        _type : str
+            Type of item to match. Checks `item.type`.
 
         Returns
         -------
-        res : FilterStoreGet
-            Response from underlying FilterStore. Call 'res.value' for the
-            underlying dictionary.
+        res.value : FilterStoreGet.value
+            Returned item.
+
+        Raises
+        ------
+        ItemNotFound
         """
 
         target = None
         for i in self.items:
-            if i.type == _type:
-                target = i
-                break
+            try:
+                if i.type == _type:
+                    target = i
+                    break
+
+            except AttributeError:
+                continue
 
         if not target:
             raise ItemNotFound(_type)
