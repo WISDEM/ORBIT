@@ -469,7 +469,7 @@ class ProjectManager:
 
         for name in phase_list:
             if self.weather is not None:
-                weather = self.weather.iloc[ceil(_start) :].copy()
+                weather = self.weather.iloc[ceil(_start) :].copy().to_records()
 
             else:
                 weather = None
@@ -520,12 +520,11 @@ class ProjectManager:
 
             for l in logs:
                 try:
-                    l["time"] += _start
+                    l["time"] += (start - _zero).days * 24
                 except KeyError:
                     pass
 
             self._output_logs.extend(logs)
-            _start = ceil(_start + time)
 
     def get_weather_profile(self, start):
         """
@@ -551,7 +550,7 @@ class ProjectManager:
         if profile.empty:
             raise WeatherProfileError(start, self.weather)
 
-        return profile
+        return profile.to_records()
 
     @property
     def project_logs(self):
