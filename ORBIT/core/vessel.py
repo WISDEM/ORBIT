@@ -37,52 +37,108 @@ class Vessel(Agent):
 
         super().__init__(name)
         self.config = config
-        # self.extract_vessel_specs()
+        self.extract_vessel_dayrate()
+
+    def submit_action_log(self, action, duration, **kwargs):
+        """
+        Submits a log representing a completed `action` performed over time
+        `duration`.
+
+        This method overwrites the default `submit_action_log` in
+        `marmot.Agent`, adding operation cost to every submitted log within
+        ORBIT.
+
+        Parameters
+        ----------
+        action : str
+            Performed action.
+        duration : int | float
+            Duration of action.
+
+        Raises
+        ------
+        AgentNotRegistered
+        """
+
+        if self.env is None:
+            raise AgentNotRegistered(self)
+
+        else:
+            payload = {
+                **kwargs,
+                "agent": str(self),
+                "action": action,
+                "duration": float(duration),
+                "cost": self.operation_cost(duration),
+            }
+
+            self.env._submit_log(payload, level="ACTION")
+
+    def extract_vessel_dayrate(self):
+        """
+        Extracts the day rate of the vessel. If it isn't found, resorts to
+        default values.
+        """
+
+        try:
+            self.day_rate = self.config["vessel_specs"]["day_rate"]
+
+        except KeyError:
+            self.day_rate = np.NaN
+
+    def operation_cost(self, hours, mult=1.0):
+        """
+        Returns cost of an operation of duration `hours`.
+
+        Parameters
+        ----------
+        hours : int | float
+            Duration of operation in hours.
+        mult : int | float
+            Multiplier to use for the operation cost.
+            Default: 1.
+        """
+
+        return (self.day_rate / 24) * hours * mult
 
     @property
     def crane(self):
-        # TODO: Add crane.setter type check?
-        if self._crane:
+        try:
             return self._crane
 
-        else:
+        except AttributeError:
             raise MissingComponent(self, "Crane")
 
     @property
     def jacksys(self):
-        # TODO: Add jacksys.setter type check?
-        if self._jacksys:
+        try:
             return self._jacksys
 
-        else:
+        except AttributeError:
             raise MissingComponent(self, "Jacking System")
 
     @property
     def storage(self):
-        # TODO: Add storage.setter type check?
-        if self._storage:
+        try:
             return self._storage
 
-        else:
+        except AttributeError:
             return MissingComponent(self, "Vessel Storage")
 
     @property
     def rock_storage(self):
-        # TODO: Add rock_storage.setter type check?
-
-        if self._rock_storage:
+        try:
             return self._rock_storage
 
-        else:
+        except AttributeError:
             raise MissingComponent(self, "Scour Protection Storage")
 
     @property
     def cable_storage(self):
-        # TODO: Add cable_storage.setter type check?
-        if self._cable_storage:
+        try:
             return self._cable_storage
 
-        else:
+        except AttributeError:
             raise MissingComponent(self, "Cable Storage")
 
     def extract_vessel_specs(self):
@@ -104,46 +160,29 @@ class Vessel(Agent):
         self.transit_speed = self._transport_specs.get("transit_speed", None)
 
     def extract_crane_specs(self):
-        """
-        TODO:
-        """
+        """Extracts crane specifications if found."""
 
         self._crane_specs = self.config.get("crane_specs", {})
         if self._crane_specs:
             self._crane = Crane(self._crane_specs)
 
-        else:
-            self._crane = None
-
     def extract_jacksys_specs(self):
-        """
-        TODO:
-        """
+        """Extracts jacking system specifications if found."""
 
         self._jacksys_specs = self.config.get("jacksys_specs", {})
         if self._jacksys_specs:
             self._jacksys = JackingSys(self._jacksys_specs)
 
-        else:
-            self._jacksys = None
-
     def extract_storage_specs(self):
-        """
-        Extracts and defines storage system specifications.
-        """
+        """Extracts storage system specifications if found."""
 
         self._storage_specs = self.config.get("storage_specs", {})
         if self._storage_specs:
             self.trip_data = []
             self._storage = VesselStorage(self.env, **self._storage_specs)
 
-        else:
-            self._storage = None
-
     def extract_cable_storage_specs(self):
-        """
-        Extracts and defines cable storage system specifications.
-        """
+        """Extracts and defines cable storage system specifications if found."""
 
         self._cable_storage_specs = self.config.get("cable_storage", {})
         if self._cable_storage_specs:
@@ -151,9 +190,6 @@ class Vessel(Agent):
             self._cable_storage = CableCarousel(
                 self.env, **self._cable_storage_specs
             )
-
-        else:
-            self._cable_storage = None
 
     def extract_scour_protection_specs(self):
         """
@@ -178,9 +214,6 @@ class Vessel(Agent):
         if capacity:
             self._rock_storage = ScourProtectionStorage(self.env, capacity)
 
-        else:
-            self._rock_storage = None
-
         self.scour_protection_install_speed = self._sp_specs.get(
             "scour_protection_install_speed", 10
         )
@@ -190,7 +223,17 @@ class Vessel(Agent):
         self, _type, vessel=None, release=False, **kwargs
     ):
         """
+        Retrieves an item which matches `item.type = _type` from `self.storage`
+        or `vessel.storage` if configured.
 
+        Parameters
+        ----------
+        _type : str
+            Type of item to retrieve.
+        vessel : Vessel | None
+            Optional configuration to retrieve item from different vessel.
+        release : bool
+            If True, releases the vessel if it is empty.
         """
 
         if vessel is None:
@@ -204,7 +247,12 @@ class Vessel(Agent):
             raise e
 
         action, time = item.release(**kwargs)
-        yield self.task(action, time, constraints=self.transit_limits)
+        yield self.task(
+            action,
+            time,
+            constraints=self.transit_limits,
+            cost=self.operation_cost(time),
+        )
 
         if release and vessel.storage.any_remaining(_type) is False:
             vessel.release.succeed()
@@ -253,8 +301,8 @@ class Vessel(Agent):
     @property
     def transit_limits(self):
         """
-        TODO: Returns dictionary with 'max_windspeed' and 'max_waveheight'
-        for transit.
+        Returns dictionary of `marmot.Constraints` for 'windspeed' and
+        'waveheight', representing the transit limits of the vessel.
         """
 
         _dict = {
@@ -267,8 +315,8 @@ class Vessel(Agent):
     @property
     def operational_limits(self):
         """
-        TODO: Returns dictionary with 'max_windspeed' and 'max_waveheight'
-        for operations.
+        Returns dictionary of `marmot.Constraints` for 'windspeed' and
+        'waveheight', representing the operational limits of the vessel.
         """
 
         try:

@@ -9,20 +9,19 @@ from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import (
+    shuttle_items_to_queue,
     prep_for_site_operations,
     get_list_of_items_from_port,
-    shuttle_items_to_queue
 )
-
 from ORBIT.phases.install import InstallPhase
-from .common import (
-    Topside,
-    install_topside
+from ORBIT.phases.install.monopile_install.common import (
+    Monopile,
+    upend_monopile,
+    install_monopile,
 )
 
-from ORBIT.phases.install.monopile_install.common import (
-    Monopile, install_monopile, upend_monopile
-)
+from .common import Topside, install_topside
+
 
 class OffshoreSubstationInstallation(InstallPhase):
     """
@@ -63,12 +62,10 @@ class OffshoreSubstationInstallation(InstallPhase):
 
         Parameters
         ----------
-        TODO:
         config : dict
             Simulation specific configuration.
-        weather : pd.DataFrame (optional)
+        weather : np.ndarray
             Weather profile at site.
-            Expects columns 'max_waveheight' and 'max_windspeed'.
         """
 
         super().__init__(weather, **kwargs)
@@ -76,7 +73,6 @@ class OffshoreSubstationInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.extract_defaults()
-        # self.extract_phase_kwargs(**kwargs)
 
         self.initialize_port()
         self.setup_simulation(**kwargs)
@@ -131,7 +127,6 @@ class OffshoreSubstationInstallation(InstallPhase):
         for _ in range(self.num_substations):
             self.port.put(sub)
             self.port.put(top)
-
 
     def initialize_oss_install_vessel(self):
         """
@@ -229,25 +224,27 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
             if queue.vessel:
 
                 # Prep for monopile install
-                yield prep_for_site_operations(vessel, survey_required=True, **kwargs)
+                yield prep_for_site_operations(
+                    vessel, survey_required=True, **kwargs
+                )
 
                 # Get monopile
                 monopile = yield vessel.get_item_from_storage(
-                    "Monopile",
-                    vessel=queue.vessel,
-                    **kwargs,
+                    "Monopile", vessel=queue.vessel, **kwargs
                 )
 
-                yield upend_monopile(vessel, monopile.length, constraints=vessel.operational_limits, **kwargs)
+                yield upend_monopile(
+                    vessel,
+                    monopile.length,
+                    constraints=vessel.operational_limits,
+                    **kwargs,
+                )
                 yield install_monopile(vessel, monopile, **kwargs)
 
                 # Get topside
                 topside = yield vessel.get_item_from_storage(
-                        "Topside",
-                        vessel=queue.vessel,
-                        release=True,
-                        **kwargs,
-                    )
+                    "Topside", vessel=queue.vessel, release=True, **kwargs
+                )
                 yield install_topside(vessel, topside, **kwargs)
                 n += 1
 
@@ -255,7 +252,9 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
                 start = vessel.env.now
                 yield queue.activate
                 delay_time = vessel.env.now - start
-                vessel.submit_action_log("WaitForFeeder", delay_time, location="Site")
+                vessel.submit_action_log(
+                    "WaitForFeeder", delay_time, location="Site"
+                )
 
     # Transit to port
     vessel.at_site = False

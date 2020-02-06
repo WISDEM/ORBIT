@@ -15,9 +15,9 @@ from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import (
+    shuttle_items_to_queue,
     prep_for_site_operations,
     get_list_of_items_from_port,
-    shuttle_items_to_queue
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
@@ -30,11 +30,6 @@ from .common import (
     install_tower_section,
     install_turbine_blade,
 )
-
-# from ORBIT.simulation.logic import shuttle_items_to_queue
-# from ORBIT.phases.install.turbine_install._wtiv_with_feeders import (
-#     install_turbine_components_from_queue,
-# )
 
 
 class TurbineInstallation(InstallPhase):
@@ -88,12 +83,10 @@ class TurbineInstallation(InstallPhase):
 
         Parameters
         ----------
-        TODO:
         config : dict
             Simulation specific configuration.
         weather : np.ndarray
             Weather profile at site.
-            Expects columns 'max_waveheight' and 'max_windspeed'.
         """
 
         super().__init__(weather, **kwargs)
@@ -101,7 +94,6 @@ class TurbineInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.extract_defaults()
-        # self.extract_phase_kwargs(**kwargs)
 
         self.initialize_port()
         self.initialize_wtiv()
@@ -308,7 +300,7 @@ def solo_install_turbines(
     component_list = [
         *np.repeat("TowerSection", tower_sections),
         "Nacelle",
-        *np.repeat("Blade", num_blades)
+        *np.repeat("Blade", num_blades),
     ]
 
     n = 0
@@ -428,7 +420,7 @@ def install_turbine_components_from_queue(
     component_list = [
         *np.repeat("TowerSection", tower_sections),
         "Nacelle",
-        *np.repeat("Blade", num_blades)
+        *np.repeat("Blade", num_blades),
     ]
 
     n = 0
@@ -489,9 +481,7 @@ def install_turbine_components_from_queue(
                 )
 
                 yield wtiv.task(
-                    "Jackdown",
-                    jackdown_time,
-                    constraints=wtiv.transit_limits,
+                    "Jackdown", jackdown_time, constraints=wtiv.transit_limits
                 )
 
                 n += 1
@@ -500,13 +490,13 @@ def install_turbine_components_from_queue(
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log("WaitForFeeder", delay_time, location="Site")
+                wtiv.submit_action_log(
+                    "WaitForFeeder", delay_time, location="Site"
+                )
 
     # Transit to port
     wtiv.at_site = False
-    yield wtiv.task(
-        "Transit", transit_time, constraints=wtiv.transit_limits
-    )
+    yield wtiv.task("Transit", transit_time, constraints=wtiv.transit_limits)
     wtiv.at_port = True
 
     wtiv.submit_debug_log(message="Turbine installation complete!")

@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from copy import deepcopy
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -77,6 +78,8 @@ def test_for_complete_logging(weather, config):
         _df = df[df["agent"] == vessel].copy()
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
+
+    assert ~df["cost"].isnull().any()
 
 
 # @pytest.mark.parametrize(

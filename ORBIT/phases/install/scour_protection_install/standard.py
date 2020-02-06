@@ -37,18 +37,14 @@ class ScourProtectionInstallation(InstallPhase):
 
     def __init__(self, config, weather=None, **kwargs):
         """
-        TODO:
-        Creates an instance of WtivSim.
+        Creates an instance of `ScourProtectionInstallation`.
 
         Parameters
         ----------
         config : dict
-            User-defined input dictionary for modeling.
-        weather : str, default None
-            File and path to file for a weather profile used to determine
-            weather delays. If `None`, then there are no weather delays.
-        kwargs : dict
-            Optional user-defined inputs.
+            Simulation specific configuration.
+        weather : np.ndarray
+            Weather profile at site.
         """
 
         super().__init__(weather, **kwargs)
@@ -56,7 +52,6 @@ class ScourProtectionInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.extract_defaults()
-        # self.extract_phase_kwargs(**kwargs)
 
         self.setup_simulation(**kwargs)
 

@@ -10,6 +10,7 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 import copy
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -44,6 +45,8 @@ def test_full_run_logging(weather):
     df = df.assign(shift=(df.time - df.time.shift(1)))
     assert (df.duration - df["shift"]).fillna(0.0).abs().max() < 1e-9
     assert df[df.action == "Drop SP Material"].shape[0] == sim.num_turbines
+
+    assert ~df["cost"].isnull().any()
 
 
 def test_kwargs():

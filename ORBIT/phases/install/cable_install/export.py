@@ -58,7 +58,7 @@ class ExportCableInstallation(InstallPhase):
         config : dict
             Simulation specific configuration.
         weather : np.ndarray
-            Hourly weather profile at site.
+            Weather profile at site.
         """
 
         super().__init__(weather, **kwargs)
@@ -66,7 +66,6 @@ class ExportCableInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.extract_defaults()
-        # self.extract_phase_kwargs(**kwargs)
 
         self.extract_distances()
         self.setup_simulation(**kwargs)
@@ -152,8 +151,8 @@ class ExportCableInstallation(InstallPhase):
                 "action": "Onshore Construction",
                 "agent": "Onshore Construction",
                 "duration": construction_time,
+                "cost": construction_time * construction_rate,
                 "location": "Landfall",
-                # TODO: Cost
             },
             level="ACTION",
         )

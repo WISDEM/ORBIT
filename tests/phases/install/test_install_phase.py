@@ -26,6 +26,8 @@ class BadInstallPhase(InstallPhase):
 class SampleInstallPhase(InstallPhase):
     """Subclass for testing InstallPhase."""
 
+    phase = "SampleInstallPhase"
+
     def __init__(self, config, **kwargs):
         """Creates an instance of SampleInstallPhase."""
 

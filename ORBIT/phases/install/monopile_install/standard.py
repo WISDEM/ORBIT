@@ -11,9 +11,9 @@ from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import (
+    shuttle_items_to_queue,
     prep_for_site_operations,
     get_list_of_items_from_port,
-    shuttle_items_to_queue
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
@@ -23,7 +23,7 @@ from .common import (
     TransitionPiece,
     upend_monopile,
     install_monopile,
-    install_transition_piece
+    install_transition_piece,
 )
 
 
@@ -71,7 +71,6 @@ class MonopileInstallation(InstallPhase):
 
         Parameters
         ----------
-        TODO:
         config : dict
             Simulation specific configuration.
         weather : pd.DataFrame (optional)
@@ -84,7 +83,6 @@ class MonopileInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.extract_defaults()
-        # self.extract_phase_kwargs(**kwargs)
 
         self.initialize_port()
         self.initialize_wtiv()
@@ -124,7 +122,6 @@ class MonopileInstallation(InstallPhase):
             hub_height=hub_height,
             **kwargs,
         )
-
 
     def setup_simulation_with_feeders(self, **kwargs):
         """
@@ -238,6 +235,7 @@ class MonopileInstallation(InstallPhase):
 
         return outputs
 
+
 @process
 def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
     """
@@ -266,8 +264,8 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
             try:
                 # Get substructure + transition piece from port
                 yield get_list_of_items_from_port(
-                        vessel, port, component_list, **kwargs
-                    )
+                    vessel, port, component_list, **kwargs
+                )
 
             except ItemNotFound:
                 # If no items are at port and vessel.storage.items is empty,
@@ -290,20 +288,27 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
 
             if vessel.storage.items:
                 # Prep for monopile install
-                yield prep_for_site_operations(vessel, survey_required=True, **kwargs)
+                yield prep_for_site_operations(
+                    vessel, survey_required=True, **kwargs
+                )
 
                 # Get monopile from internal storage
                 monopile = yield vessel.get_item_from_storage(
-                        "Monopile", **kwargs
-                    )
+                    "Monopile", **kwargs
+                )
 
-                yield upend_monopile(vessel, monopile.length, constraints=vessel.operational_limits, **kwargs)
+                yield upend_monopile(
+                    vessel,
+                    monopile.length,
+                    constraints=vessel.operational_limits,
+                    **kwargs,
+                )
                 yield install_monopile(vessel, monopile, **kwargs)
 
                 # Get transition piece from internal storage
                 tp = yield vessel.get_item_from_storage(
-                        "TransitionPiece", **kwargs
-                    )
+                    "TransitionPiece", **kwargs
+                )
 
                 yield install_transition_piece(vessel, tp, **kwargs)
 
@@ -357,16 +362,21 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
             if queue.vessel:
 
                 # Prep for monopile install
-                yield prep_for_site_operations(wtiv, survey_required=True, **kwargs)
+                yield prep_for_site_operations(
+                    wtiv, survey_required=True, **kwargs
+                )
 
                 # Get monopile
                 monopile = yield wtiv.get_item_from_storage(
-                    "Monopile",
-                    vessel=queue.vessel,
-                    **kwargs,
+                    "Monopile", vessel=queue.vessel, **kwargs
                 )
 
-                yield upend_monopile(wtiv, monopile.length, constraints=wtiv.operational_limits, **kwargs)
+                yield upend_monopile(
+                    wtiv,
+                    monopile.length,
+                    constraints=wtiv.operational_limits,
+                    **kwargs,
+                )
                 yield install_monopile(wtiv, monopile, **kwargs)
 
                 # Get transition piece from active feeder
@@ -386,13 +396,13 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log("WaitForFeeder", delay_time, location="Site")
+                wtiv.submit_action_log(
+                    "WaitForFeeder", delay_time, location="Site"
+                )
 
     # Transit to port
     wtiv.at_site = False
-    yield wtiv.task(
-        "Transit", transit_time, constraints=wtiv.transit_limits
-    )
+    yield wtiv.task("Transit", transit_time, constraints=wtiv.transit_limits)
     wtiv.at_port = True
 
     wtiv.submit_debug_log(message="Monopile installation complete!")

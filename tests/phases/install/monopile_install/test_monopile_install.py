@@ -86,6 +86,8 @@ def test_for_complete_logging(weather, config):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
+    assert ~df["cost"].isnull().any()
+
 
 # TODO: Remove?
 # @pytest.mark.parametrize(

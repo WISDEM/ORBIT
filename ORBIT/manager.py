@@ -25,11 +25,11 @@ from ORBIT.phases.design import (
 )
 from ORBIT.phases.install import (
     TurbineInstallation,
-    # MonopileInstallation,
-    # ArrayCableInstallation,
-    # ExportCableInstallation,
-    # ScourProtectionInstallation,
-    # OffshoreSubstationInstallation,
+    MonopileInstallation,
+    ArrayCableInstallation,
+    ExportCableInstallation,
+    ScourProtectionInstallation,
+    OffshoreSubstationInstallation,
 )
 from ORBIT.core.exceptions import PhaseNotFound, WeatherProfileError
 
@@ -50,12 +50,12 @@ class ProjectManager:
     ]
 
     _install_phases = [
-        # MonopileInstallation,
+        MonopileInstallation,
         TurbineInstallation,
-        # OffshoreSubstationInstallation,
-        # ArrayCableInstallation,
-        # ExportCableInstallation,
-        # ScourProtectionInstallation,
+        OffshoreSubstationInstallation,
+        ArrayCableInstallation,
+        ExportCableInstallation,
+        ScourProtectionInstallation,
     ]
 
     def __init__(self, config, library_path=None, weather=None):
@@ -68,8 +68,8 @@ class ProjectManager:
             Project configuration.
         library_path: str, default: None
             The absolute path to the project library.
-        weather : pd.DataFrame
-            Site weather.
+        weather : np.ndarray
+            Site weather timeseries.
         """
 
         initialize_library(library_path)
@@ -86,7 +86,7 @@ class ProjectManager:
         self.weather = weather
         self.phase_times = {}
         self.phase_costs = {}
-        self._output_dfs = {}
+        self._output_logs = []
         self._phases = {}
 
         self.design_results = {}
@@ -366,7 +366,7 @@ class ProjectManager:
         ----------
         name : str
             Phase to run.
-        weather : bool | DataFrame
+        weather : None | np.ndarray
 
         Returns
         -------
@@ -374,8 +374,8 @@ class ProjectManager:
             Total phase time.
         cost : int | float
             Total phase cost.
-        df : pd.DataFrame
-            Total phase dataframe.
+        logs : list
+            List of phase logs.
         """
 
         _class = self.get_phase_class(name)
@@ -389,11 +389,11 @@ class ProjectManager:
 
         time = phase.total_phase_time
         cost = phase.total_phase_cost
-        df = phase.phase_dataframe
+        logs = deepcopy(phase.env.logs)
 
-        self.detailed_outputs[name] = phase.detailed_output
+        # self.detailed_outputs[name] = phase.detailed_output
 
-        return time, cost, df
+        return time, cost, logs
 
     def get_phase_class(self, phase):
         """
@@ -474,14 +474,18 @@ class ProjectManager:
             else:
                 weather = None
 
-            time, cost, df = self.run_install_phase(name, weather)
+            time, cost, logs = self.run_install_phase(name, weather)
 
             self.phase_times[name] = time
             self.phase_costs[name] = cost
 
-            df["time"] = df["time"] + _start
-            self._output_dfs[name] = df
+            for l in logs:
+                try:
+                    l["time"] += _start
+                except KeyError:
+                    pass
 
+            self._output_logs.extend(logs)
             _start = ceil(_start + time)
 
     def run_multiple_phases_overlapping(self, phase_dict):
@@ -509,13 +513,19 @@ class ProjectManager:
             else:
                 weather = None
 
-            time, cost, df = self.run_install_phase(name, weather)
+            time, cost, logs = self.run_install_phase(name, weather)
 
             self.phase_times[name] = time
             self.phase_costs[name] = cost
 
-            df["time"] = df["time"] + (start - _zero).days * 24
-            self._output_dfs[name] = df
+            for l in logs:
+                try:
+                    l["time"] += _start
+                except KeyError:
+                    pass
+
+            self._output_logs.extend(logs)
+            _start = ceil(_start + time)
 
     def get_weather_profile(self, start):
         """
@@ -529,7 +539,7 @@ class ProjectManager:
 
         Returns
         -------
-        profile : DataFrame
+        profile : np.ndarray.
             Weather profile with first index at 'start'.
         """
 
@@ -544,19 +554,23 @@ class ProjectManager:
         return profile
 
     @property
-    def project_dataframe(self):
-        """Returns total project schedule in DataFrame format."""
+    def project_logs(self):
+        """Returns list of all logs in the project."""
 
-        if not self._output_dfs:
-            raise Exception("Project has not been ran yet.")
+        if not self._output_logs:
+            raise Exception("Project hasn't been ran yet.")
 
-        df = (
-            pd.concat([df for _, df in self._output_dfs.items()])
-            .sort_values("time")
-            .reset_index(drop=True)
-        )
+        return self._output_logs
 
-        return df
+    @property
+    def project_actions(self):
+        """Returns list of all actions in the project."""
+
+        if not self._output_logs:
+            raise Exception("Project hasn't been ran yet.")
+
+        actions = [l for l in self._output_logs if l["level"] == "ACTION"]
+        return sorted(actions, key=lambda l: l["time"])
 
     @staticmethod
     def create_input_xlsx():

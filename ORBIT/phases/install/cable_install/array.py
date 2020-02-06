@@ -54,7 +54,7 @@ class ArrayCableInstallation(InstallPhase):
         config : dict
             Simulation specific configuration.
         weather : np.ndarray
-            Hourly weather profile at site.
+            Weather profile at site.
         """
 
         super().__init__(weather, **kwargs)
@@ -62,7 +62,6 @@ class ArrayCableInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.extract_defaults()
-        # self.extract_phase_kwargs(**kwargs)
 
         self.setup_simulation(**kwargs)
 
