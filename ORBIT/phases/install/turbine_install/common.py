@@ -1,10 +1,9 @@
-"""
-Jake Nunemaker
-National Renewable Energy Lab
-01/26/2020
+"""Common processes and cargo types for Turbine Installations."""
 
-A reconstruction of turbine related tasks using Marmot.
-"""
+__author__ = "Jake Nunemaker"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
+__maintainer__ = "Jake Nunemaker"
+__email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import process

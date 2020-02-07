@@ -1,4 +1,4 @@
-""""""
+"""Common processes and cargo types for Offshore Substation installations."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -18,7 +18,7 @@ from ORBIT.phases.install.monopile_install.common import (
 
 
 class Topside(Cargo):
-    """"""
+    """Topside Cargo"""
 
     def __init__(self, weight=None, deck_space=None, **kwargs):
         """
@@ -48,14 +48,14 @@ class Topside(Cargo):
 
 
 class Jacket(Cargo):
-    # TODO:
+    """Jacket Cargo"""
+
     pass
 
 
 @process
-def lift_topside(vessel, constraints={}, **kwargs):
+def lift_topside(vessel, **kwargs):
     """
-    TODO:
     Calculates time required to lift topside at site.
 
     Parameters
@@ -63,21 +63,22 @@ def lift_topside(vessel, constraints={}, **kwargs):
     vessel : Vessel
         Vessel to perform action.
 
-    Returns
-    -------
-    topside_lift_time : float
-        Time required to lift topside (h).
+    Yields
+    ------
+    vessel.task representing time to "Lift Topside".
     """
 
     lift_height = 5  # small lift just to clear the deck
     crane_rate = vessel.crane.crane_rate(**kwargs)
     lift_time = lift_height / crane_rate
 
-    yield vessel.task("Lift Topside", lift_time, constraints=constraints)
+    yield vessel.task(
+        "Lift Topside", lift_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def attach_topside(vessel, constraints={}, **kwargs):
+def attach_topside(vessel, **kwargs):
     """
     Returns time required to attach topside at site.
 
@@ -88,10 +89,9 @@ def attach_topside(vessel, constraints={}, **kwargs):
     topside_attach_time : int | float
         Time required to attach topside.
 
-    Returns
-    -------
-    topside_attach_time : float
-        Time required to attach topside (h).
+    Yields
+    ------
+    vessel.task representing time to "Attach Topside".
     """
 
     _ = vessel.crane
@@ -99,13 +99,14 @@ def attach_topside(vessel, constraints={}, **kwargs):
     key = "topside_attach_time"
     attach_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Attach Topside", attach_time, constraints=constraints)
+    yield vessel.task(
+        "Attach Topside", attach_time, constraints=vessel.operational_limits
+    )
 
 
 @process
 def install_topside(vessel, topside, **kwargs):
     """
-    TODO:
     Substation topside installation process.
     Subprocesses:
     - Crane reequip
@@ -133,22 +134,16 @@ def install_topside(vessel, topside, **kwargs):
         constraints=vessel.transit_limits,
         **kwargs,
     )
-    yield lift_topside(vessel, constraints=vessel.operational_limits)
-    yield attach_topside(vessel, constraints=vessel.operational_limits)
+    yield lift_topside(vessel)
+    yield attach_topside(vessel)
 
     if connection is "bolted":
-        yield bolt_transition_piece(
-            vessel, constraints=vessel.operational_limits, **kwargs
-        )
+        yield bolt_transition_piece(vessel, **kwargs)
 
     elif connection is "grouted":
 
-        yield pump_transition_piece_grout(
-            vessel, constraints=vessel.operational_limits, **kwargs
-        )
-        yield cure_transition_piece_grout(
-            vessel, constraints=vessel.transit_limits
-        )
+        yield pump_transition_piece_grout(vessel, **kwargs)
+        yield cure_transition_piece_grout(vessel, **kwargs)
 
     else:
         raise Exception(

@@ -1,9 +1,9 @@
-"""Provides the `ScourProtectionInstallation` class."""
+"""`ScourProtectionInstallation` and related processes."""
 
 __author__ = "Rob Hammond"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
-__maintainer__ = "Rob Hammond"
-__email__ = "robert.hammond@nrel.gov"
+__maintainer__ = "Jake Nunemaker"
+__email__ = "Jake.Nunemaker@nrel.gov"
 
 
 from math import ceil

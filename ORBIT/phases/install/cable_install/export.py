@@ -1,3 +1,5 @@
+"""`ExportCableInstallation` and related processes."""
+
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
@@ -191,12 +193,14 @@ class ExportCableInstallation(InstallPhase):
     def detailed_output(self):
         """Returns detailed outputs."""
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations([self.cable_lay_vessel]),
-        }
+        # TODO: 
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations([self.cable_lay_vessel]),
+        # }
 
-        return outputs
+        # return outputs
+        return {}
 
 
 @process

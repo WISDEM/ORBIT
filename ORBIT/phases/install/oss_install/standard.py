@@ -1,3 +1,5 @@
+"""`OffshoreSubstationInstallation` and related processes."""
+
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
@@ -8,11 +10,7 @@ import simpy
 from marmot import process
 
 from ORBIT.core import Vessel
-from ORBIT.core.logic import (
-    shuttle_items_to_queue,
-    prep_for_site_operations,
-    get_list_of_items_from_port,
-)
+from ORBIT.core.logic import shuttle_items_to_queue, prep_for_site_operations
 from ORBIT.phases.install import InstallPhase
 from ORBIT.phases.install.monopile_install.common import (
     Monopile,
@@ -181,13 +179,15 @@ class OffshoreSubstationInstallation(InstallPhase):
         Returns detailed outputs in a dictionary.
         """
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations([*self.feeders]),
-            **self.get_max_deck_space_utilzations([*self.feeders]),
-        }
+        # TODO:
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations([*self.feeders]),
+        #     **self.get_max_deck_space_utilzations([*self.feeders]),
+        # }
 
-        return outputs
+        # return outputs
+        return {}
 
 
 @process
@@ -207,16 +207,12 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
         Distance from site to port (km).
     """
 
-    transit_time = vessel.transit_time(distance)
-
     n = 0
     while n < substations:
         if vessel.at_port:
             # Transit to site
             vessel.at_port = False
-            yield vessel.task(
-                "Transit", transit_time, constraints=vessel.transit_limits
-            )
+            yield vessel.transit(distance)
             vessel.at_site = True
 
         if vessel.at_site:
@@ -258,8 +254,6 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
 
     # Transit to port
     vessel.at_site = False
-    yield vessel.task(
-        "Transit", transit_time, constraints=vessel.transit_limits
-    )
+    yield vessel.transit(distance)
     vessel.at_port = True
     vessel.submit_debug_log(message="Monopile installation complete!")

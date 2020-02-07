@@ -1,3 +1,5 @@
+"""Common processes and cargo types for Cable Installations."""
+
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
@@ -43,7 +45,7 @@ def load_cable_on_vessel(vessel, cable, constraints={}, **kwargs):
     load_time = kwargs.get(key, pt[key])
 
     vessel.cable_storage.load_cable(cable)
-    yield vessel.task("Load Cable", load_time)
+    yield vessel.task("Load Cable", load_time, constraints=constraints, **kwargs)
 
 
 @process

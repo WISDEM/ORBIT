@@ -1,4 +1,4 @@
-"""Provides the `TurbineInstallation` class."""
+"""`TurbineInstallation` class and related processes."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"

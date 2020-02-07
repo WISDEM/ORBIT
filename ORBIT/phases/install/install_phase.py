@@ -1,4 +1,4 @@
-"""Provides the base `InstallPhase` class."""
+"""`InstallPhase` base class."""
 
 __author__ = ["Jake Nunemaker", "Rob Hammond"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
