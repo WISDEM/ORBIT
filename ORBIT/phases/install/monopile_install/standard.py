@@ -221,19 +221,22 @@ class MonopileInstallation(InstallPhase):
         - Deck space efficiencies, ``highest space used / maximum space``
         """
 
-        if self.feeders:
-            transport_vessels = [*self.feeders]
+        # TODO:
+        # if self.feeders:
+        #     transport_vessels = [*self.feeders]
 
-        else:
-            transport_vessels = [self.wtiv]
+        # else:
+        #     transport_vessels = [self.wtiv]
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations(transport_vessels),
-            **self.get_max_deck_space_utilzations(transport_vessels),
-        }
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations(transport_vessels),
+        #     **self.get_max_deck_space_utilzations(transport_vessels),
+        # }
 
-        return outputs
+        # return outputs
+
+        return {}
 
 
 @process
@@ -255,7 +258,6 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
         Total monopiles to install.
     """
 
-    transit_time = vessel.transit_time(distance)
     component_list = ["Monopile", "TransitionPiece"]
 
     n = 0
@@ -279,9 +281,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
             # Transit to site
             vessel.update_trip_data()
             vessel.at_port = False
-            yield vessel.task(
-                "Transit", transit_time, constraints=vessel.transit_limits
-            )
+            yield vessel.transit(distance)
             vessel.at_site = True
 
         if vessel.at_site:
@@ -297,12 +297,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
                     "Monopile", **kwargs
                 )
 
-                yield upend_monopile(
-                    vessel,
-                    monopile.length,
-                    constraints=vessel.operational_limits,
-                    **kwargs,
-                )
+                yield upend_monopile(vessel, monopile.length, **kwargs)
                 yield install_monopile(vessel, monopile, **kwargs)
 
                 # Get transition piece from internal storage
@@ -317,9 +312,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
             else:
                 # Transit to port
                 vessel.at_site = False
-                yield vessel.task(
-                    "Transit", transit_time, constraints=vessel.transit_limits
-                )
+                yield vessel.transit(distance)
                 vessel.at_port = True
 
     vessel.submit_debug_log(message="Monopile installation complete!")
@@ -345,16 +338,12 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
         Distance from site to port (km).
     """
 
-    transit_time = wtiv.transit_time(distance)
-
     n = 0
     while n < monopiles:
         if wtiv.at_port:
             # Transit to site
             wtiv.at_port = False
-            yield wtiv.task(
-                "Transit", transit_time, constraints=wtiv.transit_limits
-            )
+            yield wtiv.transit(distance)
             wtiv.at_site = True
 
         if wtiv.at_site:
@@ -371,12 +360,7 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
                     "Monopile", vessel=queue.vessel, **kwargs
                 )
 
-                yield upend_monopile(
-                    wtiv,
-                    monopile.length,
-                    constraints=wtiv.operational_limits,
-                    **kwargs,
-                )
+                yield upend_monopile(wtiv, monopile.length, **kwargs)
                 yield install_monopile(wtiv, monopile, **kwargs)
 
                 # Get transition piece from active feeder
@@ -389,7 +373,6 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
 
                 # Install transition piece
                 yield install_transition_piece(wtiv, tp, **kwargs)
-
                 n += 1
 
             else:
@@ -402,7 +385,7 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
 
     # Transit to port
     wtiv.at_site = False
-    yield wtiv.task("Transit", transit_time, constraints=wtiv.transit_limits)
+    yield wtiv.transit(distance)
     wtiv.at_port = True
 
     wtiv.submit_debug_log(message="Monopile installation complete!")

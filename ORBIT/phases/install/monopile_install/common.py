@@ -14,7 +14,7 @@ from ORBIT.core._defaults import process_times as pt
 
 
 class Monopile(Cargo):
-    """"""
+    """Monopile Cargo"""
 
     def __init__(
         self,
@@ -53,7 +53,7 @@ class Monopile(Cargo):
 
 
 class TransitionPiece(Cargo):
-    """"""
+    """Transition Piece Cargo"""
 
     def __init__(self, weight=None, deck_space=None, **kwargs):
         """
@@ -83,9 +83,8 @@ class TransitionPiece(Cargo):
 
 
 @process
-def upend_monopile(vessel, length, constraints={}, **kwargs):
+def upend_monopile(vessel, length, **kwargs):
     """
-    TODO:
     Calculates time required to upend monopile to vertical position.
 
     Parameters
@@ -95,22 +94,22 @@ def upend_monopile(vessel, length, constraints={}, **kwargs):
     length : int | float
         Overall length of monopile (m).
 
-    Returns
-    -------
-    mono_upend_time : float
-        Time required to upened monopile (h).
+    Yields
+    ------
+    vessel.task representing time to "Upend Monopile".
     """
 
     crane_rate = vessel.crane.crane_rate(**kwargs)
     upend_time = length / crane_rate
 
-    yield vessel.task("Upend Monopile", upend_time, constraints=constraints)
+    yield vessel.task(
+        "Upend Monopile", upend_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def lower_monopile(vessel, constraints={}, **kwargs):
+def lower_monopile(vessel, **kwargs):
     """
-    TODO:
     Calculates time required to lower monopile to seafloor.
 
     Parameters
@@ -120,10 +119,9 @@ def lower_monopile(vessel, constraints={}, **kwargs):
     site_depth : int | float
         Seafloor depth at site (m).
 
-    Returns
-    -------
-    mono_lower_time : float
-        Time required to lower monopile (h).
+    Yields
+    ------
+    vessel.task representing time to "Lower Monopile".
     """
 
     depth = kwargs.get("site_depth", None)
@@ -132,13 +130,14 @@ def lower_monopile(vessel, constraints={}, **kwargs):
     height = (vessel.jacksys.air_gap + vessel.jacksys.leg_pen + depth) / rate
     lower_time = height / rate
 
-    yield vessel.task("Lower Monopile", lower_time, constraints=constraints)
+    yield vessel.task(
+        "Lower Monopile", lower_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def drive_monopile(vessel, constraints={}, **kwargs):
+def drive_monopile(vessel, **kwargs):
     """
-    TODO:
     Calculates time required to drive monopile into seafloor.
 
     Parameters
@@ -150,10 +149,9 @@ def drive_monopile(vessel, constraints={}, **kwargs):
     mono_drive_rate : int | float
         Driving rate (m/hr).
 
-    Returns
-    -------
-    drive_time : float
-        Time required to drive monopile to 'drive_length' (h).
+    Yields
+    ------
+    vessel.task representing time to "Drive Monopile".
     """
 
     _ = vessel.crane
@@ -163,13 +161,14 @@ def drive_monopile(vessel, constraints={}, **kwargs):
 
     drive_time = mono_embed_len / mono_drive_rate
 
-    yield vessel.task("Drive Monopile", drive_time, constraints=constraints)
+    yield vessel.task(
+        "Drive Monopile", drive_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def lower_transition_piece(vessel, constraints={}, **kwargs):
+def lower_transition_piece(vessel, **kwargs):
     """
-    TODO:
     Calculates time required to lower a transition piece onto monopile.
 
     Parameters
@@ -177,22 +176,22 @@ def lower_transition_piece(vessel, constraints={}, **kwargs):
     vessel : Vessel
         Vessel to perform action.
 
-    Returns
-    -------
-    tp_lower_time : float
-        Time required to lower transition piece.
+    Yields
+    ------
+    vessel.task representing time to "Lower Transition Piece".
     """
 
     rate = vessel.crane.crane_rate(**kwargs)
     lower_time = vessel.jacksys.air_gap / rate
 
-    yield vessel.task("Lower TP", lower_time, constraints=constraints)
+    yield vessel.task(
+        "Lower TP", lower_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def bolt_transition_piece(vessel, constraints={}, **kwargs):
+def bolt_transition_piece(vessel, **kwargs):
     """
-    TODO:
     Returns time required to bolt transition piece to monopile.
 
     Parameters
@@ -202,20 +201,21 @@ def bolt_transition_piece(vessel, constraints={}, **kwargs):
     tp_bolt_time : int | float
         Time required to attach transition piece.
 
-    Returns
-    -------
-    tp_bolt_time : float
-        Time required to attach transition piece (h).
+    Yields
+    ------
+    vessel.task representing time to "Bolt TP".
     """
 
     key = "tp_bolt_time"
     bolt_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Bolt TP", bolt_time, constraints=constraints)
+    yield vessel.task(
+        "Bolt TP", bolt_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def pump_transition_piece_grout(vessel, constraints={}, **kwargs):
+def pump_transition_piece_grout(vessel, **kwargs):
     """
     Returns time required to pump grout at the transition piece interface.
 
@@ -224,20 +224,21 @@ def pump_transition_piece_grout(vessel, constraints={}, **kwargs):
     grout_pump_time : int | float
         Time required to pump grout at the interface.
 
-    Returns
-    -------
-    grout_pump_time : float
-        Time required to pump grout at the interface (h).
+    Yields
+    ------
+    vessel.task representing time to "Pump TP Grout".
     """
 
     key = "grout_pump_time"
     pump_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Pump TP Grout", pump_time, constraints=constraints)
+    yield vessel.task(
+        "Pump TP Grout", pump_time, constraints=vessel.operational_limits
+    )
 
 
 @process
-def cure_transition_piece_grout(vessel, constraints={}, **kwargs):
+def cure_transition_piece_grout(vessel, **kwargs):
     """
     Returns time required for the transition piece grout to cure.
 
@@ -246,16 +247,17 @@ def cure_transition_piece_grout(vessel, constraints={}, **kwargs):
     grout_cure_time : int | float
         Time required for the grout to cure.
 
-    Returns
-    -------
-    grout_cure_time : float
-        Time required for the grout to cure (h).
+    Yields
+    ------
+    vessel.task representing time to "Cure TP Grout".
     """
 
     key = "grout_cure_time"
     cure_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Cure TP Grout", cure_time, constraints=constraints)
+    yield vessel.task(
+        "Cure TP Grout", cure_time, constraints=vessel.transit_limits
+    )
 
 
 @process
@@ -278,18 +280,14 @@ def install_monopile(vessel, monopile, **kwargs):
 
     reequip_time = vessel.crane.reequip(**kwargs)
 
-    yield lower_monopile(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield lower_monopile(vessel, **kwargs)
     yield vessel.task(
         "Crane Reequip",
         reequip_time,
         constraints=vessel.transit_limits,
         **kwargs,
     )
-    yield drive_monopile(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield drive_monopile(vessel, **kwargs)
 
 
 @process
@@ -336,23 +334,15 @@ def install_transition_piece(vessel, tp, **kwargs):
         constraints=vessel.transit_limits,
         **kwargs,
     )
-    yield lower_transition_piece(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield lower_transition_piece(vessel, **kwargs)
 
     if connection is "bolted":
-        yield bolt_transition_piece(
-            vessel, constraints=vessel.operational_limits, **kwargs
-        )
+        yield bolt_transition_piece(vessel, **kwargs)
 
     elif connection is "grouted":
 
-        yield pump_transition_piece_grout(
-            vessel, constraints=vessel.operational_limits, **kwargs
-        )
-        yield cure_transition_piece_grout(
-            vessel, constraints=vessel.transit_limits
-        )
+        yield pump_transition_piece_grout(vessel, **kwargs)
+        yield cure_transition_piece_grout(vessel)
 
     else:
         raise Exception(
