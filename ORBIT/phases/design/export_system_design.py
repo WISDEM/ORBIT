@@ -50,7 +50,15 @@ class ExportSystemDesign(CableSystem):
         },
     }
 
-    output_config = {"export_system": {"cables": "dict"}}
+    output_config = {
+        "export_system": {
+            "cable": {
+                "linear_density": "int | float",
+                "number": "int",
+                "length": "int | float",
+            }
+        }
+    }
 
     def __init__(self, config, **kwargs):
         """
@@ -159,3 +167,38 @@ class ExportSystemDesign(CableSystem):
         """
 
         return np.full(self.num_cables, self.cable.name)
+
+    @property
+    def design_result(self):
+        """
+        A dictionary of cables types and number of different cable lengths and
+        linear density.
+
+        Returns
+        -------
+        output : dict
+            Dictionary of the number of section lengths and the linear density
+            of each cable type.
+             - <`cable_type`>_system: dict
+                - cables: dict
+                    - `Cable.name`: dict
+                        - sections: [
+                            (length of unique section, number of sections)
+                          ],
+                        - linear_density: `Cable.linear_density`
+        """
+
+        if self.cables is None:
+            raise Exception(f"Has {self.__class__.__name__} been ran?")
+
+        output = {"export_system": {}}
+
+        for name, cable in self.cables.items():
+
+            output["export_system"]["cable"] = {
+                "linear_density": cable.linear_density,
+                "length": self.length,
+                "number": self.num_cables,
+            }
+
+        return output

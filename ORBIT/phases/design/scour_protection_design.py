@@ -62,7 +62,7 @@ class ScourProtectionDesign(DesignPhase):
         },
     }
 
-    output_config = {"scour_protection": {"tonnes_per_substructure": "int"}}
+    output_config = {"scour_protection": {"tons_per_substructure": "int"}}
 
     def __init__(self, config, **kwargs):
         """
@@ -114,7 +114,9 @@ class ScourProtectionDesign(DesignPhase):
             np.pi * self.protection_depth * (r ** 2 - (self.diameter / 2) ** 2)
         )
 
-        self.scour_protection_tonnes = ceil(self.rock_density * volume / 1000.0)
+        self.scour_protection_tonnes = ceil(
+            self.rock_density * volume / 1000.0
+        )
 
     def run(self):
         """
@@ -168,7 +170,7 @@ class ScourProtectionDesign(DesignPhase):
 
         output = {
             "scour_protection": {
-                "tonnes_per_substructure": self.scour_protection_tonnes
+                "tons_per_substructure": self.scour_protection_tonnes
             }
         }
         return output
