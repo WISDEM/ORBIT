@@ -33,17 +33,20 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
 
     site_depth = kwargs.get("site_depth", None)
     extension = kwargs.get("extension", site_depth + 10)
-
-    position_time = kwargs.get("site_position_time", pt["site_position_time"])
     jackup_time = vessel.jacksys.jacking_time(extension, site_depth)
 
     yield position_onsite(vessel, **kwargs)
-    yield vessel.task("Jackup", jackup_time, constraints=vessel.transit_limits)
+    yield vessel.task(
+        "Jackup", jackup_time, constraints=vessel.transit_limits, **kwargs
+    )
 
     if survey_required:
         survey_time = kwargs.get("rov_survey_time", pt["rov_survey_time"])
         yield vessel.task(
-            "RovSurvey", survey_time, constraints=vessel.transit_limits
+            "RovSurvey",
+            survey_time,
+            constraints=vessel.transit_limits,
+            **kwargs,
         )
 
 
@@ -227,14 +230,7 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                     for item in buffer:
                         action, time = item.fasten(**kwargs)
                         vessel.storage.put_item(item)
-                        yield vessel.task(
-                            action, time, constraints=vessel.transit_limits
-                        )
-
-                        # if item["type"] == "Carousel":
-                        #     vessel.carousel = SimpleNamespace(**item)
-
-                        # vessel.submit_debug_log(message=f"{item['type']} Retrieved")
+                        yield vessel.task(action, time, **kwargs)
 
         else:
             raise ItemNotFound(items)
