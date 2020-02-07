@@ -13,7 +13,7 @@ from ORBIT.core._defaults import process_times as pt
 
 
 class TowerSection(Cargo):
-    """"""
+    """Tower Section Cargo"""
 
     def __init__(self, length=None, weight=None, deck_space=None, **kwargs):
         """
@@ -44,7 +44,7 @@ class TowerSection(Cargo):
 
 
 class Nacelle(Cargo):
-    """"""
+    """Nacelle Cargo"""
 
     def __init__(self, weight=None, deck_space=None, **kwargs):
         """
@@ -74,7 +74,7 @@ class Nacelle(Cargo):
 
 
 class Blade(Cargo):
-    """"""
+    """Blade Cargo"""
 
     def __init__(self, length=None, weight=None, deck_space=None, **kwargs):
         """
@@ -105,7 +105,7 @@ class Blade(Cargo):
 
 
 @process
-def lift_nacelle(vessel, constraints={}, **kwargs):
+def lift_nacelle(vessel, **kwargs):
     """
     Calculates time required to lift nacelle to hub height.
 
@@ -118,19 +118,23 @@ def lift_nacelle(vessel, constraints={}, **kwargs):
 
     Yields
     ------
-    lift_time : float
-        Time required to lift nacelle to hub height (h).
+    vessel.task representing time to "Lift Nacelle"
     """
 
     hub_height = kwargs.get("hub_height", None)
     crane_rate = vessel.crane.crane_rate(**kwargs)
     lift_time = hub_height / crane_rate
 
-    yield vessel.task("Lift Nacelle", lift_time, constraints=constraints)
+    yield vessel.task(
+        "Lift Nacelle",
+        lift_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
 
 
 @process
-def attach_nacelle(vessel, constraints={}, **kwargs):
+def attach_nacelle(vessel, **kwargs):
     """
     Returns time required to attach nacelle to tower.
 
@@ -141,21 +145,25 @@ def attach_nacelle(vessel, constraints={}, **kwargs):
     nacelle_attach_time : int | float
         Time required to attach nacelle.
 
-    Returns
-    -------
-    nacelle_attach_time : float
-        Time required to attach nacelle (h).
+    Yields
+    ------
+    vessel.task representing time to "Attach Nacelle"
     """
 
     _ = vessel.crane
     key = "nacelle_attach_time"
     attach_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Attach Nacelle", attach_time, constraints=constraints)
+    yield vessel.task(
+        "Attach Nacelle",
+        attach_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
 
 
 @process
-def lift_turbine_blade(vessel, constraints={}, **kwargs):
+def lift_turbine_blade(vessel, **kwargs):
     """
     Calculates time required to lift turbine blade to hub height.
 
@@ -166,21 +174,25 @@ def lift_turbine_blade(vessel, constraints={}, **kwargs):
     hub_height : int | float
         Hub height above MSL (m).
 
-    Returns
-    -------
-    blade_lift_time : float
-        Time required to lift blade to hub height (h).
+    Yields
+    ------
+    vessel.task representing time to "Lift Blade"
     """
 
     hub_height = kwargs.get("hub_height", None)
     crane_rate = vessel.crane.crane_rate(**kwargs)
     lift_time = hub_height / crane_rate
 
-    yield vessel.task("Lift Blade", lift_time, constraints=constraints)
+    yield vessel.task(
+        "Lift Blade",
+        lift_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
 
 
 @process
-def attach_turbine_blade(vessel, constraints={}, **kwargs):
+def attach_turbine_blade(vessel, **kwargs):
     """
     Returns time required to attach turbine blade to hub.
 
@@ -191,21 +203,25 @@ def attach_turbine_blade(vessel, constraints={}, **kwargs):
     blade_attach_time : int | float
         Time required to attach turbine blade.
 
-    Returns
-    -------
-    blade_attach_time : float
-        Time required to attach turbine blade (h).
+    Yields
+    ------
+    vessel.task representing time to "Attach Blade"
     """
 
     _ = vessel.crane
     key = "blade_attach_time"
     attach_time = kwargs.get(key, pt[key])
 
-    yield vessel.task("Attach Blade", attach_time, constraints=constraints)
+    yield vessel.task(
+        "Attach Blade",
+        attach_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
 
 
 @process
-def lift_tower_section(vessel, height, constraints={}, **kwargs):
+def lift_tower_section(vessel, height, **kwargs):
     """
     Calculates time required to lift tower section at site.
 
@@ -216,20 +232,24 @@ def lift_tower_section(vessel, height, constraints={}, **kwargs):
     height : int | float
         Height above MSL (m) required for lift.
 
-    Returns
-    -------
-    section_lift_time : float
-        Time required to lift tower section (h).
+    Yields
+    ------
+    vessel.task representing time to "Lift Tower Section"
     """
 
     crane_rate = vessel.crane.crane_rate(**kwargs)
     lift_time = height / crane_rate
 
-    yield vessel.task("Lift Tower Section", lift_time, constraints=constraints)
+    yield vessel.task(
+        "Lift Tower Section",
+        lift_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
 
 
 @process
-def attach_tower_section(vessel, constraints={}, **kwargs):
+def attach_tower_section(vessel, **kwargs):
     """
     Returns time required to attach tower section at site.
 
@@ -240,10 +260,9 @@ def attach_tower_section(vessel, constraints={}, **kwargs):
     section_attach_time : int | float
         Time required to attach tower section (h).
 
-    Returns
-    -------
-    section_attach_time : float
-        Time required to attach tower section (h).
+    Yields
+    ------
+    vessel.task representing time to "Attach Tower Section"
     """
 
     _ = vessel.crane
@@ -251,7 +270,10 @@ def attach_tower_section(vessel, constraints={}, **kwargs):
     attach_time = kwargs.get(key, pt[key])
 
     yield vessel.task(
-        "Attach Tower Section", attach_time, constraints=constraints
+        "Attach Tower Section",
+        attach_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
     )
 
 
@@ -270,13 +292,9 @@ def install_tower_section(vessel, section, height, **kwargs):
     vessel : Vessel
     tower : dict
     """
-    yield lift_tower_section(
-        vessel, height, constraints=vessel.operational_limits, **kwargs
-    )
+    yield lift_tower_section(vessel, height, **kwargs)
 
-    yield attach_tower_section(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield attach_tower_section(vessel, **kwargs)
 
 
 @process
@@ -295,11 +313,9 @@ def install_nacelle(vessel, nacelle, **kwargs):
     tower : dictå
     """
 
-    yield lift_nacelle(vessel, constraints=vessel.operational_limits, **kwargs)
+    yield lift_nacelle(vessel, **kwargs)
 
-    yield attach_nacelle(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield attach_nacelle(vessel, **kwargs)
 
 
 @process
@@ -319,10 +335,6 @@ def install_turbine_blade(vessel, blade, **kwargs):
     tower : dict
     """
 
-    yield lift_turbine_blade(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield lift_turbine_blade(vessel, **kwargs)
 
-    yield attach_turbine_blade(
-        vessel, constraints=vessel.operational_limits, **kwargs
-    )
+    yield attach_turbine_blade(vessel, **kwargs)

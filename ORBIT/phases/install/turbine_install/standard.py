@@ -259,19 +259,21 @@ class TurbineInstallation(InstallPhase):
         - Deck space efficiencies, ``highest space used / maximum space``
         """
 
-        if self.feeders:
-            transport_vessels = [*self.feeders]
+        # TODO:
+        # if self.feeders:
+        #     transport_vessels = [*self.feeders]
 
-        else:
-            transport_vessels = [self.wtiv]
+        # else:
+        #     transport_vessels = [self.wtiv]
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations(transport_vessels),
-            **self.get_max_deck_space_utilzations(transport_vessels),
-        }
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations(transport_vessels),
+        #     **self.get_max_deck_space_utilzations(transport_vessels),
+        # }
 
-        return outputs
+        # return outputs
+        return {}
 
 
 @process
@@ -294,7 +296,6 @@ def solo_install_turbines(
         Total turbine component sets to install.
     """
 
-    transit_time = vessel.transit_time(distance)
     reequip_time = vessel.crane.reequip(**kwargs)
 
     component_list = [
@@ -324,9 +325,7 @@ def solo_install_turbines(
             # Transit to site
             vessel.update_trip_data()
             vessel.at_port = False
-            yield vessel.task(
-                "Transit", transit_time, constraints=vessel.transit_limits
-            )
+            yield vessel.transit(distance)
             vessel.at_site = True
 
         if vessel.at_site:
@@ -382,9 +381,7 @@ def solo_install_turbines(
             else:
                 # Transit to port
                 vessel.at_site = False
-                yield vessel.task(
-                    "Transit", transit_time, constraints=vessel.transit_limits
-                )
+                yield vessel.transit(distance)
                 vessel.at_port = True
 
     vessel.submit_debug_log(message="Turbine installation complete!")
@@ -414,23 +411,14 @@ def install_turbine_components_from_queue(
         Distance from site to port (km).
     """
 
-    transit_time = wtiv.transit_time(distance)
     reequip_time = wtiv.crane.reequip(**kwargs)
-
-    component_list = [
-        *np.repeat("TowerSection", tower_sections),
-        "Nacelle",
-        *np.repeat("Blade", num_blades),
-    ]
 
     n = 0
     while n < turbines:
         if wtiv.at_port:
             # Transit to site
             wtiv.at_port = False
-            yield wtiv.task(
-                "Transit", transit_time, constraints=wtiv.transit_limits
-            )
+            yield wtiv.transit(distance)
             wtiv.at_site = True
 
         if wtiv.at_site:
@@ -496,7 +484,7 @@ def install_turbine_components_from_queue(
 
     # Transit to port
     wtiv.at_site = False
-    yield wtiv.task("Transit", transit_time, constraints=wtiv.transit_limits)
+    yield wtiv.transit(distance)
     wtiv.at_port = True
 
     wtiv.submit_debug_log(message="Turbine installation complete!")

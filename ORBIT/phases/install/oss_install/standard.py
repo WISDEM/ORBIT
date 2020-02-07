@@ -229,12 +229,7 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
                     "Monopile", vessel=queue.vessel, **kwargs
                 )
 
-                yield upend_monopile(
-                    vessel,
-                    monopile.length,
-                    constraints=vessel.operational_limits,
-                    **kwargs,
-                )
+                yield upend_monopile(vessel, monopile.length, **kwargs)
                 yield install_monopile(vessel, monopile, **kwargs)
 
                 # Get topside
