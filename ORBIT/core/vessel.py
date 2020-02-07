@@ -9,6 +9,7 @@ from collections import Counter, namedtuple
 
 import numpy as np
 from marmot import Agent, le, process
+from marmot._exceptions import AgentNotRegistered
 
 from ORBIT.core.components import (
     Crane,
@@ -103,6 +104,7 @@ class Vessel(Agent):
 
     @property
     def crane(self):
+        """Returns configured `Crane` or raises `MissingComponent`."""
         try:
             return self._crane
 
@@ -111,6 +113,7 @@ class Vessel(Agent):
 
     @property
     def jacksys(self):
+        """Returns configured `JackSys` or raises `MissingComponent`."""
         try:
             return self._jacksys
 
@@ -119,6 +122,7 @@ class Vessel(Agent):
 
     @property
     def storage(self):
+        """Returns configured `VesselStorage` or raises `MissingComponent`."""
         try:
             return self._storage
 
@@ -127,6 +131,7 @@ class Vessel(Agent):
 
     @property
     def rock_storage(self):
+        """Returns configured `ScourProtectionStorage` or raises `MissingComponent`."""
         try:
             return self._rock_storage
 
@@ -135,6 +140,7 @@ class Vessel(Agent):
 
     @property
     def cable_storage(self):
+        """Returns configured `CableCarousel` or raises `MissingComponent`."""
         try:
             return self._cable_storage
 
@@ -201,8 +207,7 @@ class Vessel(Agent):
             Dictionary containing scour protection installation specifications.
         """
 
-        # TODO: Require a specific vessel configuration
-        self._sp_specs = self.config.get("scour_protection_install_specs", {})
+        self._sp_specs = self.config.get("spi_specs", {})
 
         _capacity = self._sp_specs.get("max_cargo_weight", None)
         if _capacity is None:
@@ -320,10 +325,10 @@ class Vessel(Agent):
         """
 
         try:
-            crane = getattr(self, "crane")
+            _ = getattr(self, "crane")
             max_windspeed = self._crane_specs["max_windspeed"]
 
-        except MissingComponent as e:
+        except MissingComponent:
             max_windspeed = self._transport_specs["max_windspeed"]
 
         _dict = {

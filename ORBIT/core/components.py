@@ -5,11 +5,6 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
-
-import itertools
-from dataclasses import dataclass
-
-import numpy as np
 import simpy
 
 from ORBIT.core._defaults import process_times as pt
@@ -251,19 +246,13 @@ class VesselStorage(simpy.FilterStore):
 
     def get_item(self, _type):
         """
-        TODO:
-        Checks self.items for an item satisfying 'rule'. Returns item if found,
-        otherwise returns an error.
+        Checks `self.items` for an item satisfying `item.type = _type`. Returns
+        item if found, otherwise returns an error.
 
         Parameters
         ----------
-        rule : tuple
-            Tuple defining the rule to filter items by.
-            - ('key': 'value')
-
-        Yields
-        ------
-        response :
+        _type : str
+            Type of item to retrieve.
         """
 
         target = None
@@ -281,21 +270,20 @@ class VesselStorage(simpy.FilterStore):
 
     def any_remaining(self, _type):
         """
-        TODO:
-        Checks self.items for any items satisfying 'rule'. Returns True/False.
-        Used to trigger vessel release if empty without having to wait for next
-        self.get_item() iteration.
+        Checks `self.items` for an item satisfying `item.type = _type`. Returns
+        True/False depending on if an item is found. Used to trigger vessel
+        release if empty without having to wait for next self.get_item()
+        iteration.
 
         Parameters
         ----------
-        rule : tuple
-            Tuple defining the rule to filter items by.
-            - ('key': 'value')
+        _type : str
+            Type of item to retrieve.
 
         Returns
         -------
         resp : bool
-            Indicates if any items in self.items satisfy 'rule'.
+            Indicates if any items in self.items satisfy `_type`.
         """
 
         target = None
@@ -328,18 +316,6 @@ class ScourProtectionStorage(simpy.Container):
 
         self.max_weight = max_weight
         super().__init__(env, self.max_weight)
-
-        # Only needed for port interactions
-        # self.max_deck_space = 1
-        # self.max_deck_load = max_deck_load
-
-    # @property
-    # def current_cargo_weight(self):
-    #     """
-    #     Returns current cargo weight in tonnes.
-    #     """
-
-    #     return self.level
 
     @property
     def available_capacity(self):
@@ -390,7 +366,7 @@ class CableCarousel(simpy.Container):
         return self.available_weight / cable.linear_density
 
     def reset(self):
-        """Resets self.cable and """
+        """Resets `self.cable` and empties `self.level`."""
 
         if self.level != 0.0:
             _ = self.get(self.level)
@@ -398,7 +374,19 @@ class CableCarousel(simpy.Container):
         self.cable = None
 
     def load_cable(self, cable, length=None):
-        """"""
+        """
+        Loads input `cable` type onto `self.level`. If `length` isn't passed,
+        defaults to maximum amount of cable that can be loaded.
+
+        Parameters
+        ----------
+        cable : Cable | SimpleCable
+        length : int | float
+
+        Raises
+        ------
+        ValueError
+        """
 
         if self.cable and self.cable != cable:
             raise AttributeError("Carousel already has a cable type.")
@@ -420,7 +408,18 @@ class CableCarousel(simpy.Container):
             self.put(length)
 
     def get_cable(self, length):
-        """"""
+        """
+        Retrieves `length` of cable from `self.level`.
+
+        Parameters
+        ----------
+        length : int | float
+            Length of cable to retrieve.
+
+        Raises
+        ------
+        InsufficientCable
+        """
 
         if self.cable is None:
             raise AttributeError("Carousel doesn't have any cable.")

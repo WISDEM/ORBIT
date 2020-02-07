@@ -1,3 +1,5 @@
+"""`ArrayCableInstallation` class and related processes."""
+
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
@@ -27,6 +29,7 @@ from .common import (
 
 
 class ArrayCableInstallation(InstallPhase):
+    """Array Cable Installation Phase"""
 
     phase = "Array Cable Installation"
 
@@ -126,15 +129,18 @@ class ArrayCableInstallation(InstallPhase):
     @property
     def detailed_output(self):
         """
-        TODO:
-        Returns detailed outputs."""
+        Returns detailed outputs.
+        """
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations([self.cable_lay_vessel]),
-        }
+        # TODO:
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations([self.cable_lay_vessel]),
+        # }
 
-        return outputs
+        # return outputs
+
+        return {}
 
 
 @process
@@ -172,6 +178,7 @@ def install_array_cables(
             elif vessel.at_site:
 
                 try:
+                    # TODO: Add variable speed back in.
                     length, num_sections, *speed = sections.pop(0)
 
                 except IndexError:
@@ -185,7 +192,7 @@ def install_array_cables(
                     try:
                         section = vessel.cable_storage.get_cable(length)
 
-                    except InsufficientCable as e:
+                    except InsufficientCable:
 
                         yield vessel.transit(distance, **kwargs)
                         yield load_cable_on_vessel(vessel, cable, **kwargs)
