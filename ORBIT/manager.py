@@ -9,6 +9,7 @@ import datetime as dt
 import collections.abc as collections
 from copy import deepcopy
 from math import ceil
+from numbers import Number
 from itertools import product
 
 import pandas as pd
@@ -92,7 +93,7 @@ class ProjectManager:
         self.design_results = {}
         self.detailed_outputs = {}
 
-    def run_project(self):
+    def run_project(self, **kwargs):
         """
         Main project run method.
 
@@ -119,13 +120,13 @@ class ProjectManager:
         if isinstance(install_phases, str):
             install_phases = [install_phases]
 
-        self.run_all_design_phases(design_phases)
+        self.run_all_design_phases(design_phases, **kwargs)
 
         if isinstance(install_phases, list):
-            self.run_multiple_phases_in_serial(install_phases)
+            self.run_multiple_phases_in_serial(install_phases, **kwargs)
 
         elif isinstance(install_phases, dict):
-            self.run_multiple_phases_overlapping(install_phases)
+            self.run_multiple_phases_overlapping(install_phases, **kwargs)
 
     @classmethod
     def compile_input_dict(cls, phases):
@@ -198,27 +199,24 @@ class ProjectManager:
                     f"Input and calculated project capacity don't match."
                 )
 
-            return config
-
         else:
             if all((project_capacity, turbine_rating)):
-                config["plant"]["num_turbines"] = ceil(
-                    project_capacity / turbine_rating
-                )
+                num_turbines = ceil(project_capacity / turbine_rating)
+                config["plant"]["num_turbines"] = num_turbines
 
             elif all((project_capacity, num_turbines)):
-                _rating = project_capacity / num_turbines
+                turbine_rating = project_capacity / num_turbines
                 try:
-                    config["turbine"]["turbine_rating"] = _rating
+                    config["turbine"]["turbine_rating"] = turbine_rating
 
                 except KeyError:
-                    config["turbine"] = {"turbine_rating": _rating}
+                    config["turbine"] = {"turbine_rating": turbine_rating}
 
             elif all((num_turbines, turbine_rating)):
-                _capacity = turbine_rating * num_turbines
-                config["plant"]["capacity"] = _capacity
+                project_capacity = turbine_rating * num_turbines
+                config["plant"]["capacity"] = project_capacity
 
-            return config
+        return config
 
     @classmethod
     def find_key_match(cls, target):
@@ -356,7 +354,7 @@ class ProjectManager:
 
         return phase_config
 
-    def run_install_phase(self, name, weather):
+    def run_install_phase(self, name, weather, **kwargs):
         """
         Compiles the phase specific configuration input dictionary for input
         'name', checks the input against _class.expected_config and runs the
@@ -378,12 +376,29 @@ class ProjectManager:
             List of phase logs.
         """
 
+        _catch = kwargs.get("catch_exceptions", False)
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
 
         kwargs = _config.pop("kwargs", {})
-        phase = _class(_config, weather=weather, phase_name=name, **kwargs)
-        phase.run()
+
+        if _catch:
+            try:
+                phase = _class(
+                    _config, weather=weather, phase_name=name, **kwargs
+                )
+                phase.run()
+
+            except Exception as e:
+                print(f"\n\t - {name}: {e}")
+                self.phase_costs[name] = e.__class__.__name__
+                self.phase_times[name] = e.__class__.__name__
+
+                return None, None, None
+
+        else:
+            phase = _class(_config, weather=weather, phase_name=name, **kwargs)
+            phase.run()
 
         self._phases[name] = phase
 
@@ -391,9 +406,11 @@ class ProjectManager:
         cost = phase.total_phase_cost
         logs = deepcopy(phase.env.logs)
 
+        self.phase_costs[name] = cost
+        self.phase_times[name] = time
         # self.detailed_outputs[name] = phase.detailed_output
 
-        return time, cost, logs
+        return cost, time, logs
 
     def get_phase_class(self, phase):
         """
@@ -418,15 +435,15 @@ class ProjectManager:
 
         return phase_class
 
-    def run_all_design_phases(self, phase_list):
+    def run_all_design_phases(self, phase_list, **kwargs):
         """
         Runs multiple design phases and adds '.design_result' to self.config.
         """
 
         for name in phase_list:
-            self.run_design_phase(name)
+            self.run_design_phase(name, **kwargs)
 
-    def run_design_phase(self, name):
+    def run_design_phase(self, name, **kwargs):
         """
         Runs a design phase defined by 'name' and merges the '.design_result'
         into self.config.
@@ -437,11 +454,24 @@ class ProjectManager:
             Name of design phase that partially matches a key in `phase_dict`.
         """
 
+        _catch = kwargs.get("catch_exceptions", False)
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
 
-        phase = _class(_config)
-        phase.run()
+        if _catch:
+            try:
+                phase = _class(_config)
+                phase.run()
+
+            except Exception as e:
+                print(f"\n\t - {name}: {e}")
+                self.phase_costs[name] = e.__class__.__name__
+                self.phase_times[name] = e.__class__.__name__
+                return
+
+        else:
+            phase = _class(_config)
+            phase.run()
 
         self._phases[name] = phase
 
@@ -455,7 +485,7 @@ class ProjectManager:
             self.config, phase.design_result, overwrite=False
         )
 
-    def run_multiple_phases_in_serial(self, phase_list):
+    def run_multiple_phases_in_serial(self, phase_list, **kwargs):
         """
         Runs multiple phases listed in self.config['install_phases'] in serial.
 
@@ -474,21 +504,22 @@ class ProjectManager:
             else:
                 weather = None
 
-            time, cost, logs = self.run_install_phase(name, weather)
+            time, cost, logs = self.run_install_phase(name, weather, **kwargs)
 
-            self.phase_times[name] = time
-            self.phase_costs[name] = cost
+            if logs is None:
+                continue
 
-            for l in logs:
-                try:
-                    l["time"] += _start
-                except KeyError:
-                    pass
+            else:
+                for l in logs:
+                    try:
+                        l["time"] += _start
+                    except KeyError:
+                        pass
 
-            self._output_logs.extend(logs)
-            _start = ceil(_start + time)
+                self._output_logs.extend(logs)
+                _start = ceil(_start + time)
 
-    def run_multiple_phases_overlapping(self, phase_dict):
+    def run_multiple_phases_overlapping(self, phase_dict, **kwargs):
         """
         Runs multiple phases with defined start days in
         self.config['install_phases'].
@@ -513,18 +544,19 @@ class ProjectManager:
             else:
                 weather = None
 
-            time, cost, logs = self.run_install_phase(name, weather)
+            time, cost, logs = self.run_install_phase(name, weather, **kwargs)
 
-            self.phase_times[name] = time
-            self.phase_costs[name] = cost
+            if logs is None:
+                continue
 
-            for l in logs:
-                try:
-                    l["time"] += (start - _zero).days * 24
-                except KeyError:
-                    pass
+            else:
+                for l in logs:
+                    try:
+                        l["time"] += (start - _zero).days * 24
+                    except KeyError:
+                        pass
 
-            self._output_logs.extend(logs)
+                self._output_logs.extend(logs)
 
     def get_weather_profile(self, start):
         """
@@ -551,6 +583,18 @@ class ProjectManager:
             raise WeatherProfileError(start, self.weather)
 
         return profile.to_records()
+
+    @property
+    def capacity(self):
+        """Returns project capacity in MW."""
+
+        try:
+            capacity = self.config["plant"]["capacity"]
+
+        except KeyError:
+            capacity = None
+
+        return capacity
 
     @property
     def project_logs(self):
@@ -614,7 +658,7 @@ class ProjectManager:
             [
                 v
                 for k, v in self.phase_times.items()
-                if k in self.config["install_phases"]
+                if k in self.config["install_phases"] and isinstance(v, Number)
             ]
         )
         return res
@@ -643,12 +687,43 @@ class ProjectManager:
         return abs((a - b).days)
 
     @property
+    def phase_costs_per_kw(self):
+        """
+        Returns phase costs in CAPEX/kW.
+        """
+
+        _dict = {}
+        for k, capex in self.phase_costs.items():
+
+            try:
+                _dict[k] = capex / (self.capacity * 1000)
+
+            except TypeError:
+                pass
+
+        return _dict
+
+    @property
     def total_capex(self):
         """
         Returns total BOS CAPEX including commissioning and decommissioning.
         """
 
         return self.bos_capex + self.commissioning + self.decommissioning
+
+    @property
+    def total_capex_per_kw(self):
+        """
+        Returns total BOS CAPEX/kW including commissioning and decommissioning.
+        """
+
+        try:
+            capex = self.total_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def installation_capex(self):
@@ -660,10 +735,24 @@ class ProjectManager:
             [
                 v
                 for k, v in self.phase_costs.items()
-                if k in self.config["install_phases"]
+                if k in self.config["install_phases"] and isinstance(v, Number)
             ]
         )
         return res
+
+    @property
+    def installation_capex_per_kw(self):
+        """
+        Returns installation related CAPEX/kW.
+        """
+
+        try:
+            capex = self.installation_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def bos_capex(self):
@@ -672,6 +761,20 @@ class ProjectManager:
         """
 
         return sum([v for _, v in self.phase_costs.items()])
+
+    @property
+    def bos_capex_per_kw(self):
+        """
+        Returns BOS CAPEX/kW not including commissioning and decommissioning.
+        """
+
+        try:
+            capex = self.bos_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def commissioning(self):
@@ -688,6 +791,20 @@ class ProjectManager:
 
         comm = total * _comm
         return comm
+
+    @property
+    def commissioning_per_kw(self):
+        """
+        Returns the cost of commissioning per kW.
+        """
+
+        try:
+            capex = self.commissioning / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def decommissioning(self):
@@ -707,6 +824,20 @@ class ProjectManager:
             return 0.0
 
         return decomm
+
+    @property
+    def decommissioning_per_kw(self):
+        """
+        Returns the cost of decommissioning per kW.
+        """
+
+        try:
+            capex = self.decommissioning / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def turbine_capex(self):
@@ -729,6 +860,15 @@ class ProjectManager:
 
         capex = _capex * num_turbines * rating * 1000
         return capex
+
+    @property
+    def turbine_capex_per_kw(self):
+        """
+        Returns the turbine CAPEX/kW.
+        """
+
+        _capex = self.config.get("turbine_capex", None)
+        return _capex
 
     def export_configuration(self, file_name):
         """

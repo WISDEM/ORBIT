@@ -3,6 +3,18 @@
 ORBIT Changelog
 ===============
 
+0.3.5
+-----
+
+- Added 'per kW' properties to ``ProjectManager`` CAPEX results.
+
+0.3.4
+-----
+
+- Added configuration to ``ProjectManager`` that allows exceptions to be caught
+  within individual modules and allows the project as a whole to continue.
+- Fixed installation process when installing from GitHub.
+
 0.3.3
 -----
 
