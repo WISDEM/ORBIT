@@ -14,6 +14,7 @@ from marmot import process
 from ORBIT.core import Vessel
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
+from ORBIT.core.exceptions import InsufficientAmount, CargoWeightExceeded
 
 
 class ScourProtectionInstallation(InstallPhase):
@@ -120,13 +121,15 @@ class ScourProtectionInstallation(InstallPhase):
     def detailed_output(self):
         """Returns detailed outputs."""
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations([self.spi_vessel]),
-            **self.get_max_deck_space_utilzations([self.spi_vessel]),
-        }
+        # TODO:
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations([self.spi_vessel]),
+        #     **self.get_max_deck_space_utilzations([self.spi_vessel]),
+        # }
 
-        return outputs
+        # return outputs
+        return {}
 
 
 @process
@@ -163,10 +166,7 @@ def install_scour_protection(
         if vessel.at_port:
             # Load scour protection material
             yield load_material(
-                vessel,
-                vessel.rock_storage.available_capacity,
-                constraints=vessel.transit_limits,
-                **kwargs,
+                vessel, vessel.rock_storage.available_capacity, **kwargs
             )
 
             # Transit to site
@@ -177,12 +177,7 @@ def install_scour_protection(
         elif vessel.at_site:
             if vessel.rock_storage.level >= tons_per_substructure:
                 # Drop scour protection material
-                yield drop_material(
-                    vessel,
-                    tons_per_substructure,
-                    constraints=vessel.transit_limits,
-                    **kwargs,
-                )
+                yield drop_material(vessel, tons_per_substructure, **kwargs)
                 turbines -= 1
 
                 # Transit to another turbine
@@ -211,7 +206,7 @@ def install_scour_protection(
 
 
 @process
-def load_material(vessel, weight, constraints={}, **kwargs):
+def load_material(vessel, weight, **kwargs):
     """
     A wrapper for simpy.Container.put that checks VesselStorageContainer
     constraints and triggers self.put() if successful.
@@ -239,11 +234,16 @@ def load_material(vessel, weight, constraints={}, **kwargs):
     load_time = kwargs.get(key, pt[key])
 
     vessel.rock_storage.put(weight)
-    yield vessel.task("Load SP Material", load_time, constraints=constraints)
+    yield vessel.task(
+        "Load SP Material",
+        load_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )
 
 
 @process
-def drop_material(vessel, weight, constraints={}, **kwargs):
+def drop_material(vessel, weight, **kwargs):
     """
     Checks if there is enough of item, otherwise returns an error.
 
@@ -255,7 +255,6 @@ def drop_material(vessel, weight, constraints={}, **kwargs):
         Amount of the item to be loaded into storage.
     """
 
-    # TODO: Revise to not require full amount?
     if vessel.rock_storage.level < weight:
         raise InsufficientAmount(
             vessel.rock_storage.level, "Scour Protection", weight
@@ -265,4 +264,9 @@ def drop_material(vessel, weight, constraints={}, **kwargs):
     drop_time = kwargs.get(key, pt[key])
 
     _ = vessel.rock_storage.get(weight)
-    yield vessel.task("Drop SP Material", drop_time, constraints=constraints)
+    yield vessel.task(
+        "Drop SP Material",
+        drop_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )

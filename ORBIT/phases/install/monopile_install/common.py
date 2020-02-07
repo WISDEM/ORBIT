@@ -102,7 +102,10 @@ def upend_monopile(vessel, length, **kwargs):
     upend_time = length / crane_rate
 
     yield vessel.task(
-        "Upend Monopile", upend_time, constraints=vessel.operational_limits
+        "Upend Monopile",
+        upend_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
     )
 
 
@@ -130,7 +133,10 @@ def lower_monopile(vessel, **kwargs):
     lower_time = height / rate
 
     yield vessel.task(
-        "Lower Monopile", lower_time, constraints=vessel.operational_limits
+        "Lower Monopile",
+        lower_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
     )
 
 
@@ -161,7 +167,10 @@ def drive_monopile(vessel, **kwargs):
     drive_time = mono_embed_len / mono_drive_rate
 
     yield vessel.task(
-        "Drive Monopile", drive_time, constraints=vessel.operational_limits
+        "Drive Monopile",
+        drive_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
     )
 
 
@@ -184,7 +193,7 @@ def lower_transition_piece(vessel, **kwargs):
     lower_time = vessel.jacksys.air_gap / rate
 
     yield vessel.task(
-        "Lower TP", lower_time, constraints=vessel.operational_limits
+        "Lower TP", lower_time, constraints=vessel.operational_limits, **kwargs
     )
 
 
@@ -209,7 +218,7 @@ def bolt_transition_piece(vessel, **kwargs):
     bolt_time = kwargs.get(key, pt[key])
 
     yield vessel.task(
-        "Bolt TP", bolt_time, constraints=vessel.operational_limits
+        "Bolt TP", bolt_time, constraints=vessel.operational_limits, **kwargs
     )
 
 
@@ -232,7 +241,10 @@ def pump_transition_piece_grout(vessel, **kwargs):
     pump_time = kwargs.get(key, pt[key])
 
     yield vessel.task(
-        "Pump TP Grout", pump_time, constraints=vessel.operational_limits
+        "Pump TP Grout",
+        pump_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
     )
 
 
@@ -255,7 +267,7 @@ def cure_transition_piece_grout(vessel, **kwargs):
     cure_time = kwargs.get(key, pt[key])
 
     yield vessel.task(
-        "Cure TP Grout", cure_time, constraints=vessel.transit_limits
+        "Cure TP Grout", cure_time, constraints=vessel.transit_limits, **kwargs
     )
 
 
