@@ -66,6 +66,7 @@ class ArrayCableInstallation(InstallPhase):
         self.config = self.validate_config(config)
         self.extract_defaults()
 
+        self.initialize_port()
         self.setup_simulation(**kwargs)
 
     def setup_simulation(self, **kwargs):

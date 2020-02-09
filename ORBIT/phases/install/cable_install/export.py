@@ -69,6 +69,7 @@ class ExportCableInstallation(InstallPhase):
         self.config = self.validate_config(config)
         self.extract_defaults()
 
+        self.initialize_port()
         self.extract_distances()
         self.setup_simulation(**kwargs)
 
@@ -193,7 +194,7 @@ class ExportCableInstallation(InstallPhase):
     def detailed_output(self):
         """Returns detailed outputs."""
 
-        # TODO: 
+        # TODO:
         # outputs = {
         #     **self.agent_efficiencies,
         #     **self.get_max_cargo_weight_utilzations([self.cable_lay_vessel]),
