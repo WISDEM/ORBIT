@@ -45,7 +45,9 @@ def load_cable_on_vessel(vessel, cable, constraints={}, **kwargs):
     load_time = kwargs.get(key, pt[key])
 
     vessel.cable_storage.load_cable(cable)
-    yield vessel.task("Load Cable", load_time, constraints=constraints, **kwargs)
+    yield vessel.task(
+        "Load Cable", load_time, constraints=constraints, **kwargs
+    )
 
 
 @process
@@ -175,11 +177,11 @@ def lay_bury_cable(vessel, distance, **kwargs):
     lay_bury_speed = kwargs.get(key, pt[key])
     lay_bury_time = distance / lay_bury_speed
 
-    # TODO: Make suspendable?
     yield vessel.task(
         "Lay/Bury Cable",
         lay_bury_time,
         constraints=vessel.operational_limits,
+        suspendable=True,
         **kwargs,
     )
 
@@ -203,9 +205,12 @@ def lay_cable(vessel, distance, **kwargs):
     lay_speed = kwargs.get(key, pt[key])
     lay_time = distance / lay_speed
 
-    # TODO: Make suspendable?
     yield vessel.task(
-        "Lay Cable", lay_time, constraints=vessel.operational_limits, **kwargs
+        "Lay Cable",
+        lay_time,
+        constraints=vessel.operational_limits,
+        suspendable=True,
+        **kwargs,
     )
 
 
@@ -228,7 +233,6 @@ def bury_cable(vessel, distance, **kwargs):
     bury_speed = kwargs.get(key, pt[key])
     bury_time = distance / bury_speed
 
-    # TODO: Make suspendable?
     yield vessel.task(
         "Bury Cable",
         bury_time,
