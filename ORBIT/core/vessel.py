@@ -70,7 +70,7 @@ class Vessel(Agent):
                 "agent": str(self),
                 "action": action,
                 "duration": float(duration),
-                "cost": self.operation_cost(duration),
+                "cost": self.operation_cost(duration, **kwargs),
             }
 
             self.env._submit_log(payload, level="ACTION")
@@ -87,7 +87,7 @@ class Vessel(Agent):
         except KeyError:
             self.day_rate = np.NaN
 
-    def operation_cost(self, hours, mult=1.0):
+    def operation_cost(self, hours, **kwargs):
         """
         Returns cost of an operation of duration `hours`.
 
@@ -100,6 +100,7 @@ class Vessel(Agent):
             Default: 1.
         """
 
+        mult = kwargs.get("cost_multiplier", 1.0)
         return (self.day_rate / 24) * hours * mult
 
     @property
