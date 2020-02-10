@@ -64,6 +64,7 @@ def test_for_complete_logging(config, weather):
     sim.run()
 
     df = pd.DataFrame(sim.env.actions)
+    df = df.loc[df["action"]!="Mobilize"].reset_index(drop=True)
     df = df.assign(shift=(df["time"] - df["time"].shift(1)))
 
     for vessel in df["agent"].unique():

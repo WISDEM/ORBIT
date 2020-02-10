@@ -171,6 +171,7 @@ class ExportCableInstallation(InstallPhase):
         self.env.register(vessel)
 
         vessel.extract_vessel_specs()
+        vessel.mobilize()
         self.install_vessel = vessel
 
     def initialize_burial_vessel(self):
@@ -188,6 +189,7 @@ class ExportCableInstallation(InstallPhase):
         self.env.register(vessel)
 
         vessel.extract_vessel_specs()
+        vessel.mobilize()
         self.bury_vessel = vessel
 
     @property
