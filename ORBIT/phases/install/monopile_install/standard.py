@@ -158,6 +158,7 @@ class MonopileInstallation(InstallPhase):
         self.env.register(wtiv)
 
         wtiv.extract_vessel_specs()
+        wtiv.mobilize()
         wtiv.at_port = True
         wtiv.at_site = False
         self.wtiv = wtiv
@@ -179,6 +180,7 @@ class MonopileInstallation(InstallPhase):
             self.env.register(feeder)
 
             feeder.extract_vessel_specs()
+            feeder.mobilize()
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)

@@ -87,6 +87,21 @@ class Vessel(Agent):
         except KeyError:
             self.day_rate = np.NaN
 
+    def mobilize(self, days=7, mult=0.5):
+        """
+        Submits an action log representing the cost to mobilize the vessel at
+        the start of an installation based on the vessel day rate.
+
+        Parameters
+        ----------
+        days : int | float
+            Number of mobilization days.
+        mult : int | float
+            Operations cost multiplier.
+        """
+
+        self.submit_action_log("Mobilize", days * 24, cost_multiplier=mult)
+
     def operation_cost(self, hours, **kwargs):
         """
         Returns cost of an operation of duration `hours`.
