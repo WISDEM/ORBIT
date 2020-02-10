@@ -11,7 +11,7 @@ from copy import deepcopy
 import pytest
 
 from ORBIT import ProjectManager, library
-from ORBIT.simulation.exceptions import LibraryItemNotFoundError
+from ORBIT.core.exceptions import LibraryItemNotFoundError
 
 config = {
     "site": {"distance": 100, "depth": 15},

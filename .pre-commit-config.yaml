@@ -35,20 +35,3 @@ repos:
     hooks:
     -   id: pylint
         exclude: ^tests/
-
--   repo: local
-    hooks:
-    - id: pytest
-      name: pytest
-      stages: [commit]
-      entry: pytest --tb=line --deselect=setup.py tests/
-      language: system
-      types: [python]
-
-    - id: pytest-cov
-      name: pytest-cov
-      stages: [commit]
-      language: system
-      entry: pytest --cov=ORBIT --tb=no --ignore=*setup.py --cov-fail-under=80
-      types: [python]
-      pass_filenames: false

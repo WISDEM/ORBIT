@@ -1,4 +1,4 @@
-"""Provides the `MonopileInstallation` class."""
+"""`MonopileInstallation` class and related processes."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -7,16 +7,23 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import simpy
+from marmot import process
 
-from ORBIT.vessels import Vessel
-from ORBIT.simulation import Environment, VesselStorage
-from ORBIT.phases.install import InstallPhase
-from ORBIT.simulation.logic import shuttle_items_to_queue
-from ORBIT.phases.install.monopile_install._single_wtiv import (
-    solo_install_monopiles,
+from ORBIT.core import Vessel
+from ORBIT.core.logic import (
+    shuttle_items_to_queue,
+    prep_for_site_operations,
+    get_list_of_items_from_port,
 )
-from ORBIT.phases.install.monopile_install._wtiv_with_feeders import (
-    install_monopiles_from_queue,
+from ORBIT.phases.install import InstallPhase
+from ORBIT.core.exceptions import ItemNotFound
+
+from .common import (
+    Monopile,
+    TransitionPiece,
+    upend_monopile,
+    install_monopile,
+    install_transition_piece,
 )
 
 
@@ -45,17 +52,12 @@ class MonopileInstallation(InstallPhase):
             "name": "str (optional)",
         },
         "monopile": {
-            "type": "Monopile",
             "length": "float",
             "diameter": "float",
             "deck_space": "float",
             "weight": "float",
         },
-        "transition_piece": {
-            "type": "Transition Piece",
-            "deck_space": "float",
-            "weight": "float",
-        },
+        "transition_piece": {"deck_space": "float", "weight": "float"},
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -71,19 +73,15 @@ class MonopileInstallation(InstallPhase):
             Expects columns 'max_waveheight' and 'max_windspeed'.
         """
 
+        super().__init__(weather, **kwargs)
+
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.env = Environment(weather)
-        self.init_logger(**kwargs)
-        self.extract_phase_kwargs(**kwargs)
         self.extract_defaults()
 
         self.initialize_port()
         self.initialize_wtiv()
-
-        self.num_monopiles = self.config["plant"]["num_turbines"]
         self.initialize_monopiles()
-
         self.setup_simulation(**kwargs)
 
     def setup_simulation(self, **kwargs):
@@ -110,17 +108,14 @@ class MonopileInstallation(InstallPhase):
         site_depth = self.config["site"]["depth"]
         hub_height = self.config["turbine"]["hub_height"]
 
-        self.env.process(
-            solo_install_monopiles(
-                env=self.env,
-                vessel=self.wtiv,
-                port=self.port,
-                distance=site_distance,
-                number=self.num_monopiles,
-                site_depth=site_depth,
-                hub_height=hub_height,
-                **kwargs,
-            )
+        solo_install_monopiles(
+            self.wtiv,
+            port=self.port,
+            distance=site_distance,
+            monopiles=self.num_monopiles,
+            site_depth=site_depth,
+            hub_height=hub_height,
+            **kwargs,
         )
 
     def setup_simulation_with_feeders(self, **kwargs):
@@ -130,32 +125,25 @@ class MonopileInstallation(InstallPhase):
 
         site_distance = self.config["site"]["distance"]
         site_depth = self.config["site"]["depth"]
+        component_list = ["Monopile", "TransitionPiece"]
 
-        self.env.process(
-            install_monopiles_from_queue(
-                env=self.env,
-                wtiv=self.wtiv,
-                queue=self.active_feeder,
-                site_depth=site_depth,
-                distance=site_distance,
-                number=self.num_monopiles,
-                **kwargs,
-            )
+        install_monopiles_from_queue(
+            self.wtiv,
+            queue=self.active_feeder,
+            monopiles=self.num_monopiles,
+            distance=site_distance,
+            site_depth=site_depth,
+            **kwargs,
         )
 
-        component_list = [("type", "Monopile"), ("type", "Transition Piece")]
-
         for feeder in self.feeders:
-            self.env.process(
-                shuttle_items_to_queue(
-                    env=self.env,
-                    vessel=feeder,
-                    port=self.port,
-                    queue=self.active_feeder,
-                    distance=site_distance,
-                    items=component_list,
-                    **kwargs,
-                )
+            shuttle_items_to_queue(
+                feeder,
+                port=self.port,
+                queue=self.active_feeder,
+                distance=site_distance,
+                items=component_list,
+                **kwargs,
             )
 
     def initialize_wtiv(self):
@@ -164,27 +152,15 @@ class MonopileInstallation(InstallPhase):
         """
 
         wtiv_specs = self.config.get("wtiv", None)
-
-        if wtiv_specs is None:
-            raise Exception("WTIV is not defined.")
-
         name = wtiv_specs.get("name", "WTIV")
-        cost = wtiv_specs["vessel_specs"].get(
-            "day_rate", self.defaults["wtiv_day_rate"]
-        )
 
-        self.wtiv = Vessel(name, wtiv_specs)
+        wtiv = Vessel(name, wtiv_specs)
+        self.env.register(wtiv)
 
-        _storage_specs = wtiv_specs.get("storage_specs", None)
-        if _storage_specs is None:
-            raise Exception("Storage specifications must be set for WTIV.")
-
-        self.wtiv.storage = VesselStorage(self.env, **_storage_specs)
-
-        self.wtiv.at_port = True
-        self.wtiv.at_site = False
-
-        self.agent_costs[name] = cost
+        wtiv.extract_vessel_specs()
+        wtiv.at_port = True
+        wtiv.at_site = False
+        self.wtiv = wtiv
 
     def initialize_feeders(self):
         """
@@ -194,48 +170,31 @@ class MonopileInstallation(InstallPhase):
         number = self.config.get("num_feeders", None)
         feeder_specs = self.config.get("feeder", None)
 
-        if feeder_specs is None:
-            raise Exception("Feeder Barge is not defined.")
-
-        cost = feeder_specs["vessel_specs"].get(
-            "day_rate", self.defaults["feeder_day_rate"]
-        )
-
-        _storage_specs = feeder_specs.get("storage_specs", None)
-        if _storage_specs is None:
-            raise Exception(
-                "Storage specifications must be set in feeder_specs."
-            )
-
         self.feeders = []
         for n in range(number):
+            # TODO: Add in option for named feeders.
             name = "Feeder {}".format(n)
-            feeder = Vessel(name, feeder_specs)
-            feeder.storage = VesselStorage(self.env, **_storage_specs)
 
+            feeder = Vessel(name, feeder_specs)
+            self.env.register(feeder)
+
+            feeder.extract_vessel_specs()
             feeder.at_port = True
             feeder.at_site = False
-
             self.feeders.append(feeder)
-
-            self.agent_costs[name] = cost
 
     def initialize_monopiles(self):
         """
         Initializes monopile and transition piece objects at port.
         """
 
-        monopile = self.config.get("monopile", None)
-        transition_piece = self.config.get("transition_piece", None)
+        monopile = Monopile(**self.config["monopile"])
+        tp = TransitionPiece(**self.config["transition_piece"])
+        self.num_monopiles = self.config["plant"]["num_turbines"]
 
         for _ in range(self.num_monopiles):
             self.port.put(monopile)
-            self.port.put(transition_piece)
-
-        self.logger.debug(
-            "SUBSTRUCTURES INITIALIZED",
-            extra={"time": self.env.now, "agent": "Director"},
-        )
+            self.port.put(tp)
 
     def initialize_queue(self):
         """
@@ -257,16 +216,171 @@ class MonopileInstallation(InstallPhase):
         - Deck space efficiencies, ``highest space used / maximum space``
         """
 
-        if self.feeders:
-            transport_vessels = [*self.feeders]
+        # TODO:
+        # if self.feeders:
+        #     transport_vessels = [*self.feeders]
 
-        else:
-            transport_vessels = [self.wtiv]
+        # else:
+        #     transport_vessels = [self.wtiv]
 
-        outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations(transport_vessels),
-            **self.get_max_deck_space_utilzations(transport_vessels),
-        }
+        # outputs = {
+        #     **self.agent_efficiencies,
+        #     **self.get_max_cargo_weight_utilzations(transport_vessels),
+        #     **self.get_max_deck_space_utilzations(transport_vessels),
+        # }
 
-        return outputs
+        # return outputs
+
+        return {}
+
+
+@process
+def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
+    """
+    TODO:
+    Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
+    monopile installation process.
+
+    Parameters
+    ----------
+    env : simulation.Environment
+        SimPy environment that the simulation runs in.
+    vessel : vessels.Vessel
+        Vessel object that represents the WTIV.
+    distance : int | float
+        Distance between port and site (km).
+    number : int
+        Total monopiles to install.
+    """
+
+    component_list = ["Monopile", "TransitionPiece"]
+
+    n = 0
+    while n < monopiles:
+        if vessel.at_port:
+            try:
+                # Get substructure + transition piece from port
+                yield get_list_of_items_from_port(
+                    vessel, port, component_list, **kwargs
+                )
+
+            except ItemNotFound:
+                # If no items are at port and vessel.storage.items is empty,
+                # the job is done
+                if not vessel.storage.items:
+                    vessel.submit_debug_log(
+                        message="Item not found. Shutting down."
+                    )
+                    break
+
+            # Transit to site
+            vessel.update_trip_data()
+            vessel.at_port = False
+            yield vessel.transit(distance)
+            vessel.at_site = True
+
+        if vessel.at_site:
+
+            if vessel.storage.items:
+                # Prep for monopile install
+                yield prep_for_site_operations(
+                    vessel, survey_required=True, **kwargs
+                )
+
+                # Get monopile from internal storage
+                monopile = yield vessel.get_item_from_storage(
+                    "Monopile", **kwargs
+                )
+
+                yield upend_monopile(vessel, monopile.length, **kwargs)
+                yield install_monopile(vessel, monopile, **kwargs)
+
+                # Get transition piece from internal storage
+                tp = yield vessel.get_item_from_storage(
+                    "TransitionPiece", **kwargs
+                )
+
+                yield install_transition_piece(vessel, tp, **kwargs)
+
+                n += 1
+
+            else:
+                # Transit to port
+                vessel.at_site = False
+                yield vessel.transit(distance)
+                vessel.at_port = True
+
+    vessel.submit_debug_log(message="Monopile installation complete!")
+
+
+@process
+def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
+    """
+    Logic that a Wind Turbine Installation Vessel (WTIV) uses to install
+    monopiles and transition pieces from queue of feeder barges.
+
+    Parameters
+    ----------
+    env : simulation.Environment
+        SimPy environment that the simulation runs in.
+    wtiv : vessels.Vessel
+        Vessel object that represents the WTIV.
+    queue : simpy.Resource
+        Queue object to interact with active feeder barge.
+    number : int
+        Total monopiles to install.
+    distance : int | float
+        Distance from site to port (km).
+    """
+
+    n = 0
+    while n < monopiles:
+        if wtiv.at_port:
+            # Transit to site
+            wtiv.at_port = False
+            yield wtiv.transit(distance)
+            wtiv.at_site = True
+
+        if wtiv.at_site:
+
+            if queue.vessel:
+
+                # Prep for monopile install
+                yield prep_for_site_operations(
+                    wtiv, survey_required=True, **kwargs
+                )
+
+                # Get monopile
+                monopile = yield wtiv.get_item_from_storage(
+                    "Monopile", vessel=queue.vessel, **kwargs
+                )
+
+                yield upend_monopile(wtiv, monopile.length, **kwargs)
+                yield install_monopile(wtiv, monopile, **kwargs)
+
+                # Get transition piece from active feeder
+                tp = yield wtiv.get_item_from_storage(
+                    "TransitionPiece",
+                    vessel=queue.vessel,
+                    release=True,
+                    **kwargs,
+                )
+
+                # Install transition piece
+                yield install_transition_piece(wtiv, tp, **kwargs)
+                n += 1
+
+            else:
+                start = wtiv.env.now
+                yield queue.activate
+                delay_time = wtiv.env.now - start
+                wtiv.submit_action_log(
+                    "WaitForFeeder", delay_time, location="Site"
+                )
+
+    # Transit to port
+    wtiv.at_site = False
+    yield wtiv.transit(distance)
+    wtiv.at_port = True
+
+    wtiv.submit_debug_log(message="Monopile installation complete!")

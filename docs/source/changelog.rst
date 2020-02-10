@@ -3,6 +3,23 @@
 ORBIT Changelog
 ===============
 
+0.4.0
+-----
+- Revised package structure. Functionally formerly in ORBIT.simulation or
+  ORBIT.vessels has been moved to ORBIT.core.
+- ``InstallPhase`` cleaned up and slimmed down.
+- ``Environment`` and associated functionality has been replaced with
+  ``marmot.Environment``.
+- Logging functionality revised to not use the base python logging module.
+- ``Vessel`` now inherits from ``marmot.Agent``.
+- Tasks that were in ``ORBIT.vessels.tasks`` have been moved to their
+  respective modules and restructured with ``marmot.process`` and
+  ``Agent.tasks``.
+- Simplified ``ArrayCableInstallation``, ``ExportCableInstallation`` modules.
+- Modules inputs cleaned up. ``type`` parameters are no longer required for
+  monopile, transition piece or turbine component definitions.
+- Removed old/irrelevant tests.
+
 0.3.5
 -----
 

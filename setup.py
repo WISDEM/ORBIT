@@ -20,13 +20,16 @@ setup(
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
+    ),
     install_requires=[
         "numpy",
         "matplotlib",
         "scipy",
         "pandas",
-        "simpy",
+        "simpy-agents @ http://github.com/JakeNunemaker/simpy-agents/tarball/master#egg=v0.1.0",
+        "marmot @ https://github.com/JakeNunemaker/marmot/tarball/master#egg=v0.2.3",
         "pyyaml",
         "geopy",
         "openmdao>= 2.0",
