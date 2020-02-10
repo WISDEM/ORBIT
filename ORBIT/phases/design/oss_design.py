@@ -79,7 +79,6 @@ class OffshoreSubstationDesign(DesignPhase):
         }
 
         self._outputs["offshore_substation_topside"] = {
-            "type": "Topside",
             "deck_space": self.topside_deck_space,
             "weight": self.topside_mass,
         }
