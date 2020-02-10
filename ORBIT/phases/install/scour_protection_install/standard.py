@@ -113,6 +113,7 @@ class ScourProtectionInstallation(InstallPhase):
         self.env.register(spi_vessel)
 
         spi_vessel.extract_vessel_specs()
+        spi_vessel.mobilize()
         spi_vessel.at_port = True
         spi_vessel.at_site = False
         self.spi_vessel = spi_vessel

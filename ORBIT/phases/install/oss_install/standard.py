@@ -137,6 +137,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         self.env.register(oss_vessel)
 
         oss_vessel.extract_vessel_specs()
+        oss_vessel.mobilize()
         oss_vessel.at_port = True
         oss_vessel.at_site = False
         self.oss_vessel = oss_vessel
@@ -158,6 +159,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             self.env.register(feeder)
 
             feeder.extract_vessel_specs()
+            feeder.mobilize()
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)
