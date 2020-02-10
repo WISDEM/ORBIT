@@ -8,7 +8,6 @@ offshore_substation_substructure:
   weight: 400
 offshore_substation_topside:
   deck_space: 200
-  type: Topside
   weight: 400
 oss_install_vessel: test_heavy_lift_vessel
 port:

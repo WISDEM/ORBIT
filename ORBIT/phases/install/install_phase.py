@@ -61,10 +61,13 @@ class InstallPhase(BasePhase):
         Initializes a Port object with N number of cranes.
         """
 
-        cranes = self.config["port"]["num_cranes"]
+        try:
+            cranes = self.config["port"]["num_cranes"]
+            self.port = Port(self.env)
+            self.port.crane = simpy.Resource(self.env, cranes)
 
-        self.port = Port(self.env)
-        self.port.crane = simpy.Resource(self.env, cranes)
+        except KeyError:
+            self.port = Port(self.env)
 
     def run(self, until=None):
         """

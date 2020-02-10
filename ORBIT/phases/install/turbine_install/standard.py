@@ -58,22 +58,13 @@ class TurbineInstallation(InstallPhase):
         "turbine": {
             "hub_height": "float",
             "tower": {
-                "type": "Tower",
                 "deck_space": "float",
                 "weight": "float",
                 "length": "float",
                 "sections": "int (optional)",
             },
-            "nacelle": {
-                "type": "Nacelle",
-                "deck_space": "float",
-                "weight": "float",
-            },
-            "blade": {
-                "type": "Blade",
-                "deck_space": "float",
-                "weight": "float",
-            },
+            "nacelle": {"deck_space": "float", "weight": "float"},
+            "blade": {"deck_space": "float", "weight": "float"},
         },
     }
 

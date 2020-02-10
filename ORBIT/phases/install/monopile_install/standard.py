@@ -52,17 +52,12 @@ class MonopileInstallation(InstallPhase):
             "name": "str (optional)",
         },
         "monopile": {
-            "type": "Monopile",
             "length": "float",
             "diameter": "float",
             "deck_space": "float",
             "weight": "float",
         },
-        "transition_piece": {
-            "type": "Transition Piece",
-            "deck_space": "float",
-            "weight": "float",
-        },
+        "transition_piece": {"deck_space": "float", "weight": "float"},
     }
 
     def __init__(self, config, weather=None, **kwargs):

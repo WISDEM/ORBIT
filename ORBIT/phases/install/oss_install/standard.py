@@ -42,7 +42,6 @@ class OffshoreSubstationInstallation(InstallPhase):
             "name": "str (optional)",
         },
         "offshore_substation_topside": {
-            "type": "Topside",
             "deck_space": "float",
             "weight": "float",
         },
