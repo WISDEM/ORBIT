@@ -37,8 +37,9 @@ class MooringSystemDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
+        self.num_turbines = self.config["plant"]["num_turbines"]
         self._design = self.config.get("mooring_system_design", {})
-        self.num_lines = self.config["plant"]["num_turbines"]
+        self.num_lines = self._design.get("num_lines", 4)
         self.extract_defaults()
         self._outputs = {}
 
@@ -104,8 +105,10 @@ class MooringSystemDesign(DesignPhase):
         Returns the total cost of the mooring system.
         """
 
-        return self.num_lines * (
-            self.anchor_cost + self.line_length * self.line_cost_rate
+        return (
+            self.num_lines
+            * self.num_turbines
+            * (self.anchor_cost + self.line_length * self.line_cost_rate)
         )
 
     @property
@@ -120,3 +123,27 @@ class MooringSystemDesign(DesignPhase):
             "anchor_cost": self.anchor_cost,
             "total_cost": self.calculate_total_cost(),
         }
+
+    @property
+    def total_phase_cost(self):
+        """Returns total phase cost in $USD."""
+
+        _design = self.config.get("monopile_design", {})
+        design_cost = _design.get("design_cost", 0.0)
+        material_cost = sum([v for _, v in self.material_cost.items()])
+
+        return design_cost + material_cost
+
+    @property
+    def total_phase_time(self):
+        """Returns total phase time in hours."""
+
+        _design = self.config.get("monopile_design", {})
+        phase_time = _design.get("design_time", 0.0)
+        return phase_time
+
+    @property
+    def detailed_output(self):
+        """Returns detailed phase information."""
+
+        return {}
