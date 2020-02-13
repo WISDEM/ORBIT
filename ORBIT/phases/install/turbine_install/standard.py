@@ -252,21 +252,19 @@ class TurbineInstallation(InstallPhase):
         - Deck space efficiencies, ``highest space used / maximum space``
         """
 
-        # TODO:
-        # if self.feeders:
-        #     transport_vessels = [*self.feeders]
+        if self.feeders:
+            transport_vessels = [*self.feeders]
 
-        # else:
-        #     transport_vessels = [self.wtiv]
+        else:
+            transport_vessels = [self.wtiv]
 
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations(transport_vessels),
-        #     **self.get_max_deck_space_utilzations(transport_vessels),
-        # }
+        outputs = {
+            **self.agent_efficiencies,
+            **self.get_max_cargo_weight_utilzations(transport_vessels),
+            **self.get_max_deck_space_utilzations(transport_vessels),
+        }
 
-        # return outputs
-        return {}
+        return outputs
 
 
 @process
@@ -471,9 +469,7 @@ def install_turbine_components_from_queue(
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log(
-                    "WaitForFeeder", delay_time, location="Site"
-                )
+                wtiv.submit_action_log("Delay", delay_time, location="Site")
 
     # Transit to port
     wtiv.at_site = False

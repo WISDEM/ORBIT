@@ -64,7 +64,7 @@ def test_for_complete_logging(config, weather):
     sim.run()
 
     df = pd.DataFrame(sim.env.actions)
-    df = df.loc[df["action"]!="Mobilize"].reset_index(drop=True)
+    df = df.loc[df["action"] != "Mobilize"].reset_index(drop=True)
     df = df.assign(shift=(df["time"] - df["time"].shift(1)))
 
     for vessel in df["agent"].unique():
@@ -73,20 +73,8 @@ def test_for_complete_logging(config, weather):
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
     assert ~df["cost"].isnull().any()
-
-
-# TODO: Remove?
-# @pytest.mark.parametrize(
-#     "CableInstall,config", installs, ids=["array", "export"]
-# )
-# def test_for_array_install_efficiencies(CableInstall, config):
-
-#     sim = CableInstall(config)
-#     sim.run()
-
-#     vessel = sim.cable_lay_vessel.name
-#     assert 0 <= sim.detailed_output[f"{vessel}_operational_efficiency"] <= 1
-#     assert 0 <= sim.detailed_output[f"{vessel}_cargo_weight_utilization"] <= 1
+    _ = sim.agent_efficiencies
+    _ = sim.detailed_output
 
 
 def test_simultaneous_speed_kwargs():

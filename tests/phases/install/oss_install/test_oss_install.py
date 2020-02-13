@@ -80,50 +80,8 @@ def test_for_complete_logging(weather, config):
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
     assert ~df["cost"].isnull().any()
-
-
-# @pytest.mark.parametrize(
-#     "config",
-#     (config_single, config_multi),
-#     ids=["single_feeder", "multi_feeder"],
-# )
-# def test_for_efficiencies(config):
-
-#     sim = OffshoreSubstationInstallation(config)
-#     sim.run()
-
-#     assert (
-#         0
-#         <= sim.detailed_output["Heavy Lift Vessel_operational_efficiency"]
-#         <= 1
-#     )
-#     if sim.feeders is None:
-#         assert (
-#             0
-#             <= sim.detailed_output[
-#                 "Heavy Lift Vessel_cargo_weight_utilization"
-#             ]
-#             <= 1
-#         )
-#         assert (
-#             0
-#             <= sim.detailed_output["Heavy Lift Vessel_deck_space_utilization"]
-#             <= 1
-#         )
-#     else:
-#         for feeder in sim.feeders:
-#             name = feeder.name
-#             assert (
-#                 0 <= sim.detailed_output[f"{name}_operational_efficiency"] <= 1
-#             )
-#             assert (
-#                 0
-#                 <= sim.detailed_output[f"{name}_cargo_weight_utilization"]
-#                 <= 1
-#             )
-#             assert (
-#                 0 <= sim.detailed_output[f"{name}_deck_space_utilization"] <= 1
-#             )
+    _ = sim.agent_efficiencies
+    _ = sim.detailed_output
 
 
 def test_kwargs():

@@ -122,15 +122,9 @@ class ScourProtectionInstallation(InstallPhase):
     def detailed_output(self):
         """Returns detailed outputs."""
 
-        # TODO:
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations([self.spi_vessel]),
-        #     **self.get_max_deck_space_utilzations([self.spi_vessel]),
-        # }
+        outputs = {**self.agent_efficiencies}
 
-        # return outputs
-        return {}
+        return outputs
 
 
 @process

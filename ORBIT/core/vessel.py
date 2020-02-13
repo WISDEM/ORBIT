@@ -387,7 +387,12 @@ class Vessel(Agent):
     def cargo_weight_utilizations(self):
         """Returns cargo weight utilizations for list of trips."""
 
-        return np.array(self.cargo_weight_list) / self.max_cargo
+        try:
+            max_cargo_weight = self.storage.max_cargo_weight
+            return np.array(self.cargo_weight_list) / max_cargo_weight
+
+        except MissingComponent:
+            return np.array(np.NaN)
 
     @property
     def deck_space_list(self):
@@ -399,7 +404,12 @@ class Vessel(Agent):
     def deck_space_utilizations(self):
         """Returns deck space utilizations for list of trips."""
 
-        return np.array(self.deck_space_list) / self.max_deck_space
+        try:
+            max_deck_space = self.storage.max_deck_space
+            return np.array(self.deck_space_list) / max_deck_space
+
+        except MissingComponent:
+            return np.array(np.NaN)
 
     @property
     def max_cargo_weight_utilization(self):

@@ -87,45 +87,8 @@ def test_for_complete_logging(weather, config):
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
     assert ~df["cost"].isnull().any()
-
-
-# TODO: Remove?
-# @pytest.mark.parametrize(
-#     "config",
-#     (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-#     ids=["wtiv_only", "single_feeder", "multi_feeder"],
-# )
-# def test_for_efficiencies(config):
-
-#     sim = MonopileInstallation(config)
-#     sim.run()
-
-#     assert 0 <= sim.detailed_output["Example WTIV_operational_efficiency"] <= 1
-#     if sim.feeders is None:
-#         assert (
-#             0
-#             <= sim.detailed_output["Example WTIV_cargo_weight_utilization"]
-#             <= 1
-#         )
-#         assert (
-#             0
-#             <= sim.detailed_output["Example WTIV_deck_space_utilization"]
-#             <= 1
-#         )
-#     else:
-#         for feeder in sim.feeders:
-#             name = feeder.name
-#             assert (
-#                 0 <= sim.detailed_output[f"{name}_operational_efficiency"] <= 1
-#             )
-#             assert (
-#                 0
-#                 <= sim.detailed_output[f"{name}_cargo_weight_utilization"]
-#                 <= 1
-#             )
-#             assert (
-#                 0 <= sim.detailed_output[f"{name}_deck_space_utilization"] <= 1
-#             )
+    _ = sim.agent_efficiencies
+    _ = sim.detailed_output
 
 
 def test_kwargs():

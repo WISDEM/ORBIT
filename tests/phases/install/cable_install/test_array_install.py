@@ -59,7 +59,7 @@ def test_for_complete_logging(config, weather):
     sim.run()
 
     df = pd.DataFrame(sim.env.actions)
-    df = df.loc[df["action"]!="Mobilize"].reset_index(drop=True)
+    df = df.loc[df["action"] != "Mobilize"].reset_index(drop=True)
     df = df.assign(shift=(df["time"] - df["time"].shift(1)))
 
     for vessel in df["agent"].unique():
@@ -68,6 +68,8 @@ def test_for_complete_logging(config, weather):
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
     assert ~df["cost"].isnull().any()
+    _ = sim.agent_efficiencies
+    _ = sim.detailed_output
 
 
 def test_simultaneous_speed_kwargs():

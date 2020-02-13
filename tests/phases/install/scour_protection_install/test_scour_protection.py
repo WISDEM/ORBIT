@@ -47,6 +47,8 @@ def test_full_run_logging(weather):
     assert df[df.action == "Drop SP Material"].shape[0] == sim.num_turbines
 
     assert ~df["cost"].isnull().any()
+    _ = sim.agent_efficiencies
+    _ = sim.detailed_output
 
 
 def test_kwargs():

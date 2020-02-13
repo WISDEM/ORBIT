@@ -180,15 +180,13 @@ class OffshoreSubstationInstallation(InstallPhase):
         Returns detailed outputs in a dictionary.
         """
 
-        # TODO:
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations([*self.feeders]),
-        #     **self.get_max_deck_space_utilzations([*self.feeders]),
-        # }
+        outputs = {
+            **self.agent_efficiencies,
+            **self.get_max_cargo_weight_utilzations([*self.feeders]),
+            **self.get_max_deck_space_utilzations([*self.feeders]),
+        }
 
-        # return outputs
-        return {}
+        return outputs
 
 
 @process
@@ -244,9 +242,7 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
                 start = vessel.env.now
                 yield queue.activate
                 delay_time = vessel.env.now - start
-                vessel.submit_action_log(
-                    "WaitForFeeder", delay_time, location="Site"
-                )
+                vessel.submit_action_log("Delay", delay_time, location="Site")
 
     # Transit to port
     vessel.at_site = False
