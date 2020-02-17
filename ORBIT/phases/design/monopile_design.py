@@ -48,7 +48,6 @@ class MonopileDesign(DesignPhase):
 
     output_config = {
         "monopile": {
-            "type": "Monopile",
             "diameter": "float",
             "thickness": "float",
             "moment": "float",
@@ -58,7 +57,6 @@ class MonopileDesign(DesignPhase):
             "deck_space": "float",
         },
         "transition_piece": {
-            "type": "Transition Piece",
             "length": "float",
             "weight": "float",
             "deck_space": "float",
@@ -189,9 +187,6 @@ class MonopileDesign(DesignPhase):
         # Deck space
         sizing["deck_space"] = sizing["diameter"] ** 2
 
-        # Required for simulation
-        sizing["type"] = "Monopile"
-
         self.monopile_sizing = sizing
 
         return sizing
@@ -228,7 +223,6 @@ class MonopileDesign(DesignPhase):
         ) / 907.185  # t
 
         tp_design = {
-            "type": "Transition Piece",
             "thickness": t_tp,
             "diameter": D_tp,
             "weight": m_tp,

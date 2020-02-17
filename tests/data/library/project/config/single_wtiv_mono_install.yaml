@@ -2,7 +2,6 @@ monopile:
   deck_space: 500
   diameter: 10
   length: 50
-  type: Monopile
   weight: 350
 plant:
   num_turbines: 20
@@ -14,7 +13,6 @@ site:
   distance: 50
 transition_piece:
   deck_space: 250
-  type: Transition Piece
   weight: 350
 turbine:
   hub_height: 100

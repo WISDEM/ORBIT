@@ -14,7 +14,7 @@ from ORBIT.library import (
     extract_library_data,
     extract_library_specs,
 )
-from ORBIT.simulation.exceptions import MissingInputs
+from ORBIT.core.exceptions import MissingInputs
 
 
 class BasePhase(ABC):

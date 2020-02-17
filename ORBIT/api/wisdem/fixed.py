@@ -59,7 +59,7 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         self.add_input('site_depth', 40., units='m', desc='Site depth.')
         self.add_input('site_distance', 40., units='km', desc='Distance from site to installation port.')
         self.add_input('site_distance_to_landfall', 50., units='km', desc='Distance from site to landfall for export cable.')
-        self.add_input('site_distance_to_interconnection', 3., units='km', desc='Distance from landfall to interconnection.')
+        self.add_input('interconnection_distance', 3., units='km', desc='Distance from landfall to interconnection.')
         self.add_input('site_mean_windspeed', 9., units='m/s', desc='Mean windspeed of the site.')
 
         # Plant
@@ -115,11 +115,10 @@ class OrbitWisdemFixed(om.ExplicitComponent):
             'wtiv': discrete_inputs['wtiv'],
             'feeder': discrete_inputs['feeder'],
             'num_feeders': discrete_inputs['num_feeders'],
-            'scour_protection_install_vessel': 'example_scour_protection_vessel',
-            'trench_dig_vessel': 'example_trench_dig_vessel',
-            'array_cable_lay_vessel': 'example_cable_lay_vessel',
+            'spi_vessel': 'example_scour_protection_vessel',
+            'array_cable_install_vessel': 'example_cable_lay_vessel',
             'array_cable_bury_vessel': 'example_cable_lay_vessel',
-            'export_cable_lay_vessel': 'example_cable_lay_vessel',
+            'export_cable_install_vessel': 'example_cable_lay_vessel',
             'export_cable_bury_vessel': 'example_cable_lay_vessel',
             
             # Site/plant
@@ -127,9 +126,11 @@ class OrbitWisdemFixed(om.ExplicitComponent):
                 'depth': float(inputs['site_depth']),
                 'distance': float(inputs['site_distance']),
                 'distance_to_landfall': float(inputs['site_distance_to_landfall']),
-                'distance_to_beach': 0,
-                'distance_to_interconnection': float(inputs['site_distance_to_interconnection']),
                 'mean_windspeed': float(inputs['site_mean_windspeed'])
+            },
+
+            'landfall': {
+                'interconnection_distance': float(inputs['interconnection_distance']),
             },
             
             'plant': {
@@ -246,7 +247,7 @@ class OrbitWisdemFixed(om.ExplicitComponent):
 
         outputs['bos_capex'] = project.bos_capex
         outputs['total_capex'] = project.total_capex
-        outputs['total_capex_kW'] = project.total_capex / (1e3*inputs['turbine_rating'] * discrete_inputs['number_of_turbines'])
+        outputs['total_capex_kW'] = project.total_capex_per_kw
         outputs['installation_time'] = project.installation_time
         outputs['installation_capex'] = project.installation_capex
 

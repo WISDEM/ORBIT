@@ -20,13 +20,15 @@ setup(
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
+    ),
     install_requires=[
         "numpy",
         "matplotlib",
+        "marmot-agents",
         "scipy",
         "pandas",
-        "simpy",
         "pyyaml",
         "geopy",
         "openmdao>= 2.0",

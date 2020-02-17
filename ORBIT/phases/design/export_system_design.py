@@ -38,9 +38,9 @@ class ExportSystemDesign(CableSystem):
     expected_config = {
         "site": {
             "distance_to_landfall": "int | float",
-            "distance_to_interconnection": "int | float",
             "depth": "int | float",
         },
+        "landfall": {"interconnection_distance": "km, (optional)"},
         "plant": {"num_turbines": "int"},
         "turbine": {"turbine_rating": "int | float"},
         "export_system_design": {
@@ -50,7 +50,15 @@ class ExportSystemDesign(CableSystem):
         },
     }
 
-    output_config = {"export_system": {"cables": "dict"}}
+    output_config = {
+        "export_system": {
+            "cable": {
+                "linear_density": "int | float",
+                "number": "int",
+                "sections": "list",
+            }
+        }
+    }
 
     def __init__(self, config, **kwargs):
         """
@@ -76,9 +84,12 @@ class ExportSystemDesign(CableSystem):
             * self.config["turbine"]["turbine_rating"]
         )
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
-        self._distance_to_interconnection = config["site"][
-            "distance_to_interconnection"
-        ]
+        try:
+            self._distance_to_interconnection = config["landfall"][
+                "interconnection_distance"
+            ]
+        except KeyError:
+            self._distance_to_interconnection = 3
 
     def run(self):
         """
@@ -159,3 +170,37 @@ class ExportSystemDesign(CableSystem):
         """
 
         return np.full(self.num_cables, self.cable.name)
+
+    @property
+    def design_result(self):
+        """
+        A dictionary of cables types and number of different cable lengths and
+        linear density.
+
+        Returns
+        -------
+        output : dict
+            Dictionary containing the output export system. Contains:
+            - 'linear_density': 't/km'
+            - 'sections': 'list [self.length]'
+            - 'number': 'int'
+        """
+
+        if self.cables is None:
+            raise Exception(f"Has {self.__class__.__name__} been ran?")
+
+        output = {
+            "export_system": {
+                "interconnection_distance": self._distance_to_interconnection
+            }
+        }
+
+        for name, cable in self.cables.items():
+
+            output["export_system"]["cable"] = {
+                "linear_density": cable.linear_density,
+                "sections": [self.length],
+                "number": self.num_cables,
+            }
+
+        return output

@@ -1,0 +1,431 @@
+"""Provides the `Crane` class."""
+
+__author__ = "Jake Nunemaker"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
+__maintainer__ = "Jake Nunemaker"
+__email__ = "jake.nunemaker@nrel.gov"
+
+import simpy
+
+from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.exceptions import (
+    ItemNotFound,
+    DeckSpaceExceeded,
+    InsufficientCable,
+    CargoWeightExceeded,
+)
+
+# TODO: __str__ methods for Components
+
+
+class Crane:
+    """Base Crane Class"""
+
+    def __init__(self, crane_specs):
+        """
+        Creates an instance of Crane.
+
+        Parameters
+        ----------
+        crane_specs : dict
+            Dictionary containing crane system specifications.
+        """
+
+        self.extract_crane_specs(crane_specs)
+
+    def extract_crane_specs(self, crane_specs):
+        """
+        Extracts and defines crane specifications.
+
+        Parameters
+        ----------
+        crane_specs : dict
+            Dictionary of crane specifications.
+        """
+
+        # Physical Dimensions
+        self.boom_length = crane_specs.get("boom_length", None)
+        self.radius = crane_specs.get("radius", None)
+
+        # Operational Parameters
+        self.max_lift = crane_specs.get("max_lift", None)
+        self.max_hook_height = crane_specs.get("max_hook_height", None)
+        self.max_windspeed = crane_specs.get("max_windspeed", 99)
+
+    @staticmethod
+    def crane_rate(**kwargs):
+        """
+        Calculates minimum crane rate based on current wave height equation
+        from DNV standards for offshore lifts.
+
+        Parameters
+        ----------
+        wave_height : int | float
+            Significant wave height (m).
+
+        Returns
+        -------
+        crane_rate : float
+            Hoist speed of crane (m/hr).
+        """
+
+        wave_height = kwargs.get("wave_height", 2)
+        return 0.6 * wave_height * 3600
+
+    @staticmethod
+    def reequip(**kwargs):
+        """
+        Calculates time taken to change crane equipment.
+
+        Parameters
+        ----------
+        crane_reequip_time : int | float
+            Time required to change crane equipment (h).
+
+        Returns
+        -------
+        reequip_time : float
+            Time required to change crane equipment (h).
+        """
+
+        _key = "crane_reequip_time"
+        duration = kwargs.get(_key, pt[_key])
+
+        return duration
+
+
+class JackingSys:
+    """Base Jacking System Class"""
+
+    def __init__(self, jacksys_specs):
+        """
+        Creates an instance of JackingSys.
+
+        Parameters
+        ----------
+        jacksys_specs : dict
+            Dictionary containing jacking system specifications.
+        """
+
+        self.extract_jacksys_specs(jacksys_specs)
+
+    def extract_jacksys_specs(self, jacksys_specs):
+        """
+        Extracts and defines jacking system specifications.
+
+        Parameters
+        ----------
+        jacksys_specs : dict
+            Dictionary containing jacking system specifications.
+        """
+
+        # Physical Dimensions
+        self.num_legs = jacksys_specs.get("num_legs", None)
+        self.leg_length = jacksys_specs.get("leg_length", None)
+        self.air_gap = jacksys_specs.get("air_gap", None)
+        self.leg_pen = jacksys_specs.get("leg_pen", None)
+
+        # Operational Parameters
+        self.max_depth = jacksys_specs.get("max_depth", None)
+        self.max_extension = jacksys_specs.get("max_extension", None)
+        self.speed_below_depth = jacksys_specs.get("speed_below_depth", None)
+        self.speed_above_depth = jacksys_specs.get("speed_above_depth", None)
+
+    def jacking_time(self, extension, depth):
+        """
+        Calculates jacking time for a given depth.
+
+        Parameters
+        ----------
+        extension : int | float
+            Height to jack-up to or jack-down from (m).
+        depth : int | float
+            Depth at jack-up location (m).
+
+        Returns
+        -------
+        extension_time : float
+            Time required to jack-up to given extension (h).
+        """
+
+        if extension > self.max_extension:
+            raise Exception(
+                "{} extension is greater than {} maximum"
+                "".format(extension, self.max_extension)
+            )
+
+        elif depth > self.max_depth:
+            raise Exception(
+                "{} is beyond the operating depth {}"
+                "".format(depth, self.max_depth)
+            )
+
+        elif depth > extension:
+            raise Exception("Extension must be greater than depth")
+
+        else:
+            return (
+                depth / self.speed_below_depth
+                + (extension - depth) / self.speed_above_depth
+            ) / 60
+
+
+class VesselStorage(simpy.FilterStore):
+    """Vessel Storage Class"""
+
+    required_keys = ["type", "weight", "deck_space"]
+
+    def __init__(
+        self, env, max_cargo, max_deck_space, max_deck_load, **kwargs
+    ):
+        """
+        Creates an instance of VesselStorage.
+
+        Parameters
+        ----------
+        env : simpy.Environment
+            SimPy environment that simulation runs on.
+        max_cargo : int | float
+            Maximum weight the storage system can carry (t).
+        max_deck_space : int | float
+            Maximum deck space the storage system can use (m2).
+        max_deck_load : int | float
+            Maximum deck load that the storage system can apply (t/m2).
+        """
+
+        capacity = kwargs.get("capacity", float("inf"))
+        super().__init__(env, capacity)
+
+        self.max_cargo_weight = max_cargo
+        self.max_deck_space = max_deck_space
+        self.max_deck_load = max_deck_load
+
+    @property
+    def current_cargo_weight(self):
+        """Returns current cargo weight in tons."""
+
+        return sum([item.weight for item in self.items])
+
+    @property
+    def current_deck_space(self):
+        """Returns current deck space used in m2."""
+
+        return sum([item.deck_space for item in self.items])
+
+    def put_item(self, item):
+        """
+        Checks VesselStorage specific constraints and triggers self.put()
+        if successful.
+
+        Items put into the instance should be a dictionary with the following
+        attributes:
+        - name
+        - weight (t)
+        - deck_space (m2)
+
+        Parameters
+        ----------
+        item : dict
+            Dictionary of item properties.
+        """
+
+        # if any(x not in item.keys() for x in self.required_keys):
+        #     raise ItemPropertyNotDefined(item, self.required_keys)
+
+        if self.current_deck_space + item.deck_space > self.max_deck_space:
+            raise DeckSpaceExceeded(
+                self.max_deck_space, self.current_deck_space, item
+            )
+
+        if self.current_cargo_weight + item.weight > self.max_cargo_weight:
+            raise CargoWeightExceeded(
+                self.max_cargo_weight, self.current_cargo_weight, item
+            )
+
+        self.put(item)
+
+    def get_item(self, _type):
+        """
+        Checks `self.items` for an item satisfying `item.type = _type`. Returns
+        item if found, otherwise returns an error.
+
+        Parameters
+        ----------
+        _type : str
+            Type of item to retrieve.
+        """
+
+        target = None
+        for i in self.items:
+            if i.type == _type:
+                target = i
+                break
+
+        if not target:
+            raise ItemNotFound(_type)
+
+        else:
+            res = self.get(lambda x: x == target)
+            return res.value
+
+    def any_remaining(self, _type):
+        """
+        Checks `self.items` for an item satisfying `item.type = _type`. Returns
+        True/False depending on if an item is found. Used to trigger vessel
+        release if empty without having to wait for next self.get_item()
+        iteration.
+
+        Parameters
+        ----------
+        _type : str
+            Type of item to retrieve.
+
+        Returns
+        -------
+        resp : bool
+            Indicates if any items in self.items satisfy `_type`.
+        """
+
+        target = None
+        for i in self.items:
+            if i.type == _type:
+                target = i
+                break
+
+        if target:
+            return True
+
+        else:
+            return False
+
+
+class ScourProtectionStorage(simpy.Container):
+    """Scour Protection Storage Class"""
+
+    def __init__(self, env, max_weight, **kwargs):
+        """
+        Creates an instance of VesselStorage.
+
+        Parameters
+        ----------
+        env : simpy.Environment
+            SimPy environment that simulation runs on.
+        max_weight : int | float
+            Maximum weight the storage system can carry (t).
+        """
+
+        self.max_weight = max_weight
+        super().__init__(env, self.max_weight)
+
+    @property
+    def available_capacity(self):
+        """Returns available cargo capacity."""
+
+        return self.max_weight - self.level
+
+
+class CableCarousel(simpy.Container):
+    """Cable Storage Class"""
+
+    def __init__(self, env, max_weight, **kwargs):
+        """
+        Creates an instance of CableCarousel.
+
+        Parameters
+        ----------
+        env : simpy.Environment
+            SimPy environment that simulation runs on.
+        max_weight : int | float
+            Maximum weight the storage system can carry (t).
+        """
+
+        self.cable = None
+        self.max_weight = max_weight
+        super().__init__(env)
+
+    @property
+    def available_weight(self):
+        """Returns available cargo weight capacity."""
+
+        return self.max_weight - self.current_weight
+
+    @property
+    def current_weight(self):
+        """Returns current cargo weight"""
+
+        try:
+            weight = self.level * self.cable.linear_density
+            return weight
+
+        except AttributeError:
+            return 0
+
+    def available_length(self, cable):
+        """Returns available length capacity based on input linear density."""
+
+        return self.available_weight / cable.linear_density
+
+    def reset(self):
+        """Resets `self.cable` and empties `self.level`."""
+
+        if self.level != 0.0:
+            _ = self.get(self.level)
+
+        self.cable = None
+
+    def load_cable(self, cable, length=None):
+        """
+        Loads input `cable` type onto `self.level`. If `length` isn't passed,
+        defaults to maximum amount of cable that can be loaded.
+
+        Parameters
+        ----------
+        cable : Cable | SimpleCable
+        length : int | float
+
+        Raises
+        ------
+        ValueError
+        """
+
+        if self.cable and self.cable != cable:
+            raise AttributeError("Carousel already has a cable type.")
+
+        self.cable = cable
+        if length is None:
+            # Load maximum amount
+            length = self.available_length(self.cable)
+            self.put(length)
+
+        else:
+            # Load length of cable
+            proposed = length * cable.linear_density
+            if proposed > self.available_weight:
+                raise ValueError(
+                    f"Length {length} of {cable} can't be loaded."
+                )
+
+            self.put(length)
+
+    def get_cable(self, length):
+        """
+        Retrieves `length` of cable from `self.level`.
+
+        Parameters
+        ----------
+        length : int | float
+            Length of cable to retrieve.
+
+        Raises
+        ------
+        InsufficientCable
+        """
+
+        if self.cable is None:
+            raise AttributeError("Carousel doesn't have any cable.")
+
+        if length > self.level:
+            raise InsufficientCable(self.level, length)
+
+        else:
+            return self.get(length).amount
