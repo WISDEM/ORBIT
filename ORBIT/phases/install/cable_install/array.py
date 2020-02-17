@@ -175,8 +175,18 @@ def install_array_cables(
             elif vessel.at_site:
 
                 try:
-                    # TODO: Add variable speed back in.
-                    length, num_sections, *speed = sections.pop(0)
+                    length, num_sections, *extra = sections.pop(0)
+                    if extra:
+                        speed = extra[0]
+
+                        if burial_vessel is None:
+                            specs = {**kwargs, "cable_lay_bury_speed": speed}
+
+                        else:
+                            specs = {**kwargs, "cable_lay_speed": speed}
+
+                    else:
+                        specs = deepcopy(kwargs)
 
                 except IndexError:
                     vessel.at_site = False
@@ -205,10 +215,10 @@ def install_array_cables(
 
                     # Cable laying procedure
                     if burial_vessel is None:
-                        yield lay_bury_cable(vessel, section, **kwargs)
+                        yield lay_bury_cable(vessel, section, **specs)
 
                     else:
-                        yield lay_cable(vessel, section, **kwargs)
+                        yield lay_cable(vessel, section, **specs)
                         to_bury.append(section)
 
                     # Post cable laying procedure (at substructure 2)

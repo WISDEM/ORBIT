@@ -26,10 +26,9 @@ setup(
     install_requires=[
         "numpy",
         "matplotlib",
+        "marmot-agents",
         "scipy",
         "pandas",
-        "simpy-agents @ http://github.com/JakeNunemaker/simpy-agents/tarball/master#egg=v0.1.0",
-        "marmot @ https://github.com/JakeNunemaker/marmot/tarball/master#egg=v0.2.3",
         "pyyaml",
         "geopy",
         "openmdao>= 2.0",
