@@ -36,10 +36,7 @@ class ExportCableInstallation(InstallPhase):
 
     #:
     expected_config = {
-        "landfall": {
-            "trench_length": "int | float (optional)",
-            "distance_to_interconnection": "int | float (optional)",
-        },
+        "landfall": {"trench_length": "int | float (optional)"},
         "export_cable_install_vessel": "str | dict",
         "export_cable_bury_vessel": "str | dict (optional)",
         "site": {"distance": "int | float"},
@@ -51,7 +48,7 @@ class ExportCableInstallation(InstallPhase):
                 "sections": [("distance", "speed (optional)")],
                 "number": "int (optional)",
             },
-            "distance_to_grid": "km (optional); default: 3km",
+            "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
         },
     }
@@ -118,19 +115,7 @@ class ExportCableInstallation(InstallPhase):
         except KeyError:
             trench = 1
 
-        try:
-            interconnection = self.config["landfall"][
-                "distance_to_interconnection"
-            ]
-
-        except KeyError:
-            interconnection = 2
-
-        self.distances = {
-            "site": site,
-            "trench": trench,
-            "interconnection": interconnection,
-        }
+        self.distances = {"site": site, "trench": trench}
 
     def onshore_construction(self, **kwargs):
         """
@@ -178,7 +163,9 @@ class ExportCableInstallation(InstallPhase):
         voltage = self.config["export_system"].get(
             "interconnection_voltage", 345
         )
-        distance = self.config["export_system"].get("distance_to_grid", 3)
+        distance = self.config["export_system"].get(
+            "interconnection_distance", 3
+        )
 
         switchyard_cost = 18115 * voltage + 165944
         onshore_substation_cost = 11652 * (voltage + capacity) + 1200000
@@ -262,8 +249,6 @@ def install_export_cables(
         trench : int | float
             Trench length at landfall. Determines time required to tow the plow
             and pull-in cable (km).
-        interconnection : int | float
-            Distance between landfall and the onshore substation (km).
     burial_vessel : Vessel
         Optional configuration for burial vessel. If configured, the
         installation vessel only lays the cable on the seafloor and this
