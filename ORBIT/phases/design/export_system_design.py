@@ -55,7 +55,7 @@ class ExportSystemDesign(CableSystem):
             "cable": {
                 "linear_density": "int | float",
                 "number": "int",
-                "length": "int | float",
+                "sections": "list",
             }
         }
     }
@@ -177,15 +177,10 @@ class ExportSystemDesign(CableSystem):
         Returns
         -------
         output : dict
-            Dictionary of the number of section lengths and the linear density
-            of each cable type.
-             - <`cable_type`>_system: dict
-                - cables: dict
-                    - `Cable.name`: dict
-                        - sections: [
-                            (length of unique section, number of sections)
-                          ],
-                        - linear_density: `Cable.linear_density`
+            Dictionary containing the output export system. Contains:
+            - 'linear_density': 't/km'
+            - 'sections': 'list [self.length]'
+            - 'number': 'int'
         """
 
         if self.cables is None:
@@ -197,7 +192,7 @@ class ExportSystemDesign(CableSystem):
 
             output["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
-                "length": self.length,
+                "sections": [self.length],
                 "number": self.num_cables,
             }
 

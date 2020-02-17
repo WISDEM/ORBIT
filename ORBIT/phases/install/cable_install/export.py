@@ -6,6 +6,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from copy import deepcopy
 from math import ceil
 
 from marmot import process
@@ -42,12 +43,16 @@ class ExportCableInstallation(InstallPhase):
         "export_cable_install_vessel": "str | dict",
         "export_cable_bury_vessel": "str | dict (optional)",
         "site": {"distance": "int | float"},
+        "plant": {"num_turbines": "int"},
+        "turbine": {"turbine_rating": "MW"},
         "export_system": {
             "cable": {
                 "linear_density": "int | float",
-                "length": "int | float",
+                "sections": [("distance", "speed (optional)")],
                 "number": "int (optional)",
-            }
+            },
+            "distance_to_grid": "km (optional); default: 3km",
+            "interconnection_voltage": "kV (optional); default: 345kV",
         },
     }
 
@@ -83,7 +88,7 @@ class ExportCableInstallation(InstallPhase):
 
         system = self.config["export_system"]
         self.cable = Cable(system["cable"]["linear_density"])
-        self.length = system["cable"]["length"]
+        self.sections = system["cable"]["sections"]
         self.number = system["cable"].get("number", 1)
 
         self.initialize_installation_vessel()
@@ -95,7 +100,7 @@ class ExportCableInstallation(InstallPhase):
         # Perform cable installation
         install_export_cables(
             self.install_vessel,
-            length=self.length,
+            sections=self.sections,
             cable=self.cable,
             number=self.number,
             distances=self.distances,
@@ -142,23 +147,54 @@ class ExportCableInstallation(InstallPhase):
             Default: 50000 USD/day
         """
 
-        construction_time = kwargs.get(
-            "onshore_construction_time", pt["onshore_construction_time"]
-        )
-        construction_rate = self.defaults["onshore_construction_rate"]
+        construction_time = kwargs.get("onshore_construction_time", 0.0)
+        construction_cost = self.calculate_onshore_transmission_cost(**kwargs)
 
-        _ = self.env.timeout(construction_time)
-        self.env.run()
+        if construction_time:
+            _ = self.env.timeout(construction_time)
+            self.env.run()
+
         self.env._submit_log(
             {
                 "action": "Onshore Construction",
                 "agent": "Onshore Construction",
                 "duration": construction_time,
-                "cost": construction_time * construction_rate,
+                "cost": construction_cost,
                 "location": "Landfall",
             },
             level="ACTION",
         )
+
+    def calculate_onshore_transmission_cost(self, **kwargs):
+        """
+        Calculates the cost of onshore transmission costs. From legacy
+        OffshoreBOS model.
+        """
+
+        tr = self.config["turbine"]["turbine_rating"]
+        num = self.config["plant"]["num_turbines"]
+        capacity = num * tr
+
+        voltage = self.config["export_system"].get(
+            "interconnection_voltage", 345
+        )
+        distance = self.config["export_system"].get("distance_to_grid", 3)
+
+        switchyard_cost = 18115 * voltage + 165944
+        onshore_substation_cost = 11652 * (voltage + capacity) + 1200000
+        onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
+        transmission_line_cost = (1176 * voltage + 218257) * (
+            distance ** (1 - 0.1063)
+        )
+
+        onshore_transmission_cost = (
+            switchyard_cost
+            + onshore_substation_cost
+            + onshore_misc_cost
+            + transmission_line_cost
+        )
+
+        return onshore_transmission_cost
 
     def initialize_installation_vessel(self):
         """Creates the export cable installation vessel."""
@@ -203,7 +239,7 @@ class ExportCableInstallation(InstallPhase):
 
 @process
 def install_export_cables(
-    vessel, length, cable, number, distances, burial_vessel=None, **kwargs
+    vessel, sections, cable, number, distances, burial_vessel=None, **kwargs
 ):
     """
     Simulation of the installation of export cables.
@@ -212,8 +248,8 @@ def install_export_cables(
     ----------
     vessel : Vessel
         Cable installation vessel.
-    length : float
-        Full length of an export cable.
+    sections : float
+        Section lengths of the export cable.
     cable : SimpleCable | Cable
         Cable type to use.
     number : int
@@ -236,39 +272,50 @@ def install_export_cables(
 
     for _ in range(number):
         vessel.cable_storage.reset()
-        splice_required = False
-        remaining = length
-
         yield load_cable_on_vessel(vessel, cable, **kwargs)
 
         # At Landfall
         yield landfall_tasks(vessel, distances["trench"], **kwargs)
 
-        while remaining > 0:
-            if splice_required:
-                yield splice_process(vessel, **kwargs)
-
+        for s in sections:
+            splice_required = False
             try:
-                section = vessel.cable_storage.get_cable(remaining)
+                length, speed = s
+                if burial_vessel is None:
+                    specs = {**kwargs, "cable_lay_bury_speed": speed}
 
-            except InsufficientCable as e:
-                section = vessel.cable_storage.get_cable(e.current)
+                else:
+                    specs = {**kwargs, "cable_lay_speed": speed}
 
-            if burial_vessel is None:
-                yield lay_bury_cable(vessel, section, **kwargs)
+            except TypeError:
+                length = s
+                specs = deepcopy(kwargs)
 
-            else:
-                yield lay_cable(vessel, section, **kwargs)
+            remaining = length
+            while remaining > 0:
+                if splice_required:
+                    yield splice_process(vessel, **kwargs)
 
-            remaining -= ceil(section)
-            if remaining > 0:
-                splice_required = True
-                distance = (remaining / length) * distances["site"]
+                try:
+                    section = vessel.cable_storage.get_cable(remaining)
 
-                yield vessel.transit(distance)
-                vessel.cable_storage.reset()
-                yield load_cable_on_vessel(vessel, cable, **kwargs)
-                yield vessel.transit(distance)
+                except InsufficientCable as e:
+                    section = vessel.cable_storage.get_cable(e.current)
+
+                if burial_vessel is None:
+                    yield lay_bury_cable(vessel, section, **specs)
+
+                else:
+                    yield lay_cable(vessel, section, **specs)
+
+                remaining -= ceil(section)
+                if remaining > 0:
+                    splice_required = True
+
+                    yield vessel.transit(distances["site"])
+                    vessel.cable_storage.reset()
+                    yield load_cable_on_vessel(vessel, cable, **kwargs)
+                    yield vessel.transit(distances["site"])
 
         # At Site
         yield position_onsite(vessel, **kwargs)

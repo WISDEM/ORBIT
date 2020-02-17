@@ -151,11 +151,15 @@ class InstallPhase(BasePhase):
 
             try:
                 delay = grouped[(agent, "Delay")]
+                e = (total - delay) / total
 
             except KeyError:
                 delay = 0.0
+                e = 1.0
 
-            e = (total - delay) / total
+            except ZeroDivisionError:
+                e = 1.0
+
             if not 0.0 <= e <= 1.0:
                 raise ValueError(f"Invalid efficiency for agent '{agent}'")
 
