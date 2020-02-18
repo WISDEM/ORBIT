@@ -35,21 +35,18 @@ class OffshoreSubstationInstallation(InstallPhase):
         "oss_install_vessel": "dict | str",
         "num_feeders": "int",
         "feeder": "dict | str",
-        "site": {"distance": "float", "depth": "int"},
+        "site": {"distance": "km", "depth": "m"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float (optional)",
+            "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
-        "offshore_substation_topside": {
-            "deck_space": "float",
-            "weight": "float",
-        },
+        "offshore_substation_topside": {"deck_space": "m2", "weight": "t"},
         "offshore_substation_substructure": {
             "type": "Monopile",
-            "deck_space": "float",
-            "weight": "float",
-            "length": "float",
+            "deck_space": "m2",
+            "weight": "t",
+            "length": "m",
         },
     }
 

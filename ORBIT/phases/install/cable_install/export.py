@@ -36,16 +36,16 @@ class ExportCableInstallation(InstallPhase):
 
     #:
     expected_config = {
-        "landfall": {"trench_length": "int | float (optional)"},
+        "landfall": {"trench_length": "km (optional)"},
         "export_cable_install_vessel": "str | dict",
         "export_cable_bury_vessel": "str | dict (optional)",
-        "site": {"distance": "int | float"},
+        "site": {"distance": "km"},
         "plant": {"num_turbines": "int"},
         "turbine": {"turbine_rating": "MW"},
         "export_system": {
             "cable": {
-                "linear_density": "int | float",
-                "sections": [("distance", "speed (optional)")],
+                "linear_density": "t/km",
+                "sections": [("length, km", "speed, km/h (optional)")],
                 "number": "int (optional)",
             },
             "interconnection_distance": "km (optional); default: 3km",

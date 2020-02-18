@@ -36,13 +36,10 @@ class ExportSystemDesign(CableSystem):
     """
 
     expected_config = {
-        "site": {
-            "distance_to_landfall": "int | float",
-            "depth": "int | float",
-        },
-        "landfall": {"interconnection_distance": "km, (optional)"},
+        "site": {"distance_to_landfall": "km", "depth": "m"},
+        "landfall": {"interconnection_distance": "km (optional)"},
         "plant": {"num_turbines": "int"},
-        "turbine": {"turbine_rating": "int | float"},
+        "turbine": {"turbine_rating": "MW"},
         "export_system_design": {
             "cables": "str",
             "num_redundant": "int (optional)",
@@ -53,7 +50,7 @@ class ExportSystemDesign(CableSystem):
     output_config = {
         "export_system": {
             "cable": {
-                "linear_density": "int | float",
+                "linear_density": "t/km",
                 "number": "int",
                 "sections": "list",
             }
