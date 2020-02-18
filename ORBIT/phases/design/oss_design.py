@@ -15,23 +15,23 @@ class OffshoreSubstationDesign(DesignPhase):
     """Offshore Substation Design Class."""
 
     expected_config = {
-        "site": {"depth": "float"},
+        "site": {"depth": "m"},
         "plant": {"num_turbines": "int"},
-        "turbine": {"turbine_rating": "int | float"},
+        "turbine": {"turbine_rating": "MW"},
         "substation_design": {
-            "mpt_cost_rate": "float (optional)",
-            "topside_fab_cost_rate": "float (optional)",
-            "topside_design_cost": "float (optional)",
-            "shunt_cost_rate": "float (optional)",
-            "switchgear_cost": "float (optional)",
-            "backup_gen_cost": "float (optional)",
-            "workspace_cost": "float (optional)",
-            "other_ancillary_cost": "float (optional)",
+            "mpt_cost_rate": "USD/MW (optional)",
+            "topside_fab_cost_rate": "USD/t (optional)",
+            "topside_design_cost": "USD (optional)",
+            "shunt_cost_rate": "USD/MW (optional)",
+            "switchgear_cost": "USD (optional)",
+            "backup_gen_cost": "USD (optional)",
+            "workspace_cost": "USD (optional)",
+            "other_ancillary_cost": "USD (optional)",
             "topside_assembly_factor": "float (optional)",
-            "substation_jacket_cost_rate": "float (optional)",
-            "substation_pile_cost_rate": "float (optional)",
+            "substation_jacket_cost_rate": "USD/t (optional)",
+            "substation_pile_cost_rate": "USD/t (optional)",
             "num_substations": "int (optional)",
-            "design_time": "float (optional)",
+            "design_time": "h (optional)",
         },
     }
 

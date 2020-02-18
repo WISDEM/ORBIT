@@ -48,23 +48,23 @@ class TurbineInstallation(InstallPhase):
         "wtiv": "dict | str",
         "feeder": "dict | str (optional)",
         "num_feeders": "int (optional)",
-        "site": {"depth": "float", "distance": "float"},
+        "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float (optional)",
+            "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
         "turbine": {
-            "hub_height": "float",
+            "hub_height": "m",
             "tower": {
-                "deck_space": "float",
-                "weight": "float",
-                "length": "float",
+                "deck_space": "m2",
+                "weight": "t",
+                "length": "m",
                 "sections": "int (optional)",
             },
-            "nacelle": {"deck_space": "float", "weight": "float"},
-            "blade": {"deck_space": "float", "weight": "float"},
+            "nacelle": {"deck_space": "m2", "weight": "t"},
+            "blade": {"deck_space": "m2", "weight": "t"},
         },
     }
 

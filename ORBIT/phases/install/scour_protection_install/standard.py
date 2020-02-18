@@ -26,12 +26,15 @@ class ScourProtectionInstallation(InstallPhase):
         "site": {"distance": "int"},
         "plant": {
             "num_turbines": "int",
-            "turbine_spacing": "int",
-            "turbine_distance": "float (optional)",
+            "turbine_spacing": "rotor diameters",
+            "turbine_distance": "km (optional)",
         },
-        "turbine": {"rotor_diameter": "int"},
-        "port": {"monthly_rate": "float (optional)", "name": "str (optional)"},
-        "scour_protection": {"tons_per_substructure": "int"},
+        "turbine": {"rotor_diameter": "m"},
+        "port": {
+            "monthly_rate": "USD/mo (optional)",
+            "name": "str (optional)",
+        },
+        "scour_protection": {"tons_per_substructure": "float"},
     }
 
     phase = "Scour Protection Installation"

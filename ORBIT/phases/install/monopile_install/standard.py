@@ -43,21 +43,21 @@ class MonopileInstallation(InstallPhase):
         "wtiv": "dict | str",
         "feeder": "dict | str (optional)",
         "num_feeders": "int (optional)",
-        "site": {"depth": "float", "distance": "float"},
+        "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
-        "turbine": {"hub_height": "float"},
+        "turbine": {"hub_height": "m"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float (optional)",
+            "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
         "monopile": {
-            "length": "float",
-            "diameter": "float",
-            "deck_space": "float",
-            "weight": "float",
+            "length": "m",
+            "diameter": "m",
+            "deck_space": "m2",
+            "weight": "t",
         },
-        "transition_piece": {"deck_space": "float", "weight": "float"},
+        "transition_piece": {"deck_space": "m2", "weight": "t"},
     }
 
     def __init__(self, config, weather=None, **kwargs):

@@ -37,12 +37,14 @@ class ArrayCableInstallation(InstallPhase):
     expected_config = {
         "array_cable_install_vessel": "str",
         "array_cable_bury_vessel": "str (optional)",
-        "site": {"distance": "int | float"},
+        "site": {"distance": "km"},
         "array_system": {
             "cables": {
                 "name (variable)": {
-                    "linear_density": "int | float",
-                    "cable_sections": [("float", "int", "float (optional)")],
+                    "linear_density": "t/km",
+                    "cable_sections": [
+                        ("length, km", "int", "speed, km/h (optional)")
+                    ],
                 }
             }
         },

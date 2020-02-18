@@ -67,21 +67,18 @@ class ArraySystemDesign(CableSystem):
     """
 
     expected_config = {
-        "site": {"depth": "int | float"},
+        "site": {"depth": "m"},
         "plant": {
             "layout": "str",
-            "row_spacing": "int",
-            "turbine_spacing": "int",
-            "turbine_distance": "int (optional)",
+            "row_spacing": "rotor diameters",
+            "turbine_spacing": "rotor diameters",
+            "turbine_distance": "km (optional)",
             "num_turbines": "int",
-            "substation_distance": "int | float",
+            "substation_distance": "km",
         },
-        "turbine": {
-            "rotor_diameter": "int | float",
-            "turbine_rating": "int | float",
-        },
+        "turbine": {"rotor_diameter": "m", "turbine_rating": "MW"},
         "array_system_design": {
-            "design_time": "int | float (optional)",
+            "design_time": "hrs (optional)",
             "cables": "list | str",
             "average_exclusion_percent": "float (optional)",
         },
