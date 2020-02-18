@@ -1,0 +1,8 @@
+ac_resistance: 0.05
+capacitance: 307
+conductor_size: 500
+current_capacity: 734
+inductance: 0.346
+linear_density: 34.62
+name: XLPE_500mm_33kV
+rated_voltage: 33

@@ -1,0 +1,19 @@
+carousel_specs:
+  capacity: 2000
+  max_cable_size: 300
+  min_cable_size: 50
+storage_specs:
+  helideck: true
+  max_cargo: 4000
+  max_deck_load: 15
+  max_deck_space: 1600
+transport_specs:
+  cable_lay_speed: 0.5
+  max_waveheight: 1.5
+  max_windspeed: 25
+  transit_speed: 11.5
+vessel_specs:
+  beam_length: 30.0
+  day_rate: 50000
+  min_draft: 4.8
+  overall_length: 99.0
