@@ -33,10 +33,10 @@ Dependencies
 ~~~~~~~~~~~~
 
 - Python 3.7+
-- SimPy
+- simpy-agents
+- marmot-agents
 - NumPy
 - SciPy
-- pandas
 - Matplotlib
 - OpenMDAO (>=2.0)
 
@@ -57,6 +57,7 @@ Recommended packages for easy iteration and running of code:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - jupyterlab
+- pandas
 
 
 Instructions
