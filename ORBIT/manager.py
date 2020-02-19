@@ -15,6 +15,7 @@ from itertools import product
 import pandas as pd
 
 from ORBIT import library
+from ORBIT.phases import DesignPhase, InstallPhase
 from ORBIT.library import initialize_library, extract_library_data
 from ORBIT.phases.design import (
     MonopileDesign,
@@ -145,10 +146,10 @@ class ProjectManager:
             raise PhaseNotFound(_error)
 
         design_phases = {
-            n: c for n, c in _phases.items() if hasattr(c, "_design_phase")
+            n: c for n, c in _phases.items() if issubclass(c, DesignPhase)
         }
         install_phases = {
-            n: c for n, c in _phases.items() if hasattr(c, "_install_phase")
+            n: c for n, c in _phases.items() if issubclass(c, InstallPhase)
         }
 
         config = {}
