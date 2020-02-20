@@ -6,3 +6,4 @@ inductance: 0.403
 linear_density: 20.99
 name: XLPE_185mm_33kV
 rated_voltage: 33
+cost_per_km: 100

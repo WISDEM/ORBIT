@@ -6,4 +6,4 @@ inductance: 0.349
 linear_density: 45
 name: XLPE_630mm_66kV
 rated_voltage: 66
-cost_per_km:  407
+cost_per_km:  407000
