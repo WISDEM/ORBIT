@@ -74,13 +74,13 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         self.add_input('turbine_capex', 1100, units='USD/kW', desc='Turbine CAPEX')
         self.add_input('hub_height', 100., units='m', desc='Turbine hub height.')
         self.add_input('turbine_rotor_diameter', 130, units='m', desc='Turbine rotor diameter.')
-        self.add_input('tower_mass', 400., units='t', desc='Weight of the total tower.')
+        self.add_input('tower_mass', 400., units='t', desc='mass of the total tower.')
         self.add_input('tower_length', 100., units='m', desc='Total length of the tower.')
         self.add_input('tower_deck_space', 0., units='m**2', desc='Deck space required to transport the tower. Defaults to 0 in order to not be a constraint on installation.')
-        self.add_input('nacelle_mass', 500., units='t', desc='Weight of the rotor nacelle assembly (RNA).')
+        self.add_input('nacelle_mass', 500., units='t', desc='mass of the rotor nacelle assembly (RNA).')
         self.add_input('nacelle_deck_space', 0., units='m**2', desc='Deck space required to transport the rotor nacelle assembly (RNA). Defaults to 0 in order to not be a constraint on installation.')
         self.add_discrete_input('number_of_blades', 3, desc='Number of blades per turbine.')
-        self.add_input('blade_mass', 50., units='t', desc='Weight of an individual blade.')
+        self.add_input('blade_mass', 50., units='t', desc='mass of an individual blade.')
         self.add_input('blade_deck_space', 0., units='m**2', desc='Deck space required to transport a blade. Defaults to 0 in order to not be a constraint on installation.')
 
         # Port
@@ -89,9 +89,9 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         # Monopile
         self.add_input('monopile_length', 100., units='m', desc='Length of monopile.')
         self.add_input('monopile_diameter', 7., units='m', desc='Diameter of monopile.')
-        self.add_input('monopile_mass', 900., units='t', desc='Weight of an individual monopile.')
+        self.add_input('monopile_mass', 900., units='t', desc='mass of an individual monopile.')
         self.add_input('monopile_deck_space', 0., units='m**2', desc='Deck space required to transport a monopile. Defaults to 0 in order to not be a constraint on installation.')
-        self.add_input('transition_piece_mass', 250., units='t', desc='Weight of an individual transition piece.')
+        self.add_input('transition_piece_mass', 250., units='t', desc='mass of an individual transition piece.')
         self.add_input('transition_piece_deck_space', 0., units='m**2', desc='Deck space required to transport a transition piece. Defaults to 0 in order to not be a constraint on installation.')
 
         # Other

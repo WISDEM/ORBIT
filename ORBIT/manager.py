@@ -409,7 +409,9 @@ class ProjectManager:
 
         self.phase_costs[name] = cost
         self.phase_times[name] = time
-        # self.detailed_outputs[name] = phase.detailed_output
+        self.detailed_outputs = self.merge_dicts(
+            self.detailed_outputs, phase.detailed_output
+        )
 
         return cost, time, logs
 
@@ -484,6 +486,9 @@ class ProjectManager:
 
         self.config = self.merge_dicts(
             self.config, phase.design_result, overwrite=False
+        )
+        self.detailed_outputs = self.merge_dicts(
+            self.detailed_outputs, phase.detailed_output
         )
 
     def run_multiple_phases_in_serial(self, phase_list, **kwargs):

@@ -81,12 +81,12 @@ class DeckSpaceExceeded(Exception):
         return self.message
 
 
-class CargoWeightExceeded(Exception):
+class CargoMassExceeded(Exception):
     """Error for exceeding vessel maximum cargo mass"""
 
     def __init__(self, max, current, item):
         """
-        Creates an instance of CargoWeightExceeded.
+        Creates an instance of CargoMassExceeded.
 
         Parameters
         ----------

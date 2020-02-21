@@ -14,7 +14,7 @@ from marmot import process
 from ORBIT.core import Vessel
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
-from ORBIT.core.exceptions import InsufficientAmount, CargoWeightExceeded
+from ORBIT.core.exceptions import CargoMassExceeded, InsufficientAmount
 
 
 class ScourProtectionInstallation(InstallPhase):
@@ -123,9 +123,9 @@ class ScourProtectionInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """Returns detailed outputs."""
+        """Detailed outputs of the scour protection installation."""
 
-        outputs = {**self.agent_efficiencies}
+        outputs = {self.phase: {**self.agent_efficiencies}}
 
         return outputs
 
@@ -221,9 +221,9 @@ def load_material(vessel, mass, **kwargs):
         Dictionary of item properties.
     """
 
-    if vessel.rock_storage.level + mass > vessel.rock_storage.max_weight:
-        raise CargoWeightExceeded(
-            vessel.rock_storage.max_weight,
+    if vessel.rock_storage.level + mass > vessel.rock_storage.max_mass:
+        raise CargoMassExceeded(
+            vessel.rock_storage.max_mass,
             vessel.rock_storage.level,
             "Scour Protection",
         )

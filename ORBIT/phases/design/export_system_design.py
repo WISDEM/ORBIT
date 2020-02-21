@@ -115,6 +115,7 @@ class ExportSystemDesign(CableSystem):
             "export_system_total_mass": self.total_mass,
             "export_system_total_length": self.total_length,
             "export_system_total_cost": self.total_cable_cost,
+            "export_system_cable_power": self.cable.cable_power,
         }
 
         return _output

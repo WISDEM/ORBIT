@@ -10,9 +10,9 @@ import simpy
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.core.exceptions import (
     ItemNotFound,
+    CargoMassExceeded,
     DeckSpaceExceeded,
     InsufficientCable,
-    CargoWeightExceeded,
 )
 
 # TODO: __str__ methods for Components
@@ -196,12 +196,12 @@ class VesselStorage(simpy.FilterStore):
         capacity = kwargs.get("capacity", float("inf"))
         super().__init__(env, capacity)
 
-        self.max_cargo_weight = max_cargo
+        self.max_cargo_mass = max_cargo
         self.max_deck_space = max_deck_space
         self.max_deck_load = max_deck_load
 
     @property
-    def current_cargo_weight(self):
+    def current_cargo_mass(self):
         """Returns current cargo mass in tons."""
 
         return sum([item.mass for item in self.items])
@@ -237,9 +237,9 @@ class VesselStorage(simpy.FilterStore):
                 self.max_deck_space, self.current_deck_space, item
             )
 
-        if self.current_cargo_weight + item.mass > self.max_cargo_weight:
-            raise CargoWeightExceeded(
-                self.max_cargo_weight, self.current_cargo_weight, item
+        if self.current_cargo_mass + item.mass > self.max_cargo_mass:
+            raise CargoMassExceeded(
+                self.max_cargo_mass, self.current_cargo_mass, item
             )
 
         self.put(item)
@@ -302,7 +302,7 @@ class VesselStorage(simpy.FilterStore):
 class ScourProtectionStorage(simpy.Container):
     """Scour Protection Storage Class"""
 
-    def __init__(self, env, max_weight, **kwargs):
+    def __init__(self, env, max_mass, **kwargs):
         """
         Creates an instance of VesselStorage.
 
@@ -310,24 +310,24 @@ class ScourProtectionStorage(simpy.Container):
         ----------
         env : simpy.Environment
             SimPy environment that simulation runs on.
-        max_weight : int | float
+        max_mass : int | float
             Maximum mass the storage system can carry (t).
         """
 
-        self.max_weight = max_weight
-        super().__init__(env, self.max_weight)
+        self.max_mass = max_mass
+        super().__init__(env, self.max_mass)
 
     @property
     def available_capacity(self):
         """Returns available cargo capacity."""
 
-        return self.max_weight - self.level
+        return self.max_mass - self.level
 
 
 class CableCarousel(simpy.Container):
     """Cable Storage Class"""
 
-    def __init__(self, env, max_weight, **kwargs):
+    def __init__(self, env, max_mass, **kwargs):
         """
         Creates an instance of CableCarousel.
 
@@ -335,22 +335,22 @@ class CableCarousel(simpy.Container):
         ----------
         env : simpy.Environment
             SimPy environment that simulation runs on.
-        max_weight : int | float
+        max_mass : int | float
             Maximum mass the storage system can carry (t).
         """
 
         self.cable = None
-        self.max_weight = max_weight
+        self.max_mass = max_mass
         super().__init__(env)
 
     @property
-    def available_weight(self):
+    def available_mass(self):
         """Returns available cargo mass capacity."""
 
-        return self.max_weight - self.current_weight
+        return self.max_mass - self.current_mass
 
     @property
-    def current_weight(self):
+    def current_mass(self):
         """Returns current cargo mass"""
 
         try:
@@ -363,7 +363,7 @@ class CableCarousel(simpy.Container):
     def available_length(self, cable):
         """Returns available length capacity based on input linear density."""
 
-        return self.available_weight / cable.linear_density
+        return self.available_mass / cable.linear_density
 
     def reset(self):
         """Resets `self.cable` and empties `self.level`."""
@@ -400,7 +400,7 @@ class CableCarousel(simpy.Container):
         else:
             # Load length of cable
             proposed = length * cable.linear_density
-            if proposed > self.available_weight:
+            if proposed > self.available_mass:
                 raise ValueError(
                     f"Length {length} of {cable} can't be loaded."
                 )

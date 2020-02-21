@@ -152,7 +152,9 @@ class ScourProtectionDesign(DesignPhase):
         Returns detailed outputs of the design.
         """
 
-        _out = {"tonnes_per_substructure": self.scour_protection_tonnes}
+        _out = {
+            "scour_protection_per_substructure": self.scour_protection_tonnes
+        }
         return _out
 
     @property

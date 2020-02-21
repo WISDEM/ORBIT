@@ -434,7 +434,6 @@ class CableSystem(DesignPhase):
                 _temp[name] = {
                     "cable_sections": sections,
                     "linear_density": cable.linear_density,
-                    "power": cable.cable_power,
                 }
 
         return output
