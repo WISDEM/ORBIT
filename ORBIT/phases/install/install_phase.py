@@ -170,7 +170,7 @@ class InstallPhase(BasePhase):
     @staticmethod
     def get_max_cargo_weight_utilzations(vessels):
         """
-        Returns a summary of cargo weight efficiencies for list of input `vessels`.
+        Returns a summary of cargo mass efficiencies for list of input `vessels`.
 
         Parameters
         ----------

@@ -100,6 +100,25 @@ class ExportSystemDesign(CableSystem):
         self.compute_cable_mass()
         self.compute_total_cable()
 
+    @property
+    def total_cable_cost(self):
+        """Returns total array system cable cost."""
+
+        return sum(self.cost_by_type.values())
+
+    @property
+    def detailed_output(self):
+        """Returns export system design outputs."""
+
+        _output = {
+            **self.design_result,
+            "export_system_total_mass": self.total_mass,
+            "export_system_total_length": self.total_length,
+            "export_system_total_cost": self.total_cable_cost,
+        }
+
+        return _output
+
     def compute_number_cables(self):
         """
         Calculate the total number of required and redundant cables to

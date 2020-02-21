@@ -82,7 +82,7 @@ class DeckSpaceExceeded(Exception):
 
 
 class CargoWeightExceeded(Exception):
-    """Error for exceeding vessel maximum cargo weight"""
+    """Error for exceeding vessel maximum cargo mass"""
 
     def __init__(self, max, current, item):
         """
@@ -91,18 +91,18 @@ class CargoWeightExceeded(Exception):
         Parameters
         ----------
         max : int | float
-            Maximum vessel cargo weight (t).
+            Maximum vessel cargo mass (t).
         current : int | float
-            Vessel cargo weight currently in use (t).
+            Vessel cargo mass currently in use (t).
         item : dict or str
-            Item that exceeded cargo weight limit. Item can either be
+            Item that exceeded cargo mass limit. Item can either be
             a dictionary with a 'type' or the name of an item.
         """
 
         self.max = max
         self.current = current
         self.item = item
-        self.message = f"'{self.item}' will exceed maximum cargo weight."
+        self.message = f"'{self.item}' will exceed maximum cargo mass."
 
     def __str__(self):
         return self.message
@@ -359,7 +359,7 @@ class VesselCapacityError(Exception):
 
         self.message = (
             f"Vessel {self.vessel} does not have the required "
-            "cargo weight or deck space capacity to transport a "
+            "cargo mass or deck space capacity to transport a "
             f"whole set of components: {self.items}"
         )
 

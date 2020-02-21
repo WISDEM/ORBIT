@@ -173,7 +173,7 @@ class JackingSys:
 class VesselStorage(simpy.FilterStore):
     """Vessel Storage Class"""
 
-    required_keys = ["type", "weight", "deck_space"]
+    required_keys = ["type", "mass", "deck_space"]
 
     def __init__(
         self, env, max_cargo, max_deck_space, max_deck_load, **kwargs
@@ -186,7 +186,7 @@ class VesselStorage(simpy.FilterStore):
         env : simpy.Environment
             SimPy environment that simulation runs on.
         max_cargo : int | float
-            Maximum weight the storage system can carry (t).
+            Maximum mass the storage system can carry (t).
         max_deck_space : int | float
             Maximum deck space the storage system can use (m2).
         max_deck_load : int | float
@@ -202,9 +202,9 @@ class VesselStorage(simpy.FilterStore):
 
     @property
     def current_cargo_weight(self):
-        """Returns current cargo weight in tons."""
+        """Returns current cargo mass in tons."""
 
-        return sum([item.weight for item in self.items])
+        return sum([item.mass for item in self.items])
 
     @property
     def current_deck_space(self):
@@ -220,7 +220,7 @@ class VesselStorage(simpy.FilterStore):
         Items put into the instance should be a dictionary with the following
         attributes:
         - name
-        - weight (t)
+        - mass (t)
         - deck_space (m2)
 
         Parameters
@@ -237,7 +237,7 @@ class VesselStorage(simpy.FilterStore):
                 self.max_deck_space, self.current_deck_space, item
             )
 
-        if self.current_cargo_weight + item.weight > self.max_cargo_weight:
+        if self.current_cargo_weight + item.mass > self.max_cargo_weight:
             raise CargoWeightExceeded(
                 self.max_cargo_weight, self.current_cargo_weight, item
             )
@@ -311,7 +311,7 @@ class ScourProtectionStorage(simpy.Container):
         env : simpy.Environment
             SimPy environment that simulation runs on.
         max_weight : int | float
-            Maximum weight the storage system can carry (t).
+            Maximum mass the storage system can carry (t).
         """
 
         self.max_weight = max_weight
@@ -336,7 +336,7 @@ class CableCarousel(simpy.Container):
         env : simpy.Environment
             SimPy environment that simulation runs on.
         max_weight : int | float
-            Maximum weight the storage system can carry (t).
+            Maximum mass the storage system can carry (t).
         """
 
         self.cable = None
@@ -345,17 +345,17 @@ class CableCarousel(simpy.Container):
 
     @property
     def available_weight(self):
-        """Returns available cargo weight capacity."""
+        """Returns available cargo mass capacity."""
 
         return self.max_weight - self.current_weight
 
     @property
     def current_weight(self):
-        """Returns current cargo weight"""
+        """Returns current cargo mass"""
 
         try:
-            weight = self.level * self.cable.linear_density
-            return weight
+            mass = self.level * self.cable.linear_density
+            return mass
 
         except AttributeError:
             return 0

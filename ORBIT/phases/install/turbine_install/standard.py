@@ -59,12 +59,12 @@ class TurbineInstallation(InstallPhase):
             "hub_height": "m",
             "tower": {
                 "deck_space": "m2",
-                "weight": "t",
+                "mass": "t",
                 "length": "m",
                 "sections": "int (optional)",
             },
-            "nacelle": {"deck_space": "m2", "weight": "t"},
-            "blade": {"deck_space": "m2", "weight": "t"},
+            "nacelle": {"deck_space": "m2", "mass": "t"},
+            "blade": {"deck_space": "m2", "mass": "t"},
         },
     }
 
@@ -206,7 +206,7 @@ class TurbineInstallation(InstallPhase):
         self.num_sections = tower.get("sections", 1)
 
         _section = {}
-        for k in ["length", "deck_space", "weight"]:
+        for k in ["length", "deck_space", "mass"]:
             try:
                 _section[k] = ceil(tower.get(k) / self.num_sections)
 
@@ -248,7 +248,7 @@ class TurbineInstallation(InstallPhase):
         Returns detailed outputs in a dictionary, including:
 
         - Agent operational efficiencies, ``operations time / total time``
-        - Cargo weight efficiencies, ``highest weight used / maximum weight``
+        - Cargo mass efficiencies, ``highest mass used / maximum mass``
         - Deck space efficiencies, ``highest space used / maximum space``
         """
 

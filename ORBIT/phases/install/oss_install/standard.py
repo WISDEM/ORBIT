@@ -41,11 +41,11 @@ class OffshoreSubstationInstallation(InstallPhase):
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
-        "offshore_substation_topside": {"deck_space": "m2", "weight": "t"},
+        "offshore_substation_topside": {"deck_space": "m2", "mass": "t"},
         "offshore_substation_substructure": {
             "type": "Monopile",
             "deck_space": "m2",
-            "weight": "t",
+            "mass": "t",
             "length": "m",
         },
     }

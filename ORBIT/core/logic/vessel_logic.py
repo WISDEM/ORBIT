@@ -191,13 +191,13 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                     item = port.get_item(i)
                     buffer.append(item)
 
-                # Calculate deck space and weight of one complete turbine
+                # Calculate deck space and mass of one complete turbine
                 total_deck_space = sum([item.deck_space for item in buffer])
                 proposed_deck_space = (
                     vessel.storage.current_deck_space + total_deck_space
                 )
 
-                total_weight = sum([item.weight for item in buffer])
+                total_weight = sum([item.mass for item in buffer])
                 proposed_weight = (
                     vessel.storage.current_cargo_weight + total_weight
                 )

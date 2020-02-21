@@ -155,21 +155,21 @@ class OrbitWisdemFixed(om.ExplicitComponent):
                 'tower': {
                     'type': 'Tower',
                     'deck_space': float(inputs['tower_deck_space']),
-                    'weight': float(inputs['tower_mass']),
+                    'mass': float(inputs['tower_mass']),
                     'length': float(inputs['tower_length'])
                 },
                 
                 'nacelle': {
                     'type': 'Nacelle',
                     'deck_space': float(inputs['nacelle_deck_space']),
-                    'weight': float(inputs['nacelle_mass'])
+                    'mass': float(inputs['nacelle_mass'])
                 },
                 
                 'blade': {
                     'type': 'Blade',
                     'number': float(discrete_inputs['number_of_blades']),
                     'deck_space': float(inputs['blade_deck_space']),
-                    'weight': float(inputs['blade_mass'])
+                    'mass': float(inputs['blade_mass'])
                 }
             },
 
@@ -179,13 +179,13 @@ class OrbitWisdemFixed(om.ExplicitComponent):
                 'length': float(inputs['monopile_length']),
                 'diameter': float(inputs['monopile_diameter']),
                 'deck_space': float(inputs['monopile_deck_space']),
-                'weight': float(inputs['monopile_mass'])
+                'mass': float(inputs['monopile_mass'])
             },
             
             'transition_piece': {
                 'type': 'Transition Piece',
                 'deck_space': float(inputs['transition_piece_deck_space']),
-                'weight': float(inputs['transition_piece_mass'])
+                'mass': float(inputs['transition_piece_mass'])
             },
             
             'scour_protection_design': {

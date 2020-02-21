@@ -385,7 +385,7 @@ class Vessel(Agent):
 
     @property
     def cargo_weight_utilizations(self):
-        """Returns cargo weight utilizations for list of trips."""
+        """Returns cargo mass utilizations for list of trips."""
 
         try:
             max_cargo_weight = self.storage.max_cargo_weight
@@ -413,7 +413,7 @@ class Vessel(Agent):
 
     @property
     def max_cargo_weight_utilization(self):
-        """Returns maximum cargo weight utilization."""
+        """Returns maximum cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
@@ -422,7 +422,7 @@ class Vessel(Agent):
 
     @property
     def min_cargo_weight_utilization(self):
-        """Returns minimum cargo weight utilization."""
+        """Returns minimum cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
@@ -431,7 +431,7 @@ class Vessel(Agent):
 
     @property
     def mean_cargo_weight_utilization(self):
-        """Returns mean cargo weight utilization."""
+        """Returns mean cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
@@ -440,7 +440,7 @@ class Vessel(Agent):
 
     @property
     def median_cargo_weight_utilization(self):
-        """Returns median cargo weight utilization."""
+        """Returns median cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN

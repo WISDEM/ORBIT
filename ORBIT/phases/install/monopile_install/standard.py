@@ -55,9 +55,9 @@ class MonopileInstallation(InstallPhase):
             "length": "m",
             "diameter": "m",
             "deck_space": "m2",
-            "weight": "t",
+            "mass": "t",
         },
-        "transition_piece": {"deck_space": "m2", "weight": "t"},
+        "transition_piece": {"deck_space": "m2", "mass": "t"},
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -214,7 +214,7 @@ class MonopileInstallation(InstallPhase):
         Returns detailed outputs in a dictionary, including:
 
         - Agent operational efficiencies, ``operations time / total time``
-        - Cargo weight efficiencies, ``highest weight used / maximum weight``
+        - Cargo mass efficiencies, ``highest mass used / maximum mass``
         - Deck space efficiencies, ``highest space used / maximum space``
         """
 

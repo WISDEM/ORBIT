@@ -74,13 +74,13 @@ class OffshoreSubstationDesign(DesignPhase):
         self._outputs["offshore_substation_substructure"] = {
             "type": "Monopile",  # Substation install only supports monopiles
             "deck_space": self.substructure_deck_space,
-            "weight": self.substructure_mass,
+            "mass": self.substructure_mass,
             "length": self.substructure_length,
         }
 
         self._outputs["offshore_substation_topside"] = {
             "deck_space": self.topside_deck_space,
-            "weight": self.topside_mass,
+            "mass": self.topside_mass,
         }
 
         self._outputs["num_substations"] = self.num_substations
