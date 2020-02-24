@@ -124,6 +124,7 @@ class ArraySystemDesign(CableSystem):
 
         _output = {
             **self.design_result,
+            "array_system_num_strings": self.num_strings,
             "array_system_total_length": self.total_length,
             "array_system_length_by_type": self.total_cable_length_by_type,
             "array_system_total_cost": self.total_cable_cost,

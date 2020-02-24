@@ -26,7 +26,8 @@ setup(
     install_requires=[
         "numpy",
         "matplotlib",
-        "marmot-agents",
+        "simpy",
+        "marmot-agents>=0.2.5",
         "scipy",
         "pandas",
         "pyyaml",
@@ -42,11 +43,10 @@ setup(
             "isort",
             "pytest",
             "pytest-cov",
-            "pytest-xdist",
             "sphinx",
             "sphinx-rtd-theme",
         ]
     },
     test_suite="pytest",
-    tests_require=["pytest", "pytest-xdist", "pytest-cov"],
+    tests_require=["pytest", "pytest-cov"],
 )

@@ -129,6 +129,12 @@ class ProjectManager:
         elif isinstance(install_phases, dict):
             self.run_multiple_phases_overlapping(install_phases, **kwargs)
 
+    @property
+    def phases(self):
+        """Returns dict of phases that have been ran."""
+
+        return self._phases
+
     @classmethod
     def compile_input_dict(cls, phases):
         """
