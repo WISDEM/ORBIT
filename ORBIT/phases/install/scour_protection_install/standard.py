@@ -14,7 +14,7 @@ from marmot import process
 from ORBIT.core import Vessel
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
-from ORBIT.core.exceptions import InsufficientAmount, CargoWeightExceeded
+from ORBIT.core.exceptions import CargoMassExceeded, InsufficientAmount
 
 
 class ScourProtectionInstallation(InstallPhase):
@@ -123,9 +123,9 @@ class ScourProtectionInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """Returns detailed outputs."""
+        """Detailed outputs of the scour protection installation."""
 
-        outputs = {**self.agent_efficiencies}
+        outputs = {self.phase: {**self.agent_efficiencies}}
 
         return outputs
 
@@ -143,7 +143,7 @@ def install_scour_protection(
     """
     Installs the scour protection. Processes the traveling between site
     and turbines for when there are enough rocks leftover from a previous
-    installation as well as the weight of rocks available.
+    installation as well as the mass of rocks available.
 
     Parameters
     ----------
@@ -204,7 +204,7 @@ def install_scour_protection(
 
 
 @process
-def load_material(vessel, weight, **kwargs):
+def load_material(vessel, mass, **kwargs):
     """
     A wrapper for simpy.Container.put that checks VesselStorageContainer
     constraints and triggers self.put() if successful.
@@ -212,7 +212,7 @@ def load_material(vessel, weight, **kwargs):
     Items put into the instance should be a dictionary with the following
     attributes:
         - name
-        - weight (t)
+        - mass (t)
         - length (km)
 
     Parameters
@@ -221,9 +221,9 @@ def load_material(vessel, weight, **kwargs):
         Dictionary of item properties.
     """
 
-    if vessel.rock_storage.level + weight > vessel.rock_storage.max_weight:
-        raise CargoWeightExceeded(
-            vessel.rock_storage.max_weight,
+    if vessel.rock_storage.level + mass > vessel.rock_storage.max_mass:
+        raise CargoMassExceeded(
+            vessel.rock_storage.max_mass,
             vessel.rock_storage.level,
             "Scour Protection",
         )
@@ -231,7 +231,7 @@ def load_material(vessel, weight, **kwargs):
     key = "load_rocks_time"
     load_time = kwargs.get(key, pt[key])
 
-    vessel.rock_storage.put(weight)
+    vessel.rock_storage.put(mass)
     yield vessel.task(
         "Load SP Material",
         load_time,
@@ -241,7 +241,7 @@ def load_material(vessel, weight, **kwargs):
 
 
 @process
-def drop_material(vessel, weight, **kwargs):
+def drop_material(vessel, mass, **kwargs):
     """
     Checks if there is enough of item, otherwise returns an error.
 
@@ -253,15 +253,15 @@ def drop_material(vessel, weight, **kwargs):
         Amount of the item to be loaded into storage.
     """
 
-    if vessel.rock_storage.level < weight:
+    if vessel.rock_storage.level < mass:
         raise InsufficientAmount(
-            vessel.rock_storage.level, "Scour Protection", weight
+            vessel.rock_storage.level, "Scour Protection", mass
         )
 
     key = "drop_rocks_time"
     drop_time = kwargs.get(key, pt[key])
 
-    _ = vessel.rock_storage.get(weight)
+    _ = vessel.rock_storage.get(mass)
     yield vessel.task(
         "Drop SP Material",
         drop_time,

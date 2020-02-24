@@ -217,9 +217,9 @@ class ExportCableInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """Returns detailed outputs."""
+        """Detailed outputs of the export system installation."""
 
-        outputs = {**self.agent_efficiencies}
+        outputs = {self.phase: {**self.agent_efficiencies}}
 
         return outputs
 

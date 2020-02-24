@@ -18,9 +18,9 @@ config = {
     "plant": {"num_turbines": 10},
     "turbine": {
         "hub_height": 100,
-        "tower": {"type": "Tower", "deck_space": 100, "weight": 400},
-        "nacelle": {"type": "Nacelle", "deck_space": 200, "weight": 400},
-        "blade": {"type": "Blade", "deck_space": 100, "weight": 100},
+        "tower": {"type": "Tower", "deck_space": 100, "mass": 400},
+        "nacelle": {"type": "Nacelle", "deck_space": 200, "mass": 400},
+        "blade": {"type": "Blade", "deck_space": 100, "mass": 100},
     },
     "MonopileInstallation": {"wtiv": "test_wtiv"},
     "TurbineInstallation": {"wtiv": "test_wtiv"},
@@ -30,12 +30,12 @@ config = {
         "length": 50,
         "diameter": 10,
         "deck_space": 500,
-        "weight": 350,
+        "mass": 350,
     },
     "transition_piece": {
         "type": "Transition Piece",
         "deck_space": 250,
-        "weight": 350,
+        "mass": 350,
     },
     "install_phases": ["MonopileInstallation", "TurbineInstallation"],
 }

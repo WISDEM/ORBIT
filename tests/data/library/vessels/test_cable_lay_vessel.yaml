@@ -9,4 +9,4 @@ vessel_specs:
   min_draft: 4.8        # m
   overall_length: 99.0  # m
 cable_storage:
-  max_weight: 6000
+  max_mass: 6000

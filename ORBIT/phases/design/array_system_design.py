@@ -106,6 +106,33 @@ class ArraySystemDesign(CableSystem):
         self.extract_phase_kwargs(**kwargs)
         self.system = Plant(self.config)
 
+    @property
+    def total_length(self):
+        """Returns total array system length."""
+
+        return sum([v for _, v in self.total_cable_length_by_type.items()])
+
+    @property
+    def total_cable_cost(self):
+        """Returns total array system cable cost."""
+
+        return sum(self.cost_by_type.values())
+
+    @property
+    def detailed_output(self):
+        """Returns array system design outputs."""
+
+        _output = {
+            **self.design_result,
+            "array_system_num_strings": self.num_strings,
+            "array_system_total_length": self.total_length,
+            "array_system_length_by_type": self.total_cable_length_by_type,
+            "array_system_total_cost": self.total_cable_cost,
+            "array_system_cost_by_type": self.cost_by_type,
+        }
+
+        return _output
+
     def _compute_maximum_turbines_per_cable(self):
         """
         Calculates the maximum turbines that each cable can support and adds

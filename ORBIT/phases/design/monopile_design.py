@@ -53,10 +53,10 @@ class MonopileDesign(DesignPhase):
             "moment": "m4",
             "embedment_length": "m",
             "length": "m",
-            "weight": "t",
+            "mass": "t",
             "deck_space": "m2",
         },
-        "transition_piece": {"length": "m", "weight": "t", "deck_space": "m2"},
+        "transition_piece": {"length": "m", "mass": "t", "deck_space": "m2"},
     }
 
     def __init__(self, config, **kwargs):
@@ -133,7 +133,7 @@ class MonopileDesign(DesignPhase):
             - ``moment`` - Pile bending moment of inertia (m4)
             - ``embedment_length`` - Pile embedment length (m)
             - ``length`` - Total pile length (m)
-            - ``weight`` - Pile weight (t)
+            - ``mass`` - Pile mass (t)
             - ``type`` - `'Monopile'`
 
         References
@@ -173,7 +173,7 @@ class MonopileDesign(DesignPhase):
         # Total length
         airgap = kwargs.get("airgap", 10)  # m
         sizing["length"] = sizing["embedment_length"] + site_depth + airgap
-        sizing["weight"] = self.pile_mass(
+        sizing["mass"] = self.pile_mass(
             Dp=sizing["diameter"],
             tp=sizing["thickness"],
             Lt=sizing["length"],
@@ -221,7 +221,7 @@ class MonopileDesign(DesignPhase):
         tp_design = {
             "thickness": t_tp,
             "diameter": D_tp,
-            "weight": m_tp,
+            "mass": m_tp,
             "length": L_tp,
             "deck_space": D_tp ** 2,
         }
@@ -261,7 +261,16 @@ class MonopileDesign(DesignPhase):
     def detailed_output(self):
         """Returns detailed phase information."""
 
-        return {}
+        _outputs = {
+            "total_monopile_mass": self.total_monopile_mass,
+            "total_monopile_cost": self.material_cost["monopile"],
+            "total_transition_piece_mass": self.total_tp_mass,
+            "total_transition_piece_cost": self.material_cost[
+                "transition_piece"
+            ],
+        }
+
+        return _outputs
 
     @property
     def material_cost(self):
@@ -270,16 +279,34 @@ class MonopileDesign(DesignPhase):
         if not self._outputs:
             raise Exception("Has MonopileDesign been ran yet?")
 
-        num_turbines = self.config["plant"]["num_turbines"]
-        mono_weight = self._outputs["monopile"]["weight"] * num_turbines
-        tp_weight = self._outputs["transition_piece"]["weight"] * num_turbines
-
         out = {
-            "monopile": mono_weight * self.monopile_steel_cost,
-            "transition_piece": tp_weight * self.tp_steel_cost,
+            "monopile": self.total_monopile_mass * self.monopile_steel_cost,
+            "transition_piece": self.total_tp_mass * self.tp_steel_cost,
         }
 
         return out
+
+    @property
+    def total_monopile_mass(self):
+        """Returns total mass of all monopiles."""
+
+        if not self._outputs:
+            raise Exception("Has MonopileDesign been ran yet?")
+
+        num_turbines = self.config["plant"]["num_turbines"]
+
+        return self._outputs["monopile"]["mass"] * num_turbines
+
+    @property
+    def total_tp_mass(self):
+        """Returns total mass of all transition pieces."""
+
+        if not self._outputs:
+            raise Exception("Has MonopileDesign been ran yet?")
+
+        num_turbines = self.config["plant"]["num_turbines"]
+
+        return self._outputs["transition_piece"]["mass"] * num_turbines
 
     @property
     def monopile_steel_cost(self):

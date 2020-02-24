@@ -55,9 +55,9 @@ class MonopileInstallation(InstallPhase):
             "length": "m",
             "diameter": "m",
             "deck_space": "m2",
-            "weight": "t",
+            "mass": "t",
         },
-        "transition_piece": {"deck_space": "m2", "weight": "t"},
+        "transition_piece": {"deck_space": "m2", "mass": "t"},
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -210,13 +210,7 @@ class MonopileInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs in a dictionary, including:
-
-        - Agent operational efficiencies, ``operations time / total time``
-        - Cargo weight efficiencies, ``highest weight used / maximum weight``
-        - Deck space efficiencies, ``highest space used / maximum space``
-        """
+        """Returns detailed outputs of the monopile installation."""
 
         if self.feeders:
             transport_vessels = [*self.feeders]
@@ -225,9 +219,11 @@ class MonopileInstallation(InstallPhase):
             transport_vessels = [self.wtiv]
 
         outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations(transport_vessels),
-            **self.get_max_deck_space_utilzations(transport_vessels),
+            self.phase: {
+                **self.agent_efficiencies,
+                **self.get_max_cargo_mass_utilzations(transport_vessels),
+                **self.get_max_deck_space_utilzations(transport_vessels),
+            }
         }
 
         return outputs
