@@ -163,14 +163,15 @@ class InstallPhase(BasePhase):
             if not 0.0 <= e <= 1.0:
                 raise ValueError(f"Invalid efficiency for agent '{agent}'")
 
-            efficiencies[agent] = e
+            name = str(agent).replace(" ", "_")
+            efficiencies[f"{name}_operational_efficiency"] = e
 
         return efficiencies
 
     @staticmethod
-    def get_max_cargo_weight_utilzations(vessels):
+    def get_max_cargo_mass_utilzations(vessels):
         """
-        Returns a summary of cargo weight efficiencies for list of input `vessels`.
+        Returns a summary of cargo mass efficiencies for list of input `vessels`.
 
         Parameters
         ----------
@@ -181,15 +182,15 @@ class InstallPhase(BasePhase):
         outputs = {}
 
         for vessel in vessels:
-
+            name = vessel.name.replace(" ", "_")
             storage = getattr(vessel, "storage", None)
             if storage is None:
                 print("Vessel does not have storage capacity.")
                 continue
 
             outputs[
-                f"{vessel.name}_cargo_weight_utilization"
-            ] = vessel.max_cargo_weight_utilization
+                f"{name}_cargo_mass_utilization"
+            ] = vessel.max_cargo_mass_utilization
 
         return outputs
 
@@ -207,14 +208,14 @@ class InstallPhase(BasePhase):
         outputs = {}
 
         for vessel in vessels:
-
+            name = vessel.name.replace(" ", "_")
             storage = getattr(vessel, "storage", None)
             if storage is None:
                 print("Vessel does not have storage capacity.")
                 continue
 
             outputs[
-                f"{vessel.name}_deck_space_utilization"
+                f"{name}_deck_space_utilization"
             ] = vessel.max_deck_space_utilization
 
         return outputs

@@ -15,6 +15,7 @@ from itertools import product
 import pandas as pd
 
 from ORBIT import library
+from ORBIT.phases import DesignPhase, InstallPhase
 from ORBIT.library import initialize_library, extract_library_data
 from ORBIT.phases.design import (
     MonopileDesign,
@@ -128,6 +129,12 @@ class ProjectManager:
         elif isinstance(install_phases, dict):
             self.run_multiple_phases_overlapping(install_phases, **kwargs)
 
+    @property
+    def phases(self):
+        """Returns dict of phases that have been ran."""
+
+        return self._phases
+
     @classmethod
     def compile_input_dict(cls, phases):
         """
@@ -145,10 +152,10 @@ class ProjectManager:
             raise PhaseNotFound(_error)
 
         design_phases = {
-            n: c for n, c in _phases.items() if hasattr(c, "_design_phase")
+            n: c for n, c in _phases.items() if issubclass(c, DesignPhase)
         }
         install_phases = {
-            n: c for n, c in _phases.items() if hasattr(c, "_install_phase")
+            n: c for n, c in _phases.items() if issubclass(c, InstallPhase)
         }
 
         config = {}
@@ -408,7 +415,9 @@ class ProjectManager:
 
         self.phase_costs[name] = cost
         self.phase_times[name] = time
-        # self.detailed_outputs[name] = phase.detailed_output
+        self.detailed_outputs = self.merge_dicts(
+            self.detailed_outputs, phase.detailed_output
+        )
 
         return cost, time, logs
 
@@ -483,6 +492,9 @@ class ProjectManager:
 
         self.config = self.merge_dicts(
             self.config, phase.design_result, overwrite=False
+        )
+        self.detailed_outputs = self.merge_dicts(
+            self.detailed_outputs, phase.detailed_output
         )
 
     def run_multiple_phases_in_serial(self, phase_list, **kwargs):

@@ -16,12 +16,7 @@ class Monopile(Cargo):
     """Monopile Cargo"""
 
     def __init__(
-        self,
-        length=None,
-        diameter=None,
-        weight=None,
-        deck_space=None,
-        **kwargs,
+        self, length=None, diameter=None, mass=None, deck_space=None, **kwargs
     ):
         """
         Creates an instance of `Monopile`.
@@ -29,7 +24,7 @@ class Monopile(Cargo):
 
         self.length = length
         self.diameter = diameter
-        self.weight = weight
+        self.mass = mass
         self.deck_space = deck_space
 
     @staticmethod
@@ -54,12 +49,12 @@ class Monopile(Cargo):
 class TransitionPiece(Cargo):
     """Transition Piece Cargo"""
 
-    def __init__(self, weight=None, deck_space=None, **kwargs):
+    def __init__(self, mass=None, deck_space=None, **kwargs):
         """
         Creates an instance of `TransitionPiece`.
         """
 
-        self.weight = weight
+        self.mass = mass
         self.deck_space = deck_space
 
     @staticmethod

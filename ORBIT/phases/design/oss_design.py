@@ -74,13 +74,13 @@ class OffshoreSubstationDesign(DesignPhase):
         self._outputs["offshore_substation_substructure"] = {
             "type": "Monopile",  # Substation install only supports monopiles
             "deck_space": self.substructure_deck_space,
-            "weight": self.substructure_mass,
+            "mass": self.substructure_mass,
             "length": self.substructure_length,
         }
 
         self._outputs["offshore_substation_topside"] = {
             "deck_space": self.topside_deck_space,
-            "weight": self.topside_mass,
+            "mass": self.topside_mass,
         }
 
         self._outputs["num_substations"] = self.num_substations
@@ -321,4 +321,13 @@ class OffshoreSubstationDesign(DesignPhase):
     def detailed_output(self):
         """Returns detailed phase information."""
 
-        return {}
+        _outputs = {
+            "num_substations": self.num_substations,
+            "substation_mpt_rating": self.mpt_rating,
+            "substation_topside_mass": self.topside_mass,
+            "substation_topside_cost": self.topside_cost,
+            "substation_substructure_mass": self.substructure_mass,
+            "substation_substructure_cost": self.substructure_cost,
+        }
+
+        return _outputs

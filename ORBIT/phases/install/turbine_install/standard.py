@@ -59,12 +59,12 @@ class TurbineInstallation(InstallPhase):
             "hub_height": "m",
             "tower": {
                 "deck_space": "m2",
-                "weight": "t",
+                "mass": "t",
                 "length": "m",
                 "sections": "int (optional)",
             },
-            "nacelle": {"deck_space": "m2", "weight": "t"},
-            "blade": {"deck_space": "m2", "weight": "t"},
+            "nacelle": {"deck_space": "m2", "mass": "t"},
+            "blade": {"deck_space": "m2", "mass": "t"},
         },
     }
 
@@ -206,7 +206,7 @@ class TurbineInstallation(InstallPhase):
         self.num_sections = tower.get("sections", 1)
 
         _section = {}
-        for k in ["length", "deck_space", "weight"]:
+        for k in ["length", "deck_space", "mass"]:
             try:
                 _section[k] = ceil(tower.get(k) / self.num_sections)
 
@@ -244,13 +244,7 @@ class TurbineInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs in a dictionary, including:
-
-        - Agent operational efficiencies, ``operations time / total time``
-        - Cargo weight efficiencies, ``highest weight used / maximum weight``
-        - Deck space efficiencies, ``highest space used / maximum space``
-        """
+        """Returns detailed outputs of the turbine installation."""
 
         if self.feeders:
             transport_vessels = [*self.feeders]
@@ -259,9 +253,11 @@ class TurbineInstallation(InstallPhase):
             transport_vessels = [self.wtiv]
 
         outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations(transport_vessels),
-            **self.get_max_deck_space_utilzations(transport_vessels),
+            self.phase: {
+                **self.agent_efficiencies,
+                **self.get_max_cargo_mass_utilzations(transport_vessels),
+                **self.get_max_deck_space_utilzations(transport_vessels),
+            }
         }
 
         return outputs

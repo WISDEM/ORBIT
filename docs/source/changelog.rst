@@ -3,6 +3,15 @@
 ORBIT Changelog
 ===============
 
+0.4.1
+-----
+
+- Modified installation to require version of marmot-agents that has an
+  internal copy of simpy.
+- Added/expanded ``detailed_outputs`` for all modules.
+- Standardized naming of weight/mass terms to mass throughout the model.
+- Cleanup in ``ProjectManager``
+
 0.4.0
 -----
 

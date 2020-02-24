@@ -9,7 +9,7 @@ monopile:
   deck_space: 500
   diameter: 10
   length: 50
-  weight: 350
+  mass: 350
 plant:
   num_turbines: 10
 port:
@@ -20,17 +20,17 @@ site:
   distance: 50
 transition_piece:
   deck_space: 250
-  weight: 350
+  mass: 350
 turbine:
   blade:
     deck_space: 100
-    weight: 100
+    mass: 100
   hub_height: 100
   nacelle:
     deck_space: 200
-    weight: 400
+    mass: 400
   tower:
     deck_space: 100
-    weight: 400
+    mass: 400
     length: 100
 wtiv: test_wtiv

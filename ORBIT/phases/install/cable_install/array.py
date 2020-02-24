@@ -133,11 +133,9 @@ class ArrayCableInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs.
-        """
+        """Detailed outputs of the array system installation."""
 
-        outputs = {**self.agent_efficiencies}
+        outputs = {self.phase: {**self.agent_efficiencies}}
 
         return outputs
 
