@@ -51,13 +51,13 @@ Consider a simple project with one monopile installation phase:
            'length': 'float',
            'diameter': 'float',
            'deck_space': 'float',
-           'weight': 'float'
+           'mass': 'float'
        },
 
        'transition_piece': {
            'type': 'Transition Piece',
            'deck_space': 'float',
-           'weight': 'float'
+           'mass': 'float'
        },
 
        'design_phases': [],
@@ -134,7 +134,7 @@ project config above:
 
        'monopile': {               # <-- 'monopile' isn't required but can be
            'type': 'Monopile',     #     added to include known project parameters.
-           'weight': 800,          #     Other inputs produced by MonopileDesign will
+           'mass': 800,          #     Other inputs produced by MonopileDesign will
            'length': 100           #     be added to the config.
        },
 
@@ -162,7 +162,7 @@ project config above:
 
        'monopile': {
            'type': 'Monopile',
-           'weight': 800,
+           'mass': 800,
            'length': 100,
            'diameter': 8.512,      # <-- Additional inputs added by MonopileDesign
            'deck_space': 36.245    #

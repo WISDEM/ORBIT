@@ -20,12 +20,12 @@ from ORBIT.phases.install.monopile_install.common import (
 class Topside(Cargo):
     """Topside Cargo"""
 
-    def __init__(self, weight=None, deck_space=None, **kwargs):
+    def __init__(self, mass=None, deck_space=None, **kwargs):
         """
         Creates an instance of `Topside`.
         """
 
-        self.weight = weight
+        self.mass = mass
         self.deck_space = deck_space
 
     @staticmethod

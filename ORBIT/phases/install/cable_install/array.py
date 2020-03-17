@@ -105,8 +105,7 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.install_vessel = vessel
@@ -125,19 +124,16 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.bury_vessel = vessel
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs.
-        """
+        """Detailed outputs of the array system installation."""
 
-        outputs = {**self.agent_efficiencies}
+        outputs = {self.phase: {**self.agent_efficiencies}}
 
         return outputs
 

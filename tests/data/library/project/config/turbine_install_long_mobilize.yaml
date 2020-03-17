@@ -18,4 +18,4 @@ turbine:
     deck_space: 100
     mass: 400
     length: 100
-wtiv: test_wtiv
+wtiv: test_wtiv_mobilize

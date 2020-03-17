@@ -41,11 +41,11 @@ class OffshoreSubstationInstallation(InstallPhase):
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
-        "offshore_substation_topside": {"deck_space": "m2", "weight": "t"},
+        "offshore_substation_topside": {"deck_space": "m2", "mass": "t"},
         "offshore_substation_substructure": {
             "type": "Monopile",
             "deck_space": "m2",
-            "weight": "t",
+            "mass": "t",
             "length": "m",
         },
     }
@@ -133,8 +133,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         oss_vessel = Vessel(name, oss_vessel_specs)
         self.env.register(oss_vessel)
 
-        oss_vessel.extract_vessel_specs()
-        oss_vessel.mobilize()
+        oss_vessel.initialize()
         oss_vessel.at_port = True
         oss_vessel.at_site = False
         self.oss_vessel = oss_vessel
@@ -155,8 +154,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             feeder = Vessel(name, feeder_specs)
             self.env.register(feeder)
 
-            feeder.extract_vessel_specs()
-            feeder.mobilize()
+            feeder.initialize()
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)
@@ -173,14 +171,20 @@ class OffshoreSubstationInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs in a dictionary.
-        """
+        """Returns detailed outputs of the oss installation."""
+
+        if self.feeders:
+            transport_vessels = [*self.feeders]
+
+        else:
+            transport_vessels = [self.oss_vessel]
 
         outputs = {
-            **self.agent_efficiencies,
-            **self.get_max_cargo_weight_utilzations([*self.feeders]),
-            **self.get_max_deck_space_utilzations([*self.feeders]),
+            self.phase: {
+                **self.agent_efficiencies,
+                **self.get_max_cargo_mass_utilzations(transport_vessels),
+                **self.get_max_deck_space_utilzations(transport_vessels),
+            }
         }
 
         return outputs

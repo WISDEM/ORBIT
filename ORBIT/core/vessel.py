@@ -20,7 +20,7 @@ from ORBIT.core.components import (
 )
 from ORBIT.core.exceptions import ItemNotFound, MissingComponent
 
-Trip = namedtuple("Trip", "cargo_weight deck_space items")
+Trip = namedtuple("Trip", "cargo_mass deck_space items")
 
 
 class Vessel(Agent):
@@ -87,18 +87,14 @@ class Vessel(Agent):
         except KeyError:
             self.day_rate = np.NaN
 
-    def mobilize(self, days=7, mult=0.5):
+    def mobilize(self):
         """
         Submits an action log representing the cost to mobilize the vessel at
         the start of an installation based on the vessel day rate.
-
-        Parameters
-        ----------
-        days : int | float
-            Number of mobilization days.
-        mult : int | float
-            Operations cost multiplier.
         """
+
+        days = self._vessel_specs.get("mobilization_days", 3)
+        mult = self._vessel_specs.get("mobilization_mult", 0.5)
 
         self.submit_action_log("Mobilize", days * 24, cost_multiplier=mult)
 
@@ -163,17 +159,22 @@ class Vessel(Agent):
         except AttributeError:
             raise MissingComponent(self, "Cable Storage")
 
-    def extract_vessel_specs(self):
+    def initialize(self, mobilize=True):
         """
-        Extracts vessel specifications from self.config.
+        Initializes vessel by extracting vessel/component specifications and
+        running `self.mobilize()`.
         """
 
+        self._vessel_specs = self.config.get("vessel_specs", {})
         self.extract_transport_specs()
         self.extract_jacksys_specs()
         self.extract_crane_specs()
         self.extract_storage_specs()
         self.extract_cable_storage_specs()
         self.extract_scour_protection_specs()
+
+        if mobilize:
+            self.mobilize()
 
     def extract_transport_specs(self):
         """Extracts and defines transport related specifications."""
@@ -225,7 +226,7 @@ class Vessel(Agent):
 
         self._sp_specs = self.config.get("spi_specs", {})
 
-        _capacity = self._sp_specs.get("max_cargo_weight", None)
+        _capacity = self._sp_specs.get("max_cargo_mass", None)
         if _capacity is None:
             capacity = self._storage_specs.get("max_cargo", None)
 
@@ -369,27 +370,27 @@ class Vessel(Agent):
         if storage is None:
             raise Exception("Vessel does not have storage capacity.")
 
-        _cargo = storage.current_cargo_weight if cargo else np.NaN
+        _cargo = storage.current_cargo_mass if cargo else np.NaN
         _deck = storage.current_deck_space if deck else np.NaN
         _items = dict(Counter(i for i in storage.items)) if items else np.NaN
 
-        trip = Trip(cargo_weight=_cargo, deck_space=_deck, items=_items)
+        trip = Trip(cargo_mass=_cargo, deck_space=_deck, items=_items)
 
         self.trip_data.append(trip)
 
     @property
-    def cargo_weight_list(self):
-        """Returns cargo weights trips in self.trip_data."""
+    def cargo_mass_list(self):
+        """Returns cargo masss trips in self.trip_data."""
 
-        return [trip.cargo_weight for trip in self.trip_data]
+        return [trip.cargo_mass for trip in self.trip_data]
 
     @property
-    def cargo_weight_utilizations(self):
-        """Returns cargo weight utilizations for list of trips."""
+    def cargo_mass_utilizations(self):
+        """Returns cargo mass utilizations for list of trips."""
 
         try:
-            max_cargo_weight = self.storage.max_cargo_weight
-            return np.array(self.cargo_weight_list) / max_cargo_weight
+            max_cargo_mass = self.storage.max_cargo_mass
+            return np.array(self.cargo_mass_list) / max_cargo_mass
 
         except MissingComponent:
             return np.array(np.NaN)
@@ -412,40 +413,40 @@ class Vessel(Agent):
             return np.array(np.NaN)
 
     @property
-    def max_cargo_weight_utilization(self):
-        """Returns maximum cargo weight utilization."""
+    def max_cargo_mass_utilization(self):
+        """Returns maximum cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
 
-        return np.max(self.cargo_weight_utilizations)
+        return np.max(self.cargo_mass_utilizations)
 
     @property
-    def min_cargo_weight_utilization(self):
-        """Returns minimum cargo weight utilization."""
+    def min_cargo_mass_utilization(self):
+        """Returns minimum cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
 
-        return np.min(self.cargo_weight_utilizations)
+        return np.min(self.cargo_mass_utilizations)
 
     @property
-    def mean_cargo_weight_utilization(self):
-        """Returns mean cargo weight utilization."""
+    def mean_cargo_mass_utilization(self):
+        """Returns mean cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
 
-        return np.mean(self.cargo_weight_utilizations)
+        return np.mean(self.cargo_mass_utilizations)
 
     @property
-    def median_cargo_weight_utilization(self):
-        """Returns median cargo weight utilization."""
+    def median_cargo_mass_utilization(self):
+        """Returns median cargo mass utilization."""
 
         if not self.trip_data:
             return np.NaN
 
-        return np.median(self.cargo_weight_utilizations)
+        return np.median(self.cargo_mass_utilizations)
 
     @property
     def max_deck_space_utilization(self):
@@ -484,23 +485,23 @@ class Vessel(Agent):
         return np.median(self.deck_space_utilizations)
 
     @property
-    def max_items_by_weight(self):
-        """Returns items corresponding to `self.max_cargo_weight`."""
+    def max_items_by_mass(self):
+        """Returns items corresponding to `self.max_cargo_mass`."""
 
         if not self.trip_data:
             return np.NaN
 
-        i = np.argmax(self.cargo_weight_list)
+        i = np.argmax(self.cargo_mass_list)
         return self.trip_data[i].items
 
     @property
-    def min_items_by_weight(self):
-        """Returns items corresponding to `self.min_cargo_weight`."""
+    def min_items_by_mass(self):
+        """Returns items corresponding to `self.min_cargo_mass`."""
 
         if not self.trip_data:
             return np.NaN
 
-        i = np.argmin(self.cargo_weight_list)
+        i = np.argmin(self.cargo_mass_list)
         return self.trip_data[i].items
 
     @property

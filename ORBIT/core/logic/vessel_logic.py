@@ -191,16 +191,14 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                     item = port.get_item(i)
                     buffer.append(item)
 
-                # Calculate deck space and weight of one complete turbine
+                # Calculate deck space and mass of one complete turbine
                 total_deck_space = sum([item.deck_space for item in buffer])
                 proposed_deck_space = (
                     vessel.storage.current_deck_space + total_deck_space
                 )
 
-                total_weight = sum([item.weight for item in buffer])
-                proposed_weight = (
-                    vessel.storage.current_cargo_weight + total_weight
-                )
+                total_mass = sum([item.mass for item in buffer])
+                proposed_mass = vessel.storage.current_cargo_mass + total_mass
 
                 if proposed_deck_space > vessel.storage.max_deck_space:
                     vessel.submit_debug_log(message="Full")
@@ -208,19 +206,19 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                     for item in buffer:
                         port.put(item)
 
-                    if vessel.storage.current_cargo_weight > 0:
+                    if vessel.storage.current_cargo_mass > 0:
                         break
 
                     else:
                         raise VesselCapacityError(vessel, items)
 
-                elif proposed_weight > vessel.storage.max_cargo_weight:
+                elif proposed_mass > vessel.storage.max_cargo_mass:
                     vessel.submit_debug_log(message="Full")
 
                     for item in buffer:
                         port.put(item)
 
-                    if vessel.storage.current_cargo_weight > 0:
+                    if vessel.storage.current_cargo_mass > 0:
                         break
 
                     else:
