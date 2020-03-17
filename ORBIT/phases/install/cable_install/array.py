@@ -105,8 +105,7 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.install_vessel = vessel
@@ -125,8 +124,7 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.bury_vessel = vessel

@@ -13,7 +13,6 @@ from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import position_onsite
-from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import InsufficientCable
 
@@ -193,8 +192,7 @@ class ExportCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         self.install_vessel = vessel
 
     def initialize_burial_vessel(self):
@@ -211,8 +209,7 @@ class ExportCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         self.bury_vessel = vessel
 
     @property
