@@ -17,6 +17,7 @@ from ORBIT.core.exceptions import (
     MissingInputs,
     PhaseNotFound,
     WeatherProfileError,
+    PhaseDependenciesInvalid,
 )
 
 weather_df = pd.DataFrame(test_weather).set_index("datetime")
@@ -153,7 +154,7 @@ def test_install_phase_start_parsing():
     config_mixed_starts["install_phases"] = {
         "MonopileInstallation": 0,
         "TurbineInstallation": "10/22/2009",
-        "ArrayCableInstallation": {"MonopileInstallation": 0.5},
+        "ArrayCableInstallation": ("MonopileInstallation", 0.5),
     }
 
     project = ProjectManager(config_mixed_starts, weather=weather_df)
@@ -352,7 +353,7 @@ def test_resolve_project_capacity():
 
 
 ### Exceptions
-def test_exceptions():
+def test_incomplete_config():
 
     incomplete_config = deepcopy(config)
     _ = incomplete_config["site"].pop("depth")
@@ -361,12 +362,18 @@ def test_exceptions():
         project = ProjectManager(incomplete_config)
         project.run_project()
 
+
+def test_wrong_phases():
+
     wrong_phases = deepcopy(config)
     wrong_phases["install_phases"].append("IncorrectPhaseName")
 
     with pytest.raises(PhaseNotFound):
         project = ProjectManager(wrong_phases)
         project.run_project()
+
+
+def test_bad_dates():
 
     bad_dates = deepcopy(config)
     bad_dates["install_phases"] = {
@@ -376,4 +383,33 @@ def test_exceptions():
 
     with pytest.raises(WeatherProfileError):
         project = ProjectManager(bad_dates, weather=weather_df)
+        project.run_project()
+
+
+def test_no_defined_start():
+
+    missing_start = deepcopy(config)
+    missing_start["install_phases"] = {
+        "MonopileInstallation": ("TurbineInstallation", 0.1),
+        "TurbineInstallation": ("MonopileInstallation", 0.1),
+    }
+
+    with pytest.raises(ValueError):
+        project = ProjectManager(missing_start)
+        project.run_project()
+
+
+def test_circular_dependencies():
+
+    circular_deps = deepcopy(config)
+    circular_deps["spi_vessel"] = "test_scour_protection_vessel"
+    circular_deps["scour_protection"] = {"tons_per_substructure": 200}
+    circular_deps["install_phases"] = {
+        "ScourProtectionInstallation": 0,
+        "MonopileInstallation": ("TurbineInstallation", 0.1),
+        "TurbineInstallation": ("MonopileInstallation", 0.1),
+    }
+
+    with pytest.raises(PhaseDependenciesInvalid):
+        project = ProjectManager(circular_deps)
         project.run_project()

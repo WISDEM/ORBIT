@@ -33,7 +33,11 @@ from ORBIT.phases.install import (
     ScourProtectionInstallation,
     OffshoreSubstationInstallation,
 )
-from ORBIT.core.exceptions import PhaseNotFound, WeatherProfileError
+from ORBIT.core.exceptions import (
+    PhaseNotFound,
+    WeatherProfileError,
+    PhaseDependenciesInvalid,
+)
 
 
 class ProjectManager:
@@ -607,14 +611,22 @@ class ProjectManager:
                     continue
 
             if phases and progress is False:
-                raise Exception("")
+                raise PhaseDependenciesInvalid(phases)
 
             else:
                 break
 
     def get_dependency_start_time(self, target, perc):
         """
+        Returns start time based on the `perc` complete of `target` phase.
 
+        Parameters
+        ----------
+        target : str
+            Phase that start time is dependent on.
+        perc : int | float
+            Percentage of the target phase completion time. `0`: starts at the
+            same time. `1`: starts when target phase is completed.
         """
 
         start = self.phase_starts[target]
