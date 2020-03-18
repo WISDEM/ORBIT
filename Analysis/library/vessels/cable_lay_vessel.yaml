@@ -8,5 +8,7 @@ vessel_specs:
   day_rate: 135000      # USD/day, cost of operating vessel with crew
   min_draft: 4.8        # m
   overall_length: 99.0  # m
+  mobilization_days: 5    # days
+  mobilization_mult: 1  # Mobilization multiplier applied to 'day_rate'
 cable_storage:
-  max_weight: 4000      # t
+  max_mass: 4000      # t
