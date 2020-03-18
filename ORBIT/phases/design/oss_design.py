@@ -120,13 +120,18 @@ class OffshoreSubstationDesign(DesignPhase):
         turbine_rating : float
         """
 
+        _design = self.config.get("substation_design", {})
+        self.num_substations = _design.get("num_substations", 1)
+
         num_turbines = self.config["plant"]["num_turbines"]
         turbine_rating = self.config["turbine"]["turbine_rating"]
 
-        self.num_mpt = np.ceil(num_turbines * turbine_rating / 250)
+        self.num_mpt = np.ceil(num_turbines * turbine_rating /
+                               (250 * self.num_substations))
         self.mpt_rating = (
             round(
-                ((num_turbines * turbine_rating * 1.15) / self.num_mpt) / 10.0
+                ((num_turbines * turbine_rating * 1.15) /
+                 (self.num_mpt * self.num_substations)) / 10.0
             )
             * 10.0
         )
@@ -268,11 +273,8 @@ class OffshoreSubstationDesign(DesignPhase):
 
         Parameters
         ----------
-        num_substations : int
-        """
 
-        _design = self.config.get("substation_design", {})
-        self.num_substations = _design.get("num_substations", 1)
+        """
 
         self.substation_cost = (
             sum(
