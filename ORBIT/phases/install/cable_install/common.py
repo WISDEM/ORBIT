@@ -8,12 +8,13 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from marmot import process
 
-from ORBIT.core import Cargo
 from ORBIT.core.logic import position_onsite
 from ORBIT.core._defaults import process_times as pt
 
 
 class SimpleCable:
+    """Simple Cable Class"""
+
     def __init__(self, linear_density):
         """
         Creates an instance of SimpleCable.
@@ -176,13 +177,14 @@ def lay_bury_cable(vessel, distance, **kwargs):
     key = "cable_lay_bury_speed"
     lay_bury_speed = kwargs.get(key, pt[key])
     lay_bury_time = distance / lay_bury_speed
+    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Lay/Bury Cable",
         lay_bury_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **kwargs,
+        **{**_vkwargs, **kwargs},
     )
 
 
@@ -204,13 +206,14 @@ def lay_cable(vessel, distance, **kwargs):
     key = "cable_lay_speed"
     lay_speed = kwargs.get(key, pt[key])
     lay_time = distance / lay_speed
+    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Lay Cable",
         lay_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **kwargs,
+        **{**_vkwargs, **kwargs},
     )
 
 
@@ -232,13 +235,14 @@ def bury_cable(vessel, distance, **kwargs):
     key = "cable_bury_speed"
     bury_speed = kwargs.get(key, pt[key])
     bury_time = distance / bury_speed
+    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Bury Cable",
         bury_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **kwargs,
+        **{**_vkwargs, **kwargs},
     )
 
 

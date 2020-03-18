@@ -7,6 +7,7 @@ __email__ = ["jake.nunemaker@nrel.gov", "robert.hammond@nrel.gov"]
 
 
 from abc import abstractmethod
+from itertools import groupby
 
 import numpy as np
 import simpy
@@ -131,82 +132,90 @@ class InstallPhase(BasePhase):
 
         pass
 
-    # @property
-    # def agent_efficiencies(self):
-    #     """
-    #     Returns a summary of agent operational efficiencies.
-    #     """
+    @property
+    def agent_efficiencies(self):
+        """
+        Returns a summary of agent operational efficiencies.
+        """
 
-    #     logs = self.logs.loc[self.logs["level"] == "INFO"]
-    #     grouped = (
-    #         logs.groupby(["agent", "type"])
-    #         .sum()["duration"]
-    #         .unstack()
-    #         .fillna(0.0)
-    #     )
+        efficiencies = {}
 
-    #     if "Operations" not in grouped.columns:
-    #         raise Exception("'Operations' not found in action types.")
+        s = sorted(self.env.actions, key=lambda x: (x["agent"], x["action"]))
+        grouped = {
+            k: sum([i["duration"] for i in list(v)])
+            for k, v in groupby(s, key=lambda x: (x["agent"], x["action"]))
+        }
+        agents = list(set([k[0] for k in grouped.keys()]))
+        for agent in agents:
+            total = sum([v for k, v in grouped.items() if k[0] == agent])
 
-    #     if "Delay" not in grouped.columns:
-    #         grouped["Delay"] = 0.0
+            try:
+                delay = grouped[(agent, "Delay")]
+                e = (total - delay) / total
 
-    #     grouped["Total"] = grouped["Operations"] + grouped["Delay"]
-    #     _efficiencies = (grouped["Operations"] / grouped["Total"]).to_dict()
-    #     efficiencies = {
-    #         k + "_operational_efficiency": v for k, v in _efficiencies.items()
-    #     }
+            except KeyError:
+                delay = 0.0
+                e = 1.0
 
-    #     return efficiencies
+            except ZeroDivisionError:
+                e = 1.0
 
-    # @staticmethod
-    # def get_max_cargo_weight_utilzations(vessels):
-    #     """
-    #     Returns a summary of cargo weight efficiencies for list of input `vessels`.
+            if not 0.0 <= e <= 1.0:
+                raise ValueError(f"Invalid efficiency for agent '{agent}'")
 
-    #     Parameters
-    #     ----------
-    #     vessels : list
-    #         List of vessels to calculate efficiencies for.
-    #     """
+            name = str(agent).replace(" ", "_")
+            efficiencies[f"{name}_operational_efficiency"] = e
 
-    #     outputs = {}
+        return efficiencies
 
-    #     for vessel in vessels:
+    @staticmethod
+    def get_max_cargo_mass_utilzations(vessels):
+        """
+        Returns a summary of cargo mass efficiencies for list of input `vessels`.
 
-    #         storage = getattr(vessel, "storage", None)
-    #         if storage is None:
-    #             print("Vessel does not have storage capacity.")
-    #             continue
+        Parameters
+        ----------
+        vessels : list
+            List of vessels to calculate efficiencies for.
+        """
 
-    #         outputs[
-    #             f"{vessel.name}_cargo_weight_utilization"
-    #         ] = vessel.max_cargo_weight_utilization
+        outputs = {}
 
-    #     return outputs
+        for vessel in vessels:
+            name = vessel.name.replace(" ", "_")
+            storage = getattr(vessel, "storage", None)
+            if storage is None:
+                print("Vessel does not have storage capacity.")
+                continue
 
-    # @staticmethod
-    # def get_max_deck_space_utilzations(vessels):
-    #     """
-    #     Returns a summary of deck space efficiencies for list of input `vessels`.
+            outputs[
+                f"{name}_cargo_mass_utilization"
+            ] = vessel.max_cargo_mass_utilization
 
-    #     Parameters
-    #     ----------
-    #     vessels : list
-    #         List of vessels to calculate efficiencies for.
-    #     """
+        return outputs
 
-    #     outputs = {}
+    @staticmethod
+    def get_max_deck_space_utilzations(vessels):
+        """
+        Returns a summary of deck space efficiencies for list of input `vessels`.
 
-    #     for vessel in vessels:
+        Parameters
+        ----------
+        vessels : list
+            List of vessels to calculate efficiencies for.
+        """
 
-    #         storage = getattr(vessel, "storage", None)
-    #         if storage is None:
-    #             print("Vessel does not have storage capacity.")
-    #             continue
+        outputs = {}
 
-    #         outputs[
-    #             f"{vessel.name}_deck_space_utilization"
-    #         ] = vessel.max_deck_space_utilization
+        for vessel in vessels:
+            name = vessel.name.replace(" ", "_")
+            storage = getattr(vessel, "storage", None)
+            if storage is None:
+                print("Vessel does not have storage capacity.")
+                continue
 
-    #     return outputs
+            outputs[
+                f"{name}_deck_space_utilization"
+            ] = vessel.max_deck_space_utilization
+
+        return outputs

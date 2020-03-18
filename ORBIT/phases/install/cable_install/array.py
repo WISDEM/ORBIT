@@ -37,12 +37,14 @@ class ArrayCableInstallation(InstallPhase):
     expected_config = {
         "array_cable_install_vessel": "str",
         "array_cable_bury_vessel": "str (optional)",
-        "site": {"distance": "int | float"},
+        "site": {"distance": "km"},
         "array_system": {
             "cables": {
                 "name (variable)": {
-                    "linear_density": "int | float",
-                    "cable_sections": [("float", "int", "float (optional)")],
+                    "linear_density": "t/km",
+                    "cable_sections": [
+                        ("length, km", "int", "speed, km/h (optional)")
+                    ],
                 }
             }
         },
@@ -103,8 +105,7 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.install_vessel = vessel
@@ -123,27 +124,18 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
-        vessel.extract_vessel_specs()
-        vessel.mobilize()
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.bury_vessel = vessel
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs.
-        """
+        """Detailed outputs of the array system installation."""
 
-        # TODO:
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations([self.cable_lay_vessel]),
-        # }
+        outputs = {self.phase: {**self.agent_efficiencies}}
 
-        # return outputs
-
-        return {}
+        return outputs
 
 
 @process
@@ -181,8 +173,18 @@ def install_array_cables(
             elif vessel.at_site:
 
                 try:
-                    # TODO: Add variable speed back in.
-                    length, num_sections, *speed = sections.pop(0)
+                    length, num_sections, *extra = sections.pop(0)
+                    if extra:
+                        speed = extra[0]
+
+                        if burial_vessel is None:
+                            specs = {**kwargs, "cable_lay_bury_speed": speed}
+
+                        else:
+                            specs = {**kwargs, "cable_lay_speed": speed}
+
+                    else:
+                        specs = deepcopy(kwargs)
 
                 except IndexError:
                     vessel.at_site = False
@@ -211,10 +213,10 @@ def install_array_cables(
 
                     # Cable laying procedure
                     if burial_vessel is None:
-                        yield lay_bury_cable(vessel, section, **kwargs)
+                        yield lay_bury_cable(vessel, section, **specs)
 
                     else:
-                        yield lay_cable(vessel, section, **kwargs)
+                        yield lay_cable(vessel, section, **specs)
                         to_bury.append(section)
 
                     # Post cable laying procedure (at substructure 2)

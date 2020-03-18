@@ -2,7 +2,10 @@ export_cable_install_vessel: test_cable_lay_vessel
 export_cable_bury_vessel: test_cable_lay_vessel
 export_system:
   cable:
-    length: 33.3502
+    sections:
+      - 30
+      - - 20
+        - 0.5
     linear_density: 50.0
 plant:
   layout: grid

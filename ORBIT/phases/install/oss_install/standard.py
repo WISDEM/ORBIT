@@ -35,21 +35,18 @@ class OffshoreSubstationInstallation(InstallPhase):
         "oss_install_vessel": "dict | str",
         "num_feeders": "int",
         "feeder": "dict | str",
-        "site": {"distance": "float", "depth": "int"},
+        "site": {"distance": "km", "depth": "m"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float (optional)",
+            "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
-        "offshore_substation_topside": {
-            "deck_space": "float",
-            "weight": "float",
-        },
+        "offshore_substation_topside": {"deck_space": "m2", "mass": "t"},
         "offshore_substation_substructure": {
             "type": "Monopile",
-            "deck_space": "float",
-            "weight": "float",
-            "length": "float",
+            "deck_space": "m2",
+            "mass": "t",
+            "length": "m",
         },
     }
 
@@ -136,8 +133,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         oss_vessel = Vessel(name, oss_vessel_specs)
         self.env.register(oss_vessel)
 
-        oss_vessel.extract_vessel_specs()
-        oss_vessel.mobilize()
+        oss_vessel.initialize()
         oss_vessel.at_port = True
         oss_vessel.at_site = False
         self.oss_vessel = oss_vessel
@@ -158,8 +154,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             feeder = Vessel(name, feeder_specs)
             self.env.register(feeder)
 
-            feeder.extract_vessel_specs()
-            feeder.mobilize()
+            feeder.initialize()
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)
@@ -176,19 +171,23 @@ class OffshoreSubstationInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs in a dictionary.
-        """
+        """Returns detailed outputs of the oss installation."""
 
-        # TODO:
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations([*self.feeders]),
-        #     **self.get_max_deck_space_utilzations([*self.feeders]),
-        # }
+        if self.feeders:
+            transport_vessels = [*self.feeders]
 
-        # return outputs
-        return {}
+        else:
+            transport_vessels = [self.oss_vessel]
+
+        outputs = {
+            self.phase: {
+                **self.agent_efficiencies,
+                **self.get_max_cargo_mass_utilzations(transport_vessels),
+                **self.get_max_deck_space_utilzations(transport_vessels),
+            }
+        }
+
+        return outputs
 
 
 @process
@@ -244,9 +243,7 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
                 start = vessel.env.now
                 yield queue.activate
                 delay_time = vessel.env.now - start
-                vessel.submit_action_log(
-                    "WaitForFeeder", delay_time, location="Site"
-                )
+                vessel.submit_action_log("Delay", delay_time, location="Site")
 
     # Transit to port
     vessel.at_site = False

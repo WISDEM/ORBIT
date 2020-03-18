@@ -43,21 +43,21 @@ class MonopileInstallation(InstallPhase):
         "wtiv": "dict | str",
         "feeder": "dict | str (optional)",
         "num_feeders": "int (optional)",
-        "site": {"depth": "float", "distance": "float"},
+        "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
-        "turbine": {"hub_height": "float"},
+        "turbine": {"hub_height": "m"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float (optional)",
+            "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
         "monopile": {
-            "length": "float",
-            "diameter": "float",
-            "deck_space": "float",
-            "weight": "float",
+            "length": "m",
+            "diameter": "m",
+            "deck_space": "m2",
+            "mass": "t",
         },
-        "transition_piece": {"deck_space": "float", "weight": "float"},
+        "transition_piece": {"deck_space": "m2", "mass": "t"},
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -157,8 +157,7 @@ class MonopileInstallation(InstallPhase):
         wtiv = Vessel(name, wtiv_specs)
         self.env.register(wtiv)
 
-        wtiv.extract_vessel_specs()
-        wtiv.mobilize()
+        wtiv.initialize()
         wtiv.at_port = True
         wtiv.at_site = False
         self.wtiv = wtiv
@@ -179,8 +178,7 @@ class MonopileInstallation(InstallPhase):
             feeder = Vessel(name, feeder_specs)
             self.env.register(feeder)
 
-            feeder.extract_vessel_specs()
-            feeder.mobilize()
+            feeder.initialize()
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)
@@ -210,30 +208,23 @@ class MonopileInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs in a dictionary, including:
+        """Returns detailed outputs of the monopile installation."""
 
-        - Agent operational efficiencies, ``operations time / total time``
-        - Cargo weight efficiencies, ``highest weight used / maximum weight``
-        - Deck space efficiencies, ``highest space used / maximum space``
-        """
+        if self.feeders:
+            transport_vessels = [*self.feeders]
 
-        # TODO:
-        # if self.feeders:
-        #     transport_vessels = [*self.feeders]
+        else:
+            transport_vessels = [self.wtiv]
 
-        # else:
-        #     transport_vessels = [self.wtiv]
+        outputs = {
+            self.phase: {
+                **self.agent_efficiencies,
+                **self.get_max_cargo_mass_utilzations(transport_vessels),
+                **self.get_max_deck_space_utilzations(transport_vessels),
+            }
+        }
 
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations(transport_vessels),
-        #     **self.get_max_deck_space_utilzations(transport_vessels),
-        # }
-
-        # return outputs
-
-        return {}
+        return outputs
 
 
 @process
@@ -245,13 +236,12 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
 
     Parameters
     ----------
-    env : simulation.Environment
-        SimPy environment that the simulation runs in.
     vessel : vessels.Vessel
         Vessel object that represents the WTIV.
+    port : Port
     distance : int | float
         Distance between port and site (km).
-    number : int
+    monopiles : int
         Total monopiles to install.
     """
 
@@ -376,9 +366,7 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log(
-                    "WaitForFeeder", delay_time, location="Site"
-                )
+                wtiv.submit_action_log("Delay", delay_time, location="Site")
 
     # Transit to port
     wtiv.at_site = False

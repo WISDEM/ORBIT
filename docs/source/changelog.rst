@@ -3,19 +3,37 @@
 ORBIT Changelog
 ===============
 
+0.4.1
+-----
+
+- Modified installation to require version of marmot-agents that has an
+  internal copy of simpy.
+- Added/expanded ``detailed_outputs`` for all modules.
+- Standardized naming of weight/mass terms to mass throughout the model.
+- Cleanup in ``ProjectManager``
+
 0.4.0
 -----
+
+- Vessel mobilization added to all vessels in all installation modules.
+  Defaults to 7 days at 50% day-rate.
+- Cable lay, bury and simulataneous lay/bury methods are not flagged as
+  suspendable to avoid unrealistic project delays.
+- Cost of onshore transmission construction added to
+  ``ExportCableInstallation``.
+- Simplified ``ArrayCableInstallation``, ``ExportCableInstallation`` modules.
+- Removed `pandas` from the internals of the model, though it is still useful
+  for tabulating the project logs.
 - Revised package structure. Functionally formerly in ORBIT.simulation or
   ORBIT.vessels has been moved to ORBIT.core.
 - ``InstallPhase`` cleaned up and slimmed down.
 - ``Environment`` and associated functionality has been replaced with
   ``marmot.Environment``.
-- Logging functionality revised to not use the base python logging module.
+- Logging functionality revised. No longer uses the base python logging module.
 - ``Vessel`` now inherits from ``marmot.Agent``.
 - Tasks that were in ``ORBIT.vessels.tasks`` have been moved to their
   respective modules and restructured with ``marmot.process`` and
   ``Agent.tasks``.
-- Simplified ``ArrayCableInstallation``, ``ExportCableInstallation`` modules.
 - Modules inputs cleaned up. ``type`` parameters are no longer required for
   monopile, transition piece or turbine component definitions.
 - Removed old/irrelevant tests.

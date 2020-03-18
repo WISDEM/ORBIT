@@ -36,13 +36,10 @@ class ExportSystemDesign(CableSystem):
     """
 
     expected_config = {
-        "site": {
-            "distance_to_landfall": "int | float",
-            "distance_to_interconnection": "int | float",
-            "depth": "int | float",
-        },
+        "site": {"distance_to_landfall": "km", "depth": "m"},
+        "landfall": {"interconnection_distance": "km (optional)"},
         "plant": {"num_turbines": "int"},
-        "turbine": {"turbine_rating": "int | float"},
+        "turbine": {"turbine_rating": "MW"},
         "export_system_design": {
             "cables": "str",
             "num_redundant": "int (optional)",
@@ -53,9 +50,9 @@ class ExportSystemDesign(CableSystem):
     output_config = {
         "export_system": {
             "cable": {
-                "linear_density": "int | float",
+                "linear_density": "t/km",
                 "number": "int",
-                "length": "int | float",
+                "sections": "list",
             }
         }
     }
@@ -84,9 +81,12 @@ class ExportSystemDesign(CableSystem):
             * self.config["turbine"]["turbine_rating"]
         )
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
-        self._distance_to_interconnection = config["site"][
-            "distance_to_interconnection"
-        ]
+        try:
+            self._distance_to_interconnection = config["landfall"][
+                "interconnection_distance"
+            ]
+        except KeyError:
+            self._distance_to_interconnection = 3
 
     def run(self):
         """
@@ -99,6 +99,26 @@ class ExportSystemDesign(CableSystem):
         self.compute_cable_length()
         self.compute_cable_mass()
         self.compute_total_cable()
+
+    @property
+    def total_cable_cost(self):
+        """Returns total array system cable cost."""
+
+        return sum(self.cost_by_type.values())
+
+    @property
+    def detailed_output(self):
+        """Returns export system design outputs."""
+
+        _output = {
+            **self.design_result,
+            "export_system_total_mass": self.total_mass,
+            "export_system_total_length": self.total_length,
+            "export_system_total_cost": self.total_cable_cost,
+            "export_system_cable_power": self.cable.cable_power,
+        }
+
+        return _output
 
     def compute_number_cables(self):
         """
@@ -177,27 +197,26 @@ class ExportSystemDesign(CableSystem):
         Returns
         -------
         output : dict
-            Dictionary of the number of section lengths and the linear density
-            of each cable type.
-             - <`cable_type`>_system: dict
-                - cables: dict
-                    - `Cable.name`: dict
-                        - sections: [
-                            (length of unique section, number of sections)
-                          ],
-                        - linear_density: `Cable.linear_density`
+            Dictionary containing the output export system. Contains:
+            - 'linear_density': 't/km'
+            - 'sections': 'list [self.length]'
+            - 'number': 'int'
         """
 
         if self.cables is None:
             raise Exception(f"Has {self.__class__.__name__} been ran?")
 
-        output = {"export_system": {}}
+        output = {
+            "export_system": {
+                "interconnection_distance": self._distance_to_interconnection
+            }
+        }
 
         for name, cable in self.cables.items():
 
             output["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
-                "length": self.length,
+                "sections": [self.length],
                 "number": self.num_cables,
             }
 

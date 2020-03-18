@@ -50,15 +50,15 @@ class ScourProtectionDesign(DesignPhase):
     """
 
     expected_config = {
-        "monopile": {"diameter": "int | float"},
+        "monopile": {"diameter": "m"},
         "plant": {"num_turbines": "int"},
         "scour_protection_design": {
-            "cost_per_tonne": "float",
-            "rock_density": "float (optional)",
-            "design_time": "int | float (optional)",
+            "cost_per_tonne": "USD/t",
+            "rock_density": "kg/m3 (optional)",
+            "design_time": "h (optional)",
             "soil_friction_angle": "float (optional)",
             "scour_depth_equilibrium": "float (optional)",
-            "scour_protection_depth": "int | float (optional)",
+            "scour_protection_depth": "m (optional)",
         },
     }
 
@@ -152,7 +152,9 @@ class ScourProtectionDesign(DesignPhase):
         Returns detailed outputs of the design.
         """
 
-        _out = {"tonnes_per_substructure": self.scour_protection_tonnes}
+        _out = {
+            "scour_protection_per_substructure": self.scour_protection_tonnes
+        }
         return _out
 
     @property

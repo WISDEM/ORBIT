@@ -48,23 +48,23 @@ class TurbineInstallation(InstallPhase):
         "wtiv": "dict | str",
         "feeder": "dict | str (optional)",
         "num_feeders": "int (optional)",
-        "site": {"depth": "float", "distance": "float"},
+        "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
         "port": {
             "num_cranes": "int",
-            "monthly_rate": "float (optional)",
+            "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
         "turbine": {
-            "hub_height": "float",
+            "hub_height": "m",
             "tower": {
-                "deck_space": "float",
-                "weight": "float",
-                "length": "float",
+                "deck_space": "m2",
+                "mass": "t",
+                "length": "m",
                 "sections": "int (optional)",
             },
-            "nacelle": {"deck_space": "float", "weight": "float"},
-            "blade": {"deck_space": "float", "weight": "float"},
+            "nacelle": {"deck_space": "m2", "mass": "t"},
+            "blade": {"deck_space": "m2", "mass": "t"},
         },
     }
 
@@ -169,8 +169,7 @@ class TurbineInstallation(InstallPhase):
         wtiv = Vessel(name, wtiv_specs)
         self.env.register(wtiv)
 
-        wtiv.extract_vessel_specs()
-        wtiv.mobilize()
+        wtiv.initialize()
         wtiv.at_port = True
         wtiv.at_site = False
         self.wtiv = wtiv
@@ -191,8 +190,7 @@ class TurbineInstallation(InstallPhase):
             feeder = Vessel(name, feeder_specs)
             self.env.register(feeder)
 
-            feeder.extract_vessel_specs()
-            feeder.mobilize()
+            feeder.initialize()
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)
@@ -206,7 +204,7 @@ class TurbineInstallation(InstallPhase):
         self.num_sections = tower.get("sections", 1)
 
         _section = {}
-        for k in ["length", "deck_space", "weight"]:
+        for k in ["length", "deck_space", "mass"]:
             try:
                 _section[k] = ceil(tower.get(k) / self.num_sections)
 
@@ -244,29 +242,23 @@ class TurbineInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """
-        Returns detailed outputs in a dictionary, including:
+        """Returns detailed outputs of the turbine installation."""
 
-        - Agent operational efficiencies, ``operations time / total time``
-        - Cargo weight efficiencies, ``highest weight used / maximum weight``
-        - Deck space efficiencies, ``highest space used / maximum space``
-        """
+        if self.feeders:
+            transport_vessels = [*self.feeders]
 
-        # TODO:
-        # if self.feeders:
-        #     transport_vessels = [*self.feeders]
+        else:
+            transport_vessels = [self.wtiv]
 
-        # else:
-        #     transport_vessels = [self.wtiv]
+        outputs = {
+            self.phase: {
+                **self.agent_efficiencies,
+                **self.get_max_cargo_mass_utilzations(transport_vessels),
+                **self.get_max_deck_space_utilzations(transport_vessels),
+            }
+        }
 
-        # outputs = {
-        #     **self.agent_efficiencies,
-        #     **self.get_max_cargo_weight_utilzations(transport_vessels),
-        #     **self.get_max_deck_space_utilzations(transport_vessels),
-        # }
-
-        # return outputs
-        return {}
+        return outputs
 
 
 @process
@@ -471,9 +463,7 @@ def install_turbine_components_from_queue(
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log(
-                    "WaitForFeeder", delay_time, location="Site"
-                )
+                wtiv.submit_action_log("Delay", delay_time, location="Site")
 
     # Transit to port
     wtiv.at_site = False

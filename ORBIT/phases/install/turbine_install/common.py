@@ -15,13 +15,13 @@ from ORBIT.core._defaults import process_times as pt
 class TowerSection(Cargo):
     """Tower Section Cargo"""
 
-    def __init__(self, length=None, weight=None, deck_space=None, **kwargs):
+    def __init__(self, length=None, mass=None, deck_space=None, **kwargs):
         """
         Creates an instance of `TowerSection`.
         """
 
         self.length = length
-        self.weight = weight
+        self.mass = mass
         self.deck_space = deck_space
 
     @staticmethod
@@ -46,12 +46,12 @@ class TowerSection(Cargo):
 class Nacelle(Cargo):
     """Nacelle Cargo"""
 
-    def __init__(self, weight=None, deck_space=None, **kwargs):
+    def __init__(self, mass=None, deck_space=None, **kwargs):
         """
         Creates an instance of `Nacelle`.
         """
 
-        self.weight = weight
+        self.mass = mass
         self.deck_space = deck_space
 
     @staticmethod
@@ -76,13 +76,13 @@ class Nacelle(Cargo):
 class Blade(Cargo):
     """Blade Cargo"""
 
-    def __init__(self, length=None, weight=None, deck_space=None, **kwargs):
+    def __init__(self, length=None, mass=None, deck_space=None, **kwargs):
         """
         Creates an instance of `Blade`.
         """
 
         self.length = length
-        self.weight = weight
+        self.mass = mass
         self.deck_space = deck_space
 
     @staticmethod

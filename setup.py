@@ -26,10 +26,10 @@ setup(
     install_requires=[
         "numpy",
         "matplotlib",
+        "simpy",
+        "marmot-agents>=0.2.5",
         "scipy",
         "pandas",
-        "simpy-agents @ http://github.com/JakeNunemaker/simpy-agents/tarball/master#egg=v0.1.0",
-        "marmot @ https://github.com/JakeNunemaker/marmot/tarball/master#egg=v0.2.3",
         "pyyaml",
         "geopy",
         "openmdao>= 2.0",
@@ -43,11 +43,10 @@ setup(
             "isort",
             "pytest",
             "pytest-cov",
-            "pytest-xdist",
             "sphinx",
             "sphinx-rtd-theme",
         ]
     },
     test_suite="pytest",
-    tests_require=["pytest", "pytest-xdist", "pytest-cov"],
+    tests_require=["pytest", "pytest-cov"],
 )

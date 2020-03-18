@@ -101,6 +101,6 @@ def test_design_result():
     cable_name = export.cable.name
     cables = export.design_result["export_system"]["cable"]
 
-    assert cables["length"] == export.length
+    assert cables["sections"] == [export.length]
     assert cables["number"] == 11
     assert cables["linear_density"] == export.cable.linear_density

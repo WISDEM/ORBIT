@@ -86,7 +86,7 @@ out and the model can be ran:
            'thickness': 0.078,          # m
            'embedment_length': 55.84,   # m
            'length': 85.84,             # m
-           'weight': 640.57,            # t
+           'mass': 640.57,            # t
            'deck_space': 5.58,          # m2
            'type': 'Monopile'
        }
