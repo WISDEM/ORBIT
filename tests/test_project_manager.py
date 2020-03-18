@@ -168,6 +168,30 @@ def test_install_phase_start_parsing():
     assert defined["TurbineInstallation"] == 1
 
 
+def test_chained_dependencies():
+
+    config_chained = deepcopy(config)
+    config_chained["spi_vessel"] = "test_scour_protection_vessel"
+    config_chained["scour_protection"] = {"tons_per_substructure": 200}
+    config_chained["install_phases"] = {
+        "ScourProtectionInstallation": 0,
+        "MonopileInstallation": ("ScourProtectionInstallation", 0.1),
+        "TurbineInstallation": ("MonopileInstallation", 0.5),
+    }
+
+    project = ProjectManager(config_chained)
+    project.run_project()
+
+    df = pd.DataFrame(project.project_actions)
+    sp = list(df.loc[df["phase"] == "ScourProtectionInstallation"]["time"])
+    mp = list(df.loc[df["phase"] == "MonopileInstallation"]["time"])
+    tu = list(df.loc[df["phase"] == "TurbineInstallation"]["time"])
+
+    assert min(sp) == 0
+    assert min(mp) == (max(sp) - min(sp)) * 0.1
+    assert min(tu) == (max(mp) - min(mp)) * 0.5 + min(mp)
+
+
 @pytest.mark.parametrize(
     "m_start, t_start", [(0, 0), (0, 100), (100, 100), (100, 200)]
 )
