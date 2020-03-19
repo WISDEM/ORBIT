@@ -110,3 +110,6 @@ docs/cables/Figs
 
 # VSCode
 .vscode/
+
+# Pycharm
+.idea/
