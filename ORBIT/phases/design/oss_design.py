@@ -126,12 +126,16 @@ class OffshoreSubstationDesign(DesignPhase):
         num_turbines = self.config["plant"]["num_turbines"]
         turbine_rating = self.config["turbine"]["turbine_rating"]
 
-        self.num_mpt = np.ceil(num_turbines * turbine_rating /
-                               (250 * self.num_substations))
+        self.num_mpt = np.ceil(
+            num_turbines * turbine_rating / (250 * self.num_substations)
+        )
         self.mpt_rating = (
             round(
-                ((num_turbines * turbine_rating * 1.15) /
-                 (self.num_mpt * self.num_substations)) / 10.0
+                (
+                    (num_turbines * turbine_rating * 1.15)
+                    / (self.num_mpt * self.num_substations)
+                )
+                / 10.0
             )
             * 10.0
         )
@@ -270,10 +274,6 @@ class OffshoreSubstationDesign(DesignPhase):
         """
         Calculates the total cost of the substation solution, based on the
         number of configured substations.
-
-        Parameters
-        ----------
-
         """
 
         self.substation_cost = (
