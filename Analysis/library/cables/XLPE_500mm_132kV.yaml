@@ -1,8 +1,0 @@
-ac_resistance: 0.05
-capacitance: 224
-conductor_size: 500
-current_capacity: 635
-inductance: 200
-linear_density: 50
-name: XLPE_500mm_132kV
-rated_voltage: 132
