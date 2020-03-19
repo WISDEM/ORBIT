@@ -23,6 +23,6 @@ transport_specs:
   max_windspeed: 20
   transit_speed: 7
 vessel_specs:
-  day_rate: 350000
+  day_rate: 353000
   max_draft: 4.5
   overall_length: 102.75

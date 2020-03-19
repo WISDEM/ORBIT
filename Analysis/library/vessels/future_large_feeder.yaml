@@ -17,10 +17,10 @@ storage_specs:
 transport_specs:
   max_waveheight: 2.5
   max_windspeed: 20
-  transit_speed: 6
+  transit_speed: 7
 vessel_specs:
   beam_length: 35
-  day_rate: 100000
+  day_rate: 108000
   max_draft: 5
   min_draft: 4
   overall_length: 60
