@@ -11,10 +11,10 @@ from itertools import groupby
 
 import numpy as np
 import simpy
-from marmot import Environment
 
 from ORBIT.core import Port
 from ORBIT.phases import BasePhase
+from ORBIT.core.environment import OrbitEnvironment as Environment
 
 
 class InstallPhase(BasePhase):
