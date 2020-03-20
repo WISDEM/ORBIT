@@ -1,9 +1,0 @@
-ac_resistance: 0.04
-capacitance: 287
-conductor_size: 630
-current_capacity: 775
-inductance: 0.349
-linear_density: 45
-name: XLPE_630mm_66kV
-rated_voltage: 66
-cost_per_km:  407000

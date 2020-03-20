@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+pip-wheel-metadata/
 .Python
 env/
 build/
@@ -110,3 +111,9 @@ docs/cables/Figs
 
 # VSCode
 .vscode/
+
+# Pycharm
+.idea/
+
+# Other
+Analysis/
