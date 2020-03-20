@@ -362,3 +362,31 @@ def pull_winch(vessel, distance, **kwargs):
         constraints=vessel.operational_limits,
         **kwargs,
     )
+
+@process
+def dig_trench(vessel, distance, **kwargs):
+    """
+    Task representing time required to dig a trench prior to cable lay and burial
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Performing vessel. Requires configured `operational_limits`.
+    distance : int | float
+        Length of trench, equal to length of cable section (km).
+    trench_dig_speed : int | float
+        Speed at which trench is dug (km/hr).
+    """
+
+    key = "trench_dig_speed"
+    trench_dig_speed = kwargs.get(key, pt[key])
+    trench_dig_time = distance / trench_dig_speed
+    _vkwargs = getattr(vessel, "_transport_specs", {})
+
+    yield vessel.task(
+        "Dig trench",
+        trench_dig_time,
+        constraints=vessel.operational_limits,
+        suspendable=True,
+        **{**_vkwargs, **kwargs},
+    )
