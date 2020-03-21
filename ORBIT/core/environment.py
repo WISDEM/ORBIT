@@ -6,12 +6,39 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from bisect import bisect
+
+import numpy as np
 from marmot import Environment
 from marmot._core import Constraint
+from numpy.lib.recfunctions import append_fields
 
 
 class OrbitEnvironment(Environment):
     """ORBIT Specific Environment."""
+
+    def __init__(self, name="Environment", state=None, alpha=0.1):
+        """
+        Creates an instance of Environment.
+
+        Parameters
+        ----------
+        name : str
+            Environment name.
+            Default: 'Environment'
+        state : array-like
+            Time series representing the state of the environment throughout
+            time or iterations.
+        """
+
+        super().__init__()
+
+        self.name = name
+        self.state = state
+        self.alpha = alpha
+        self._logs = []
+        self._agents = {}
+        self._objects = []
 
     def _find_valid_constraints(self, **kwargs):
         """
@@ -28,50 +55,97 @@ class OrbitEnvironment(Environment):
             Valid constraints that apply to a column in `self.state`.
         """
 
-        _constraints = {
-            k: v for k, v in kwargs.items() if isinstance(v, Constraint)
-        }
-        ws = {}
-        valid = {}
+        c = {k: v for k, v in kwargs.items() if isinstance(v, Constraint)}
+        constraints = self.resolve_windspeed_constraints(c)
 
-        for k, v in _constraints.items():
-            if "windspeed" in k:
-                ws[k] = v
+        keys = set(self.state.dtype.names).intersection(
+            set(constraints.keys())
+        )
+        valid = {k: v for k, v in constraints.items() if k in keys}
 
-            elif k in self.state.dtype.names:
-                valid[k] = v
-
-        valid = {**valid, **self.resolve_windspeed_constraints(ws)}
         return valid
 
-    def resolve_windspeed_constraints(self, ws):
+    def resolve_windspeed_constraints(self, constraints):
         """
         Resolves the applied windspeed constraints given the windspeed profiles
         that are present in `self.state`.
 
         Parameters
         ----------
-        ws : dict
-            Windspeed constraints in the format: `'windspeed_###m': Constraint`
-
-        Returns
-        -------
-        valid_ws : dict
-            Valid windspeed constraints.
+        constraints : dict
+            Dictionary of constraints
         """
+
+        ws = [k for k, _ in constraints.items() if "windspeed" in k]
+        if not ws:
+            return constraints
 
         if "windspeed" in self.state.dtype.names:
             if len(ws) > 1:
                 raise ValueError(
-                    "Multiple windspeed constraints applied to "
-                    "the 'windspeed' column."
+                    "Multiple constraints applied to the 'windspeed' column."
                 )
 
-            return {"windspeed": v for _, v in ws.items()}
+            v = constraints.pop(ws[0])
+            return {**constraints, "windspeed": v}
+
+        for k in ws:
+            if k in self.state.dtype.names:
+                continue
+
+            val = k.split("_")[1].replace("m", "")
+            height = float(val) if "." in val else int(val)
+            loc = bisect(self.ws_heights, height)
+
+            if loc == 0:
+                self.ws_extrap(self.ws_heights[0], height)
+
+            elif loc == len(self.ws_heights):
+                self.ws_extrap(self.ws_heights[-1], height)
+
+            else:
+                h1 = self.ws_heights[loc - 1]
+                h2 = self.ws_heights[loc]
+                self.ws_interp(h1, h2, height)
+
+        return constraints
 
     @property
-    def windspeed_heights(self):
+    def ws_heights(self):
         """Returns heights of available windspeed profiles."""
 
         columns = [c for c in self.state.dtype.names if "windspeed" in c]
-        return [float(c.split("_")[1].replace("m", "")) for c in columns]
+
+        heights = []
+        for c in columns:
+            val = c.split("_")[1].replace("m", "")
+            heights.append(float(val) if "." in val else int(val))
+
+        return sorted(heights)
+
+    def ws_interp(self, h1, h2, h):
+        """
+        TODO
+        """
+
+        ts1 = self.state[f"windspeed_{h1}m"]
+        ts2 = self.state[f"windspeed_{h2}m"]
+        alpha = np.log(ts2.mean() / ts1.mean()) / np.log(h2 / h1)
+        print(alpha)
+        ts = ts1 * (h / h1) ** alpha
+
+        self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
+
+    def ws_extrap(self, h1, h):
+        """
+        TODO
+        """
+
+        ts1 = self.state[f"windspeed_{h1}m"]
+        if h > h1:
+            ts = ts1 * (h / h1) ** self.alpha
+
+        else:
+            ts = ts1 / ((h1 / h) ** self.alpha)
+
+        self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
