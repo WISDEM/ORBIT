@@ -328,8 +328,8 @@ def dig_array_cables_trench(vessel, distance, **kwargs):
     ----------
     vessel : Vessel
         Performing vessel.
-    sections : list
-        List of cable sections that need to be buried at site.
+    distance : int | float
+        Distance between turbines to dig trench for array cable
     """
 
     yield position_onsite(vessel, site_position_time=2)
