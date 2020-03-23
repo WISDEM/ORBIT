@@ -43,7 +43,7 @@ class InstallPhase(BasePhase):
         """
 
         env_name = kwargs.get("env_name", "Environment")
-        self.env = Environment(name=env_name, state=weather)
+        self.env = Environment(name=env_name, state=weather, **kwargs)
 
     @abstractmethod
     def setup_simulation(self):
