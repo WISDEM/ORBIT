@@ -17,7 +17,7 @@ from numpy.lib.recfunctions import append_fields
 class OrbitEnvironment(Environment):
     """ORBIT Specific Environment."""
 
-    def __init__(self, name="Environment", state=None, alpha=0.1):
+    def __init__(self, name="Environment", state=None, **kwargs):
         """
         Creates an instance of Environment.
 
@@ -34,8 +34,10 @@ class OrbitEnvironment(Environment):
         super().__init__()
 
         self.name = name
-        self.state = state
-        self.alpha = alpha
+        self.state = self.standarize_state_inputs(state)
+        self.alpha = kwargs.get("ws_alpha", 0.1)
+        self.default_height = kwargs.get("ws_default_height", 10)
+
         self._logs = []
         self._agents = {}
         self._objects = []
@@ -65,6 +67,44 @@ class OrbitEnvironment(Environment):
 
         return valid
 
+    def standarize_state_inputs(self, _in):
+        """
+        Standardization routines applied to columns in `self.state`.
+
+        Parameters
+        ----------
+        _in : array-like
+            Time series representing the state of the environment throughout
+            time or iterations.
+
+        Returns
+        -------
+        state : array-like
+            Time series with windspeed heights in simplest representation.
+        """
+
+        if _in is None:
+            return None
+
+        names = []
+        for name in list(_in.dtype.names):
+
+            if "windspeed" in name:
+                try:
+                    val = name.split("_")[1].replace("m", "")
+                    new = f"windspeed_{self.simplify_num(val)}m"
+                    names.append(new)
+
+                except IndexError:
+                    names.append(name)
+
+            else:
+                names.append(name)
+
+        state = _in.copy()
+        state.dtype.names = names
+        return state
+
     def resolve_windspeed_constraints(self, constraints):
         """
         Resolves the applied windspeed constraints given the windspeed profiles
@@ -74,9 +114,19 @@ class OrbitEnvironment(Environment):
         ----------
         constraints : dict
             Dictionary of constraints
+
+        Returns
+        -------
+        constraitns : dict
+            Dictionary of constraints with windspeed columns resolved to their
+            simplest representation.
         """
 
-        ws = [k for k, _ in constraints.items() if "windspeed" in k]
+        ws = {}
+        for k in list(constraints.keys()):
+            if "windspeed" in k:
+                ws[k] = constraints.pop(k)
+
         if not ws:
             return constraints
 
@@ -86,27 +136,35 @@ class OrbitEnvironment(Environment):
                     "Multiple constraints applied to the 'windspeed' column."
                 )
 
-            v = constraints.pop(ws[0])
-            return {**constraints, "windspeed": v}
+            return {**constraints, "windspeed": list(ws.values())[0]}
 
-        for k in ws:
-            if k in self.state.dtype.names:
-                continue
+        for k, v in ws.items():
 
-            val = k.split("_")[1].replace("m", "")
-            height = float(val) if "." in val else int(val)
-            loc = bisect(self.ws_heights, height)
-
-            if loc == 0:
-                self.ws_extrap(self.ws_heights[0], height)
-
-            elif loc == len(self.ws_heights):
-                self.ws_extrap(self.ws_heights[-1], height)
+            if k == "windspeed":
+                height = self.simplify_num(self.default_height)
 
             else:
-                h1 = self.ws_heights[loc - 1]
-                h2 = self.ws_heights[loc]
-                self.ws_interp(h1, h2, height)
+                val = k.split("_")[1].replace("m", "")
+                height = self.simplify_num(val)
+
+            name = f"windspeed_{height}m"
+            if name in self.state.dtype.names:
+                pass
+
+            else:
+                loc = bisect(self.ws_heights, height)
+                if loc == 0:
+                    self.extrapolate_ws(self.ws_heights[0], height)
+
+                elif loc == len(self.ws_heights):
+                    self.extrapolate_ws(self.ws_heights[-1], height)
+
+                else:
+                    h1 = self.ws_heights[loc - 1]
+                    h2 = self.ws_heights[loc]
+                    self.interpolate_ws(h1, h2, height)
+
+            constraints[name] = v
 
         return constraints
 
@@ -123,9 +181,19 @@ class OrbitEnvironment(Environment):
 
         return sorted(heights)
 
-    def ws_interp(self, h1, h2, h):
+    def interpolate_ws(self, h1, h2, h):
         """
-        TODO
+        Interpolates between two windspeed profiles using the power law. This
+        method will calculate the power law coefficient between `h1` and `h2`.
+
+        Parameters
+        ----------
+        h1 : int | float
+            Lower measurement height.
+        h2 : int | float
+            Upper measurement height.
+        h : int | float
+            Desired profile height.
         """
 
         ts1 = self.state[f"windspeed_{h1}m"]
@@ -136,9 +204,17 @@ class OrbitEnvironment(Environment):
 
         self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
 
-    def ws_extrap(self, h1, h):
+    def extrapolate_ws(self, h1, h):
         """
-        TODO
+        Extrapolates a windspeed profile using the power law coefficient
+        at `self.alpha`.
+
+        Parameters
+        ----------
+        h1 : int | float
+            Measurement height.
+        h : int | float
+            Desired profile height.
         """
 
         ts1 = self.state[f"windspeed_{h1}m"]
@@ -149,3 +225,14 @@ class OrbitEnvironment(Environment):
             ts = ts1 / ((h1 / h) ** self.alpha)
 
         self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
+
+    @staticmethod
+    def simplify_num(str):
+        """Returns the simplest str representation of a number."""
+
+        num = float(str)
+        if int(num) == num:
+            return int(num)
+
+        else:
+            return num
