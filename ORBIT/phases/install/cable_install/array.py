@@ -25,6 +25,7 @@ from .common import (
     lay_bury_cable,
     terminate_cable,
     load_cable_on_vessel,
+    dig_trench,
 )
 
 
@@ -144,6 +145,7 @@ class ArrayCableInstallation(InstallPhase):
         vessel = Vessel(name, vessel_specs)
         self.env.register(vessel)
 
+        vessel.initialize()
         vessel.at_port = True
         vessel.at_site = False
         self.trench_vessel = vessel
@@ -168,7 +170,7 @@ def install_array_cables(
     ----------
     vessel : Vessel
         Cable installation vessel.
-    cables : list
+    cable_data : list
         List of tuples containing `Cable` instances and sections.
     burial_vessel : Vessel
         Optional configuration for burial vessel. If configured, the
@@ -179,6 +181,40 @@ def install_array_cables(
         trenching vessel travels along the cable route prior to arrival of
         the cable lay vessel and digs a trench.
     """
+    # print(cable_data)
+    # for c,s in cable_data:
+    #     print(c,s)
+    # Conduct trenching along cable routes before laying cable
+    if trench_vessel is None:
+        pass
+    else:
+        for cable, sections in cable_data:
+            vessel.cable_storage.reset()
+
+            while True:
+                if trench_vessel.at_port:
+                    trench_vessel.at_port = False
+                    yield trench_vessel.transit(distance, **kwargs)
+                    trench_vessel.at_site = True
+
+                elif trench_vessel.at_site:
+                    try:
+                        print(sections)
+                        length, num_sections, *extra = sections.pop(0)
+                        print('length',length,'ns',num_sections)
+                        for _ in range(num_sections):
+                            print('installing',length,'for',_,'of',num_sections,'sections')
+                            # section = vessel.cable_storage.get_cable(length)
+                            dig_array_cables_trench(trench_vessel, length, **kwargs)
+                    except IndexError:
+                        trench_vessel.at_site = False
+                        yield trench_vessel.transit(distance, **kwargs)
+                        trench_vessel.at_port = True
+                        break
+            # Transit back to port
+            trench_vessel.at_site = False
+            yield trench_vessel.transit(distance, **kwargs)
+            trench_vessel.at_port = True
 
     to_bury = []
 
@@ -280,3 +316,22 @@ def bury_array_cables(vessel, sections, **kwargs):
         yield bury_cable(vessel, length, **kwargs)
 
     vessel.submit_debug_log(message="Array cable burial process completed!")
+
+@process
+def dig_array_cables_trench(vessel, sections, **kwargs):
+    """
+    Simulation for digging a trench for the array cables (if configured).
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Performing vessel.
+    sections : list
+        List of cable sections that need to be buried at site.
+    """
+
+    for length in sections:
+        yield position_onsite(vessel, site_position_time=2)
+        yield dig_trench(vessel, length, **kwargs)
+
+    vessel.submit_debug_log(message="Array cable trench digging process completed!")

@@ -380,6 +380,7 @@ def dig_trench(vessel, distance, **kwargs):
 
     key = "trench_dig_speed"
     trench_dig_speed = kwargs.get(key, pt[key])
+    print(distance, trench_dig_speed)
     trench_dig_time = distance / trench_dig_speed
     _vkwargs = getattr(vessel, "_transport_specs", {})
 
