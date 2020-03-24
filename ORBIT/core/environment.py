@@ -199,7 +199,7 @@ class OrbitEnvironment(Environment):
         ts1 = self.state[f"windspeed_{h1}m"]
         ts2 = self.state[f"windspeed_{h2}m"]
         alpha = np.log(ts2.mean() / ts1.mean()) / np.log(h2 / h1)
-        print(alpha)
+
         ts = ts1 * (h / h1) ** alpha
 
         self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
@@ -218,11 +218,7 @@ class OrbitEnvironment(Environment):
         """
 
         ts1 = self.state[f"windspeed_{h1}m"]
-        if h > h1:
-            ts = ts1 * (h / h1) ** self.alpha
-
-        else:
-            ts = ts1 / ((h1 / h) ** self.alpha)
+        ts = ts1 * (h / h1) ** self.alpha
 
         self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
 
