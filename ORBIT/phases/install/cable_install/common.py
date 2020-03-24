@@ -363,6 +363,7 @@ def pull_winch(vessel, distance, **kwargs):
         **kwargs,
     )
 
+
 @process
 def dig_trench(vessel, distance, **kwargs):
     """

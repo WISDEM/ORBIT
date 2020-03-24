@@ -20,17 +20,18 @@ from .common import SimpleCable as Cable
 from .common import (
     lay_cable,
     bury_cable,
+    dig_trench,
     pull_in_cable,
     landfall_tasks,
     lay_bury_cable,
     splice_process,
     terminate_cable,
     load_cable_on_vessel,
-    dig_trench,
 )
 
 
 class ExportCableInstallation(InstallPhase):
+    """Export Cable Installation Phase"""
 
     phase = "Export Cable Installation"
 
@@ -39,7 +40,7 @@ class ExportCableInstallation(InstallPhase):
         "landfall": {"trench_length": "km (optional)"},
         "export_cable_install_vessel": "str | dict",
         "export_cable_bury_vessel": "str | dict (optional)",
-        "array_cable_trench_vessel": "str (optional)",
+        "export_cable_trench_vessel": "str (optional)",
         "site": {"distance": "km"},
         "plant": {"num_turbines": "int"},
         "turbine": {"turbine_rating": "MW"},
@@ -245,7 +246,14 @@ class ExportCableInstallation(InstallPhase):
 
 @process
 def install_export_cables(
-    vessel, sections, cable, number, distances, burial_vessel=None, trench_vessel=None, **kwargs
+    vessel,
+    sections,
+    cable,
+    number,
+    distances,
+    burial_vessel=None,
+    trench_vessel=None,
+    **kwargs,
 ):
     """
     Simulation of the installation of export cables.
@@ -289,11 +297,15 @@ def install_export_cables(
             # Trenching vessel can dig a trench during inbound or outbound journey
             if trench_vessel.at_port:
                 trench_vessel.at_port = False
-                yield dig_export_cables_trench(trench_vessel, total_sections_distance, **kwargs)
+                yield dig_export_cables_trench(
+                    trench_vessel, total_sections_distance, **kwargs
+                )
                 trench_vessel.at_site = True
             elif trench_vessel.at_site:
                 trench_vessel.at_site = False
-                yield dig_export_cables_trench(trench_vessel, total_sections_distance, **kwargs)
+                yield dig_export_cables_trench(
+                    trench_vessel, total_sections_distance, **kwargs
+                )
                 trench_vessel.at_port = True
 
         # If the vessel finishes trenching at site, return to shore
@@ -388,6 +400,7 @@ def bury_export_cables(vessel, length, number, **kwargs):
 
     vessel.submit_debug_log(message="Export cable burial process completed!")
 
+
 @process
 def dig_export_cables_trench(vessel, distance, **kwargs):
     """
@@ -404,4 +417,6 @@ def dig_export_cables_trench(vessel, distance, **kwargs):
     yield position_onsite(vessel, site_position_time=2)
     yield dig_trench(vessel, distance, **kwargs)
 
-    vessel.submit_debug_log(message="Export cable trench digging process completed!")
+    vessel.submit_debug_log(
+        message="Export cable trench digging process completed!"
+    )
