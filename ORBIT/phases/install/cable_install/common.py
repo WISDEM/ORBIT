@@ -174,17 +174,18 @@ def lay_bury_cable(vessel, distance, **kwargs):
         Maximum speed at which cable is dispensed (km/hr)
     """
 
+    kwargs = {**kwargs, **getattr(vessel, "_transport_specs", {})}
+
     key = "cable_lay_bury_speed"
     lay_bury_speed = kwargs.get(key, pt[key])
     lay_bury_time = distance / lay_bury_speed
-    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Lay/Bury Cable",
         lay_bury_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **{**_vkwargs, **kwargs},
+        **kwargs,
     )
 
 
@@ -203,17 +204,18 @@ def lay_cable(vessel, distance, **kwargs):
         Maximum speed at which cable is dispensed (km/hr)
     """
 
+    kwargs = {**kwargs, **getattr(vessel, "_transport_specs", {})}
+
     key = "cable_lay_speed"
     lay_speed = kwargs.get(key, pt[key])
     lay_time = distance / lay_speed
-    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Lay Cable",
         lay_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **{**_vkwargs, **kwargs},
+        **kwargs,
     )
 
 
@@ -232,17 +234,18 @@ def bury_cable(vessel, distance, **kwargs):
         Maximum speed at which cable is buried (km/hr).
     """
 
+    kwargs = {**kwargs, **getattr(vessel, "_transport_specs", {})}
+
     key = "cable_bury_speed"
     bury_speed = kwargs.get(key, pt[key])
     bury_time = distance / bury_speed
-    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Bury Cable",
         bury_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **{**_vkwargs, **kwargs},
+        **kwargs,
     )
 
 
@@ -379,15 +382,16 @@ def dig_trench(vessel, distance, **kwargs):
         Speed at which trench is dug (km/hr).
     """
 
+    kwargs = {**kwargs, **getattr(vessel, "_transport_specs", {})}
+
     key = "trench_dig_speed"
     trench_dig_speed = kwargs.get(key, pt[key])
     trench_dig_time = distance / trench_dig_speed
-    _vkwargs = getattr(vessel, "_transport_specs", {})
 
     yield vessel.task(
         "Dig trench",
         trench_dig_time,
         constraints=vessel.operational_limits,
         suspendable=True,
-        **{**_vkwargs, **kwargs},
+        **kwargs,
     )
