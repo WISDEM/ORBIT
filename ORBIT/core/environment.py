@@ -176,8 +176,12 @@ class OrbitEnvironment(Environment):
 
         heights = []
         for c in columns:
-            val = c.split("_")[1].replace("m", "")
-            heights.append(float(val) if "." in val else int(val))
+            try:
+                val = c.split("_")[1].replace("m", "")
+                heights.append(float(val) if "." in val else int(val))
+
+            except IndexError:
+                pass
 
         return sorted(heights)
 
