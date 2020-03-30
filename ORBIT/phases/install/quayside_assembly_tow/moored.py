@@ -6,15 +6,16 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import Agent, process
-
-from ORBIT.core import Cargo, WetStorage
+from ORBIT.core import WetStorage
 from ORBIT.phases.install import InstallPhase
+
+from .common import SubstructureAssemblyLine
 
 
 class MooredSubInstallation(InstallPhase):
     """
-    TODO
+    Installation module to model the quayside assembly, tow-out and
+    installation at sea of moored substructures.
     """
 
     phase = "Moored Substructure Installation"
@@ -56,14 +57,22 @@ class MooredSubInstallation(InstallPhase):
 
     def setup_simulation(self, **kwargs):
         """
-        TODO
+        Sets up simulation infrastructure.
+        - Initializes substructure production
+        - Initializes turbine assembly processes
+        - Initializes towing groups
         """
 
         self.initialize_substructure_production()
 
     def initialize_substructure_production(self):
         """
+        Initializes the production of substructures at port. The number of
+        independent assembly lines and production time associated with a
+        substructure can be configured with the following parameters:
 
+        - self.config["substructure"]["takt_time"]
+        - self.config["port"]["sub_assembly_lines"]
         """
 
         self.wet_storage = WetStorage(self.env)
@@ -80,7 +89,7 @@ class MooredSubInstallation(InstallPhase):
             )
 
             self.env.register(a)
-            a.run()
+            a.start()
 
     def initialize_substructure_storage(self):
         """
@@ -111,65 +120,3 @@ class MooredSubInstallation(InstallPhase):
 
         # TODO:
         return {}
-
-
-class FloatingSubstructure:
-    """"""
-
-    def __init__(self):
-        """
-        TODO
-        """
-        pass
-
-
-class SubstructureAssemblyLine(Agent):
-    """"""
-
-    def __init__(self, assigned, time, target, num):
-        """
-        Creates an instance of SubstructureAssemblyLine.
-
-        Parameters
-        ----------
-        time : int | float
-            Hours required to produce one substructure.
-        target : simpy.Store
-            Target storage.
-        num : int
-            Assembly line number designation.
-        """
-
-        super().__init__(f"Substructure Assembly Line {num}")
-
-        self.assigned = assigned
-        self.time = time
-        self.target = target
-
-    @process
-    def assemble_substructure(self):
-        """
-        Simulation process for assembling a substructure.
-        """
-
-        yield self.task("Substructure Assembly", self.time)
-        substructure = FloatingSubstructure()
-
-        start = self.env.now
-        yield self.target.put(substructure)
-        delay = self.env.now - start
-
-        if delay > 0:
-            self.submit_action_log("Delay: No Wet Storage Available")
-
-    @process
-    def run(self):
-        """"""
-
-        while True:
-            try:
-                _ = self.assigned.pop(0)
-                yield self.assemble_substructure()
-
-            except IndexError:
-                break
