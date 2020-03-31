@@ -150,7 +150,9 @@ class TurbineAssemblyLine(Agent):
                 "Delay: No Assembly Storage Available", delay
             )
 
-        self.submit_debug_log("Assembly delievered to installation groups.")
+        self.submit_debug_log(
+            message="Assembly delievered to installation groups."
+        )
 
     @process
     def prepare_for_assembly(self):

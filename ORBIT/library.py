@@ -241,7 +241,7 @@ def export_library_specs(key, filename, data, file_ext="yaml"):
         return
     if file_ext == "yaml":
         f = open(data_path, "w")
-        yaml.dump( data, f, Dumper=Dumper, default_flow_style=False )
+        yaml.dump(data, f, Dumper=Dumper, default_flow_style=False)
         f.close()
     elif file_ext == "csv":
         with open(data_path, "w") as f:
@@ -263,6 +263,7 @@ PATH_LIBRARY = {
     "trench_dig_vessel": "vessels",
     "feeder": "vessels",
     "wtiv": "vessels",
+    "towing_vessel": "vessels",
     # cables
     "cables": "cables",
     "array_system": "cables",

@@ -6,7 +6,11 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from ORBIT.core import WetStorage
+from copy import deepcopy
+
+from marmot import process
+
+from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
 from .common import TurbineAssemblyLine, SubstructureAssemblyLine
@@ -22,7 +26,11 @@ class MooredSubInstallation(InstallPhase):
 
     #:
     expected_config = {
-        "tow_vessel_group": "dict | str",
+        "towing_vessel": "str",
+        "towing_vessel_groups": {
+            "vessels_per_group": "int",
+            "num_groups": "int",
+        },
         "substructure": {"takt_time": "int | float"},
         "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
@@ -67,6 +75,7 @@ class MooredSubInstallation(InstallPhase):
 
         self.initialize_substructure_production()
         self.initialize_turbine_assembly()
+        self.initialize_towing_groups()
 
     def initialize_substructure_production(self):
         """
@@ -116,11 +125,31 @@ class MooredSubInstallation(InstallPhase):
             self.env.register(a)
             a.start()
 
-    def initialize_towing_groups(self):
+    def initialize_towing_groups(self, **kwargs):
+        """
+        Initializes towing groups to bring completed assemblies to site and
+        stabilize the assembly during final installation.
         """
 
-        """
-        pass
+        distance = self.config["site"]["distance"]
+        self.installation_groups = []
+
+        vessel = self.config["towing_vessel"]
+        group = deepcopy(vessel)
+        num_groups = self.config["towing_vessel_groups"]["num_groups"]
+        num_vessels = self.config["towing_vessel_groups"]["vessels_per_group"]
+
+        for i in range(num_groups):
+            group["vessel_specs"]["day_rate"] *= num_vessels
+
+            g = Vessel(f"Towing Group {i + 1}", group)
+            self.env.register(g)
+            g.initialize()
+            self.installation_groups.append(g)
+
+            install_moored_substructures_from_storage(
+                g, self.assembly_storage, distance, **kwargs
+            )
 
     @property
     def detailed_output(self):
@@ -128,3 +157,34 @@ class MooredSubInstallation(InstallPhase):
 
         # TODO:
         return {}
+
+
+@process
+def install_moored_substructures_from_storage(group, feed, distance, **kwargs):
+    """
+    Process logic for the towing vessel group.
+
+    Parameters
+    ----------
+    group : Vessel
+        Towing group.
+    feed : simpy.Store
+        Completed assembly storage.
+    distance : int | float
+        Distance from port to site.
+    """
+
+    while True:
+
+        start = group.env.now
+        assembly = yield feed.get()
+        delay = group.env.now - start
+
+        if delay > 0:
+            group.submit_action_log(
+                "Delay: No Completed Assemblies Available", delay
+            )
+
+        yield group.transit(distance)
+        yield group.task("Site Operations", 10)
+        yield group.transit(distance)
