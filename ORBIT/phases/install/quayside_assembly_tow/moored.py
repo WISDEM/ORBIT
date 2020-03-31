@@ -9,7 +9,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from ORBIT.core import WetStorage
 from ORBIT.phases.install import InstallPhase
 
-from .common import SubstructureAssemblyLine
+from .common import TurbineAssemblyLine, SubstructureAssemblyLine
 
 
 class MooredSubInstallation(InstallPhase):
@@ -26,10 +26,12 @@ class MooredSubInstallation(InstallPhase):
         "substructure": {"takt_time": "int | float"},
         "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
+        "turbine": "dict",
         "port": {
             "sub_assembly_lines": "int",
-            "sub_storage_berths": "int",
+            "sub_storage": "int (optional, default: 2)",
             "turbine_assembly_cranes": "int",
+            "assembly_storage": "int (optional, default: 2)",
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
@@ -64,6 +66,7 @@ class MooredSubInstallation(InstallPhase):
         """
 
         self.initialize_substructure_production()
+        self.initialize_turbine_assembly()
 
     def initialize_substructure_production(self):
         """
@@ -75,7 +78,8 @@ class MooredSubInstallation(InstallPhase):
         - self.config["port"]["sub_assembly_lines"]
         """
 
-        self.wet_storage = WetStorage(self.env)
+        storage = self.config["port"].get("sub_storage", 2)
+        self.wet_storage = WetStorage(self.env, storage)
 
         time = self.config["substructure"]["takt_time"]
         lines = self.config["port"]["sub_assembly_lines"]
@@ -91,22 +95,26 @@ class MooredSubInstallation(InstallPhase):
             self.env.register(a)
             a.start()
 
-    def initialize_substructure_storage(self):
-        """
-
-        """
-
     def initialize_turbine_assembly(self):
         """
+        Initializes turbine assembly lines. The number of independent lines
+        can be configured with the following parameters:
 
-        """
-        pass
-
-    def initialize_assembly_storage(self):
+        - self.config["port"]["turb_assembly_lines"]
         """
 
-        """
-        pass
+        storage = self.config["port"].get("assembly_storage", 2)
+        self.assembly_storage = WetStorage(self.env, storage)
+
+        lines = self.config["port"]["turbine_assembly_cranes"]
+        turbine = self.config["turbine"]
+        for i in range(lines):
+            a = TurbineAssemblyLine(
+                self.wet_storage, self.assembly_storage, turbine, i + 1
+            )
+
+            self.env.register(a)
+            a.start()
 
     def initialize_towing_groups(self):
         """
