@@ -128,7 +128,7 @@ class ProjectManager:
 
         self.run_all_design_phases(design_phases, **kwargs)
 
-        if isinstance(install_phases, list):
+        if isinstance(install_phases, (list, set)):
             self.run_multiple_phases_in_serial(install_phases, **kwargs)
 
         elif isinstance(install_phases, dict):
