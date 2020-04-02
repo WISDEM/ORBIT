@@ -206,3 +206,98 @@ class TurbineAssemblyLine(Agent):
         """
 
         yield self.task("Mechanical Completion", 24)
+
+
+class TowingGroup(Agent):
+    """Class to represent an arbitrary group of towing vessels."""
+
+    def __init__(self, vessel_specs, num=1):
+        """
+        Creates an instance of TowingGroup.
+
+        Parameters
+        ----------
+        vessel_specs : dict
+            Specs for the individual vessels used in the towing group.
+            Currently restricted to one vessel specification per group.
+        """
+
+        super().__init__(f"Towing Group {num}")
+        self._specs = vessel_specs
+        self.day_rate = self._specs["vessel_specs"]["day_rate"]
+
+    def initialize(self):
+        """Initializes the towing group."""
+
+        self.submit_debug_log(message="{self.name} initialized.")
+
+    @process
+    def group_task(self, name, duration, num_vessels, **kwargs):
+        """
+        Submits a group task with any number of towing vessels.
+
+        Parameters
+        ----------
+        name : str
+            Name of task to complete. Used for submitting action logs.
+        duration : float | int
+            Duration of the task.
+            Rounded up to the nearest int.
+        num_vessels : int
+            Number of individual towing vessels needed for the operation.
+        """
+
+        kwargs = {**kwargs, "num_vessels": num_vessels}
+        yield self.task(name, duration, **kwargs)
+
+    def operation_cost(self, hours, **kwargs):
+        """
+        Returns cost of an operation of duration `hours` using number of
+        vessels, `num_vessels`.
+
+        Parameters
+        ----------
+        hours : int | float
+            Duration of operation in hours.
+        vessels : int
+            Default: 1
+        """
+
+        mult = kwargs.get("cost_multiplier", 1.0)
+        vessels = kwargs.get("num_vessels", 1)
+        return (self.day_rate / 24) * vessels * hours * mult
+
+    def submit_action_log(self, action, duration, **kwargs):
+        """
+        Submits a log representing a completed `action` performed over time
+        `duration`.
+
+        This method overwrites the default `submit_action_log` in
+        `marmot.Agent`, adding operation cost to every submitted log within
+        ORBIT.
+
+        Parameters
+        ----------
+        action : str
+            Performed action.
+        duration : int | float
+            Duration of action.
+
+        Raises
+        ------
+        AgentNotRegistered
+        """
+
+        if self.env is None:
+            raise AgentNotRegistered(self)
+
+        else:
+            payload = {
+                **kwargs,
+                "agent": str(self),
+                "action": action,
+                "duration": float(duration),
+                "cost": self.operation_cost(duration, **kwargs),
+            }
+
+            self.env._submit_log(payload, level="ACTION")
