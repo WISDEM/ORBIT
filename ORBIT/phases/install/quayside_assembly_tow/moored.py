@@ -26,19 +26,19 @@ class MooredSubInstallation(InstallPhase):
     expected_config = {
         "towing_vessel": "str",
         "towing_vessel_groups": {
-            "vessels_for_towing": "int",
-            "vessels_for_stabilization": "int",
-            "num_groups": "int",
+            "towing_vessels": "int",
+            "stabilization_vessels": "int",
+            "num_groups": "int (optional)",
         },
-        "substructure": {"takt_time": "int | float"},
+        "substructure": {"takt_time": "int | float (optional, default: 0)"},
         "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
         "turbine": "dict",
         "port": {
-            "sub_assembly_lines": "int",
-            "sub_storage": "int (optional, default: 2)",
-            "turbine_assembly_cranes": "int",
-            "assembly_storage": "int (optional, default: 2)",
+            "sub_assembly_lines": "int (optional, default: 1)",
+            "sub_storage": "int (optional, default: inf)",
+            "turbine_assembly_cranes": "int (optional, default: 1)",
+            "assembly_storage": "int (optional, default: inf)",
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
@@ -86,15 +86,30 @@ class MooredSubInstallation(InstallPhase):
         - self.config["port"]["sub_assembly_lines"]
         """
 
-        storage = self.config["port"].get("sub_storage", 2)
+        try:
+            storage = self.config["port"]["sub_storage"]
+
+        except KeyError:
+            storage = float("inf")
+
         self.wet_storage = WetStorage(self.env, storage)
 
-        time = self.config["substructure"]["takt_time"]
-        lines = self.config["port"]["sub_assembly_lines"]
-        num = self.config["plant"]["num_turbines"]
+        try:
+            time = self.config["substructure"]["takt_time"]
 
+        except KeyError:
+            time = 0
+
+        try:
+            lines = self.config["port"]["sub_assembly_lines"]
+
+        except KeyError:
+            lines = 1
+
+        num = self.config["plant"]["num_turbines"]
         to_assemble = [1] * num
 
+        self.sub_assembly_lines = []
         for i in range(lines):
             a = SubstructureAssemblyLine(
                 to_assemble, time, self.wet_storage, i + 1
@@ -102,6 +117,7 @@ class MooredSubInstallation(InstallPhase):
 
             self.env.register(a)
             a.start()
+            self.sub_assembly_lines.append(a)
 
     def initialize_turbine_assembly(self):
         """
@@ -111,11 +127,22 @@ class MooredSubInstallation(InstallPhase):
         - self.config["port"]["turb_assembly_lines"]
         """
 
-        storage = self.config["port"].get("assembly_storage", 2)
+        try:
+            storage = self.config["port"]["assembly_storage"]
+
+        except KeyError:
+            storage = float("inf")
+
         self.assembly_storage = WetStorage(self.env, storage)
 
-        lines = self.config["port"]["turbine_assembly_cranes"]
+        try:
+            lines = self.config["port"]["turbine_assembly_cranes"]
+
+        except KeyError:
+            lines = 1
+
         turbine = self.config["turbine"]
+        self.turbine_assembly_lines = []
         for i in range(lines):
             a = TurbineAssemblyLine(
                 self.wet_storage, self.assembly_storage, turbine, i + 1
@@ -123,6 +150,7 @@ class MooredSubInstallation(InstallPhase):
 
             self.env.register(a)
             a.start()
+            self.turbine_assembly_lines.append(a)
 
     def initialize_towing_groups(self, **kwargs):
         """
@@ -134,10 +162,10 @@ class MooredSubInstallation(InstallPhase):
         self.installation_groups = []
 
         vessel = self.config["towing_vessel"]
-        num_groups = self.config["towing_vessel_groups"]["num_groups"]
-        towing = self.config["towing_vessel_groups"]["vessels_for_towing"]
+        num_groups = self.config["towing_vessel_groups"].get("num_groups", 1)
+        towing = self.config["towing_vessel_groups"]["towing_vessels"]
         stabilization = self.config["towing_vessel_groups"][
-            "vessels_for_stabilization"
+            "stabilization_vessels"
         ]
 
         for i in range(num_groups):
@@ -159,18 +187,35 @@ class MooredSubInstallation(InstallPhase):
     def detailed_output(self):
         """"""
 
-        # TODO:
-        return {}
+        return {
+            "operational_delays": {
+                **{
+                    k: self.operational_delay(str(k))
+                    for k in self.sub_assembly_lines
+                },
+                **{
+                    k: self.operational_delay(str(k))
+                    for k in self.turbine_assembly_lines
+                },
+                **{
+                    k: self.operational_delay(str(k))
+                    for k in self.installation_groups
+                },
+            }
+        }
+
+    def operational_delay(self, name):
+        """"""
+
+        actions = [a for a in self.env.actions if a["agent"] == name]
+        delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
+
+        return delay
 
 
 @process
 def install_moored_substructures_from_storage(
-    group,
-    feed,
-    distance,
-    vessels_for_towing,
-    vessels_for_stabilization,
-    **kwargs,
+    group, feed, distance, towing_vessels, stabilization_vessels, **kwargs
 ):
     """
     Process logic for the towing vessel group.
@@ -183,9 +228,9 @@ def install_moored_substructures_from_storage(
         Completed assembly storage.
     distance : int | float
         Distance from port to site.
-    vessels_for_towing : int
+    towing_vessels : int
         Number of vessels to use for towing to site.
-    vessels_for_stabilization : int
+    stabilization_vessels : int
         Number of vessels to use for substructure stabilization during final
         installation at site.
     """
@@ -201,8 +246,8 @@ def install_moored_substructures_from_storage(
                 "Delay: No Completed Assemblies Available", delay
             )
 
-        yield group.group_task("Transit", 10, num_vessels=vessels_for_towing)
+        yield group.group_task("Transit", 10, num_vessels=towing_vessels)
         yield group.group_task(
-            "Installation", 10, num_vessels=vessels_for_stabilization
+            "Installation", 10, num_vessels=stabilization_vessels
         )
-        yield group.group_task("Transit", 10, num_vessels=vessels_for_towing)
+        yield group.group_task("Transit", 10, num_vessels=towing_vessels)
