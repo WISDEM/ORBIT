@@ -172,7 +172,7 @@ class TurbineAssemblyLine(Agent):
 
         yield self.task(
             "Lift and Attach Tower Section",
-            7,
+            12,
             constraints={"windspeed": le(15)},
         )
 
@@ -195,7 +195,7 @@ class TurbineAssemblyLine(Agent):
         """
 
         yield self.task(
-            "Lift and Attach Blade", 3.5, constraints={"windspeed": le(15)}
+            "Lift and Attach Blade", 3.5, constraints={"windspeed": le(12)}
         )
 
     @process
@@ -205,7 +205,9 @@ class TurbineAssemblyLine(Agent):
         work at quayside.
         """
 
-        yield self.task("Mechanical Completion", 24)
+        yield self.task(
+            "Mechanical Completion", 24, constraints={"windspeed": le(18)}
+        )
 
 
 class TowingGroup(Agent):

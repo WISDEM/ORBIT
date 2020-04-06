@@ -264,6 +264,7 @@ PATH_LIBRARY = {
     "feeder": "vessels",
     "wtiv": "vessels",
     "towing_vessel": "vessels",
+    "support_vessel": "vessels",
     # cables
     "cables": "cables",
     "array_system": "cables",
