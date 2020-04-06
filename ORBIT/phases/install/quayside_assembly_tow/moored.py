@@ -210,7 +210,7 @@ class MooredSubInstallation(InstallPhase):
         vessel = Vessel("Multi-Purpose Support Vessel", specs)
 
         self.env.register(vessel)
-        vessel.initialize()
+        vessel.initialize(mobilize=False)
         self.support_vessel = vessel
 
         stabilization = self.config["towing_vessel_groups"][
@@ -345,12 +345,14 @@ def install_moored_substructures(
         installation at site.
     """
 
-    yield vessel.transit(distance)
-
     n = 0
     while n < substructures:
-
         if queue.vessel:
+
+            if n == 0:
+                vessel.mobilize()
+                yield vessel.transit(distance)
+
             start = vessel.env.now
             yield vessel.task(
                 "Position Substructure",
@@ -388,6 +390,8 @@ def install_moored_substructures(
             start = vessel.env.now
             yield queue.activate
             delay_time = vessel.env.now - start
-            vessel.submit_action_log("Delay", delay_time, location="Site")
+
+            if n != 0:
+                vessel.submit_action_log("Delay", delay_time, location="Site")
 
     yield vessel.transit(distance)
