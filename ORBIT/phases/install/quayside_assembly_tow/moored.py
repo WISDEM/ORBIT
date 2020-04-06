@@ -244,6 +244,9 @@ class MooredSubInstallation(InstallPhase):
                     k: self.operational_delay(str(k))
                     for k in self.installation_groups
                 },
+                self.support_vessel: self.operational_delay(
+                    str(self.support_vessel)
+                ),
             }
         }
 

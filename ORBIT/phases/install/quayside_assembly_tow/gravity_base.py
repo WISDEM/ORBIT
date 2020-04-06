@@ -6,9 +6,10 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import process
+import simpy
+from marmot import le, process
 
-from ORBIT.core import WetStorage
+from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
 from .common import TowingGroup, TurbineAssemblyLine, SubstructureAssemblyLine
@@ -24,13 +25,17 @@ class GravityBasedInstallation(InstallPhase):
 
     #:
     expected_config = {
+        "support_vessel": "str",
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
             "stabilization_vessels": "int",
             "num_groups": "int (optional)",
         },
-        "substructure": {"takt_time": "int | float (optional, default: 0)"},
+        "substructure": {
+            "takt_time": "int | float (optional, default: 0)",
+            "towing_speed": "int | float (optional, default: 6 km/h)",
+        },
         "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
         "turbine": "dict",
@@ -72,9 +77,14 @@ class GravityBasedInstallation(InstallPhase):
         - Initializes towing groups
         """
 
+        self.distance = self.config["site"]["distance"]
+        self.num_turbines = self.config["plant"]["num_turbines"]
+
         self.initialize_substructure_production()
         self.initialize_turbine_assembly()
+        self.initialize_queue()
         self.initialize_towing_groups()
+        self.initialize_support_vessel()
 
     def initialize_substructure_production(self):
         """
@@ -158,15 +168,12 @@ class GravityBasedInstallation(InstallPhase):
         stabilize the assembly during final installation.
         """
 
-        distance = self.config["site"]["distance"]
         self.installation_groups = []
 
         vessel = self.config["towing_vessel"]
         num_groups = self.config["towing_vessel_groups"].get("num_groups", 1)
         towing = self.config["towing_vessel_groups"]["towing_vessels"]
-        stabilization = self.config["towing_vessel_groups"][
-            "stabilization_vessels"
-        ]
+        towing_speed = self.config["substructure"].get("towing_speed", 6)
 
         for i in range(num_groups):
             g = TowingGroup(vessel, num=i + 1)
@@ -174,14 +181,51 @@ class GravityBasedInstallation(InstallPhase):
             g.initialize()
             self.installation_groups.append(g)
 
-            install_moored_substructures_from_storage(
+            transfer_gbf_substructures_from_storage(
                 g,
                 self.assembly_storage,
-                distance,
+                self.distance,
+                self.active_group,
                 towing,
-                stabilization,
+                towing_speed,
                 **kwargs,
             )
+
+    def initialize_queue(self):
+        """
+        Initializes the queue, modeled as a ``SimPy.Resource`` that towing
+        groups join at site.
+        """
+
+        self.active_group = simpy.Resource(self.env, capacity=1)
+        self.active_group.vessel = None
+        self.active_group.activate = self.env.event()
+
+    def initialize_support_vessel(self, **kwargs):
+        """
+        Initializes Multi-Purpose Support Vessel to perform installation
+        processes at site.
+        """
+
+        specs = self.config["support_vessel"]
+        vessel = Vessel("Multi-Purpose Support Vessel", specs)
+
+        self.env.register(vessel)
+        vessel.initialize()
+        self.support_vessel = vessel
+
+        stabilization = self.config["towing_vessel_groups"][
+            "stabilization_vessels"
+        ]
+
+        install_gravity_base_foundations(
+            self.support_vessel,
+            self.active_group,
+            self.distance,
+            self.num_turbines,
+            stabilization,
+            **kwargs,
+        )
 
     @property
     def detailed_output(self):
@@ -201,6 +245,9 @@ class GravityBasedInstallation(InstallPhase):
                     k: self.operational_delay(str(k))
                     for k in self.installation_groups
                 },
+                self.support_vessel: self.operational_delay(
+                    str(self.support_vessel)
+                ),
             }
         }
 
@@ -214,25 +261,28 @@ class GravityBasedInstallation(InstallPhase):
 
 
 @process
-def install_gbf_substructures_from_storage(
-    group, feed, distance, towing_vessels, stabilization_vessels, **kwargs
+def transfer_gbf_substructures_from_storage(
+    group, feed, distance, queue, towing_vessels, towing_speed, **kwargs
 ):
     """
     Process logic for the towing vessel group.
 
     Parameters
     ----------
-    group : TowingGroup
+    group : Vessel
+        Towing group.
     feed : simpy.Store
         Completed assembly storage.
     distance : int | float
         Distance from port to site.
     towing_vessels : int
         Number of vessels to use for towing to site.
-    stabilization_vessels : int
-        Number of vessels to use for substructure stabilization during final
-        installation at site.
+    towing_speed : int | float
+        Configured towing speed (km/h)
     """
+
+    towing_time = distance / towing_speed
+    transit_time = distance / 20
 
     while True:
 
@@ -245,9 +295,104 @@ def install_gbf_substructures_from_storage(
                 "Delay: No Completed Assemblies Available", delay
             )
 
-        yield group.group_task("Release from Quay-Side", 4, num_vessels=3)
-        yield group.group_task("Transit", 10, num_vessels=towing_vessels)
         yield group.group_task(
-            "Installation", 10, num_vessels=stabilization_vessels
+            "Tow Substructure", towing_time, num_vessels=towing_vessels
         )
-        yield group.group_task("Transit", 10, num_vessels=towing_vessels)
+
+        # At Site
+        with queue.request() as req:
+            queue_start = group.env.now
+            yield req
+
+            queue_time = group.env.now - queue_start
+            if queue_time > 0:
+                group.submit_action_log("Queue", queue_time, location="Site")
+
+            queue.vessel = group
+            active_start = group.env.now
+            queue.activate.succeed()
+
+            # Released by WTIV when objects are depleted
+            group.release = group.env.event()
+            yield group.release
+            active_time = group.env.now - active_start
+
+            queue.vessel = None
+            queue.activate = group.env.event()
+
+        yield group.group_task(
+            "Transit", transit_time, num_vessels=towing_vessels
+        )
+
+
+@process
+def install_gravity_base_foundations(
+    vessel, queue, distance, substructures, stabilization_vessels, **kwargs
+):
+    """
+    Logic that a Multi-Purpose Support Vessel uses at site to complete the
+    installation of gravity based foundations.
+
+    Parameters
+    ----------
+    vessel : Vessel
+    queue :
+    distance : int | float
+        Distance between port and site (km).
+    substructures : int
+        Number of substructures to install before transiting back to port.
+    stabilization_vessels : int
+        Number of vessels to use for substructure stabilization during final
+        installation at site.
+    """
+
+    yield vessel.transit(distance)
+
+    n = 0
+    while n < substructures:
+
+        if queue.vessel:
+            start = vessel.env.now
+            yield vessel.task(
+                "Position Substructure",
+                5,
+                constraints={"windspeed": le(15), "waveheight": le(2)},
+            )
+            yield vessel.task(
+                "ROV Survey",
+                1,
+                constraints={"windspeed": le(25), "waveheight": le(3)},
+            )
+
+            # TODO: Model for ballast pump time
+            yield vessel.task(
+                "Pump Ballast",
+                12,
+                # suspendable=True,
+                constraints={"windspeed": le(15), "waveheight": le(2)},
+            )
+
+            # TODO: Model for GBF grout time
+            yield vessel.task(
+                "Grout GBF",
+                6,
+                suspendable=True,
+                constraints={"windspeed": le(15), "waveheight": le(2)},
+            )
+
+            group_time = vessel.env.now - start
+            queue.vessel.submit_action_log(
+                "Positioning Support",
+                group_time,
+                location="site",
+                num_vessels=stabilization_vessels,
+            )
+            yield queue.vessel.release.succeed()
+
+        else:
+            start = vessel.env.now
+            yield queue.activate
+            delay_time = vessel.env.now - start
+            vessel.submit_action_log("Delay", delay_time, location="Site")
+
+    yield vessel.transit(distance)
