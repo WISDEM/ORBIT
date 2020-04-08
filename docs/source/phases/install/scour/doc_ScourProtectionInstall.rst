@@ -19,8 +19,9 @@ enough that they should not be ignored when computing BOS costs.
 Configuration
 -------------
 
+TODO
 This module is simple to configure, as the main parameter considered is the
-``tonnes_per_substructure`` to install. Currently ORBIT models the simplest
+``tons_per_substructure`` to install. Currently ORBIT models the simplest
 installation method, involving "Side Stone Installation Vessels" that dump
 loads of rocks next to the substructure without much ability to ensure that
 their payload is distributed evenly. A future version of ORBIT may expand this
@@ -39,7 +40,7 @@ Example
        ...
 
        'scour_protection': {
-           'tonnes_per_substructure': 1200
+           'tons_per_substructure': 1200
            }
        }
    }
