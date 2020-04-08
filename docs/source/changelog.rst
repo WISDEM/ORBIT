@@ -6,7 +6,7 @@ ORBIT Changelog
 0.4.2
 -----
 
-- New feature: Phase dependencies to ``ProjectManager``.
+- New feature: Phase dependencies in ``ProjectManager``.
 - New feature: Windspeed constraints at multiple heights, including automatic
   interpolation/extrapolation of configured windspeed profiles.
 - Added option to define ``mobilization_days`` and ``mobilization_mult`` in a
