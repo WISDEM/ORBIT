@@ -389,7 +389,7 @@ def dig_trench(vessel, distance, **kwargs):
     trench_dig_time = distance / trench_dig_speed
 
     yield vessel.task(
-        "Dig trench",
+        "Dig Trench",
         trench_dig_time,
         constraints=vessel.operational_limits,
         suspendable=True,
