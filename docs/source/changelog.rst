@@ -3,6 +3,22 @@
 ORBIT Changelog
 ===============
 
+0.4.2
+-----
+
+- New feature: Phase dependencies to ``ProjectManager``.
+- New feature: Windspeed constraints at multiple heights, including automatic
+  interpolation/extrapolation of configured windspeed profiles.
+- Added option to define ``mobilization_days`` and ``mobilization_mult`` in a
+  ``Vessel`` configuration file.
+- Added option for pre-installation trenching operations to
+  ``ArrayCableInstallation`` and ``ExportCableInstallation``.
+- Revised ``OffshoreSubstationDesign`` to scale the size of the substations
+  with the user-configured number of substations.
+- Bugfix in the returned argument order of ``ProjectManager.run_install_phase``
+  where the cost of a prior phase would be incorrectly applied as the elapsed
+  time.
+
 0.4.1
 -----
 
@@ -10,7 +26,7 @@ ORBIT Changelog
   internal copy of simpy.
 - Added/expanded ``detailed_outputs`` for all modules.
 - Standardized naming of weight/mass terms to mass throughout the model.
-- Cleanup in ``ProjectManager``
+- Cleanup in ``ProjectManager``.
 
 0.4.0
 -----
