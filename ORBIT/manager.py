@@ -522,7 +522,7 @@ class ProjectManager:
         start = 0
 
         for name in phase_list:
-            cost, time, logs = self.run_install_phase(name, start, **kwargs)
+            _, time, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
                 continue
@@ -554,7 +554,7 @@ class ProjectManager:
         # Run defined
         for name, start in defined.items():
 
-            cost, time, logs = self.run_install_phase(name, start, **kwargs)
+            _, _, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
                 continue
