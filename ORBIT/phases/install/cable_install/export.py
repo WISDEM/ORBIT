@@ -398,7 +398,10 @@ def bury_export_cables(vessel, length, number, **kwargs):
     for _ in range(number):
         yield bury_cable(vessel, length, **kwargs)
 
-    vessel.submit_debug_log(message="Export cable burial process completed!")
+    vessel.submit_debug_log(
+        message="Export cable burial process completed!",
+        progress="Export System",
+    )
 
 
 @process

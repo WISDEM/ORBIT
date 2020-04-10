@@ -751,6 +751,24 @@ class ProjectManager:
         return self._output_logs
 
     @property
+    def progress_logs(self):
+        """Returns logs of progress points."""
+
+        if not self._output_logs:
+            raise Exception("Project hasn't been ran yet.")
+
+        progress_logs = []
+        for l in self._output_logs:
+            try:
+                _ = l["progress"]
+                progress_logs.append(l)
+
+            except KeyError:
+                pass
+
+        return progress_logs
+
+    @property
     def project_actions(self):
         """Returns list of all actions in the project."""
 
