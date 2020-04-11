@@ -12,6 +12,7 @@ from math import ceil
 from numbers import Number
 from itertools import product
 
+import numpy as np
 import pandas as pd
 
 from ORBIT import library
@@ -751,17 +752,21 @@ class ProjectManager:
         return self._output_logs
 
     @property
+    def project_time(self):
+        """Returns total project time as the time of the last log."""
+
+        return self.project_logs[-1]["time"]
+
+    @property
     def progress_logs(self):
         """Returns logs of progress points."""
 
-        if not self._output_logs:
-            raise Exception("Project hasn't been ran yet.")
-
         progress_logs = []
-        for l in self._output_logs:
+        for l in self.project_logs:
             try:
                 _ = l["progress"]
-                progress_logs.append(l)
+                log = self._filter_progress_log(l)
+                progress_logs.append(log)
 
             except KeyError:
                 pass
@@ -769,13 +774,36 @@ class ProjectManager:
         return progress_logs
 
     @property
+    def progress_summary(self):
+        """Returns a summary of progress by month."""
+
+        bins = np.arange(0, self.project_time + 730, 730)
+        arr = np.array(
+            self.progress_logs, dtype=[("progress", "U32"), ("time", "i4")]
+        )
+        dig = np.digitize(arr["time"], bins)
+
+        summary = {}
+        for i in range(1, len(bins)):
+
+            unique, counts = np.unique(
+                arr["progress"][dig == i], return_counts=True
+            )
+            summary[i] = dict(zip(unique, counts))
+
+        return summary
+
+    @staticmethod
+    def _filter_progress_log(l):
+        """Filters input log `l` to only include keys 'progress' and 'time'."""
+
+        return tuple([l[i] for i in l if i in {"progress", "time"}])
+
+    @property
     def project_actions(self):
         """Returns list of all actions in the project."""
 
-        if not self._output_logs:
-            raise Exception("Project hasn't been ran yet.")
-
-        actions = [l for l in self._output_logs if l["level"] == "ACTION"]
+        actions = [l for l in self.project_logs if l["level"] == "ACTION"]
         return sorted(actions, key=lambda l: l["time"])
 
     @staticmethod

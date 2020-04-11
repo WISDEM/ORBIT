@@ -437,3 +437,15 @@ def test_circular_dependencies():
     with pytest.raises(PhaseDependenciesInvalid):
         project = ProjectManager(circular_deps)
         project.run_project()
+
+
+def test_progress_summary():
+
+    # TODO:
+    # - Test for simple configuration (list)
+    # - Test for dict configuration
+    # - Test for phase dependencies
+    # - Test for multiple of one phase type
+    # - Test for gaps
+    # - Other?
+    pass
