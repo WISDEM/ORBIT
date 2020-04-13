@@ -1114,7 +1114,10 @@ class ProjectProgress:
         strings = self.parse_logs("Array String")
         _subs = self.parse_logs("Substructure")
         _turbines = self.parse_logs("Turbine")
+
         per_string = len(_turbines) // len(strings)
+        if len(_turbines) % len(strings):
+            per_string += 1
 
         subs = self.chunk_max(_subs, per_string)
         turbines = self.chunk_max(_turbines, per_string)

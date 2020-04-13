@@ -13,6 +13,7 @@ import pytest
 from ORBIT import ProjectManager
 from tests.data import test_weather
 from ORBIT.library import initialize_library, extract_library_specs
+from ORBIT.manager import ProjectProgress
 from ORBIT.core.exceptions import (
     MissingInputs,
     PhaseNotFound,
@@ -24,7 +25,7 @@ weather_df = pd.DataFrame(test_weather).set_index("datetime")
 
 initialize_library(pytest.library)
 config = extract_library_specs("config", "project_manager")
-
+complete_project = extract_library_specs("config", "complete_project")
 
 ### Top Level
 @pytest.mark.parametrize("weather", (None, weather_df))
@@ -441,10 +442,6 @@ def test_circular_dependencies():
 
 def test_progress_summary():
 
-    # TODO:
-    # - Test for simple configuration (list)
-    # - Test for dict configuration
-    # - Test for phase dependencies
     # - Test for multiple of one phase type
     # - Test for gaps
     # - Other?
@@ -453,11 +450,76 @@ def test_progress_summary():
 
 def test_ProjectProgress():
 
-    # TODO:
-    # - Test for input data
-    # - Test for missing progress points
-    # - Test for complete_export_system
-    # - Test for complete_array_strings
-    # -- Test for uneven strings
-    # - Test for energize_point calculations
-    pass
+    data = [
+        ("Export System", 10),
+        ("Offshore Substation", 20),
+        ("Array String", 15),
+        ("Array String", 25),
+        ("Turbine", 5),
+        ("Turbine", 10),
+        ("Turbine", 15),
+        ("Turbine", 20),
+        ("Turbine", 25),
+        ("Substructure", 6),
+        ("Substructure", 9),
+        ("Substructure", 14),
+        ("Substructure", 22),
+        ("Substructure", 26),
+    ]
+
+    progress = ProjectProgress(data)
+
+    assert progress.parse_logs("Export System") == [10]
+
+    turbines = progress.parse_logs("Turbine")
+    assert len(turbines) == 5
+
+    chunks = list(progress.chunk_max(turbines, 2))
+    assert chunks[0] == 10
+    assert chunks[1] == 20
+    assert chunks[2] == 25
+
+    assert progress.complete_export_system == 20
+    assert progress.complete_array_strings == [15, 26]
+    assert progress.energize_points == [20, 26]
+
+
+def test_ProjectProgress_with_incomplete_project():
+
+    project = ProjectManager(config)
+    project.run_project()
+
+    _ = project.progress.parse_logs("Substructure")
+    _ = project.progress.parse_logs("Turbine")
+
+    with pytest.raises(ValueError):
+        project.progress.complete_export_system
+
+    with pytest.raises(ValueError):
+        project.progress.complete_array_strings
+
+
+def test_ProjectProgress_with_complete_project():
+
+    project = ProjectManager(complete_project)
+    project.run_project()
+
+    _ = project.progress.parse_logs("Substructure")
+    _ = project.progress.parse_logs("Turbine")
+    _ = project.progress.parse_logs("Array String")
+    _ = project.progress.parse_logs("Export System")
+    _ = project.progress.parse_logs("Offshore Substation")
+
+    _ = project.progress.complete_export_system
+    _ = project.progress.complete_array_strings
+
+    _ = project.progress.energize_points
+
+    new = deepcopy(complete_project)
+    new["plant"]["num_turbines"] = 61
+
+    # Uneven strings
+    project = ProjectManager(new)
+    project.run_project()
+
+    _ = project.progress.energize_points
