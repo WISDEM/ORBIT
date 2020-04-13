@@ -449,3 +449,15 @@ def test_progress_summary():
     # - Test for gaps
     # - Other?
     pass
+
+
+def test_ProjectProgress():
+
+    # TODO:
+    # - Test for input data
+    # - Test for missing progress points
+    # - Test for complete_export_system
+    # - Test for complete_array_strings
+    # -- Test for uneven strings
+    # - Test for energize_point calculations
+    pass

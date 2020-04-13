@@ -135,6 +135,8 @@ class ProjectManager:
         elif isinstance(install_phases, dict):
             self.run_multiple_phases_overlapping(install_phases, **kwargs)
 
+        self.progress = ProjectProgress(self.progress_logs)
+
     @property
     def phases(self):
         """Returns dict of phases that have been ran."""
@@ -1073,3 +1075,82 @@ class ProjectManager:
         """
 
         library.export_library_specs("config", file_name, self.config)
+
+
+class ProjectProgress:
+    """Class to store, parse and return project progress data."""
+
+    def __init__(self, data):
+        """
+        Creates an instance of `ProjectProgress`.
+
+        Parameters
+        ----------
+        data : list
+            List of tuples representing progress points of the project.
+        """
+
+        self.data = data
+
+    @property
+    def complete_export_system(self):
+        """
+        Returns project time when the export system and offshore substations(s)
+        installations were completed (max of individual values).
+        """
+
+        export = self.parse_logs("Export System")
+        substations = self.parse_logs("Offshore Substation")
+
+        return max([*export, *substations])
+
+    @property
+    def complete_array_strings(self):
+        """
+        Returns list of times that the array strings and associated
+        substructure/turbine assembly installations were completed.
+        """
+
+        strings = self.parse_logs("Array String")
+        _subs = self.parse_logs("Substructure")
+        _turbines = self.parse_logs("Turbine")
+        per_string = len(_turbines) // len(strings)
+
+        subs = self.chunk_max(_subs, per_string)
+        turbines = self.chunk_max(_turbines, per_string)
+
+        data = list(zip(strings, subs, turbines))
+
+        return [max(l) for l in data]
+
+    @property
+    def energize_points(self):
+        """
+        Returns list of times where an array string can be energized. Max of
+        each value in `self.complete_array_strings` and
+        `self.complete_export_system`.
+        """
+
+        export = self.complete_export_system
+        points = []
+
+        for a in self.complete_array_strings:
+            points.append(max([a, export]))
+
+        return points
+
+    def parse_logs(self, k):
+        """Parse `self.data` for specific progress points associated key `k`"""
+
+        pts = [p[1] for p in self.data if p[0] == k]
+        if not pts:
+            raise ValueError(f"Installed '{k}' not found in project logs.")
+
+        return pts
+
+    @staticmethod
+    def chunk_max(l, n):
+        """Yield max value of successive n-sized chunks from l."""
+
+        for i in range(0, len(l), n):
+            yield max(l[i : i + n])
