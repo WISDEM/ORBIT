@@ -480,8 +480,12 @@ def test_ProjectProgress():
     assert chunks[2] == 25
 
     assert progress.complete_export_system == 20
-    assert progress.complete_array_strings == [15, 26]
-    assert progress.energize_points == [20, 26]
+    times, _ = progress.complete_array_strings
+    assert times == [15, 26]
+
+    times, turbines = progress.energize_points
+    assert times == [20, 26]
+    assert sum(turbines) == 5
 
 
 def test_ProjectProgress_with_incomplete_project():

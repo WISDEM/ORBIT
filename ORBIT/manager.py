@@ -176,6 +176,8 @@ class ProjectManager:
 
         config["commissioning"] = "float (optional, default: 0.01)"
         config["decommissioning"] = "float (optional, default: 0.15)"
+        config["electricity_price"] = "$/MWh (optional, default: 80)"
+        config["project_lifetime"] = "yrs (optional, default: 25)"
         config["design_phases"] = [*design_phases.keys()]
         config["install_phases"] = [*install_phases.keys()]
 
@@ -745,6 +747,30 @@ class ProjectManager:
         return capacity
 
     @property
+    def num_turbines(self):
+        """Returns number of turbines in the project."""
+
+        try:
+            num_turbines = self.config["plant"]["num_turbines"]
+
+        except KeyError:
+            num_turbines = None
+
+        return num_turbines
+
+    @property
+    def turbine_rating(self):
+        """Returns turbine rating in MW"""
+
+        try:
+            rating = self.config["turbine"]["turbine_rating"]
+
+        except KeyError:
+            rating = None
+
+        return rating
+
+    @property
     def project_logs(self):
         """Returns list of all logs in the project."""
 
@@ -760,33 +786,86 @@ class ProjectManager:
         return self.project_logs[-1]["time"]
 
     @property
+    def month_bins(self):
+        """Returns bins representing project months."""
+
+        return np.arange(0, self.project_time + 730, 730)
+
+    @property
+    def monthly_expenses(self):
+        """Returns the monthly expenses of the project from development through
+        construction."""
+
+        design_phases = [p.__name__ for p in self._design_phases]
+        design_cost = sum(
+            [v for k, v in self.phase_costs.items() if k in design_phases]
+        )
+
+        _expense_logs = self._filter_logs(keys=["cost", "time"])
+        expenses = np.array(
+            _expense_logs, dtype=[("cost", "f8"), ("time", "i4")]
+        )
+        dig = np.digitize(expenses["time"], self.month_bins)
+
+        monthly = {0: design_cost}
+        for i in range(1, len(self.month_bins)):
+            monthly[i] = sum(expenses["cost"][dig == i])
+
+        return monthly
+
+    @property
+    def monthly_revenue(self):
+        """Returns the monthly revenue based on when array system strings can
+        be energized, eg. 'self.progress.energize_points'."""
+
+        ncf = self.config.get("ncf", 0.4)
+        price = self.config.get("electricity_price", 80)
+        lifetime = self.config.get("project_lifetime", 25)
+
+        times, turbines = self.progress.energize_points
+        dig = list(np.digitize(times, self.month_bins))
+
+        revenue = {}
+        for i in range(0, lifetime * 12):
+            generating_strings = len([t for t in dig if i >= t])
+            generating_turbines = sum(turbines[:generating_strings])
+            production = (
+                generating_turbines * self.turbine_rating * ncf * 730
+            )  # MWh
+            revenue[i] = production * price
+
+        return revenue
+
+    @property
     def progress_logs(self):
         """Returns logs of progress points."""
 
-        progress_logs = []
+        return self._filter_logs(keys=["progress", "time"])
+
+    def _filter_logs(self, keys):
+        """Returns filtered list of logs."""
+
+        filtered = []
         for l in self.project_logs:
             try:
-                _ = l["progress"]
-                log = self._filter_progress_log(l)
-                progress_logs.append(log)
+                filtered.append(tuple(l[k] for k in keys))
 
             except KeyError:
                 pass
 
-        return progress_logs
+        return filtered
 
     @property
     def progress_summary(self):
         """Returns a summary of progress by month."""
 
-        bins = np.arange(0, self.project_time + 730, 730)
         arr = np.array(
             self.progress_logs, dtype=[("progress", "U32"), ("time", "i4")]
         )
-        dig = np.digitize(arr["time"], bins)
+        dig = np.digitize(arr["time"], self.month_bins)
 
         summary = {}
-        for i in range(1, len(bins)):
+        for i in range(1, len(self.month_bins)):
 
             unique, counts = np.unique(
                 arr["progress"][dig == i], return_counts=True
@@ -794,12 +873,6 @@ class ProjectManager:
             summary[i] = dict(zip(unique, counts))
 
         return summary
-
-    @staticmethod
-    def _filter_progress_log(l):
-        """Filters input log `l` to only include keys 'progress' and 'time'."""
-
-        return tuple([l[i] for i in l if i in {"progress", "time"}])
 
     @property
     def project_actions(self):
@@ -1121,10 +1194,11 @@ class ProjectProgress:
 
         subs = self.chunk_max(_subs, per_string)
         turbines = self.chunk_max(_turbines, per_string)
+        num_turbines = list(self.chunk_len(_turbines, per_string))
 
         data = list(zip(strings, subs, turbines))
 
-        return [max(l) for l in data]
+        return [max(l) for l in data], num_turbines
 
     @property
     def energize_points(self):
@@ -1137,10 +1211,11 @@ class ProjectProgress:
         export = self.complete_export_system
         points = []
 
-        for a in self.complete_array_strings:
-            points.append(max([a, export]))
+        times, turbines = self.complete_array_strings
+        for t in times:
+            points.append(max([t, export]))
 
-        return points
+        return points, turbines
 
     def parse_logs(self, k):
         """Parse `self.data` for specific progress points associated key `k`"""
@@ -1157,3 +1232,10 @@ class ProjectProgress:
 
         for i in range(0, len(l), n):
             yield max(l[i : i + n])
+
+    @staticmethod
+    def chunk_len(l, n):
+        """Yield successive n-sized chunks from l."""
+
+        for i in range(0, len(l), n):
+            yield len(l[i : i + n])
