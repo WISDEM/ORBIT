@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import Agent, le, process
+from marmot._exceptions import AgentNotRegistered
 
 
 class Substructure:
@@ -234,7 +235,9 @@ class TowingGroup(Agent):
         self.submit_debug_log(message="{self.name} initialized.")
 
     @process
-    def group_task(self, name, duration, num_vessels, **kwargs):
+    def group_task(
+        self, name, duration, num_vessels, constraints={}, **kwargs
+    ):
         """
         Submits a group task with any number of towing vessels.
 
@@ -250,7 +253,7 @@ class TowingGroup(Agent):
         """
 
         kwargs = {**kwargs, "num_vessels": num_vessels}
-        yield self.task(name, duration, **kwargs)
+        yield self.task(name, duration, constraints=constraints, **kwargs)
 
     def operation_cost(self, hours, **kwargs):
         """

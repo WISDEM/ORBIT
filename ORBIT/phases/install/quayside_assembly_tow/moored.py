@@ -295,7 +295,10 @@ def transfer_moored_substructures_from_storage(
             )
 
         yield group.group_task(
-            "Tow Substructure", towing_time, num_vessels=towing_vessels
+            "Tow Substructure",
+            towing_time,
+            num_vessels=towing_vessels,
+            constraints={"windspeed": le(15), "waveheight": le(2)},
         )
 
         # At Site
