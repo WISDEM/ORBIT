@@ -282,7 +282,7 @@ def transfer_gbf_substructures_from_storage(
     """
 
     towing_time = distance / towing_speed
-    transit_time = distance / 20
+    transit_time = distance / group.transit_speed
 
     while True:
 

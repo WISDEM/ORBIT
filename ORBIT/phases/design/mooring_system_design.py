@@ -113,9 +113,7 @@ class MooringSystemDesign(DesignPhase):
 
     @property
     def design_result(self):
-        """
-        TODO:
-        """
+        """Returns the results of the design phase."""
 
         return {
             "num_lines": self.num_lines,
@@ -128,11 +126,9 @@ class MooringSystemDesign(DesignPhase):
     def total_phase_cost(self):
         """Returns total phase cost in $USD."""
 
-        _design = self.config.get("monopile_design", {})
+        _design = self.config.get("mooring_system_design", {})
         design_cost = _design.get("design_cost", 0.0)
-        material_cost = sum([v for _, v in self.material_cost.items()])
-
-        return design_cost + material_cost
+        return self.calculate_total_cost() + design_cost
 
     @property
     def total_phase_time(self):

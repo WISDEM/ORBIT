@@ -228,6 +228,7 @@ class TowingGroup(Agent):
         super().__init__(f"Towing Group {num}")
         self._specs = vessel_specs
         self.day_rate = self._specs["vessel_specs"]["day_rate"]
+        self.transit_speed = self._specs["transport_specs"]["transit_speed"]
 
     def initialize(self):
         """Initializes the towing group."""
