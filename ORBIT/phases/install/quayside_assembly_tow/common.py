@@ -129,6 +129,7 @@ class TurbineAssemblyLine(Agent):
         instead of calculating the lift times dynamically.
         """
 
+        yield self.move_substructure()
         yield self.prepare_for_assembly()
 
         sections = self.turbine["tower"].get("sections", 1)
@@ -154,6 +155,17 @@ class TurbineAssemblyLine(Agent):
         self.submit_debug_log(
             message="Assembly delievered to installation groups."
         )
+
+    @process
+    def move_substructure(self):
+        """
+        Task representing time associated with moving the completed
+        substructure assembly to the turbine assembly line.
+
+        TODO: Move to dynamic process involving tow groups.
+        """
+
+        yield self.task("Move Substructure", 8)
 
     @process
     def prepare_for_assembly(self):

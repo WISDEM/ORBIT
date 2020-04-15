@@ -295,6 +295,13 @@ def transfer_moored_substructures_from_storage(
             )
 
         yield group.group_task(
+            "Ballast to Towing Draft",
+            6,
+            num_vessels=towing_vessels,
+            constraints={"windspeed": le(15), "waveheight": le(2)},
+        )
+
+        yield group.group_task(
             "Tow Substructure",
             towing_time,
             num_vessels=towing_vessels,
@@ -363,7 +370,7 @@ def install_moored_substructures(
                 constraints={"windspeed": le(15), "waveheight": le(2)},
             )
             yield vessel.task(
-                "Ballast Substructure",
+                "Ballast to Operational Draft",
                 6,
                 constraints={"windspeed": le(15), "waveheight": le(2)},
             )
