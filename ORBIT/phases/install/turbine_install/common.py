@@ -123,6 +123,7 @@ def lift_nacelle(vessel, **kwargs):
 
     hub_height = kwargs.get("hub_height", None)
     crane_rate = vessel.crane.crane_rate(**kwargs)
+    print('crane rate is', crane_rate)
     lift_time = hub_height / crane_rate
 
     yield vessel.task(

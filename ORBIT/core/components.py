@@ -69,8 +69,10 @@ class Crane:
             Hoist speed of crane (m/hr).
         """
 
-        wave_height = kwargs.get("wave_height", 2)
-        return 0.6 * wave_height * 3600
+        # wave_height = kwargs.get("wave_height", 2)
+        # return 0.6 * wave_height * 3600
+        crane_rate = 100
+        return crane_rate
 
     @staticmethod
     def reequip(**kwargs):
