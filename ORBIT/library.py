@@ -236,7 +236,7 @@ def export_library_specs(key, filename, data, file_ext="yaml"):
     filename = f"{filename}.{file_ext}"
     path = PATH_LIBRARY[key]
     data_path = os.path.join(os.environ["DATA_LIBRARY"], path, filename)
-    if not _get_yes_no_response(data_path):
+    if os.path.isfile(data_path) and not _get_yes_no_response(data_path):
         print("Cancelling save!")
         return
     if file_ext == "yaml":
