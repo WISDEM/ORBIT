@@ -1,5 +1,5 @@
-array_cable_install_vessel: test_cable_lay_vessel
-array_cable_bury_vessel: test_cable_lay_vessel
+array_cable_install_vessel: example_cable_lay_vessel
+array_cable_bury_vessel: example_cable_lay_vessel
 array_system:
   cables:
     XLPE_400mm_36kV:
