@@ -651,7 +651,17 @@ class CustomArraySystemDesign(ArraySystemDesign):
             [f"t{i}", "oss1", f"turbine-{i}", 0.0, 0.0, string, order, 0, 0]
             for i, (string, order) in enumerate(strings)
         ]
-        first = ["oss1", "", "offshore_substation", 0.0, 0.0, "", "", "", ""]
+        first = [
+            "oss1",
+            "oss1",
+            "offshore_substation",
+            0.0,
+            0.0,
+            "",
+            "",
+            "",
+            "",
+        ]
         rows.insert(0, first)
         rows.insert(0, self.COLUMNS)
         print(
@@ -661,8 +671,9 @@ class CustomArraySystemDesign(ArraySystemDesign):
 
     def _format_windfarm_data(self):
 
-        # Separate the OSS data
-        oss = self.windfarm[pd.isnull(self.windfarm.substation_id)].copy()
+        # Separate the OSS data where substaion_id is equal to id
+        substation_filter = self.windfarm.substation_id == self.windfarm.id
+        oss = self.windfarm[substation_filter].copy()
         oss.rename(
             columns={
                 "latitude": "substation_latitude",
@@ -679,9 +690,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         )
 
         # Separate the turbine data
-        turbines = self.windfarm[
-            ~pd.isnull(self.windfarm.substation_id)
-        ].copy()
+        turbines = self.windfarm[~substation_filter].copy()
         turbines.rename(
             columns={
                 "latitude": "turbine_latitude",
@@ -692,7 +701,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         )
 
         # Merge them back together
-        self.windfarm = turbines.merge(oss, on="substation_id")
+        self.windfarm = turbines.merge(oss, on="substation_id", how="left")
 
         self.windfarm = self.windfarm[self.REQUIRED + self.OPTIONAL]
 
@@ -741,7 +750,8 @@ class CustomArraySystemDesign(ArraySystemDesign):
         # Ensure the number of turbines matches what's expected
         if self.windfarm.shape[0] != self.system.num_turbines:
             raise ValueError(
-                "The provided number of turbines does not match the plant data."
+                f"The provided number of turbines ({self.windfarm.shape[0]}) ",
+                f"does not match the plant data ({self.system.num_turbines}).",
             )
 
         n_coords = self.windfarm.groupby(
@@ -831,19 +841,21 @@ class CustomArraySystemDesign(ArraySystemDesign):
                     string, order + 1
                 ] = data.turbine_latitude.values[order]
                 self.sections_cable_lengths[
-                    string, order - 1
-                ] = data.cable_length.values[order - 1]
+                    string, order
+                ] = data.cable_length.values[order]
                 self.sections_bury_speeds[
-                    string, order - 1
-                ] = data.bury_speed.values[order - 1]
+                    string, order
+                ] = data.bury_speed.values[order]
             i += string + 1
-
-        self._check_optional_input()
 
         # Ensure any point in array without a turbine is set to None
         no_turbines = self.windfarm_x == 0
         self.windfarm_x[no_turbines] = None
         self.windfarm_y[no_turbines] = None
+
+        self.sections_cable_lengths[no_turbines[:, 1:]] = None
+        self.sections_bury_speeds[no_turbines[:, 1:]] = None
+        self._check_optional_input()
 
         self.coordinates = np.dstack((self.windfarm_x, self.windfarm_y))
 
