@@ -133,6 +133,19 @@ class ArraySystemDesign(CableSystem):
 
         return _output
 
+    def _compute_euclidean_distance(self):
+        """Calculates the distance between two cartesian coordinate points.
+
+        Returns
+        -------
+        np.ndarray
+            The Euclidean distance between subsequent pairs of turbines in a
+            string for all strings in the windfarm.
+        """
+        differnce = np.abs(np.diff(self.coordinates, n=1, axis=1))
+        distance = np.round_(np.linalg.norm(differnce, axis=2), 10)
+        return distance
+
     def _compute_maximum_turbines_per_cable(self):
         """
         Calculates the maximum turbines that each cable can support and adds
@@ -308,18 +321,7 @@ class ArraySystemDesign(CableSystem):
         )
 
         # Take the norm of the difference of turbine "coordinate pairs".
-        self.sections_distance = np.round_(
-            np.array(
-                [
-                    np.linalg.norm(
-                        self.coordinates[i, :-1] - self.coordinates[i, 1:],
-                        axis=1,
-                    )
-                    for i in range(self.coordinates.shape[0])
-                ]
-            ),
-            10,
-        )
+        self.sections_distance = self._compute_euclidean_distance()
 
     def _create_cable_section_lengths(self):
         """
@@ -416,7 +418,7 @@ class ArraySystemDesign(CableSystem):
             If None then the plot will not be saved.
         """
 
-        fig, ax = plt.subplots(figsize=(7, 7))
+        fig, ax = plt.subplots(figsize=(10, 10))
         plt.axis("off")
 
         # Plot the offshore substation and turbiness
@@ -431,6 +433,13 @@ class ArraySystemDesign(CableSystem):
             zorder=2,
             label="Turbine",
         )
+        # Plot the turbine names
+        # for i in range(self.coordinates.shape[0]):
+        #     for j in range(self.coordinates.shape[1] - 1):
+        #         if not np.any(np.isnan(self.coordinates[i, j + 1])):
+        #             x, y = self.coordinates[i, j + 1]
+        #             name = self.windfarm.loc[(self.windfarm.string == i) & (self.windfarm.order == j), "turbine_name"].values[0]
+        #             ax.text(x, y, name)
 
         # Determine the cable section widths
         string_sets = np.unique(
@@ -558,7 +567,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
     ]
     OPTIONAL = ["cable_length", "bury_speed"]
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config, distance=False, **kwargs):
         """
         Initializes the configuration.
 
@@ -596,9 +605,14 @@ class CustomArraySystemDesign(ArraySystemDesign):
         ----------
         config : dict
             Configuration dictionary. See `expected_config`.
+        distance : bool
+            Indicator for reference coordinates, default False.
+            - True: WGS84 latitude, longitude pairs for each coordinate
+            - False: distance based pairs, in km.
         """
 
         super().__init__(config, **kwargs)
+        self.distance = config["array_system_design"].get("distance", distance)
 
     def create_project_csv(self, save_name):
         """Creates a base CSV in <`library_path`>/cables/
@@ -793,6 +807,33 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 (self.num_strings, self.num_turbines_full_string), dtype=float
             )
 
+    def _compute_haversine_distance(self):
+        """Computes the haversine distance between two subsequent pairs in a string for
+        all strings.
+
+        Returns
+        -------
+        np.ndarray
+            Haversine distance between all coordinate pairs in a string
+        """
+        RADIUS = 6371  # Radius of Earth in kilometers (3956 miles)
+        coordinates_radians = np.radians(self.coordinates)
+
+        lon1 = coordinates_radians[:, :-1, 0]
+        lon2 = coordinates_radians[:, 1:, 0]
+        lat1 = coordinates_radians[:, :-1, 1]
+        lat2 = coordinates_radians[:, 1:, 1]
+
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+
+        a = (
+            np.sin(dlat / 2) ** 2
+            + np.cos(lat1) * np.cos(lat2) * np.sin(dlon / 2) ** 2
+        )
+        c = 2 * np.arcsin(np.sqrt(a))
+        return c * RADIUS
+
     def _create_windfarm_layout(self):
         """
         Creates the custom windfarm layout that includes
@@ -860,19 +901,10 @@ class CustomArraySystemDesign(ArraySystemDesign):
         self.coordinates = np.dstack((self.windfarm_x, self.windfarm_y))
 
         # Create the distances between each subsequent turbine in a string
-        self.sections_distance = np.zeros(
-            (self.num_strings, self.num_turbines_full_string), dtype=float
-        )
-        for i in range(self.coordinates.shape[0]):
-            for j in range(self.coordinates.shape[1] - 1):
-                c1 = self.coordinates[i, j][::-1]
-                c2 = self.coordinates[i, j + 1][::-1]
-                if np.isnan(c1).sum() > 0 or np.isnan(c2).sum() > 0:
-                    d = None
-                else:
-                    d = distance.geodesic(c1, c2, ellipsoid="WGS-84").km
-                self.sections_distance[i, j] = d
-        self.sections_distance = np.round_(self.sections_distance, 10)
+        if self.distance:
+            self.sections_distance = self._compute_euclidean_distance()
+        else:
+            self.sections_distance = self._compute_haversine_distance()
 
     def run(self):
 
