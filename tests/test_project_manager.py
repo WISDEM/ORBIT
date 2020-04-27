@@ -440,14 +440,6 @@ def test_circular_dependencies():
         project.run_project()
 
 
-def test_progress_summary():
-
-    # - Test for multiple of one phase type
-    # - Test for gaps
-    # - Other?
-    pass
-
-
 def test_ProjectProgress():
 
     data = [
@@ -527,3 +519,91 @@ def test_ProjectProgress_with_complete_project():
     project.run_project()
 
     _ = project.progress.energize_points
+
+
+def test_monthly_expenses():
+
+    project = ProjectManager(complete_project)
+    project.run_project()
+    _ = project.monthly_expenses
+
+    # Still report expenses for "incomplete" project
+    config = deepcopy(complete_project)
+    _ = config["install_phases"].pop("TurbineInstallation")
+
+    project = ProjectManager(config)
+    project.run_project()
+
+    _ = project.monthly_expenses
+
+
+def test_monthly_revenue():
+
+    project = ProjectManager(complete_project)
+    project.run_project()
+    _ = project.monthly_revenue
+
+    # Can't generate revenue with "incomplete" project
+    config = deepcopy(complete_project)
+    _ = config["install_phases"].pop("TurbineInstallation")
+
+    project = ProjectManager(config)
+    project.run_project()
+
+    with pytest.raises(ValueError):
+        _ = project.monthly_revenue
+
+
+def test_cash_flow():
+
+    project = ProjectManager(complete_project)
+    project.run_project()
+    _ = project.cash_flow
+
+    # Can't generate revenue with "incomplete" project but cash flow will still
+    # be reported
+    config = deepcopy(complete_project)
+    _ = config["install_phases"].pop("TurbineInstallation")
+
+    project = ProjectManager(config)
+    project.run_project()
+
+    cash_flow = project.cash_flow
+    assert all(v <= 0 for v in cash_flow.values())
+
+
+def test_npv():
+
+    project = ProjectManager(complete_project)
+    project.run_project()
+    baseline = project.npv
+
+    config = deepcopy(complete_project)
+    config["ncf"] = 0.35
+    project = ProjectManager(config)
+    project.run_project()
+    assert project.npv != baseline
+
+    config = deepcopy(complete_project)
+    config["offtake_price"] = 70
+    project = ProjectManager(config)
+    project.run_project()
+    assert project.npv != baseline
+
+    config = deepcopy(complete_project)
+    config["project_lifetime"] = 30
+    project = ProjectManager(config)
+    project.run_project()
+    assert project.npv != baseline
+
+    config = deepcopy(complete_project)
+    config["discount_rate"] = 0.03
+    project = ProjectManager(config)
+    project.run_project()
+    assert project.npv != baseline
+
+    config = deepcopy(complete_project)
+    config["opex_rate"] = 120
+    project = ProjectManager(config)
+    project.run_project()
+    assert project.npv != baseline

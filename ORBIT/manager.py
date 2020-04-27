@@ -176,8 +176,13 @@ class ProjectManager:
 
         config["commissioning"] = "float (optional, default: 0.01)"
         config["decommissioning"] = "float (optional, default: 0.15)"
-        config["electricity_price"] = "$/MWh (optional, default: 80)"
+
+        config["ncf"] = "float (optional, default: 0.4)"
+        config["offtake_price"] = "$/MWh (optional, default: 80)"
         config["project_lifetime"] = "yrs (optional, default: 25)"
+        config["discount_rate"] = "yearly (optional, default: .025)"
+        config["opex_rate"] = "$/kW/year (optional, default: 150)"
+
         config["design_phases"] = [*design_phases.keys()]
         config["install_phases"] = [*install_phases.keys()]
 
@@ -786,6 +791,17 @@ class ProjectManager:
         return self.project_logs[-1]["time"]
 
     @property
+    def capital_cost(self):
+        """Returns the overnight capital cost of the project."""
+
+        design_phases = [p.__name__ for p in self._design_phases]
+        design_cost = sum(
+            [v for k, v in self.phase_costs.items() if k in design_phases]
+        )
+
+        return design_cost
+
+    @property
     def month_bins(self):
         """Returns bins representing project months."""
 
@@ -796,22 +812,36 @@ class ProjectManager:
         """Returns the monthly expenses of the project from development through
         construction."""
 
-        design_phases = [p.__name__ for p in self._design_phases]
-        design_cost = sum(
-            [v for k, v in self.phase_costs.items() if k in design_phases]
-        )
-
+        lifetime = self.config.get("project_lifetime", 25)
         _expense_logs = self._filter_logs(keys=["cost", "time"])
         expenses = np.array(
             _expense_logs, dtype=[("cost", "f8"), ("time", "i4")]
         )
+
         dig = np.digitize(expenses["time"], self.month_bins)
 
-        monthly = {0: design_cost}
-        for i in range(1, len(self.month_bins)):
-            monthly[i] = sum(expenses["cost"][dig == i])
+        monthly = {}
+        for i in range(1, lifetime * 12):
+            m = sum(expenses["cost"][dig == i])
+
+            if i > max(dig):
+                m += self.monthly_opex
+
+            monthly[i] = m
 
         return monthly
+
+    @property
+    def monthly_opex(self):
+        """Returns the monthly OpEx expenditures based on project size."""
+
+        rate = self.config.get("opex_rate", 150)
+        capacity = self.capacity
+
+        if capacity is None:
+            return ValueError(f"Unknown project capacity.")
+
+        return rate * capacity * 1000 / 12
 
     @property
     def monthly_revenue(self):
@@ -819,14 +849,14 @@ class ProjectManager:
         be energized, eg. 'self.progress.energize_points'."""
 
         ncf = self.config.get("ncf", 0.4)
-        price = self.config.get("electricity_price", 80)
+        price = self.config.get("offtake_price", 80)
         lifetime = self.config.get("project_lifetime", 25)
 
         times, turbines = self.progress.energize_points
         dig = list(np.digitize(times, self.month_bins))
 
         revenue = {}
-        for i in range(0, lifetime * 12):
+        for i in range(1, lifetime * 12):
             generating_strings = len([t for t in dig if i >= t])
             generating_turbines = sum(turbines[:generating_strings])
             production = (
@@ -835,6 +865,39 @@ class ProjectManager:
             revenue[i] = production * price
 
         return revenue
+
+    @property
+    def cash_flow(self):
+        """Returns the net cash flow based on `self.monthly_expenses` and
+        `self.monthly_revenue`."""
+
+        try:
+            revenue = self.monthly_revenue
+
+        except ValueError:
+            revenue = {}
+
+        expenses = self.monthly_expenses
+        return {
+            i: revenue.get(i, 0.0) - expenses.get(i, 0.0)
+            for i in range(1, max([*revenue.keys(), *expenses.keys()]) + 1)
+        }
+
+    @property
+    def npv(self):
+        """Returns the net present value of the project based on
+        `self.cash_flow`."""
+
+        dr = self.config.get("discount_rate", 0.025)
+        pr = (1 + dr) ** (1 / 12) - 1
+
+        cash_flow = self.cash_flow
+        _npv = [
+            (cash_flow[i] / (1 + pr) ** (i))
+            for i in range(1, max(cash_flow.keys()) + 1)
+        ]
+
+        return sum(_npv)
 
     @property
     def progress_logs(self):
