@@ -130,7 +130,7 @@ class ProjectManager:
 
         self.run_all_design_phases(design_phases, **kwargs)
 
-        if isinstance(install_phases, list):
+        if isinstance(install_phases, (list, set)):
             self.run_multiple_phases_in_serial(install_phases, **kwargs)
 
         elif isinstance(install_phases, dict):
@@ -524,7 +524,7 @@ class ProjectManager:
         start = 0
 
         for name in phase_list:
-            time, cost, logs = self.run_install_phase(name, start, **kwargs)
+            cost, time, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
                 continue
@@ -556,7 +556,7 @@ class ProjectManager:
         # Run defined
         for name, start in defined.items():
 
-            time, cost, logs = self.run_install_phase(name, start, **kwargs)
+            cost, time, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
                 continue
@@ -592,7 +592,7 @@ class ProjectManager:
 
                 try:
                     start = self.get_dependency_start_time(target, perc)
-                    time, cost, logs = self.run_install_phase(
+                    cost, time, logs = self.run_install_phase(
                         name, start, **kwargs
                     )
                     progress = True
@@ -610,6 +610,9 @@ class ProjectManager:
                         self._output_logs.extend(logs)
 
                 except KeyError:
+                    print(
+                        f"Skipped '{name}': Dependency '{target}' not found."
+                    )
                     continue
 
             if phases and progress is False:
