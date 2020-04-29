@@ -823,8 +823,12 @@ class ProjectManager:
         rate = self.config.get("opex_rate", 150)
         lifetime = self.config.get("project_lifetime", 25)
 
-        times, turbines = self.progress.energize_points
-        dig = list(np.digitize(times, self.month_bins))
+        try:
+            times, turbines = self.progress.energize_points
+            dig = list(np.digitize(times, self.month_bins))
+
+        except ValueError:
+            return {i: 0.0 for i in range(1, lifetime * 12)}
 
         opex = {}
         for i in range(1, lifetime * 12):
