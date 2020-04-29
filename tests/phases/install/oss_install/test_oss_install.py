@@ -6,18 +6,14 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from copy import deepcopy
-
-import numpy as np
 import pandas as pd
 import pytest
 
 from tests.data import test_weather
-from ORBIT.library import initialize_library, extract_library_specs
+from ORBIT.library import extract_library_specs
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import OffshoreSubstationInstallation
 
-initialize_library(pytest.library)
 config_single = extract_library_specs("config", "oss_install")
 config_multi = extract_library_specs("config", "oss_install")
 config_multi["num_feeders"] = 2

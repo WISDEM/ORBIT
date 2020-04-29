@@ -8,16 +8,14 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from copy import deepcopy
 
-import numpy as np
 import pandas as pd
 import pytest
 
 from tests.data import test_weather
-from ORBIT.library import initialize_library, extract_library_specs
+from ORBIT.library import extract_library_specs
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import TurbineInstallation
 
-initialize_library(pytest.library)
 config_wtiv = extract_library_specs("config", "turbine_install_wtiv")
 config_long_mobilize = extract_library_specs(
     "config", "turbine_install_long_mobilize"
@@ -93,7 +91,7 @@ def test_vessel_mobilize(config, expected):
 )
 def test_for_complete_logging(weather, config):
 
-    sim = TurbineInstallation(config)
+    sim = TurbineInstallation(config, weather=weather)
     sim.run()
 
     df = pd.DataFrame(sim.env.actions)
