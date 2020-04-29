@@ -372,7 +372,8 @@ def install_export_cables(
 
     if burial_vessel is None:
         vessel.submit_debug_log(
-            message="Export cable lay/burial process completed!"
+            message="Export cable lay/burial process completed!",
+            progress="Export System",
         )
 
     else:

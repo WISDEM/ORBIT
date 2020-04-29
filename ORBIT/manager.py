@@ -791,17 +791,6 @@ class ProjectManager:
         return self.project_logs[-1]["time"]
 
     @property
-    def capital_cost(self):
-        """Returns the overnight capital cost of the project."""
-
-        design_phases = [p.__name__ for p in self._design_phases]
-        design_cost = sum(
-            [v for k, v in self.phase_costs.items() if k in design_phases]
-        )
-
-        return design_cost
-
-    @property
     def month_bins(self):
         """Returns bins representing project months."""
 
@@ -1033,21 +1022,24 @@ class ProjectManager:
         return _dict
 
     @property
-    def total_capex(self):
-        """
-        Returns total BOS CAPEX including commissioning and decommissioning.
-        """
+    def overnight_capex(self):
+        """Returns the overnight capital cost of the project."""
 
-        return self.bos_capex + self.commissioning + self.decommissioning
+        design_phases = [p.__name__ for p in self._design_phases]
+        design_cost = sum(
+            [v for k, v in self.phase_costs.items() if k in design_phases]
+        )
+
+        return design_cost + self.turbine_capex
 
     @property
-    def total_capex_per_kw(self):
+    def overnight_capex_per_kw(self):
         """
-        Returns total BOS CAPEX/kW including commissioning and decommissioning.
+        Returns overnight CAPEX/kW.
         """
 
         try:
-            capex = self.total_capex / (self.capacity * 1000)
+            capex = self.overnight_capex / (self.capacity * 1000)
 
         except TypeError:
             capex = None
@@ -1198,6 +1190,33 @@ class ProjectManager:
 
         _capex = self.config.get("turbine_capex", None)
         return _capex
+
+    @property
+    def total_capex(self):
+        """
+        Returns total BOS CAPEX including commissioning and decommissioning.
+        """
+
+        return (
+            self.bos_capex
+            + self.turbine_capex
+            + self.commissioning
+            + self.decommissioning
+        )
+
+    @property
+    def total_capex_per_kw(self):
+        """
+        Returns total BOS CAPEX/kW including commissioning and decommissioning.
+        """
+
+        try:
+            capex = self.total_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     def export_configuration(self, file_name):
         """
