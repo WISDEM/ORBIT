@@ -10,4 +10,8 @@ from .oss_install import OffshoreSubstationInstallation
 from .cable_install import ArrayCableInstallation, ExportCableInstallation
 from .turbine_install import TurbineInstallation
 from .monopile_install import MonopileInstallation
+from .quayside_assembly_tow import (
+    MooredSubInstallation,
+    GravityBasedInstallation,
+)
 from .scour_protection_install import ScourProtectionInstallation
