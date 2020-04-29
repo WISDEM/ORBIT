@@ -17,10 +17,10 @@ class MooringSystemDesign(DesignPhase):
         "turbine": {"turbine_rating": "int | float"},
         "plant": {"num_turbines": "int"},
         "mooring_system_design": {
-            "num_lines": "int | float (optional)",
-            "anchor_type": "str (optional)",
+            "num_lines": "int | float (optional, default: 4)",
+            "anchor_type": "str (optional, default: 'suction')",
             "mooring_line_cost_rate": "int | float (optional)",
-            "drag_embedment_fixed_length": "int | float (optional)",
+            "drag_embedment_fixed_length": "int | float (optional, default: .5km)",
         },
     }
 
@@ -38,8 +38,11 @@ class MooringSystemDesign(DesignPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
         self.num_turbines = self.config["plant"]["num_turbines"]
+
         self._design = self.config.get("mooring_system_design", {})
         self.num_lines = self._design.get("num_lines", 4)
+        self.anchor_type = self._design.get("anchor_type", "Suction Pile")
+
         self.extract_defaults()
         self._outputs = {}
 
@@ -87,8 +90,13 @@ class MooringSystemDesign(DesignPhase):
         Returns the mooring line length.
         """
 
+        if self.anchor_type == "Drag Embedment":
+            fixed = self._design.get("drag_embedment_fixed_length", 0.5)
+
+        else:
+            fixed = 0
+
         depth = self.config["site"]["depth"]
-        fixed = self._design.get("drag_embedment_fixed_length", 0.5)
         self.line_length = (
             0.0002 * (depth ** 2) + 1.264 * depth + 47.776 + fixed
         )
@@ -115,11 +123,15 @@ class MooringSystemDesign(DesignPhase):
     def design_result(self):
         """Returns the results of the design phase."""
 
+        # TODO: Line mass/km
+        # TODO: Anchor mass
+        # TODO: Map with upcoming expected inputs of MooringSystemInstallation.
+
         return {
             "num_lines": self.num_lines,
+            "line_diam": self.line_diam,
             "line_length": self.line_length,
-            "anchor_cost": self.anchor_cost,
-            "total_cost": self.calculate_total_cost(),
+            "anchor_type": self.anchor_type,
         }
 
     @property
@@ -134,7 +146,7 @@ class MooringSystemDesign(DesignPhase):
     def total_phase_time(self):
         """Returns total phase time in hours."""
 
-        _design = self.config.get("monopile_design", {})
+        _design = self.config.get("mooring_system_design", {})
         phase_time = _design.get("design_time", 0.0)
         return phase_time
 
@@ -142,4 +154,11 @@ class MooringSystemDesign(DesignPhase):
     def detailed_output(self):
         """Returns detailed phase information."""
 
-        return {}
+        return {
+            "num_lines": self.num_lines,
+            "line_diam": self.line_diam,
+            "line_length": self.line_length,
+            "anchor_type": self.anchor_type,
+            "anchor_cost": self.anchor_cost,
+            "system_cost": self.calculate_total_cost(),
+        }
