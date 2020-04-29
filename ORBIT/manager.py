@@ -801,22 +801,18 @@ class ProjectManager:
         """Returns the monthly expenses of the project from development through
         construction."""
 
+        opex = self.monthly_opex
         lifetime = self.config.get("project_lifetime", 25)
+
         _expense_logs = self._filter_logs(keys=["cost", "time"])
         expenses = np.array(
             _expense_logs, dtype=[("cost", "f8"), ("time", "i4")]
         )
-
         dig = np.digitize(expenses["time"], self.month_bins)
 
         monthly = {}
         for i in range(1, lifetime * 12):
-            m = sum(expenses["cost"][dig == i])
-
-            if i > max(dig):
-                m += self.monthly_opex
-
-            monthly[i] = m
+            monthly[i] = sum(expenses["cost"][dig == i]) + opex[i]
 
         return monthly
 
@@ -825,12 +821,21 @@ class ProjectManager:
         """Returns the monthly OpEx expenditures based on project size."""
 
         rate = self.config.get("opex_rate", 150)
-        capacity = self.capacity
+        lifetime = self.config.get("project_lifetime", 25)
 
-        if capacity is None:
-            return ValueError(f"Unknown project capacity.")
+        times, turbines = self.progress.energize_points
+        dig = list(np.digitize(times, self.month_bins))
 
-        return rate * capacity * 1000 / 12
+        opex = {}
+        for i in range(1, lifetime * 12):
+            generating_strings = len([t for t in dig if i >= t])
+            generating_turbines = sum(turbines[:generating_strings])
+
+            opex[i] = (
+                generating_turbines * self.turbine_rating * rate * 1000 / 12
+            )
+
+        return opex
 
     @property
     def monthly_revenue(self):
