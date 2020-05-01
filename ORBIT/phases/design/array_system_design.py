@@ -534,6 +534,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
             "design_time": "int | float (optional)",
             "cables": "list | str",
             "location_data": "str",
+            "distance": "bool (optional)",
             "average_exclusion_percent": "float (optional)",
         },
     }
@@ -868,6 +869,9 @@ class CustomArraySystemDesign(ArraySystemDesign):
             (self.num_strings, self.num_turbines_full_string), dtype=float
         )
 
+        self.oss_x = []
+        self.oss_y = []
+
         i = 0
         for oss in self.location_data.substation_id.unique():
             layout = self.location_data[
@@ -875,12 +879,13 @@ class CustomArraySystemDesign(ArraySystemDesign):
             ]
             string_id = np.sort(layout.string.unique())
             string_id += 0 if i == 0 else i
-            self.location_data_x[
-                string_id, 0
-            ] = layout.substation_longitude.values[0]
-            self.location_data_y[
-                string_id, 0
-            ] = layout.substation_latitude.values[0]
+
+            x = layout.substation_longitude.values[0]
+            y = layout.substation_latitude.values[0]
+            self.oss_x.append(x)
+            self.oss_y.append(y)
+            self.location_data_x[string_id, 0] = x
+            self.location_data_y[string_id, 0] = y
 
             for string in string_id:
                 data = layout[layout.string == string - i]
