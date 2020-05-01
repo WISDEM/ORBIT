@@ -378,7 +378,7 @@ class ArraySystemDesign(CableSystem):
         # If this is a custom layout there could be multiple OSS to consider
         if getattr(self, "windfarm", None) is not None:
             labels_set = []
-            locations = self.windfarm.drop_duplicates(
+            locations = self.location_data.drop_duplicates(
                 subset=[
                     "substation_id",
                     "substation_name",
@@ -437,7 +437,7 @@ class ArraySystemDesign(CableSystem):
         #     for j in range(self.coordinates.shape[1] - 1):
         #         if not np.any(np.isnan(self.coordinates[i, j + 1])):
         #             x, y = self.coordinates[i, j + 1]
-        #             name = self.windfarm.loc[(self.windfarm.string == i) & (self.windfarm.order == j), "turbine_name"].values[0]
+        #             name = self.location_data.loc[(self.location_data.string == i) & (self.location_data.order == j), "turbine_name"].values[0]
         #             ax.text(x, y, name)
 
         # Determine the cable section widths
@@ -685,8 +685,10 @@ class CustomArraySystemDesign(ArraySystemDesign):
     def _format_windfarm_data(self):
 
         # Separate the OSS data where substaion_id is equal to id
-        substation_filter = self.windfarm.substation_id == self.windfarm.id
-        oss = self.windfarm[substation_filter].copy()
+        substation_filter = (
+            self.location_data.substation_id == self.location_data.id
+        )
+        oss = self.location_data[substation_filter].copy()
         oss.rename(
             columns={
                 "latitude": "substation_latitude",
@@ -703,7 +705,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         )
 
         # Separate the turbine data
-        turbines = self.windfarm[~substation_filter].copy()
+        turbines = self.location_data[~substation_filter].copy()
         turbines.rename(
             columns={
                 "latitude": "turbine_latitude",
@@ -714,25 +716,27 @@ class CustomArraySystemDesign(ArraySystemDesign):
         )
 
         # Merge them back together
-        self.windfarm = turbines.merge(oss, on="substation_id", how="left")
+        self.location_data = turbines.merge(
+            oss, on="substation_id", how="left"
+        )
 
-        self.windfarm = self.windfarm[self.REQUIRED + self.OPTIONAL]
+        self.location_data = self.location_data[self.REQUIRED + self.OPTIONAL]
 
-        self.windfarm.string = self.windfarm.string.astype(int)
-        self.windfarm.order = self.windfarm.order.astype(int)
-        self.windfarm.sort_values(
+        self.location_data.string = self.location_data.string.astype(int)
+        self.location_data.order = self.location_data.order.astype(int)
+        self.location_data.sort_values(
             by=["substation_id", "string", "order"], inplace=True
         )
 
     def _initialize_custom_data(self):
         windfarm = self.config["array_system_design"]["location_data"]
 
-        self.windfarm = extract_library_specs(
+        self.location_data = extract_library_specs(
             "cables", windfarm, file_type="csv"
         )
 
         # Make sure no data is missing
-        missing = set(self.COLUMNS).difference(self.windfarm.columns)
+        missing = set(self.COLUMNS).difference(self.location_data.columns)
         if missing:
             raise ValueError(
                 f"The following columns must be included in the location data: {missing}"
@@ -742,7 +746,9 @@ class CustomArraySystemDesign(ArraySystemDesign):
 
         # Ensure there is no missing data in required columns
         missing_data_cols = [
-            c for c in self.REQUIRED if pd.isnull(self.windfarm[c]).sum() > 0
+            c
+            for c in self.REQUIRED
+            if pd.isnull(self.location_data[c]).sum() > 0
         ]
         if missing_data_cols:
             raise ValueError(f"Missing data in columns: {missing_data_cols}!")
@@ -751,7 +757,10 @@ class CustomArraySystemDesign(ArraySystemDesign):
         missing_data_cols = [
             c
             for c in self.OPTIONAL
-            if (pd.isnull(self.windfarm[c]) | self.windfarm[c] == 0).sum() > 0
+            if (
+                pd.isnull(self.location_data[c]) | self.location_data[c] == 0
+            ).sum()
+            > 0
         ]
         if missing_data_cols:
             message = (
@@ -761,24 +770,24 @@ class CustomArraySystemDesign(ArraySystemDesign):
             warnings.warn(message)
 
         # Ensure the number of turbines matches what's expected
-        if self.windfarm.shape[0] != self.system.num_turbines:
+        if self.location_data.shape[0] != self.system.num_turbines:
             raise ValueError(
-                f"The provided number of turbines ({self.windfarm.shape[0]}) ",
+                f"The provided number of turbines ({self.location_data.shape[0]}) ",
                 f"does not match the plant data ({self.system.num_turbines}).",
             )
 
-        n_coords = self.windfarm.groupby(
+        n_coords = self.location_data.groupby(
             ["turbine_latitude", "turbine_longitude"]
         ).ngroups
-        duplicates = self.windfarm.shape[0] - n_coords
+        duplicates = self.location_data.shape[0] - n_coords
         if duplicates > 0:
             raise ValueError(
                 f"There are {duplicates} rows with duplicate coordinates."
             )
 
         # Ensure the number of turbines on a string is within the limits
-        longest_string = self.windfarm["order"].unique().size
-        self.num_strings = self.windfarm.groupby(
+        longest_string = self.location_data["order"].unique().size
+        self.num_strings = self.location_data.groupby(
             ["substation_id", "string"]
         ).ngroups
         if longest_string > self.num_turbines_full_string:
@@ -846,10 +855,10 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 optional column in the `location_data`. Shape: `n_strings` x `num_turbines_full_string`.
         """
 
-        self.windfarm_x = np.zeros(
+        self.location_data_x = np.zeros(
             (self.num_strings, self.num_turbines_full_string + 1), dtype=float
         )
-        self.windfarm_y = np.zeros(
+        self.location_data_y = np.zeros(
             (self.num_strings, self.num_turbines_full_string + 1), dtype=float
         )
         self.sections_cable_lengths = np.zeros(
@@ -860,24 +869,26 @@ class CustomArraySystemDesign(ArraySystemDesign):
         )
 
         i = 0
-        for oss in self.windfarm.substation_id.unique():
-            layout = self.windfarm[self.windfarm.substation_id == oss]
+        for oss in self.location_data.substation_id.unique():
+            layout = self.location_data[
+                self.location_data.substation_id == oss
+            ]
             string_id = np.sort(layout.string.unique())
             string_id += 0 if i == 0 else i
-            self.windfarm_x[string_id, 0] = layout.substation_longitude.values[
-                0
-            ]
-            self.windfarm_y[string_id, 0] = layout.substation_latitude.values[
-                0
-            ]
+            self.location_data_x[
+                string_id, 0
+            ] = layout.substation_longitude.values[0]
+            self.location_data_y[
+                string_id, 0
+            ] = layout.substation_latitude.values[0]
 
             for string in string_id:
                 data = layout[layout.string == string - i]
                 order = data["order"].values
-                self.windfarm_x[
+                self.location_data_x[
                     string, order + 1
                 ] = data.turbine_longitude.values[order]
-                self.windfarm_y[
+                self.location_data_y[
                     string, order + 1
                 ] = data.turbine_latitude.values[order]
                 self.sections_cable_lengths[
@@ -889,15 +900,17 @@ class CustomArraySystemDesign(ArraySystemDesign):
             i += string + 1
 
         # Ensure any point in array without a turbine is set to None
-        no_turbines = self.windfarm_x == 0
-        self.windfarm_x[no_turbines] = None
-        self.windfarm_y[no_turbines] = None
+        no_turbines = self.location_data_x == 0
+        self.location_data_x[no_turbines] = None
+        self.location_data_y[no_turbines] = None
 
         self.sections_cable_lengths[no_turbines[:, 1:]] = None
         self.sections_bury_speeds[no_turbines[:, 1:]] = None
         self._check_optional_input()
 
-        self.coordinates = np.dstack((self.windfarm_x, self.windfarm_y))
+        self.coordinates = np.dstack(
+            (self.location_data_x, self.location_data_y)
+        )
 
         # Create the distances between each subsequent turbine in a string
         if self.distance:
