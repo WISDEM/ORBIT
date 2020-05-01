@@ -65,22 +65,28 @@ Configuration
 -------------
 
 ORBIT considers two installation strategies: a simultaneous lay/bury operation
-using modern cable installation vessels; and a seperated operation where one
+using modern cable installation vessels and a seperated operation where one
 vessel lays the cable and another follows behind to bury it. A detailed
 description of the applicability of each strategy is covered in the ORBIT
 technical `report <todo>`_.
 
-To configure the installation strategy, the `'strategy'` parameter must be
-passed into the module:
+If the config contains the key ``'array_cable_bury_vessel'`` the separate
+strategy will be used. If this key is not present, the
+``'array_cable_install_vessel'`` will perform a simultaneous lay/bury of the
+cable.
+
+The key ``'array_cable_trench_vessel'`` is an optional configuration that will
+simulate a separate trenching operation along all cable routes completed by
+the above vessel. If this key is not present, this operation will not be
+modeled.
 
 .. code-block::
 
    {
+       'array_cable_install_vessel': 'example_vessel'
+       # 'array_cable_bury_vessel': 'example_vessel',
+       # 'array_cable_trench_vessel': 'example_vessel',
        'array_system': {
-           # 'strategy': 'lay'     # Vessel will lay the cable on the seafloor
-           # 'strategy': 'bury'    # Vessel will perform the burying operations
-           'strategy': 'lay_bury'  # Vessel will perform simultaneous lay/bury operations
-
            'cables': {'XLPE_400mm_33kV': {
                ...
            }
