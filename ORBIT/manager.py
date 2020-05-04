@@ -895,7 +895,7 @@ class ProjectManager:
             for i in range(1, max(cash_flow.keys()) + 1)
         ]
 
-        return sum(_npv)
+        return self.overnight_capex - sum(_npv)
 
     @property
     def progress_logs(self):
@@ -1203,7 +1203,7 @@ class ProjectManager:
     @property
     def total_capex(self):
         """
-        Returns total BOS CAPEX including commissioning and decommissioning.
+        Returns total project CAPEX including commissioning and decommissioning.
         """
 
         return (
