@@ -14,4 +14,4 @@ tower:
   length: 110         # m
   mass: 150           # t
 turbine_rating: 6     # MW
-rated_windspeed: 11   # m/s
+rated_windspeed: 13   # m/s

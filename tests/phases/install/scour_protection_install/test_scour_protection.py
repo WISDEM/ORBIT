@@ -8,18 +8,14 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "Jake.Nunemaker@nrel.gov"
 
 
-import copy
-
-import numpy as np
 import pandas as pd
 import pytest
 
 from tests.data import test_weather
-from ORBIT.library import initialize_library, extract_library_specs
+from ORBIT.library import extract_library_specs
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import ScourProtectionInstallation
 
-initialize_library(pytest.library)
 config = extract_library_specs("config", "scour_protection_install")
 
 

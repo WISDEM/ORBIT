@@ -618,6 +618,9 @@ class ProjectManager:
                         self._output_logs.extend(logs)
 
                 except KeyError:
+                    print(
+                        f"Skipped '{name}': Dependency '{target}' not found."
+                    )
                     continue
 
             if phases and progress is False:

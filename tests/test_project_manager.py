@@ -5,14 +5,13 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from copy import deepcopy
-from datetime import datetime
 
 import pandas as pd
 import pytest
 
 from ORBIT import ProjectManager
 from tests.data import test_weather
-from ORBIT.library import initialize_library, extract_library_specs
+from ORBIT.library import extract_library_specs
 from ORBIT.manager import ProjectProgress
 from ORBIT.core.exceptions import (
     MissingInputs,
@@ -23,7 +22,6 @@ from ORBIT.core.exceptions import (
 
 weather_df = pd.DataFrame(test_weather).set_index("datetime")
 
-initialize_library(pytest.library)
 config = extract_library_specs("config", "project_manager")
 complete_project = extract_library_specs("config", "complete_project")
 
@@ -362,7 +360,7 @@ def test_resolve_project_capacity():
     }
 
     with pytest.raises(AttributeError):
-        out5 = ProjectManager.resolve_project_capacity(config5)
+        _ = ProjectManager.resolve_project_capacity(config5)
 
     # Test for not enough information
     config6 = {"plant": {"capacity": 600}}
@@ -371,10 +369,10 @@ def test_resolve_project_capacity():
     assert out6["plant"]["capacity"] == config6["plant"]["capacity"]
 
     with pytest.raises(KeyError):
-        turbine_rating = out6["turbine"]["turbine_rating"]
+        _ = out6["turbine"]["turbine_rating"]
 
     with pytest.raises(KeyError):
-        num_turbines = out6["plant"]["num_turbines"]
+        _ = out6["plant"]["num_turbines"]
 
 
 ### Exceptions
