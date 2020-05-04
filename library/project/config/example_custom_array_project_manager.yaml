@@ -16,7 +16,7 @@ array_system_design:
   cables:
   - XLPE_400mm_33kV
   - XLPE_630mm_33kV
-  location_data: dudgeon_custom_update
+  location_data: dudgeon_custom
   distance: False
 array_cable_install_vessel: example_cable_lay_vessel
 array_cable_bury_vessel: example_cable_lay_vessel
