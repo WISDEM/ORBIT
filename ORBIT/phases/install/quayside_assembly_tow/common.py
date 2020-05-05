@@ -45,6 +45,41 @@ class SubstructureAssemblyLine(Agent):
         self.time = time
         self.target = target
 
+    def submit_action_log(self, action, duration, **kwargs):
+        """
+        Submits a log representing a completed `action` performed over time
+        `duration`.
+
+        This method overwrites the default `submit_action_log` in
+        `marmot.Agent`, adding operation cost to every submitted log within
+        ORBIT.
+
+        Parameters
+        ----------
+        action : str
+            Performed action.
+        duration : int | float
+            Duration of action.
+
+        Raises
+        ------
+        AgentNotRegistered
+        """
+
+        if self.env is None:
+            raise AgentNotRegistered(self)
+
+        else:
+            payload = {
+                **kwargs,
+                "agent": str(self),
+                "action": action,
+                "duration": float(duration),
+                "cost": 0,
+            }
+
+            self.env._submit_log(payload, level="ACTION")
+
     @process
     def assemble_substructure(self):
         """
@@ -100,6 +135,41 @@ class TurbineAssemblyLine(Agent):
         self.feed = feed
         self.target = target
         self.turbine = turbine
+
+    def submit_action_log(self, action, duration, **kwargs):
+        """
+        Submits a log representing a completed `action` performed over time
+        `duration`.
+
+        This method overwrites the default `submit_action_log` in
+        `marmot.Agent`, adding operation cost to every submitted log within
+        ORBIT.
+
+        Parameters
+        ----------
+        action : str
+            Performed action.
+        duration : int | float
+            Duration of action.
+
+        Raises
+        ------
+        AgentNotRegistered
+        """
+
+        if self.env is None:
+            raise AgentNotRegistered(self)
+
+        else:
+            payload = {
+                **kwargs,
+                "agent": str(self),
+                "action": action,
+                "duration": float(duration),
+                "cost": 0,
+            }
+
+            self.env._submit_log(payload, level="ACTION")
 
     @process
     def start(self):

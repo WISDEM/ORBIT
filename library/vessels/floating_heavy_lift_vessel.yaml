@@ -8,10 +8,10 @@ jacksys_specs:              # TEMPORARY UNTIL FLOATING FUNCTIONALY ADDED
   air_gap: 10               # m, distance from MSL to jacked up height
   leg_length: 110           # m
   leg_pen: 5                # m
-  max_depth: 800            # m
-  max_extension: 800        # m
-  speed_above_depth: 100    # m/min
-  speed_below_depth: 100    # m/min
+  max_depth: 1000            # m
+  max_extension: 1000        # m
+  speed_above_depth: 10000    # m/min
+  speed_below_depth: 10000    # m/min
 storage_specs:
   max_cargo: 8000           # t
   max_deck_load: 15         # t/m^2
