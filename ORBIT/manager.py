@@ -33,6 +33,7 @@ from ORBIT.phases.install import (
     ExportCableInstallation,
     ScourProtectionInstallation,
     OffshoreSubstationInstallation,
+    MooredSubInstallation
 )
 from ORBIT.core.exceptions import (
     PhaseNotFound,
@@ -64,6 +65,7 @@ class ProjectManager:
         ArrayCableInstallation,
         ExportCableInstallation,
         ScourProtectionInstallation,
+        MooredSubInstallation
     ]
 
     def __init__(self, config, library_path=None, weather=None):
