@@ -3,6 +3,15 @@
 ORBIT Changelog
 ===============
 
+0.4.3
+-----
+
+- New feature: Cash flow and net present value calculation within
+  ``ProjectManager``.
+- Revised ``CustomArraySystemDesign`` module.
+- Revised assumptions in ``MonopileDesign`` module to bring results in line
+  with industry numbers.
+
 0.4.2
 -----
 
