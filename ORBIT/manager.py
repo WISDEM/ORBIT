@@ -24,6 +24,7 @@ from ORBIT.phases.design import (
     ExportSystemDesign,
     ProjectDevelopment,
     ScourProtectionDesign,
+    CustomArraySystemDesign,
     OffshoreSubstationDesign,
 )
 from ORBIT.phases.install import (
@@ -51,6 +52,7 @@ class ProjectManager:
         ProjectDevelopment,
         MonopileDesign,
         ArraySystemDesign,
+        CustomArraySystemDesign,
         ExportSystemDesign,
         ScourProtectionDesign,
         OffshoreSubstationDesign,
