@@ -45,7 +45,16 @@ ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../.."))
 default_library = os.path.join(ROOT, "library")
 
 # Need a custom loader to read in scientific notation correctly
-loader = yaml.SafeLoader
+class CustomSafeLoader(yaml.SafeLoader):
+    def construct_python_tuple(self, node):
+        return tuple(self.construct_sequence(node))
+
+
+CustomSafeLoader.add_constructor(
+    "tag:yaml.org,2002:python/tuple", CustomSafeLoader.construct_python_tuple
+)
+
+loader = CustomSafeLoader
 loader.add_implicit_resolver(
     "tag:yaml.org,2002:float",
     re.compile(
@@ -241,7 +250,7 @@ def export_library_specs(key, filename, data, file_ext="yaml"):
         return
     if file_ext == "yaml":
         f = open(data_path, "w")
-        yaml.dump( data, f, Dumper=Dumper, default_flow_style=False )
+        yaml.dump(data, f, Dumper=Dumper, default_flow_style=False)
         f.close()
     elif file_ext == "csv":
         with open(data_path, "w") as f:
