@@ -1,0 +1,9 @@
+ac_resistance: 0.04     #
+capacitance: 300        # TODO
+conductor_size: 630     # TODO
+cost_per_km: 400000     # TODO
+current_capacity: 775   # TODO
+inductance: 0.35        # TODO
+linear_density: 42.5    # TODO
+name: XLPE_66kV_2
+rated_voltage: 66
