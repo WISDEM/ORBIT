@@ -172,7 +172,7 @@ class ExportCableInstallation(InstallPhase):
         )
 
         switchyard_cost = 18115 * voltage + 165944
-        onshore_substation_cost = 11652 * (voltage + capacity) + 1200000
+        onshore_substation_cost = (0.165 * 1e6) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
         onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
