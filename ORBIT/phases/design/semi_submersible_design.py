@@ -17,7 +17,7 @@ class SemiSubmersibleDesign(DesignPhase):
         "plant": {"num_turbines": "int"},
         "turbine": {"turbine_rating": "MW"},
         "semisubmersible_design": {
-            "column_CR": "$/t (optional, default: 3120)",
+            "stiffened_column_CR": "$/t (optional, default: 3120)",
             "truss_CR": "$/t (optional, default: 6250)",
             "heave_plate_CR": "$/t (optional, default: 6250)",
             "secondary_steel_CR": "$/t (optional, default: 7250)",
@@ -29,7 +29,7 @@ class SemiSubmersibleDesign(DesignPhase):
 
     def __init__(self, config, **kwargs):
         """
-        Creates an instance of SemiSubmersibleDesign.
+        Creates an instance of `SemiSubmersibleDesign`.
 
         Parameters
         ----------
@@ -42,6 +42,17 @@ class SemiSubmersibleDesign(DesignPhase):
         self._design = self.config.get("semisubmersible_design", {})
 
         self._outputs = {}
+
+    def run(self):
+        """Main run function."""
+
+        substructure = {
+            "mass": self.substructure_mass,
+            "cost": self.substructure_cost,
+            "towing_speed": self._design.get("towing_speed", 6),
+        }
+
+        self._outputs["semisubmersible"] = substructure
 
     @property
     def stiffened_column_mass(self):
@@ -62,7 +73,7 @@ class SemiSubmersibleDesign(DesignPhase):
         semi-submersible. From original OffshoreBOS model.
         """
 
-        cr = self._design.get("column_CR", 3120)
+        cr = self._design.get("stiffened_column_CR", 3120)
         return self.stiffened_column_mass * cr
 
     @property
@@ -130,17 +141,6 @@ class SemiSubmersibleDesign(DesignPhase):
 
         cr = self._design.get("secondary_steel_CR", 7250)
         return self.secondary_steel_mass * cr
-
-    def run(self):
-        """Main run function."""
-
-        substructure = {
-            "mass": self.substructure_mass,
-            "cost": self.substructure_cost,
-            "towing_speed": self._design.get("towing_speed", 6),
-        }
-
-        self._outputs["substructure"] = substructure
 
     @property
     def substructure_mass(self):
