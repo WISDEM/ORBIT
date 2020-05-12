@@ -38,8 +38,7 @@ class ExportSystemDesign(CableSystem):
     expected_config = {
         "site": {"distance_to_landfall": "km", "depth": "m"},
         "landfall": {"interconnection_distance": "km (optional)"},
-        "plant": {"num_turbines": "int"},
-        "turbine": {"turbine_rating": "MW"},
+        "plant": {"capacity": "MW"},
         "export_system_design": {
             "cables": "str",
             "num_redundant": "int (optional)",
@@ -53,7 +52,7 @@ class ExportSystemDesign(CableSystem):
                 "linear_density": "t/km",
                 "number": "int",
                 "sections": "list",
-                "cable_power": "MW"
+                "cable_power": "MW",
             }
         }
     }
@@ -77,10 +76,7 @@ class ExportSystemDesign(CableSystem):
         for name in self.expected_config["site"]:
             setattr(self, "".join(("_", name)), config["site"][name])
         self._depth = config["site"]["depth"]
-        self._plant_capacity = (
-            self.config["plant"]["num_turbines"]
-            * self.config["turbine"]["turbine_rating"]
-        )
+        self._plant_capacity = self.config["plant"]["capacity"]
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
         try:
             self._distance_to_interconnection = config["landfall"][

@@ -137,7 +137,8 @@ class ProjectManager:
         elif isinstance(install_phases, dict):
             self.run_multiple_phases_overlapping(install_phases, **kwargs)
 
-        self.progress = ProjectProgress(self.progress_logs)
+        if install_phases:
+            self.progress = ProjectProgress(self.progress_logs)
 
     @property
     def phases(self):
