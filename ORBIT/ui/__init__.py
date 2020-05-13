@@ -7,6 +7,5 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 from .run import RunOrbit
 from .load import LoadSave
 from .config import Config
-from .layout import App
 from .module import ModuleSelect
 from .weather import LoadWeather

@@ -4,15 +4,26 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
+import os
+import sys
+
+import PySide2
 from PySide2.QtWidgets import (
     QWidget,
     QTabWidget,
     QMainWindow,
     QVBoxLayout,
+    QApplication,
     QDesktopWidget,
 )
 
+import ORBIT
 from ORBIT import ProjectManager
+from ORBIT.ui import Config, LoadSave, RunOrbit, LoadWeather, ModuleSelect
+
+
+qt = os.path.dirname(PySide2.__file__)
+QApplication.addLibraryPath(os.path.join(qt, "plugins"))
 
 
 class App(QMainWindow):
@@ -31,8 +42,7 @@ class App(QMainWindow):
         self._inputs = {}
 
         self.resize(500, 600)
-        self.center()
-        self.setWindowTitle("ORBIT")
+        self.setWindowTitle(f"ORBIT {ORBIT.__version__}")
 
         self.navigation = Navigation(self, self.widgets)
         self.setCentralWidget(self.navigation)
@@ -43,14 +53,6 @@ class App(QMainWindow):
     @property
     def current_config(self):
         """"""
-
-    def center(self):
-        """Centers the app on the main screen."""
-
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
 
     def connect_widgets(self):
         """"""
@@ -92,3 +94,11 @@ class Navigation(QWidget):
 
         for name, widget in widgets.items():
             self.tabs.addTab(widget, name)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+    ex = App([LoadSave(), ModuleSelect(), Config(), LoadWeather(), RunOrbit()])
+
+    sys.exit(app.exec_())
