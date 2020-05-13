@@ -172,7 +172,7 @@ class ExportCableInstallation(InstallPhase):
         )
 
         switchyard_cost = 18115 * voltage + 165944
-        onshore_substation_cost = 11652 * (voltage + capacity) + 1200000
+        onshore_substation_cost = (0.165 * 1e6) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
         onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
@@ -372,7 +372,8 @@ def install_export_cables(
 
     if burial_vessel is None:
         vessel.submit_debug_log(
-            message="Export cable lay/burial process completed!"
+            message="Export cable lay/burial process completed!",
+            progress="Export System",
         )
 
     else:
@@ -398,7 +399,10 @@ def bury_export_cables(vessel, length, number, **kwargs):
     for _ in range(number):
         yield bury_cable(vessel, length, **kwargs)
 
-    vessel.submit_debug_log(message="Export cable burial process completed!")
+    vessel.submit_debug_log(
+        message="Export cable burial process completed!",
+        progress="Export System",
+    )
 
 
 @process

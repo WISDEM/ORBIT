@@ -31,7 +31,6 @@ setup(
         "scipy",
         "pandas",
         "pyyaml",
-        "geopy",
         "openmdao>= 2.0",
     ],
     extras_require={
