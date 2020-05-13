@@ -14,13 +14,10 @@ from PySide2.QtWidgets import (
     QMainWindow,
     QVBoxLayout,
     QApplication,
-    QDesktopWidget,
 )
 
 import ORBIT
-from ORBIT import ProjectManager
 from ORBIT.ui import Config, LoadSave, RunOrbit, LoadWeather, ModuleSelect
-
 
 qt = os.path.dirname(PySide2.__file__)
 QApplication.addLibraryPath(os.path.join(qt, "plugins"))
