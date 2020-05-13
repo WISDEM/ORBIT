@@ -5,5 +5,6 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 
 
 from .load import LoadSave
-from .phase import PhaseSelect
+from .config import Config
 from .layout import App
+from .module import ModuleSelect

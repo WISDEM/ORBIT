@@ -4,7 +4,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QLabel,
     QWidget,
     QLineEdit,

@@ -4,41 +4,67 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
-import sys
-
-from PyQt5.QtWidgets import (
+from PySide2.QtWidgets import (
     QWidget,
     QTabWidget,
     QMainWindow,
     QVBoxLayout,
-    QApplication,
     QDesktopWidget,
 )
 
-# from ORBIT.ui import LoadSave, PhaseSelect
+from ORBIT import ProjectManager
 
 
 class App(QMainWindow):
     def __init__(self, widgets):
-        """Initializes the main ORBIT UI window."""
+        """
+        Initializes the main ORBIT UI window.
+
+        Parameters
+        ----------
+        widgets : dict
+            'name': 'QWidget'
+        """
 
         super().__init__()
-        self.widgets = widgets
+        self.widgets = {w.name: w for w in widgets}
+        self._inputs = {}
+
         self.resize(500, 600)
         self.center()
         self.setWindowTitle("ORBIT")
 
         self.navigation = Navigation(self, self.widgets)
         self.setCentralWidget(self.navigation)
+
+        self.connect_widgets()
         self.show()
 
-    def center(self):
+    @property
+    def current_config(self):
         """"""
+
+    def center(self):
+        """Centers the app on the main screen."""
 
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def connect_widgets(self):
+        """"""
+
+        module = self.widgets["Modules"]
+        for cb in module.checkboxes:
+            cb.stateChanged.connect(self._modules_changed)
+
+    def _modules_changed(self):
+
+        module = self.widgets["Modules"]
+        config = self.widgets["Configuration"]
+
+        config.update(module.selected_modules)
 
 
 class Navigation(QWidget):
@@ -56,19 +82,13 @@ class Navigation(QWidget):
 
     def add_widgets(self, widgets):
         """
-        Adds list of `widgets` to the navigation bar.
+        Adds input `widgets` to the navigation bar.
 
         Parameters
         ----------
-        widgets : list
-            List of QWidgets.
+        widgets : dict
+            'name': 'QWidget'
         """
 
-        for w in widgets:
-            self.tabs.addTab(w, w.name)
-
-
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     ex = App([LoadSave, PhaseSelect])
-#     sys.exit(app.exec_())
+        for name, widget in widgets.items():
+            self.tabs.addTab(widget, name)
