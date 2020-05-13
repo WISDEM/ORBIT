@@ -7,9 +7,9 @@ import sys
 
 from PySide2.QtWidgets import QApplication
 
-from ORBIT.ui import App, Config, LoadSave, ModuleSelect
+from ORBIT.ui import App, Config, LoadSave, RunOrbit, LoadWeather, ModuleSelect
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    ex = App([LoadSave(), ModuleSelect(), Config()])
+    ex = App([LoadSave(), ModuleSelect(), Config(), LoadWeather(), RunOrbit()])
     sys.exit(app.exec_())

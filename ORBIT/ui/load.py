@@ -26,7 +26,7 @@ class LoadSave(QWidget):
         self.name = "Load/Save"
 
     def initUI(self):
-        """Initializes the UI."""
+        """Initializes the widget UI."""
 
         vbox = QVBoxLayout()
 
