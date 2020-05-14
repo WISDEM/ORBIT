@@ -17,6 +17,7 @@ from PySide2.QtWidgets import (
 )
 
 import ORBIT
+from ORBIT import ProjectManager
 from ORBIT.ui import Config, LoadSave, RunOrbit, LoadWeather, ModuleSelect
 
 qt = os.path.dirname(PySide2.__file__)
@@ -50,13 +51,19 @@ class App(QMainWindow):
     @property
     def current_config(self):
         """"""
+        pass
 
     def connect_widgets(self):
         """"""
 
+        config = self.widgets["Configuration"]
         module = self.widgets["Modules"]
+        run = self.widgets["Run"]
+
         for cb in module.checkboxes:
             cb.stateChanged.connect(self._modules_changed)
+
+        run.btn.clicked.connect(self._on_run)
 
     def _modules_changed(self):
 
@@ -64,6 +71,18 @@ class App(QMainWindow):
         config = self.widgets["Configuration"]
 
         config.update(module.selected_modules)
+
+    def _on_run(self):
+
+        module = self.widgets["Modules"]
+        config = self.widgets["Configuration"]
+
+        c = config.config
+        c["design_phases"] = module.selected_designs
+        c["install_phases"] = module.selected_installs
+
+        project = ProjectManager(c)
+        project.run_project()
 
 
 class Navigation(QWidget):

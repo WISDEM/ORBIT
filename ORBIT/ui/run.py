@@ -39,7 +39,7 @@ class RunOrbit(QWidget):
 
         self.setLayout(vbox)
 
-    def onRun(self):
+    def onClick(self):
         """"""
         pass
 

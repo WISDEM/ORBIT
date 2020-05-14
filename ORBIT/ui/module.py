@@ -22,7 +22,8 @@ class ModuleSelect(QWidget):
         """Creates an instance of `ModuleSelect`."""
 
         super().__init__()
-        self.checkboxes = []
+        self.designs = []
+        self.installs = []
         self.initUI()
         self.name = "Modules"
 
@@ -36,10 +37,28 @@ class ModuleSelect(QWidget):
         self.setLayout(grid)
 
     @property
+    def checkboxes(self):
+        """Returns complete list of checkboxes."""
+
+        return [*self.designs, *self.installs]
+
+    @property
     def selected_modules(self):
         """Returns list of selected modules."""
 
-        return [cb.text() for cb in self.checkboxes if cb.isChecked()]
+        return [*self.selected_designs, *self.selected_installs]
+
+    @property
+    def selected_designs(self):
+        """Returns list of selected design modules."""
+
+        return [cb.text() for cb in self.designs if cb.isChecked()]
+
+    @property
+    def selected_installs(self):
+        """Returns list of selected install modules."""
+
+        return [cb.text() for cb in self.installs if cb.isChecked()]
 
     def create_design_module_group(self):
         """"""
@@ -49,7 +68,7 @@ class ModuleSelect(QWidget):
 
         for k in ProjectManager._design_phases:
             cb = QCheckBox(k.__name__)
-            self.checkboxes.append(cb)
+            self.designs.append(cb)
             layout.addWidget(cb)
 
         box.setLayout(layout)
@@ -64,7 +83,7 @@ class ModuleSelect(QWidget):
 
         for k in ProjectManager._install_phases:
             cb = QCheckBox(k.__name__)
-            self.checkboxes.append(cb)
+            self.installs.append(cb)
             layout.addWidget(cb)
 
         box.setLayout(layout)
