@@ -303,10 +303,11 @@ class CableSystem(DesignPhase):
             )
         )
 
-        # Instantiate cables as Cable objects.
+        # Instantiate cables as Cable objects. Use "name" property from file
+        # instead of filename.
         self.cables = OrderedDict()
-        for name, specs in cables.items():
-            specs = {"name": name, **specs}
+        for specs in cables.values():
+            name = specs["name"]
             self.cables[name] = Cable(specs)
 
     @property
@@ -430,10 +431,16 @@ class CableSystem(DesignPhase):
                 sections = self.cable_lengths_by_type[name]
 
             try:
-                sections = [(data[0], count, *data[1:]) for data, count in Counter(sections).items()]
+                sections = [
+                    (data[0], count, *data[1:])
+                    for data, count in Counter(sections).items()
+                ]
             except IndexError:
-                sections = [(*data[:-1], data[-1]) for data in Counter(sections).items()]
-                
+                sections = [
+                    (*data[:-1], data[-1])
+                    for data in Counter(sections).items()
+                ]
+
             if sections:
                 _temp[name] = {
                     "cable_sections": sections,
