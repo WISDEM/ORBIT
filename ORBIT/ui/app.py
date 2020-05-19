@@ -48,13 +48,8 @@ class App(QMainWindow):
         self.connect_widgets()
         self.show()
 
-    @property
-    def current_config(self):
-        """"""
-        pass
-
     def connect_widgets(self):
-        """"""
+        """Connects widgets across the app."""
 
         config = self.widgets["Configuration"]
         module = self.widgets["Modules"]
@@ -63,21 +58,23 @@ class App(QMainWindow):
         for cb in module.checkboxes:
             cb.stateChanged.connect(self._modules_changed)
 
-        run.btn.clicked.connect(self._on_run)
+        run.btn.clicked.connect(self._run)
 
     def _modules_changed(self):
+        """Method triggered when the selected modules are changed."""
 
         module = self.widgets["Modules"]
         config = self.widgets["Configuration"]
 
-        config.update(module.selected_modules)
+        config.update_tree(module.selected_modules)
 
-    def _on_run(self):
+    def _run(self):
+        """Method triggered when the run button is clicked."""
 
         module = self.widgets["Modules"]
         config = self.widgets["Configuration"]
 
-        c = config.config
+        c = config.config(module.selected_modules)
         c["design_phases"] = module.selected_designs
         c["install_phases"] = module.selected_installs
 
@@ -87,7 +84,15 @@ class App(QMainWindow):
 
 class Navigation(QWidget):
     def __init__(self, parent, widgets):
-        """Initializes the navigation widget."""
+        """
+        Initializes the navigation widget.
+
+        Parameters
+        ----------
+        parent : QObject
+        widgets : list
+            List of QWidgets.
+        """
 
         super().__init__(parent)
 

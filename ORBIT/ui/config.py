@@ -32,21 +32,97 @@ class Config(QTreeWidget):
         self.setHeaderLabels(["Key", "Value"])
         self.setItemDelegateForColumn(0, NoEditDelegate(self))
 
-    def update(self, modules):
+    def update_tree(self, modules):
+        """
+        Updates the tree view to include the parameters of `modules`.
+
+        Parameters
+        ----------
+        modules : list
+            List of ORBIT modules to display configuration parameters for.
+        """
+
+        try:
+            self.itemChanged.disconnect()
+
+        except RuntimeError:
+            pass
 
         self.clear()
-        _dict = ProjectManager.compile_input_dict(modules)
-        self.create_tree_from_dict(self.invisibleRootItem(), _dict)
+
+        base = ProjectManager.compile_input_dict(modules)
+        user = ProjectManager.merge_dicts(base, self.inputs)
+
+        self.create_tree_from_dict(self.invisibleRootItem(), user)
+        self.itemChanged.connect(lambda x: self.save_input(x))
+
+    def config(self, modules, remove_optional=True):
+        """
+        Returns the current configuration related to input `modules`. Precedence
+        is given to inputs in `self.inputs` and default values are removed.
+
+        Parameters
+        ----------
+        modules : list
+            List of ORBIT modules to display configuration parameters for.
+        remove_optional : bool
+            Flag to toggle if the optional paramater strings are returned or
+            removed.
+        """
+
+        base = ProjectManager.compile_input_dict(modules)
+        base = self._remove_empty(base)
+        if remove_optional:
+            base = self._remove_optional(base)
+
+        user = ProjectManager.merge_dicts(base, self.inputs)
+        return user
+
+    @classmethod
+    def _remove_optional(cls, dct):
+        """Removes any keys from `dct` if the value includes 'optional'."""
+
+        for key in list(dct.keys()):
+
+            if isinstance(dct[key], str) and "optional" in dct[key]:
+                del dct[key]
+
+            elif isinstance(dct[key], dict):
+                cls._remove_optional(dct[key])
+
+            else:
+                pass
+
+        return dct
+
+    @classmethod
+    def _remove_empty(cls, dct):
+        """Removes any keys from `dct` if the values are empty."""
+
+        for key in list(dct.keys()):
+
+            if isinstance(dct[key], str) and not dct[key]:
+                del dct[key]
+
+            elif isinstance(dct[key], dict):
+                cls._remove_empty(dct[key])
+
+            else:
+                pass
+
+        return dct
 
     def create_child(self, parent, text, value=None):
         """
-        Creates child `QTreeWidgetItem`.
+        Creates `QTreeWidgetItem` as a child of `parent`.
 
         Parameters
         ----------
         parent : QWidget
         text : str
+            Child key.
         value : str | list | dict
+            Child value.
         """
 
         if isinstance(value, dict):
@@ -78,13 +154,80 @@ class Config(QTreeWidget):
         for k, v in _dict.items():
             self.create_child(parent, k, v)
 
-    @property
-    def config(self):
-        """Returns the current configuration."""
+    def save_input(self, item):
+        """
+        Saves the input `item` in the nested dict `self.inputs`.
 
-        return self.get_children(self.invisibleRootItem())
+        Parameters
+        ----------
+        item : QTreeWidgetItem
+        """
 
-    def get_children(self, item):
+        if item.text(1):
+            updated = self.item_location(item)
+            self.inputs = ProjectManager.merge_dicts(self.inputs, updated)
+
+    def item_location(self, item):
+        """
+        Returns a dictionary containing `item` at it's location from
+        `self.invisibleRootItem()`.
+
+        Parameters
+        ----------
+        item : QTreeWidgetItem
+        """
+
+        val = self._type_conv(item.text(1))
+        parents = [item.text(0)]
+
+        while True:
+            try:
+                parent = item.parent()
+                parents.append(parent.text(0))
+                item = parent
+
+            except AttributeError:
+                break
+
+        return self._path_to_dict(parents[::-1], val)
+
+    @staticmethod
+    def _path_to_dict(lst, val):
+        """Returns a nested dictionary with keys from `lst` ending at `val`."""
+
+        dct = {}
+        for i, key in enumerate(reversed(lst)):
+            if i == 0:
+                dct = {key: val}
+
+            else:
+                dct = {key: dct}
+
+        return dct
+
+    @staticmethod
+    def _type_conv(val):
+        """Returns `val` as float if possible, then int, then str."""
+
+        try:
+            if float(val) == int(val):
+                val = int(val)
+
+            else:
+                val = float(val)
+
+        # TODO: list/dict input types
+        except ValueError:
+            val = val
+
+        return val
+
+    def view_tree(self):
+        """Returns a nested dict view of the entire tree."""
+
+        return self._get_children(self.invisibleRootItem())
+
+    def _get_children(self, item):
         """Recursive method to return children of `item` as a `dict`."""
 
         children = {}
@@ -92,20 +235,10 @@ class Config(QTreeWidget):
             child = item.child(i)
 
             if child.childCount() > 0:
-                children[child.text(0)] = self.get_children(child)
+                children[child.text(0)] = self._get_children(child)
 
             else:
-                try:
-                    if float(child.text(1)) == int(child.text(1)):
-                        val = int(child.text(1))
-
-                    else:
-                        val = float(child.text(1))
-
-                except ValueError:
-                    val = child.text(1)
-
-                children[child.text(0)] = val
+                children[child.text(0)] = self._type_conv(child.text(1))
 
         return children
 
