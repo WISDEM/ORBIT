@@ -4,11 +4,11 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
+import pandas as pd
 from PySide2.QtWidgets import (
     QLabel,
     QWidget,
     QGroupBox,
-    QLineEdit,
     QHBoxLayout,
     QPushButton,
     QVBoxLayout,
@@ -22,34 +22,42 @@ class LoadWeather(QWidget):
         """Creates an instance of `LoadWeather`."""
 
         super().__init__()
-        self.initUI()
         self.name = "Weather"
+        self.data = None
+        self.initUI()
 
     def initUI(self):
         """Initializes the widget UI."""
 
         vbox = QVBoxLayout()
 
-        top = QGroupBox()
-        tLayout = QHBoxLayout()
-        tLayout.addWidget(QLabel("Filepath:"))
-        tLayout.addWidget(QLineEdit())
-        top.setLayout(tLayout)
-        vbox.addWidget(top)
-
         self.btn = QPushButton("Load")
         vbox.addWidget(self.btn)
 
-        bot = QGroupBox()
-        # Table preview of weather data.
-        vbox.addWidget(bot)
+        self.bot = QGroupBox()
+        self.preview_layout = QHBoxLayout()
 
+        self.preview = QLabel(self._preview)
+        self.preview_layout.addWidget(self.preview)
+        self.bot.setLayout(self.preview_layout)
+
+        vbox.addWidget(self.bot)
         self.setLayout(vbox)
 
-    def onLoad(self):
-        """"""
-        pass
+    def update_preview(self):
+        """Triggers an update to the preview table."""
 
-    def updateTable(self):
-        """"""
-        pass
+        self.preview.setText(self._preview)
+
+    @property
+    def _preview(self):
+        """Returns a preview of the loaded weather data, if available."""
+
+        if isinstance(self.data, pd.DataFrame):
+            return str(self.data.describe())
+
+        elif not self.data:
+            return "No Weather Data Loaded"
+
+        else:
+            return "Error Displaying Weather Preview"

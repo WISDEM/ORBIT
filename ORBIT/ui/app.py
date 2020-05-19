@@ -8,6 +8,7 @@ import os
 import sys
 
 import yaml
+import pandas as pd
 import PySide2
 from yaml import Dumper
 from PySide2.QtWidgets import (
@@ -58,14 +59,17 @@ class App(QMainWindow):
         module = self.widgets["Modules"]
         load = self.widgets["Load/Save"]
         run = self.widgets["Run"]
+        weather = self.widgets["Weather"]
 
         for cb in module.checkboxes:
             cb.stateChanged.connect(self._modules_changed)
 
         run.btn.clicked.connect(self._run)
 
-        load.load.clicked.connect(self._load)
-        load.save.clicked.connect(self._save)
+        load.load.clicked.connect(self._load_config)
+        load.save.clicked.connect(self._save_config)
+
+        weather.btn.clicked.connect(self._load_weather)
 
     def _modules_changed(self):
         """Method triggered when the selected modules are changed."""
@@ -80,15 +84,39 @@ class App(QMainWindow):
 
         module = self.widgets["Modules"]
         config = self.widgets["Configuration"]
+        weather = self.widgets["Weather"]
 
         c = config.config(module.selected_modules)
         c["design_phases"] = module.selected_designs
         c["install_phases"] = module.selected_installs
 
-        project = ProjectManager(c)
+        project = ProjectManager(c, weather=weather.data)
         project.run_project()
 
-    def _load(self):
+    def _load_weather(self):
+        """Triggers a QFileDialog to load a weather file."""
+
+        weather = self.widgets["Weather"]
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        filepath, _ = QFileDialog.getOpenFileName(
+            self,
+            "QFileDialog.getOpenFileName()",
+            "",
+            "csv(*.csv);;All Files (*)",
+            options=options,
+        )
+
+        if filepath:
+            weather.data = pd.read_csv(filepath)
+            weather.update_preview()
+            return
+
+        weather.data = None
+        weather.update_preview()
+
+    def _load_config(self):
         """Triggers a QFileDialog to load a configuration file."""
 
         module = self.widgets["Modules"]
@@ -112,7 +140,7 @@ class App(QMainWindow):
             config.inputs = loaded
             module.select_modules([*design_phases, *install_phases])
 
-    def _save(self):
+    def _save_config(self):
         """Triggers a QFileDialog to save a configuration file."""
 
         module = self.widgets["Modules"]
