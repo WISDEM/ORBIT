@@ -5,10 +5,8 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 
 
 from PySide2.QtWidgets import (
-    QLabel,
     QWidget,
     QGroupBox,
-    QLineEdit,
     QHBoxLayout,
     QPushButton,
     QVBoxLayout,
@@ -30,12 +28,6 @@ class LoadSave(QWidget):
 
         vbox = QVBoxLayout()
 
-        top = QGroupBox()
-        tLayout = QHBoxLayout()
-        tLayout.addWidget(QLabel("Filepath:"))
-        tLayout.addWidget(QLineEdit())
-        top.setLayout(tLayout)
-
         bot = QGroupBox()
         bLayout = QHBoxLayout()
 
@@ -46,15 +38,5 @@ class LoadSave(QWidget):
         bLayout.addWidget(self.save)
         bot.setLayout(bLayout)
 
-        vbox.addWidget(top)
         vbox.addWidget(bot)
-
         self.setLayout(vbox)
-
-    def onLoad(self):
-        """"""
-        pass
-
-    def onSave(self):
-        """"""
-        pass

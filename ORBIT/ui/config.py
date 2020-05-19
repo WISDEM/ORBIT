@@ -137,7 +137,7 @@ class Config(QTreeWidget):
         else:
             child = QTreeWidgetItem(parent)
             child.setText(0, text)
-            child.setText(1, value)
+            child.setText(1, str(value))
             child.setFlags(child.flags() | Qt.ItemIsEditable)
             parent.addChild(child)
 

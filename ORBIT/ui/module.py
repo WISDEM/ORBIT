@@ -42,6 +42,18 @@ class ModuleSelect(QWidget):
 
         return [*self.designs, *self.installs]
 
+    def select_modules(self, modules):
+        """Selects `modules` and deselects any others."""
+
+        for cb in self.checkboxes:
+
+            if cb.text() in modules:
+                "checking any?"
+                cb.setChecked(True)
+
+            else:
+                cb.setChecked(False)
+
     @property
     def selected_modules(self):
         """Returns list of selected modules."""

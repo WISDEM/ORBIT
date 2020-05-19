@@ -7,10 +7,13 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 import os
 import sys
 
+import yaml
 import PySide2
+from yaml import Dumper
 from PySide2.QtWidgets import (
     QWidget,
     QTabWidget,
+    QFileDialog,
     QMainWindow,
     QVBoxLayout,
     QApplication,
@@ -19,6 +22,7 @@ from PySide2.QtWidgets import (
 import ORBIT
 from ORBIT import ProjectManager
 from ORBIT.ui import Config, LoadSave, RunOrbit, LoadWeather, ModuleSelect
+from ORBIT.library import _extract_file
 
 qt = os.path.dirname(PySide2.__file__)
 QApplication.addLibraryPath(os.path.join(qt, "plugins"))
@@ -51,14 +55,17 @@ class App(QMainWindow):
     def connect_widgets(self):
         """Connects widgets across the app."""
 
-        config = self.widgets["Configuration"]
         module = self.widgets["Modules"]
+        load = self.widgets["Load/Save"]
         run = self.widgets["Run"]
 
         for cb in module.checkboxes:
             cb.stateChanged.connect(self._modules_changed)
 
         run.btn.clicked.connect(self._run)
+
+        load.load.clicked.connect(self._load)
+        load.save.clicked.connect(self._save)
 
     def _modules_changed(self):
         """Method triggered when the selected modules are changed."""
@@ -80,6 +87,55 @@ class App(QMainWindow):
 
         project = ProjectManager(c)
         project.run_project()
+
+    def _load(self):
+        """Triggers a QFileDialog to load a configuration file."""
+
+        module = self.widgets["Modules"]
+        config = self.widgets["Configuration"]
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        filepath, _ = QFileDialog.getOpenFileName(
+            self,
+            "QFileDialog.getOpenFileName()",
+            "",
+            "yaml (*.yaml);;All Files (*)",
+            options=options,
+        )
+
+        if filepath:
+            loaded = _extract_file(filepath)
+            design_phases = loaded.pop("design_phases", [])
+            install_phases = loaded.pop("install_phases", [])
+
+            config.inputs = loaded
+            module.select_modules([*design_phases, *install_phases])
+
+    def _save(self):
+        """Triggers a QFileDialog to save a configuration file."""
+
+        module = self.widgets["Modules"]
+        config = self.widgets["Configuration"]
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            "QFileDialog.getSaveFileName()",
+            "",
+            "yaml (*.yaml)",
+            options=options,
+        )
+        if filepath:
+
+            data = config.inputs
+            data["design_phases"] = module.selected_designs
+            data["install_phases"] = module.selected_installs
+
+            f = open(filepath, "w")
+            yaml.dump(data, f, Dumper=Dumper, default_flow_style=False)
+            f.close()
 
 
 class Navigation(QWidget):
