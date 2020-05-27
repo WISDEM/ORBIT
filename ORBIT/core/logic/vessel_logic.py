@@ -228,7 +228,12 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                     for item in buffer:
                         action, time = item.fasten(**kwargs)
                         vessel.storage.put_item(item)
-                        yield vessel.task(action, time, **kwargs)
+                        yield vessel.task(
+                            action,
+                            time,
+                            constraints=vessel.transit_limits,
+                            **kwargs,
+                        )
 
         else:
             raise ItemNotFound(items)

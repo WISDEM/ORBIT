@@ -336,11 +336,15 @@ def solo_install_turbines(
                 )
 
                 # Install nacelle
-                yield vessel.task("Reequip", reequip_time)
+                yield vessel.task(
+                    "Reequip", reequip_time, constraints=vessel.transit_limits
+                )
                 yield install_nacelle(vessel, nacelle, **kwargs)
 
                 # Install turbine blades
-                yield vessel.task("Reequip", reequip_time)
+                yield vessel.task(
+                    "Reequip", reequip_time, constraints=vessel.transit_limits
+                )
                 for _ in range(num_blades):
                     blade = yield vessel.get_item_from_storage(
                         "Blade", **kwargs
@@ -433,11 +437,15 @@ def install_turbine_components_from_queue(
                 )
 
                 # Install nacelle
-                yield wtiv.task("Reequip", reequip_time)
+                yield wtiv.task(
+                    "Reequip", reequip_time, constraints=wtiv.transit_limits
+                )
                 yield install_nacelle(wtiv, nacelle, **kwargs)
 
                 # Install turbine blades
-                yield wtiv.task("Reequip", reequip_time)
+                yield wtiv.task(
+                    "Reequip", reequip_time, constraints=wtiv.transit_limits
+                )
 
                 for i in range(num_blades):
                     release = True if i + 1 == num_blades else False

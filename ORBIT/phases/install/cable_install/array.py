@@ -202,7 +202,7 @@ def install_array_cables(
 
     for cable, sections in cable_data:
         for s in sections:
-            d_i, num_i = s
+            d_i, num_i, *_ = s
             trench_sections.extend([d_i] * num_i)
             total_cable_distance += d_i * num_i
 
