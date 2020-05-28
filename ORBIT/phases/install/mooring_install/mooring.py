@@ -6,12 +6,13 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-import simpy
-from marmot import le, process
+from marmot import process
 
 from ORBIT.core import Cargo, Vessel
+from ORBIT.core.logic import position_onsite, get_list_of_items_from_port
 from ORBIT.core._defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
+from ORBIT.core.exceptions import ItemNotFound
 
 
 class MooringSystemInstallation(InstallPhase):
@@ -26,11 +27,9 @@ class MooringSystemInstallation(InstallPhase):
         "plant": {"num_turbines": "int"},
         "mooring_system": {
             "num_lines": "int",
-            "line_diam": "m, float",
             "line_mass": "t",
-            "line_length": "m",
             "anchor_mass": "t",
-            "anchor_type": "str",
+            "anchor_type": "str (optional, default: 'Suction Pile')",
         },
     }
 
@@ -61,6 +60,18 @@ class MooringSystemInstallation(InstallPhase):
         self.initialize_installation_vessel()
         self.initialize_components()
 
+        depth = self.config["site"]["depth"]
+        distance = self.config["site"]["distance"]
+
+        install_mooring_systems(
+            self.vessel,
+            self.port,
+            distance,
+            depth,
+            self.number_systems,
+            **kwargs,
+        )
+
     def initialize_installation_vessel(self):
         """Initializes the mooring system installation vessel."""
 
@@ -77,27 +88,247 @@ class MooringSystemInstallation(InstallPhase):
 
     def initialize_components(self):
         """Initializes the Cargo components at port."""
-        pass
+
+        system = MooringSystem(**self.config["mooring_system"])
+        self.number_systems = self.config["plant"]["num_turbines"]
+
+        for _ in range(self.number_systems):
+            self.port.put(system)
+
+    @property
+    def detailed_output(self):
+        """Detailed outputs of the scour protection installation."""
+
+        outputs = {self.phase: {**self.agent_efficiencies}}
+
+        return outputs
 
 
 @process
-def install_mooring_system(vessel, port, distance, **kwargs):
+def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
     """
     Logic for the Mooring System Installation Vessel.
 
     Parameters
     ----------
+    vessel : Vessel
+        Mooring System Installation Vessel
+    port : Port
+    distance : int | float
+        Distance between port and site (km).
+    systems : int
+        Total systems to install.
     """
 
-    pass
+    n = 0
+    while n < systems:
+        if vessel.at_port:
+            try:
+                # Get mooring systems from port.
+                yield get_list_of_items_from_port(
+                    vessel, port, ["MooringSystem"], **kwargs
+                )
+
+            except ItemNotFound:
+                # If no items are at port and vessel.storage.items is empty,
+                # the job is done
+                if not vessel.storage.items:
+                    vessel.submit_debug_log(
+                        message="Item not found. Shutting down."
+                    )
+                    break
+
+            # Transit to site
+            vessel.update_trip_data()
+            vessel.at_port = False
+            yield vessel.transit(distance)
+            vessel.at_site = True
+
+        if vessel.at_site:
+
+            if vessel.storage.items:
+
+                system = yield vessel.get_item_from_storage(
+                    "MooringSystem", **kwargs
+                )
+                for _ in range(system.num_lines):
+                    yield position_onsite(vessel, **kwargs)
+                    yield perform_mooring_site_survey(vessel, **kwargs)
+                    yield install_mooring_anchor(
+                        vessel, depth, system.anchor_type, **kwargs
+                    )
+                    yield install_mooring_line(vessel, depth, **kwargs)
+
+                n += 1
+
+            else:
+                # Transit to port
+                vessel.at_site = False
+                yield vessel.transit(distance)
+                vessel.at_port = True
+
+    vessel.submit_debug_log(message="Mooring systems installation complete!")
 
 
-class MooringLine(Cargo):
-    pass
+@process
+def perform_mooring_site_survey(vessel, **kwargs):
+    """
+    Calculates time required to perform a mooring system survey.
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Vessel to perform action.
+
+    Yields
+    ------
+    vessel.task representing time to "Perform Mooring Site Survey".
+    """
+
+    key = "mooring_site_survey_time"
+    survey_time = kwargs.get(key, pt[key])
+
+    yield vessel.task(
+        "Perform Mooring Site Survey",
+        survey_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )
 
 
-class MooringAnchor(Cargo):
-    pass
+@process
+def install_mooring_anchor(vessel, depth, _type, **kwargs):
+    """
+    Calculates time required to install a mooring system anchor.
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Vessel to perform action.
+    depth : int | float
+        Depth at site (m).
+    _type : str
+        Anchor type. 'Suction Pile' or 'Drag Embedment'.
+
+    Yields
+    ------
+    vessel.task representing time to install mooring anchor.
+    """
+
+    if _type == "Suction Pile":
+        key = "suction_pile_install_time"
+        task = "Install Suction Pile Anchor"
+        fixed = kwargs.get(key, pt[key])
+
+    elif _type == "Drag Embedment":
+        key = "drag_embed_install_time"
+        task = "Install Drag Embedment Anchor"
+        fixed = kwargs.get(key, pt[key])
+
+    else:
+        raise ValueError(
+            f"Mooring System Anchor Type: {_type} not recognized."
+        )
+
+    install_time = fixed + 0.005 * depth
+    yield vessel.task(
+        task, install_time, constraints=vessel.transit_limits, **kwargs
+    )
 
 
-f
+@process
+def install_mooring_line(vessel, depth, **kwargs):
+    """
+    Calculates time required to install a mooring system line.
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Vessel to perform action.
+    depth : int | float
+        Depth at site (m).
+
+    Yields
+    ------
+    vessel.task representing time to install mooring line.
+    """
+
+    install_time = 0.005 * depth
+
+    yield vessel.task(
+        "Install Mooring Line",
+        install_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
+    )
+
+
+class MooringSystem(Cargo):
+    """Mooring System Cargo"""
+
+    def __init__(
+        self,
+        num_lines=None,
+        line_mass=None,
+        anchor_mass=None,
+        anchor_type="Suction Pile",
+        **kwargs,
+    ):
+        """Creates an instance of MooringSystem"""
+
+        self.num_lines = num_lines
+        self.line_mass = line_mass
+        self.anchor_mass = anchor_mass
+        self.anchor_type = anchor_type
+
+        self.deck_space = 0
+
+    @property
+    def mass(self):
+        """Returns total system mass in t."""
+
+        return self.num_lines * (self.line_mass + self.anchor_mass)
+
+    @staticmethod
+    def load(**kwargs):
+        """Returns time required to load a mooring system at port."""
+
+        key = "mooring_system_load_time"
+        time = kwargs.get(key, pt[key])
+
+        return "Load Mooring System", time
+
+    @staticmethod
+    def fasten(**kwargs):
+        """Dummy method to work with `get_list_of_items_from_port`."""
+
+        return "", 0
+
+    @staticmethod
+    def release(**kwargs):
+        """Dummy method to work with `get_list_of_items_from_port`."""
+
+        return "", 0
+
+    def anchor_install_time(self, depth):
+        """
+        Returns time to install anchor. Varies by depth.
+
+        Parameters
+        ----------
+        depth : int | float
+            Depth at site (m).
+        """
+
+        if self.anchor_type == "Suction Pile":
+            fixed = 11
+
+        elif self.anchor_type == "Drag Embedment":
+            fixed = 5
+
+        else:
+            raise ValueError(
+                f"Mooring System Anchor Type: {self.anchor_type} not recognized."
+            )
+
+        return fixed + 0.005 * depth

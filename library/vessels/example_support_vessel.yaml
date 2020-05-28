@@ -7,3 +7,7 @@ vessel_specs:
   overall_length: 150     # m
   mobilization_days: 7    # days
   mobilization_mult: 1   # Mobilization multiplier applied to 'day_rate'
+storage_specs:
+  max_cargo: 5000          # t
+  max_deck_load: 8          # t/m^2
+  max_deck_space: 1000      # m^2
