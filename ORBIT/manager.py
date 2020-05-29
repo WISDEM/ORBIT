@@ -36,6 +36,7 @@ from ORBIT.phases.install import (
     MooredSubInstallation,
     ArrayCableInstallation,
     ExportCableInstallation,
+    MooringSystemInstallation,
     ScourProtectionInstallation,
     OffshoreSubstationInstallation,
 )
@@ -73,6 +74,7 @@ class ProjectManager:
         ExportCableInstallation,
         ScourProtectionInstallation,
         MooredSubInstallation,
+        MooringSystemInstallation,
     ]
 
     def __init__(self, config, library_path=None, weather=None):

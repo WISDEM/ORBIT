@@ -54,7 +54,12 @@ class MooringSystemInstallation(InstallPhase):
         self.setup_simulation(**kwargs)
 
     def setup_simulation(self, **kwargs):
-        """"""
+        """
+        Sets up the required simulation infrastructure:
+            - initializes port
+            - initializes installation vessel
+            - initializes mooring systems at port.
+        """
 
         self.initialize_port()
         self.initialize_installation_vessel()
@@ -290,19 +295,13 @@ class MooringSystem(Cargo):
         return self.num_lines * (self.line_mass + self.anchor_mass)
 
     @staticmethod
-    def load(**kwargs):
-        """Returns time required to load a mooring system at port."""
+    def fasten(**kwargs):
+        """Dummy method to work with `get_list_of_items_from_port`."""
 
         key = "mooring_system_load_time"
         time = kwargs.get(key, pt[key])
 
         return "Load Mooring System", time
-
-    @staticmethod
-    def fasten(**kwargs):
-        """Dummy method to work with `get_list_of_items_from_port`."""
-
-        return "", 0
 
     @staticmethod
     def release(**kwargs):
