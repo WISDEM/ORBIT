@@ -15,5 +15,7 @@ available in the model.
    phases/install/array/doc_ArrayCableInstall
    phases/install/export/doc_ExportCableInstall
    phases/install/oss/doc_OffshoreSubstationInstall
+   phases/install/quayside_towout/doc_MooredSubInstallation
+   phases/install/mooring/doc_MooringSystemInstallation
 
 ..    phases/install/jacket/doc_JacketInstall

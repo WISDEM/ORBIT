@@ -47,7 +47,7 @@ class MonopileInstallation(InstallPhase):
         "plant": {"num_turbines": "int"},
         "turbine": {"hub_height": "m"},
         "port": {
-            "num_cranes": "int",
+            "num_cranes": "int (optional, default: 1)",
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },

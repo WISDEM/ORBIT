@@ -19,23 +19,26 @@ from ORBIT import library
 from ORBIT.phases import DesignPhase, InstallPhase
 from ORBIT.library import initialize_library, extract_library_data
 from ORBIT.phases.design import (
+    SparDesign,
     MonopileDesign,
     ArraySystemDesign,
     ExportSystemDesign,
     ProjectDevelopment,
     MooringSystemDesign,
     ScourProtectionDesign,
+    SemiSubmersibleDesign,
     CustomArraySystemDesign,
     OffshoreSubstationDesign,
 )
 from ORBIT.phases.install import (
     TurbineInstallation,
     MonopileInstallation,
+    MooredSubInstallation,
     ArrayCableInstallation,
     ExportCableInstallation,
+    MooringSystemInstallation,
     ScourProtectionInstallation,
     OffshoreSubstationInstallation,
-    MooredSubInstallation
 )
 from ORBIT.core.exceptions import (
     PhaseNotFound,
@@ -59,6 +62,8 @@ class ProjectManager:
         ScourProtectionDesign,
         OffshoreSubstationDesign,
         MooringSystemDesign,
+        SemiSubmersibleDesign,
+        SparDesign,
     ]
 
     _install_phases = [
@@ -68,7 +73,8 @@ class ProjectManager:
         ArrayCableInstallation,
         ExportCableInstallation,
         ScourProtectionInstallation,
-        MooredSubInstallation
+        MooredSubInstallation,
+        MooringSystemInstallation,
     ]
 
     def __init__(self, config, library_path=None, weather=None):

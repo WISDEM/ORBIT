@@ -269,12 +269,13 @@ class Vessel(Agent):
             raise e
 
         action, time = item.release(**kwargs)
-        yield self.task(
-            action,
-            time,
-            constraints=self.transit_limits,
-            cost=self.operation_cost(time),
-        )
+        if time > 0:
+            yield self.task(
+                action,
+                time,
+                constraints=self.transit_limits,
+                cost=self.operation_cost(time),
+            )
 
         if release and vessel.storage.any_remaining(_type) is False:
             vessel.release.succeed()

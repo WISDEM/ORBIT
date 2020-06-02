@@ -6,6 +6,8 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from math import sqrt
+
 from ORBIT.phases.design import DesignPhase
 
 
@@ -24,7 +26,16 @@ class MooringSystemDesign(DesignPhase):
         },
     }
 
-    output_config = {"mooring": {"anchor_type": "str", "lines": "int"}}
+    output_config = {
+        "mooring_system": {
+            "num_lines": "int",
+            "line_diam": "m, float",
+            "line_mass": "t",
+            "line_length": "m",
+            "anchor_mass": "t",
+            "anchor_type": "str",
+        }
+    }
 
     def __init__(self, config, **kwargs):
         """
@@ -53,8 +64,10 @@ class MooringSystemDesign(DesignPhase):
 
         self.determine_mooring_line()
         self.calculate_breaking_load()
-        self.calculate_line_length()
-        self.calculate_anchor_cost()
+        self.calculate_line_length_mass()
+        self.calculate_anchor_mass_cost()
+
+        self._outputs["mooring_system"] = {**self.design_result}
 
     def determine_mooring_line(self):
         """
@@ -66,14 +79,17 @@ class MooringSystemDesign(DesignPhase):
 
         if fit <= 0.09:
             self.line_diam = 0.09
+            self.line_mass_per_m = 0.161
             self.line_cost_rate = 399.0
 
         elif fit <= 0.12:
             self.line_diam = 0.12
+            self.line_mass_per_m = 0.288
             self.line_cost_rate = 721.0
 
         else:
             self.line_diam = 0.15
+            self.line_mass_per_m = 0.450
             self.line_cost_rate = 1088.0
 
     def calculate_breaking_load(self):
@@ -85,9 +101,9 @@ class MooringSystemDesign(DesignPhase):
             419449 * (self.line_diam ** 2) + 93415 * self.line_diam - 3577.9
         )
 
-    def calculate_line_length(self):
+    def calculate_line_length_mass(self):
         """
-        Returns the mooring line length.
+        Returns the mooring line length and mass.
         """
 
         if self.anchor_type == "Drag Embedment":
@@ -101,12 +117,23 @@ class MooringSystemDesign(DesignPhase):
             0.0002 * (depth ** 2) + 1.264 * depth + 47.776 + fixed
         )
 
-    def calculate_anchor_cost(self):
+        self.line_mass = self.line_length * self.line_mass_per_m
+
+    def calculate_anchor_mass_cost(self):
         """
-        Returns the cost of drag embedment anchors.
+        Returns the mass and cost of anchors.
+
+        TODO: Anchor masses are rough estimates based on initial literature
+        review. Should be revised when this module is overhauled in the future.
         """
 
-        self.anchor_cost = self.breaking_load / 9.81 / 20.0 * 2000.0
+        if self.anchor_type == "Drag Embedment":
+            self.anchor_mass = 20
+            self.anchor_cost = self.breaking_load / 9.81 / 20.0 * 2000.0
+
+        else:
+            self.anchor_mass = 50
+            self.anchor_cost = sqrt(self.breaking_load / 9.81 / 1250) * 150000
 
     def calculate_total_cost(self):
         """
@@ -123,14 +150,12 @@ class MooringSystemDesign(DesignPhase):
     def design_result(self):
         """Returns the results of the design phase."""
 
-        # TODO: Line mass/km
-        # TODO: Anchor mass
-        # TODO: Map with upcoming expected inputs of MooringSystemInstallation.
-
         return {
             "num_lines": self.num_lines,
             "line_diam": self.line_diam,
+            "line_mass": self.line_mass,
             "line_length": self.line_length,
+            "anchor_mass": self.anchor_mass,
             "anchor_type": self.anchor_type,
         }
 
@@ -157,8 +182,10 @@ class MooringSystemDesign(DesignPhase):
         return {
             "num_lines": self.num_lines,
             "line_diam": self.line_diam,
+            "line_mass": self.line_mass,
             "line_length": self.line_length,
             "anchor_type": self.anchor_type,
+            "anchor_mass": self.anchor_mass,
             "anchor_cost": self.anchor_cost,
             "system_cost": self.calculate_total_cost(),
         }

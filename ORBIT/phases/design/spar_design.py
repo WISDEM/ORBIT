@@ -29,6 +29,8 @@ class SparDesign(DesignPhase):
         },
     }
 
+    output_config = {}
+
     def __init__(self, config, **kwargs):
         """
         Creates an instance of `SparDesign`.
