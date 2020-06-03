@@ -40,9 +40,10 @@ class ArrayCableInstallation(InstallPhase):
         "array_cable_install_vessel": "str",
         "array_cable_bury_vessel": "str (optional)",
         "array_cable_trench_vessel": "str (optional)",
-        "site": {"distance": "km"},
+        "site": {"distance": "km", "depth": "m"},
         "array_system": {
             "num_strings": "int (optional, default: 10)",
+            "free_cable_length": "km (optional, default: 'depth')",
             "cables": {
                 "name (variable)": {
                     "linear_density": "t/km",
@@ -82,14 +83,18 @@ class ArrayCableInstallation(InstallPhase):
         -
         """
 
+        depth = self.config["site"]["depth"]
+        system = self.config["array_system"]
+        self.free_cable_length = system.get("free_cable_length", depth / 1000)
+
         self.initialize_installation_vessel()
         self.initialize_burial_vessel()
         self.initialize_trench_vessel()
 
-        self.num_strings = self.config["array_system"].get("num_strings", 10)
+        self.num_strings = system.get("num_strings", 10)
         self.cable_data = [
             (Cable(data["linear_density"]), deepcopy(data["cable_sections"]))
-            for _, data in self.config["array_system"]["cables"].items()
+            for _, data in system["cables"].items()
         ]
 
         # Perform cable installation
@@ -100,6 +105,7 @@ class ArrayCableInstallation(InstallPhase):
             num_strings=self.num_strings,
             burial_vessel=self.bury_vessel,
             trench_vessel=self.trench_vessel,
+            free_cable_length=self.free_cable_length,
             **kwargs,
         )
 
@@ -171,6 +177,7 @@ def install_array_cables(
     num_strings,
     burial_vessel=None,
     trench_vessel=None,
+    free_cable_length=None,
     **kwargs,
 ):
     """
@@ -197,14 +204,17 @@ def install_array_cables(
 
     breakpoints = list(np.linspace(1 / num_strings, 1, num_strings))
     trench_sections = []
-    total_cable_distance = 0
+    total_cable_length = 0
     installed = 0
 
     for cable, sections in cable_data:
         for s in sections:
-            d_i, num_i, *_ = s
-            trench_sections.extend([d_i] * num_i)
-            total_cable_distance += d_i * num_i
+            l, num_i, *_ = s
+            total_cable_length += l * num_i
+
+            _trench_length = max(0, l - 2 * free_cable_length)
+            if _trench_length:
+                trench_sections.extend([_trench_length] * num_i)
 
     ## Trenching Process
     # Conduct trenching along cable routes before laying cable
@@ -299,7 +309,9 @@ def install_array_cables(
 
                     else:
                         yield lay_cable(vessel, section, **specs)
-                        to_bury.append(section)
+                        _bury = max(0, (section - 2 * free_cable_length))
+                        if _bury:
+                            to_bury.append(_bury)
 
                     # Post cable laying procedure (at substructure 2)
                     yield prep_cable(vessel, **kwargs)
@@ -308,10 +320,7 @@ def install_array_cables(
 
                     if burial_vessel is None:
                         breakpoints = check_for_completed_string(
-                            vessel,
-                            installed,
-                            total_cable_distance,
-                            breakpoints,
+                            vessel, installed, total_cable_length, breakpoints
                         )
 
         # Transit back to port
