@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 from marmot import le, process
-
 from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
@@ -298,14 +297,14 @@ def transfer_moored_substructures_from_storage(
             "Ballast to Towing Draft",
             6,
             num_vessels=towing_vessels,
-            constraints={"windspeed": le(15), "waveheight": le(2)},
+            constraints={"windspeed": le(15), "waveheight": le(2.5)},
         )
 
         yield group.group_task(
             "Tow Substructure",
             towing_time,
             num_vessels=towing_vessels,
-            constraints={"windspeed": le(15), "waveheight": le(2)},
+            constraints={"windspeed": le(15), "waveheight": le(2.5)},
         )
 
         # At Site
@@ -367,24 +366,24 @@ def install_moored_substructures(
             yield vessel.task(
                 "Position Substructure",
                 2,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task(
                 "Ballast to Operational Draft",
                 6,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task(
                 "Connect Mooring Lines",
                 22,
                 suspendable=True,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task(
                 "Check Mooring Lines",
                 12,
                 suspendable=True,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
 
             group_time = vessel.env.now - start

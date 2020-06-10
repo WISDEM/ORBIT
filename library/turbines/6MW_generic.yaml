@@ -1,0 +1,20 @@
+blade:
+  deck_space: 192     # m^2      ##### Reset all deck_space = 1 to avoid vessel constraints
+  length: 76          # m
+  type: Blade
+  mass: 22         # t
+hub_height: 101       # m
+nacelle:
+  deck_space: 125     # m^2
+  type: Nacelle
+  mass: 262         # t
+name: 6MW Generic Turbine
+rated_windspeed: 11   # m/s
+rotor_diameter: 151   # m
+tower:
+  deck_space: 50.24      # m^2
+  sections: 2         # n
+  type: Tower
+  length: 101
+  mass: 230         # t
+turbine_rating: 6     # MW

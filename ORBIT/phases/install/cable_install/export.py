@@ -10,7 +10,6 @@ from copy import deepcopy
 from math import ceil
 
 from marmot import process
-
 from ORBIT.core import Vessel
 from ORBIT.core.logic import position_onsite
 from ORBIT.phases.install import InstallPhase
@@ -98,7 +97,7 @@ class ExportCableInstallation(InstallPhase):
         self.initialize_trench_vessel()
 
         # Perform onshore construction
-        self.onshore_construction(**kwargs)
+        # self.onshore_construction(**kwargs)
 
         # Perform cable installation
         install_export_cables(
