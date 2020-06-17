@@ -98,7 +98,9 @@ class ExportCableInstallation(InstallPhase):
         self.initialize_trench_vessel()
 
         # Perform onshore construction
-        self.onshore_construction(**kwargs)
+        onshore = kwargs.get("include_onshore_construction", True)
+        if onshore:
+            self.onshore_construction(**kwargs)
 
         # Perform cable installation
         install_export_cables(
