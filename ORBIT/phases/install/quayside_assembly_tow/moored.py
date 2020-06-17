@@ -29,7 +29,7 @@ class MooredSubInstallation(InstallPhase):
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
-            "stabilization_vessels": "int",
+            "station_keeping_vessels": "int",
             "num_groups": "int (optional)",
         },
         "substructure": {
@@ -213,8 +213,8 @@ class MooredSubInstallation(InstallPhase):
         vessel.initialize(mobilize=False)
         self.support_vessel = vessel
 
-        stabilization = self.config["towing_vessel_groups"][
-            "stabilization_vessels"
+        station_keeping_vessels = self.config["towing_vessel_groups"][
+            "station_keeping_vessels"
         ]
 
         install_moored_substructures(
@@ -222,7 +222,7 @@ class MooredSubInstallation(InstallPhase):
             self.active_group,
             self.distance,
             self.num_turbines,
-            stabilization,
+            station_keeping_vessels,
             **kwargs,
         )
 
@@ -298,14 +298,14 @@ def transfer_moored_substructures_from_storage(
             "Ballast to Towing Draft",
             6,
             num_vessels=towing_vessels,
-            constraints={"windspeed": le(15), "waveheight": le(2)},
+            constraints={"windspeed": le(15), "waveheight": le(2.5)},
         )
 
         yield group.group_task(
             "Tow Substructure",
             towing_time,
             num_vessels=towing_vessels,
-            constraints={"windspeed": le(15), "waveheight": le(2)},
+            constraints={"windspeed": le(15), "waveheight": le(2.5)},
         )
 
         # At Site
@@ -336,7 +336,7 @@ def transfer_moored_substructures_from_storage(
 
 @process
 def install_moored_substructures(
-    vessel, queue, distance, substructures, stabilization_vessels, **kwargs
+    vessel, queue, distance, substructures, station_keeping_vessels, **kwargs
 ):
     """
     Logic that a Multi-Purpose Support Vessel uses at site to complete the
@@ -350,8 +350,8 @@ def install_moored_substructures(
         Distance between port and site (km).
     substructures : int
         Number of substructures to install before transiting back to port.
-    stabilization_vessels : int
-        Number of vessels to use for substructure stabilization during final
+    station_keeping_vessels : int
+        Number of vessels to use for substructure station keeping during final
         installation at site.
     """
 
@@ -367,24 +367,24 @@ def install_moored_substructures(
             yield vessel.task(
                 "Position Substructure",
                 2,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task(
                 "Ballast to Operational Draft",
                 6,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task(
                 "Connect Mooring Lines",
                 22,
                 suspendable=True,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task(
                 "Check Mooring Lines",
                 12,
                 suspendable=True,
-                constraints={"windspeed": le(15), "waveheight": le(2)},
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
 
             group_time = vessel.env.now - start
@@ -392,7 +392,7 @@ def install_moored_substructures(
                 "Positioning Support",
                 group_time,
                 location="site",
-                num_vessels=stabilization_vessels,
+                num_vessels=station_keeping_vessels,
             )
             yield queue.vessel.release.succeed()
 

@@ -20,7 +20,7 @@ class MooringSystemDesign(DesignPhase):
         "plant": {"num_turbines": "int"},
         "mooring_system_design": {
             "num_lines": "int | float (optional, default: 4)",
-            "anchor_type": "str (optional, default: 'suction')",
+            "anchor_type": "str (optional, default: 'Suction Pile')",
             "mooring_line_cost_rate": "int | float (optional)",
             "drag_embedment_fixed_length": "int | float (optional, default: .5km)",
         },
@@ -151,12 +151,14 @@ class MooringSystemDesign(DesignPhase):
         """Returns the results of the design phase."""
 
         return {
-            "num_lines": self.num_lines,
-            "line_diam": self.line_diam,
-            "line_mass": self.line_mass,
-            "line_length": self.line_length,
-            "anchor_mass": self.anchor_mass,
-            "anchor_type": self.anchor_type,
+            "mooring_system": {
+                "num_lines": self.num_lines,
+                "line_diam": self.line_diam,
+                "line_mass": self.line_mass,
+                "line_length": self.line_length,
+                "anchor_mass": self.anchor_mass,
+                "anchor_type": self.anchor_type,
+            }
         }
 
     @property
