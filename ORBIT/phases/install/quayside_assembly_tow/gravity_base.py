@@ -29,7 +29,7 @@ class GravityBasedInstallation(InstallPhase):
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
-            "stabilization_vessels": "int",
+            "station_keeping_vessels": "int",
             "num_groups": "int (optional)",
         },
         "substructure": {
@@ -214,8 +214,8 @@ class GravityBasedInstallation(InstallPhase):
         vessel.initialize()
         self.support_vessel = vessel
 
-        stabilization = self.config["towing_vessel_groups"][
-            "stabilization_vessels"
+        station_keeping_vessels = self.config["towing_vessel_groups"][
+            "station_keeping_vessels"
         ]
 
         install_gravity_base_foundations(
@@ -223,7 +223,7 @@ class GravityBasedInstallation(InstallPhase):
             self.active_group,
             self.distance,
             self.num_turbines,
-            stabilization,
+            station_keeping_vessels,
             **kwargs,
         )
 
@@ -327,7 +327,7 @@ def transfer_gbf_substructures_from_storage(
 
 @process
 def install_gravity_base_foundations(
-    vessel, queue, distance, substructures, stabilization_vessels, **kwargs
+    vessel, queue, distance, substructures, station_keeping_vessels, **kwargs
 ):
     """
     Logic that a Multi-Purpose Support Vessel uses at site to complete the
@@ -341,8 +341,8 @@ def install_gravity_base_foundations(
         Distance between port and site (km).
     substructures : int
         Number of substructures to install before transiting back to port.
-    stabilization_vessels : int
-        Number of vessels to use for substructure stabilization during final
+    station_keeping_vessels : int
+        Number of vessels to use for substructure station keeping during final
         installation at site.
     """
 
@@ -387,7 +387,7 @@ def install_gravity_base_foundations(
                 "Positioning Support",
                 group_time,
                 location="site",
-                num_vessels=stabilization_vessels,
+                num_vessels=station_keeping_vessels,
             )
             yield queue.vessel.release.succeed()
 
