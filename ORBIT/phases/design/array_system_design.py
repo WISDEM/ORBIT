@@ -79,6 +79,7 @@ class ArraySystemDesign(CableSystem):
         "array_system_design": {
             "design_time": "hrs (optional)",
             "cables": "list | str",
+            "touchdown_distance": "m (optional, default: 0)",
             "average_exclusion_percent": "float (optional)",
         },
     }
@@ -102,6 +103,7 @@ class ArraySystemDesign(CableSystem):
         self.exclusion = 1 + self.config["array_system_design"].get(
             "average_exclusion_percent", 0.0
         )
+        self._get_touchdown_distance()
         self.extract_phase_kwargs(**kwargs)
         self.system = Plant(self.config)
 
@@ -331,7 +333,8 @@ class ArraySystemDesign(CableSystem):
         if getattr(self, "sections_cable_lengths", np.zeros(1)).sum() == 0:
             self.sections_cable_lengths = (
                 self.sections_distance * self.exclusion
-                + (2 * self.system.site_depth)
+                + (2 * self.free_cable_length)
+                - (2 * self.touchdown / 1000)
             )
         self.sections_cables = np.full(
             (self.num_strings, self.num_turbines_full_string), None

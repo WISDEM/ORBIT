@@ -42,6 +42,7 @@ class ExportSystemDesign(CableSystem):
         "export_system_design": {
             "cables": "str",
             "num_redundant": "int (optional)",
+            "touchdown_distance": "m (optional, default: 0)",
             "percent_added_length": "float (optional)",
         },
     }
@@ -78,6 +79,7 @@ class ExportSystemDesign(CableSystem):
         self._depth = config["site"]["depth"]
         self._plant_capacity = self.config["plant"]["capacity"]
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
+        self._get_touchdown_distance()
         try:
             self._distance_to_interconnection = config["landfall"][
                 "interconnection_distance"
@@ -136,8 +138,8 @@ class ExportSystemDesign(CableSystem):
         added_length = 1.0 + self._design.get("percent_added_length", 0.0)
         self.length = round(
             (
-                (self._depth / 1000.0)  # convert to km
-                + self._distance_to_landfall
+                self.free_cable_length
+                + (self._distance_to_landfall - self.touchdown / 1000)
                 + self._distance_to_interconnection
             )
             * added_length,
