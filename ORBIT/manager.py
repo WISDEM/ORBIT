@@ -584,28 +584,39 @@ class ProjectManager:
         # Run remaining phases
         self.run_dependent_phases(variable, zero)
 
-    def run_dependent_phases(self, phases, zero, **kwargs):
+    def run_dependent_phases(self, _phases, zero, **kwargs):
         """
         Runs remaining phases that depend on other phase times.
 
         Parameters
         ----------
-        phases : dict
+        _phases : dict
             Dictionary of phases to run.
         zero : int | float
             Zero time for the simulation. Used to aggregate total logs.
         """
 
+        phases = deepcopy(_phases)
+        skipped = {}
+
         while True:
 
+            phases = {**phases, **skipped}
+            if not phases:
+                break
+
+            skipped = {}
             progress = False
-            for name, (target, perc) in phases.items():
+
+            for name in list(phases.keys()):
+                target, perc = phases.pop(name)
 
                 try:
                     start = self.get_dependency_start_time(target, perc)
                     cost, time, logs = self.run_install_phase(
                         name, start, **kwargs
                     )
+
                     progress = True
 
                     if logs is None:
@@ -621,16 +632,10 @@ class ProjectManager:
                         self._output_logs.extend(logs)
 
                 except KeyError:
-                    print(
-                        f"Skipped '{name}': Dependency '{target}' not found."
-                    )
-                    continue
+                    skipped[name] = (target, perc)
 
-            if phases and progress is False:
-                raise PhaseDependenciesInvalid(phases)
-
-            else:
-                break
+            if not progress:
+                raise PhaseDependenciesInvalid(_phases)
 
     def get_dependency_start_time(self, target, perc):
         """
