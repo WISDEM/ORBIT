@@ -438,6 +438,23 @@ def test_circular_dependencies():
         project.run_project()
 
 
+def test_dependent_phase_ordering():
+
+    wrong_order = deepcopy(config)
+    wrong_order["spi_vessel"] = "test_scour_protection_vessel"
+    wrong_order["scour_protection"] = {"tons_per_substructure": 200}
+    wrong_order["install_phases"] = {
+        "ScourProtectionInstallation": ("TurbineInstallation", 0.1),
+        "TurbineInstallation": ("MonopileInstallation", 0.1),
+        "MonopileInstallation": 0,
+    }
+
+    project = ProjectManager(wrong_order)
+    project.run_project()
+
+    assert len(project.phase_times) == 3
+
+
 def test_ProjectProgress():
 
     data = [
