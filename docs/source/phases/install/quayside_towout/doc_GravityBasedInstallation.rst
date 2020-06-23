@@ -7,18 +7,4 @@ For details of the code implementation, please see
 Overview
 --------
 
-
-Configuration
--------------
-
-
-Processes
----------
-
-
-Configuration Examples
-----------------------
-
-
-Process Diagrams
-----------------
+This module will be expanded in a future release.
