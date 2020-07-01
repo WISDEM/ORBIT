@@ -3,6 +3,17 @@
 ORBIT Changelog
 ===============
 
+0.5.0
+-----
+
+- Initial release of floating substructure functionality in ORBIT.
+- New design modules: ``MooringSystemDesign``, ``SparDesign`` and
+  ``SemiSubmersibleDesign``.
+- New installation modules: ``MooringSystemInstallation`` and
+  ``MooredSubInstallation``
+- Cable design and installation modules modified to calculate catenary lengths
+  of suspended cable at depths greater than 60m.
+
 0.4.3
 -----
 
