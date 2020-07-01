@@ -359,11 +359,11 @@ def install_moored_substructures(
     while n < substructures:
         if queue.vessel:
 
+            start = vessel.env.now
             if n == 0:
                 vessel.mobilize()
                 yield vessel.transit(distance)
 
-            start = vessel.env.now
             yield vessel.task(
                 "Position Substructure",
                 2,
@@ -395,6 +395,7 @@ def install_moored_substructures(
                 num_vessels=station_keeping_vessels,
             )
             yield queue.vessel.release.succeed()
+            n += 1
 
         else:
             start = vessel.env.now

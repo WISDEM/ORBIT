@@ -178,7 +178,7 @@ class GravityBasedInstallation(InstallPhase):
         for i in range(num_groups):
             g = TowingGroup(vessel, num=i + 1)
             self.env.register(g)
-            g.initialize(mobilize=False)
+            g.initialize()
             self.installation_groups.append(g)
 
             transfer_gbf_substructures_from_storage(
@@ -211,7 +211,7 @@ class GravityBasedInstallation(InstallPhase):
         vessel = Vessel("Multi-Purpose Support Vessel", specs)
 
         self.env.register(vessel)
-        vessel.initialize()
+        vessel.initialize(mobilize=False)
         self.support_vessel = vessel
 
         station_keeping_vessels = self.config["towing_vessel_groups"][
@@ -350,11 +350,11 @@ def install_gravity_base_foundations(
     while n < substructures:
         if queue.vessel:
 
+            start = vessel.env.now
             if n == 0:
                 vessel.mobilize()
                 yield vessel.transit(distance)
 
-            start = vessel.env.now
             yield vessel.task(
                 "Position Substructure",
                 5,
@@ -390,6 +390,7 @@ def install_gravity_base_foundations(
                 num_vessels=station_keeping_vessels,
             )
             yield queue.vessel.release.succeed()
+            n += 1
 
         else:
             start = vessel.env.now
