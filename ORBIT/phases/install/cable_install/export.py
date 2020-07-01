@@ -85,7 +85,10 @@ class ExportCableInstallation(InstallPhase):
         - Routes to specific setup scripts based on configured strategy.
         """
 
+        depth = self.config["site"]["depth"]
         system = self.config["export_system"]
+        self.free_cable_length = system.get("free_cable_length", depth / 1000)
+
         self.cable = Cable(system["cable"]["linear_density"])
         self.sections = system["cable"]["sections"]
         self.number = system["cable"].get("number", 1)
@@ -95,7 +98,9 @@ class ExportCableInstallation(InstallPhase):
         self.initialize_trench_vessel()
 
         # Perform onshore construction
-        self.onshore_construction(**kwargs)
+        onshore = kwargs.get("include_onshore_construction", True)
+        if onshore:
+            self.onshore_construction(**kwargs)
 
         # Perform cable installation
         install_export_cables(
@@ -106,6 +111,7 @@ class ExportCableInstallation(InstallPhase):
             distances=self.distances,
             burial_vessel=self.bury_vessel,
             trench_vessel=self.trench_vessel,
+            free_cable_length=self.free_cable_length,
             **kwargs,
         )
 
@@ -172,7 +178,9 @@ class ExportCableInstallation(InstallPhase):
         )
 
         switchyard_cost = 18115 * voltage + 165944
-        onshore_substation_cost = (0.165 * 1e6) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
+        onshore_substation_cost = (
+            0.165 * 1e6
+        ) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
         onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
@@ -253,6 +261,7 @@ def install_export_cables(
     distances,
     burial_vessel=None,
     trench_vessel=None,
+    free_cable_length=None,
     **kwargs,
 ):
     """
@@ -286,25 +295,33 @@ def install_export_cables(
         the cable lay vessel and digs a trench.
     """
 
+    ground_distance = -free_cable_length
+    for s in sections:
+        try:
+            length, speed = s
+
+        except TypeError:
+            length = s
+
+        ground_distance += length
+
     # Conduct trenching operations
     if trench_vessel is None:
         pass
+
     else:
         for _ in range(number):
-            # Total export cable length along which to dig trench
-            total_sections_distance = sum(sections)
-
             # Trenching vessel can dig a trench during inbound or outbound journey
             if trench_vessel.at_port:
                 trench_vessel.at_port = False
                 yield dig_export_cables_trench(
-                    trench_vessel, total_sections_distance, **kwargs
+                    trench_vessel, ground_distance, **kwargs
                 )
                 trench_vessel.at_site = True
             elif trench_vessel.at_site:
                 trench_vessel.at_site = False
                 yield dig_export_cables_trench(
-                    trench_vessel, total_sections_distance, **kwargs
+                    trench_vessel, ground_distance, **kwargs
                 )
                 trench_vessel.at_port = True
 
@@ -312,7 +329,7 @@ def install_export_cables(
         # TODO: replace with demobilization method
         if trench_vessel.at_site:
             trench_vessel.at_site = False
-            yield trench_vessel.transit(total_sections_distance, **kwargs)
+            yield trench_vessel.transit(ground_distance, **kwargs)
         trench_vessel.at_port = True
 
     for _ in range(number):
@@ -378,7 +395,7 @@ def install_export_cables(
 
     else:
         vessel.submit_debug_log(message="Export cable lay process completed!")
-        bury_export_cables(burial_vessel, length, number, **kwargs)
+        bury_export_cables(burial_vessel, ground_distance, number, **kwargs)
 
 
 @process

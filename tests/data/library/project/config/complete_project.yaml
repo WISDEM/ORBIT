@@ -40,8 +40,6 @@ plant:
   row_spacing: 7
   substation_distance: 1
   turbine_spacing: 7
-port:
-  num_cranes: 1
 scour_protection_design:
   cost_per_tonne: 40
   scour_protection_depth: 1

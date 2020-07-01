@@ -273,7 +273,10 @@ PATH_LIBRARY = {
     "spi_vessel": "vessels",
     "trench_dig_vessel": "vessels",
     "feeder": "vessels",
+    "mooring_install_vessel": "vessels",
     "wtiv": "vessels",
+    "towing_vessel": "vessels",
+    "support_vessel": "vessels",
     # cables
     "cables": "cables",
     "array_system": "cables",

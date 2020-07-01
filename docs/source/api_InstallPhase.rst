@@ -17,5 +17,7 @@ description of vessel scheduling within ORBIT, please see `add link`.
    phases/install/array/api_ArrayCableInstall
    phases/install/export/api_ExportCableInstall
    phases/install/oss/api_OffshoreSubstationInstall
+   phases/install/quayside_towout/api_MooredSubInstallation
+   phases/install/mooring/api_MooringSystemInstallation
 
 ..    phases/install/jacket/api_JacketInstall

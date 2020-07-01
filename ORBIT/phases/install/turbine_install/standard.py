@@ -51,7 +51,7 @@ class TurbineInstallation(InstallPhase):
         "site": {"depth": "m", "distance": "km"},
         "plant": {"num_turbines": "int"},
         "port": {
-            "num_cranes": "int",
+            "num_cranes": "int (optional, default: 1)",
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },

@@ -37,7 +37,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         "feeder": "dict | str",
         "site": {"distance": "km", "depth": "m"},
         "port": {
-            "num_cranes": "int",
+            "num_cranes": "int (optional, default: 1)",
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },

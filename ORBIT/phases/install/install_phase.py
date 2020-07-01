@@ -61,13 +61,14 @@ class InstallPhase(BasePhase):
         Initializes a Port object with N number of cranes.
         """
 
+        self.port = Port(self.env)
+
         try:
             cranes = self.config["port"]["num_cranes"]
-            self.port = Port(self.env)
             self.port.crane = simpy.Resource(self.env, cranes)
 
         except KeyError:
-            self.port = Port(self.env)
+            self.port.crane = simpy.Resource(self.env, 1)
 
     def run(self, until=None):
         """
@@ -101,7 +102,8 @@ class InstallPhase(BasePhase):
 
         else:
             key = "port_cost_per_month"
-            rate = self.config["port"].get("monthly_rate", self.defaults[key])
+            port_config = self.config.get("port", {})
+            rate = port_config.get("monthly_rate", self.defaults[key])
 
             months = self.total_phase_time / (8760 / 12)
             return months * rate

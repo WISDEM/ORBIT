@@ -206,3 +206,36 @@ def test_correct_turbines():
 
     with pytest.raises(ValueError):
         array.run()
+
+
+def test_floating_calculations():
+
+    base = deepcopy(config_full_ring)
+    base["site"]["depth"] = 50
+    number = base["plant"]["num_turbines"]
+
+    sim = ArraySystemDesign(base)
+    sim.run()
+
+    base_length = sim.total_length
+
+    floating_no_cat = deepcopy(base)
+    floating_no_cat["site"]["depth"] = 250
+    floating_no_cat["array_system_design"]["touchdown_distance"] = 0
+
+    sim2 = ArraySystemDesign(floating_no_cat)
+    sim2.run()
+
+    no_cat_length = sim2.total_length
+    assert no_cat_length == pytest.approx(
+        base_length + 2 * (200 / 1000) * number
+    )
+
+    floating_cat = deepcopy(base)
+    floating_cat["site"]["depth"] = 250
+
+    sim3 = ArraySystemDesign(floating_cat)
+    sim3.run()
+
+    with_cat_length = sim3.total_length
+    assert with_cat_length < no_cat_length

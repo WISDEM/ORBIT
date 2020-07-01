@@ -15,7 +15,6 @@ plant:
   turbine_spacing: 7
 port:
   monthly_rate: 10000
-  num_cranes: 1
 site:
   depth: 15
   distance: 50
