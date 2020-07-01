@@ -1,5 +1,5 @@
 blade:
-  deck_space: 385     # m^2      ##### Reset all deck_space = 1 to avoid vessel constraints
+  deck_space: 385     # m^2
   length: 107          # m
   type: Blade
   mass: 54         # t
