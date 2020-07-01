@@ -82,4 +82,4 @@ def test_custom_num_lines():
     m = MooringSystemDesign(config)
     m.run()
 
-    assert m.design_result["num_lines"] == 5
+    assert m.design_result["mooring_system"]["num_lines"] == 5
