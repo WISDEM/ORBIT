@@ -497,6 +497,7 @@ class MonopileDesign(DesignPhase):
         """
 
         load_factor = kwargs.get("load_factor", 3.375)
+        print(load_factor)
 
         F_50y = self.calculate_50year_wind_load(
             mean_windspeed=mean_windspeed,
