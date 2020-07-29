@@ -186,6 +186,8 @@ class ExportCableInstallation(InstallPhase):
             + transmission_line_cost
         )
 
+        print(onshore_transmission_cost)
+
         return onshore_transmission_cost
 
     def initialize_installation_vessel(self):
