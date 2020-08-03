@@ -137,8 +137,8 @@ class ExportCableInstallation(InstallPhase):
         """
 
         construction_time = kwargs.get("onshore_construction_time", 0.0)
-        construction_cost = self.calculate_onshore_transmission_cost(**kwargs)
-
+        # construction_cost = self.calculate_onshore_transmission_cost(**kwargs)
+        construction_cost = 0
         if construction_time:
             _ = self.env.timeout(construction_time)
             self.env.run()
