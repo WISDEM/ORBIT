@@ -805,13 +805,13 @@ class ProjectManager:
         if not self._output_logs:
             raise Exception("Project hasn't been ran yet.")
 
-        return self._output_logs
+        return sorted(self._output_logs, key=lambda l: l["time"])
 
     @property
     def project_time(self):
         """Returns total project time as the time of the last log."""
 
-        return self.project_logs[-1]["time"]
+        return self.project_actions[-1]["time"]
 
     @property
     def month_bins(self):
