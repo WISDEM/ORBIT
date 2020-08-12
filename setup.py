@@ -31,7 +31,7 @@ setup(
         "scipy",
         "pandas",
         "pyyaml",
-        "openmdao>= 2.0",
+        "openmdao>= 3.2",
     ],
     extras_require={
         "dev": [
