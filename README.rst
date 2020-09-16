@@ -38,7 +38,7 @@ Dependencies
 - NumPy
 - SciPy
 - Matplotlib
-- OpenMDAO (>=2.0)
+- OpenMDAO (>=3.2)
 
 Development
 ~~~~~~~~~~~
