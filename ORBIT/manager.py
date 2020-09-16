@@ -158,6 +158,12 @@ class ProjectManager:
 
         return self._phases
 
+    @property
+    def project_params(self):
+        """Returns defined project parameters, if found."""
+
+        return self.config.get("project_parameters", {})
+
     @classmethod
     def compile_input_dict(cls, phases):
         """
@@ -189,14 +195,19 @@ class ProjectManager:
             config = cls.merge_dicts(config, d.expected_config)
             config = cls.remove_keys(config, d.output_config)
 
-        config["commissioning"] = "float (optional, default: 0.01)"
-        config["decommissioning"] = "float (optional, default: 0.15)"
-
-        config["ncf"] = "float (optional, default: 0.4)"
-        config["offtake_price"] = "$/MWh (optional, default: 80)"
-        config["project_lifetime"] = "yrs (optional, default: 25)"
-        config["discount_rate"] = "yearly (optional, default: .025)"
-        config["opex_rate"] = "$/kW/year (optional, default: 150)"
+        config["project_parameters"] = {
+            "turbine_capex": "$/kW (optional, default: 0.0)",
+            "ncf": "float (optional, default: 0.4)",
+            "offtake_price": "$/MWh (optional, default: 80)",
+            "project_lifetime": "yrs (optional, default: 25)",
+            "discount_rate": "yearly (optional, default: .025)",
+            "opex_rate": "$/kW/year (optional, default: 150)",
+            "construction_insurance": "$/kW (optional, default: 44)",
+            "construction_financing": "$/kW (optional, default: 183)",
+            "contingency": "$/kW (optional, default: 316)",
+            "commissioning": "$/kW (optional, default: 44)",
+            "decommissioning": "$/kW (optional, default: 58)",
+        }
 
         config["design_phases"] = [*design_phases.keys()]
         config["install_phases"] = [*install_phases.keys()]
@@ -825,7 +836,7 @@ class ProjectManager:
         construction."""
 
         opex = self.monthly_opex
-        lifetime = self.config.get("project_lifetime", 25)
+        lifetime = self.project_params.get("project_lifetime", 25)
 
         _expense_logs = self._filter_logs(keys=["cost", "time"])
         expenses = np.array(
@@ -843,8 +854,8 @@ class ProjectManager:
     def monthly_opex(self):
         """Returns the monthly OpEx expenditures based on project size."""
 
-        rate = self.config.get("opex_rate", 150)
-        lifetime = self.config.get("project_lifetime", 25)
+        rate = self.project_params.get("opex_rate", 150)
+        lifetime = self.project_params.get("project_lifetime", 25)
 
         try:
             times, turbines = self.progress.energize_points
@@ -869,9 +880,9 @@ class ProjectManager:
         """Returns the monthly revenue based on when array system strings can
         be energized, eg. 'self.progress.energize_points'."""
 
-        ncf = self.config.get("ncf", 0.4)
-        price = self.config.get("offtake_price", 80)
-        lifetime = self.config.get("project_lifetime", 25)
+        ncf = self.project_params.get("ncf", 0.4)
+        price = self.project_params.get("offtake_price", 80)
+        lifetime = self.project_params.get("project_lifetime", 25)
 
         times, turbines = self.progress.energize_points
         dig = list(np.digitize(times, self.month_bins))
@@ -909,7 +920,7 @@ class ProjectManager:
         """Returns the net present value of the project based on
         `self.cash_flow`."""
 
-        dr = self.config.get("discount_rate", 0.025)
+        dr = self.project_params.get("discount_rate", 0.025)
         pr = (1 + dr) ** (1 / 12) - 1
 
         cash_flow = self.cash_flow
@@ -1130,75 +1141,12 @@ class ProjectManager:
         return capex
 
     @property
-    def commissioning(self):
-        """
-        Returns the cost of commissioning based on the configured phases.
-        Defaults to 1% of total BOS CAPEX.
-        """
-
-        _comm = self.config.get("commissioning", 0.0)
-        if (_comm < 0.0) or (_comm > 1.0):
-            raise ValueError("'commissioning' must be between 0 and 1")
-
-        total = self.bos_capex + self.turbine_capex
-
-        comm = total * _comm
-        return comm
-
-    @property
-    def commissioning_per_kw(self):
-        """
-        Returns the cost of commissioning per kW.
-        """
-
-        try:
-            capex = self.commissioning / (self.capacity * 1000)
-
-        except TypeError:
-            capex = None
-
-        return capex
-
-    @property
-    def decommissioning(self):
-        """
-        Returns the cost of decommissioning based on the configured
-        installation phases. Defaults to 15% of installation CAPEX.
-        """
-
-        _decomm = self.config.get("decommissioning", 0.0)
-        if (_decomm < 0.0) or (_decomm > 1.0):
-            raise ValueError("'decommissioning' must be between 0 and 1")
-
-        try:
-            decomm = self.installation_capex * _decomm
-
-        except KeyError:
-            return 0.0
-
-        return decomm
-
-    @property
-    def decommissioning_per_kw(self):
-        """
-        Returns the cost of decommissioning per kW.
-        """
-
-        try:
-            capex = self.decommissioning / (self.capacity * 1000)
-
-        except TypeError:
-            capex = None
-
-        return capex
-
-    @property
     def turbine_capex(self):
         """
         Returns the total turbine CAPEX.
         """
 
-        _capex = self.config.get("turbine_capex", 0.0)
+        _capex = self.project_params.get("turbine_capex", 0.0)
         try:
             num_turbines = self.config["plant"]["num_turbines"]
             rating = self.config["turbine"]["turbine_rating"]
@@ -1220,7 +1168,7 @@ class ProjectManager:
         Returns the turbine CAPEX/kW.
         """
 
-        _capex = self.config.get("turbine_capex", None)
+        _capex = self.project_params.get("turbine_capex", None)
         return _capex
 
     @property
@@ -1229,12 +1177,7 @@ class ProjectManager:
         Returns total project CAPEX including commissioning and decommissioning.
         """
 
-        return (
-            self.bos_capex
-            + self.turbine_capex
-            + self.commissioning
-            + self.decommissioning
-        )
+        return self.bos_capex + self.turbine_capex + self.soft_capex
 
     @property
     def total_capex_per_kw(self):
@@ -1249,6 +1192,35 @@ class ProjectManager:
             capex = None
 
         return capex
+
+    @property
+    def soft_capex(self):
+        """Returns total project cost costs."""
+
+        try:
+            capex = self.soft_capex_per_kw * self.capacity * 1000
+
+        except TypeError:
+            capex = None
+
+        return capex
+
+    @property
+    def soft_capex_per_kw(self):
+        """
+        Returns project soft costs per kW. Default numbers are based on the
+        Cost of Energy Review (Stehly and Beiter 2018).
+        """
+
+        insurance = self.project_params.get("construction_insurance", 44)
+        financing = self.project_params.get("construction_financing", 183)
+        contingency = self.project_params.get("contingency", 316)
+        commissioning = self.project_params.get("commissioning", 44)
+        decommissioning = self.project_params.get("decommissioning", 58)
+
+        return sum(
+            [insurance, financing, contingency, commissioning, decommissioning]
+        )
 
     def export_configuration(self, file_name):
         """
