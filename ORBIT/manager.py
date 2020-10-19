@@ -402,6 +402,19 @@ class ProjectManager:
 
         return phase_config
 
+    @property
+    def phase_ends(self):
+
+        ret = {}
+        for k, t in self.phase_times.items():
+            try:
+                ret[k] = self.phase_starts[k] + t
+
+            except KeyError:
+                pass
+
+        return ret
+
     def run_install_phase(self, name, start, **kwargs):
         """
         Compiles the phase specific configuration input dictionary for input
