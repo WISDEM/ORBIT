@@ -9,7 +9,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from marmot import process
 
 from ORBIT.core import Cargo
-from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install.monopile_install.common import (
     bolt_transition_piece,
     cure_transition_piece_grout,

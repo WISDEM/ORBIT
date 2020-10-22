@@ -11,7 +11,7 @@ import pytest
 
 from tests.data import test_weather
 from ORBIT.library import extract_library_specs
-from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import OffshoreSubstationInstallation
 
 config_single = extract_library_specs("config", "oss_install")
