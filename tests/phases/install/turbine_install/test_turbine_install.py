@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from tests.data import test_weather
-from ORBIT.library import extract_library_specs
+from ORBIT.core.library import extract_library_specs
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import TurbineInstallation
 

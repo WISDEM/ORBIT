@@ -15,9 +15,12 @@ from itertools import product
 import numpy as np
 import pandas as pd
 
-from ORBIT import library
 from ORBIT.phases import DesignPhase, InstallPhase
-from ORBIT.library import initialize_library, extract_library_data
+from ORBIT.core.library import (
+    initialize_library,
+    export_library_specs,
+    extract_library_data,
+)
 from ORBIT.phases.design import (
     SparDesign,
     MonopileDesign,
@@ -1246,7 +1249,7 @@ class ProjectManager:
             Name to use for the file.
         """
 
-        library.export_library_specs("config", file_name, self.config)
+        export_library_specs("config", file_name, self.config)
 
 
 class ProjectProgress:

@@ -9,7 +9,13 @@ import os
 
 import yaml
 
+from ORBIT.core.library import loader
+
 DIR = os.path.split(__file__)[0]
 
 with open(os.path.join(DIR, "process_times.yaml"), "r") as f:
-    process_times = yaml.load(f, Loader=yaml.Loader)
+    process_times = yaml.load(f, Loader=loader)
+
+
+with open(os.path.join(DIR, "project_costs.yaml"), "r") as f:
+    project_costs = yaml.load(f, Loader=loader)

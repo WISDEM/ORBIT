@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from ORBIT.library import export_library_specs, extract_library_specs
+from ORBIT.core.library import export_library_specs, extract_library_specs
 from ORBIT.phases.design._cables import Plant, CableSystem
 
 
