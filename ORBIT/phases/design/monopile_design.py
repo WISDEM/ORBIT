@@ -10,7 +10,7 @@ from math import pi, log
 
 from scipy.optimize import fsolve
 
-from ORBIT.core.defaults import project_costs
+from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
 
@@ -316,7 +316,7 @@ class MonopileDesign(DesignPhase):
         _key = "monopile_steel_cost"
 
         try:
-            cost = _design.get(_key, project_costs[_key])
+            cost = _design.get(_key, common_costs[_key])
 
         except KeyError:
             raise Exception("Cost of monopile steel not found.")
@@ -333,7 +333,7 @@ class MonopileDesign(DesignPhase):
         _key = "tp_steel_cost"
 
         try:
-            cost = _design.get(_key, project_costs[_key])
+            cost = _design.get(_key, common_costs[_key])
 
         except KeyError:
             raise Exception("Cost of transition piece steel not found.")
