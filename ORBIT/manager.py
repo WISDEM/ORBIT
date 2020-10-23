@@ -449,13 +449,12 @@ class ProjectManager:
         _catch = kwargs.get("catch_exceptions", False)
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
-
-        kwargs = _config.pop("kwargs", {})
+        processes = _config.pop("processes", {})
 
         if _catch:
             try:
                 phase = _class(
-                    _config, weather=weather, phase_name=name, **kwargs
+                    _config, weather=weather, phase_name=name, **processes
                 )
                 phase.run()
 
@@ -467,7 +466,9 @@ class ProjectManager:
                 return None, None, None
 
         else:
-            phase = _class(_config, weather=weather, phase_name=name, **kwargs)
+            phase = _class(
+                _config, weather=weather, phase_name=name, **processes
+            )
             phase.run()
 
         self._phases[name] = phase
