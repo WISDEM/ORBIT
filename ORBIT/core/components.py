@@ -43,10 +43,6 @@ class Crane:
             Dictionary of crane specifications.
         """
 
-        # Physical Dimensions
-        self.boom_length = crane_specs.get("boom_length", None)
-        self.radius = crane_specs.get("radius", None)
-
         # Operational Parameters
         self.max_lift = crane_specs.get("max_lift", None)
         self.max_hook_height = crane_specs.get("max_hook_height", None)
@@ -106,7 +102,6 @@ class JackingSys:
         """
 
         # Physical Dimensions
-        self.num_legs = jacksys_specs.get("num_legs", None)
         self.leg_length = jacksys_specs.get("leg_length", None)
         self.air_gap = jacksys_specs.get("air_gap", None)
         self.leg_pen = jacksys_specs.get("leg_pen", None)
