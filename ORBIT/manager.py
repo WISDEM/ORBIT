@@ -15,9 +15,12 @@ from itertools import product
 import numpy as np
 import pandas as pd
 
-from ORBIT import library
 from ORBIT.phases import DesignPhase, InstallPhase
-from ORBIT.library import initialize_library, extract_library_data
+from ORBIT.core.library import (
+    initialize_library,
+    export_library_specs,
+    extract_library_data,
+)
 from ORBIT.phases.design import (
     SparDesign,
     MonopileDesign,
@@ -446,13 +449,12 @@ class ProjectManager:
         _catch = kwargs.get("catch_exceptions", False)
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
-
-        kwargs = _config.pop("kwargs", {})
+        processes = _config.pop("processes", {})
 
         if _catch:
             try:
                 phase = _class(
-                    _config, weather=weather, phase_name=name, **kwargs
+                    _config, weather=weather, phase_name=name, **processes
                 )
                 phase.run()
 
@@ -464,7 +466,9 @@ class ProjectManager:
                 return None, None, None
 
         else:
-            phase = _class(_config, weather=weather, phase_name=name, **kwargs)
+            phase = _class(
+                _config, weather=weather, phase_name=name, **processes
+            )
             phase.run()
 
         self._phases[name] = phase
@@ -1246,7 +1250,7 @@ class ProjectManager:
             Name to use for the file.
         """
 
-        library.export_library_specs("config", file_name, self.config)
+        export_library_specs("config", file_name, self.config)
 
 
 class ProjectProgress:

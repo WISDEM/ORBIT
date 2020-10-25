@@ -11,7 +11,7 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from ORBIT.library import extract_library_specs
+from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ArraySystemDesign, CustomArraySystemDesign
 from ORBIT.core.exceptions import LibraryItemNotFoundError
 

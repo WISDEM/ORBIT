@@ -11,8 +11,8 @@ import pytest
 
 from ORBIT import ProjectManager
 from tests.data import test_weather
-from ORBIT.library import extract_library_specs
 from ORBIT.manager import ProjectProgress
+from ORBIT.core.library import extract_library_specs
 from ORBIT.core.exceptions import (
     MissingInputs,
     PhaseNotFound,

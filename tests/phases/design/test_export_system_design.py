@@ -9,7 +9,7 @@ from copy import deepcopy
 
 import pytest
 
-from ORBIT.library import extract_library_specs
+from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ExportSystemDesign
 
 config = extract_library_specs("config", "export_design")

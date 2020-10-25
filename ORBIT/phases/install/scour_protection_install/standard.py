@@ -12,7 +12,7 @@ import simpy
 from marmot import process
 
 from ORBIT.core import Vessel
-from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import CargoMassExceeded, InsufficientAmount
 
@@ -55,7 +55,6 @@ class ScourProtectionInstallation(InstallPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.extract_defaults()
 
         self.setup_simulation(**kwargs)
 
