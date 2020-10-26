@@ -1,9 +1,7 @@
 crane_specs:
   max_lift: 500
 jacksys_specs:
-  air_gap: 10
   leg_length: 85
-  leg_pen: 5
   max_depth: 40
   max_extension: 60
   speed_above_depth: 0.5

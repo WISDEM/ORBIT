@@ -1,9 +1,7 @@
 crane_specs:
   max_lift: 500             # t
 jacksys_specs:
-  air_gap: 10               # m, distance from MSL to jacked up height
   leg_length: 85            # m
-  leg_pen: 5                # m
   max_depth: 40             # m
   max_extension: 60         # m
   speed_above_depth: 0.5    # m/min

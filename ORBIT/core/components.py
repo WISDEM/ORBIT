@@ -76,6 +76,34 @@ class Crane:
         return duration
 
 
+class DynamicPositioning:
+    """Base Dynamic Positioning Class"""
+
+    def __init__(self, dp_specs):
+        """
+        Creates an instance of DynamicPositioning.
+
+        Parameters
+        ----------
+        dp_specs : dict
+            Dictionary containing dynamic positioning specs.
+        """
+
+        self.extract_dp_specs(dp_specs)
+
+    def extract_dp_specs(self, dp_specs):
+        """
+        Extracts and defines jacking system specifications.
+
+        Parameters
+        ----------
+        jacksys_specs : dict
+            Dictionary containing jacking system specifications.
+        """
+
+        self.dp_class = dp_specs.get("class", 1)
+
+
 class JackingSys:
     """Base Jacking System Class"""
 

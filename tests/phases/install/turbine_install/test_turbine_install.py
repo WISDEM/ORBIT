@@ -24,12 +24,13 @@ config_long_mobilize = extract_library_specs(
 config_wtiv_feeder = extract_library_specs("config", "turbine_install_feeder")
 config_wtiv_multi_feeder = deepcopy(config_wtiv_feeder)
 config_wtiv_multi_feeder["num_feeders"] = 2
+floating = extract_library_specs("config", "floating_turbine_install_feeder")
 
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 def test_simulation_setup(config):
 
@@ -51,22 +52,27 @@ def test_simulation_setup(config):
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 def test_vessel_creation(config):
 
     sim = TurbineInstallation(config)
     assert sim.wtiv
-    assert sim.wtiv.jacksys
     assert sim.wtiv.crane
     assert sim.wtiv.storage
+
+    js = sim.wtiv._jacksys_specs
+    dp = sim.wtiv._dp_specs
+
+    if not any([js, dp]):
+        assert False
 
     if config.get("feeder", None) is not None:
         assert len(sim.feeders) == config["num_feeders"]
 
         for feeder in sim.feeders:
-            assert feeder.jacksys
+            # assert feeder.jacksys
             assert feeder.storage
 
 
@@ -84,8 +90,8 @@ def test_vessel_mobilize(config, expected):
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 @pytest.mark.parametrize(
     "weather", (None, test_weather), ids=["no_weather", "test_weather"]
@@ -110,8 +116,8 @@ def test_for_complete_logging(weather, config):
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 def test_for_complete_installation(config):
 
