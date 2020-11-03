@@ -8,13 +8,13 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import openmdao.api as om
 
-from ORBIT.api.wisdem import OrbitWisdem
+from ORBIT.api.wisdem import Orbit
 
 
 def test_wisdem_monopile_api_default():
 
     prob = om.Problem()
-    prob.model = OrbitWisdem(floating=False)
+    prob.model = Orbit(floating=False)
     prob.setup()
 
     prob.run_model()
@@ -26,7 +26,7 @@ def test_wisdem_monopile_api_default():
 def test_wisdem_floating_api_default():
 
     prob = om.Problem()
-    prob.model = OrbitWisdem(floating=True)
+    prob.model = Orbit(floating=True)
     prob.setup()
 
     prob.run_model()

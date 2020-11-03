@@ -19,12 +19,19 @@ class Orbit(om.Group):
         # Define all input variables from all models
         self.set_input_defaults('wtiv', 'example_wtiv')
         self.set_input_defaults('feeder', 'example_feeder')
+        self.set_input_defaults('num_feeders', 1)
+        self.set_input_defaults('num_towing', 1)
+        self.set_input_defaults('num_station_keeping', 3)
         self.set_input_defaults('oss_install_vessel', 'example_heavy_lift_vessel')
+        self.set_input_defaults('site_distance', 40.0, units='km')
         self.set_input_defaults('site_distance_to_landfall', 40.0, units='km')
         self.set_input_defaults('interconnection_distance', 40.0, units='km')
         self.set_input_defaults('plant_turbine_spacing', 7)
         self.set_input_defaults('plant_row_spacing', 7)
         self.set_input_defaults('plant_substation_distance', 1, units='km')
+        self.set_input_defaults('num_port_cranes', 1)
+        self.set_input_defaults('num_assembly_lines', 1)
+        self.set_input_defaults('takt_time', 170.0, units='h')
         self.set_input_defaults('port_cost_per_month', 2e6, units='USD/mo')
         self.set_input_defaults('commissioning_pct', 0.01)
         self.set_input_defaults('decommissioning_pct', 0.15)
@@ -33,8 +40,9 @@ class Orbit(om.Group):
         self.set_input_defaults('site_assessment_cost', 25e6, units='USD')
         self.set_input_defaults('construction_operations_plan_cost', 2.5e6, units='USD')
         self.set_input_defaults('design_install_plan_cost', 2.5e6, units='USD')        
+        self.set_input_defaults('boem_review_cost', 0.0, units='USD')        
         
-        self.add_subsystem('orbit', OrbitWisdemFixed(floating=self.options['floating']), promotes=['*'])
+        self.add_subsystem('orbit', OrbitWisdem(floating=self.options['floating']), promotes=['*'])
         
 
 class OrbitWisdem(om.ExplicitComponent):
@@ -93,7 +101,7 @@ class OrbitWisdem(om.ExplicitComponent):
         
         # Port
         self.add_input('port_cost_per_month', 2e6, units='USD/mo', desc='Monthly port costs.')
-        self.add_input('takt_time', 0.0, units='h', desc='Substructure assembly cycle time when doing assembly at the port.')
+        self.add_input('takt_time', 170.0, units='h', desc='Substructure assembly cycle time when doing assembly at the port.')
         self.add_discrete_input('num_assembly_lines', 1, desc='Number of assembly lines used when assembly occurs at the port.')
         self.add_discrete_input('num_port_cranes', 1, desc='Number of cranes used at the port to load feeders / WTIVS when assembly occurs on-site or assembly cranes when assembling at port.')
 
