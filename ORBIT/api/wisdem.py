@@ -351,14 +351,3 @@ class OrbitWisdem(om.ExplicitComponent):
         outputs['total_capex_kW'] = project.total_capex_per_kw
         outputs['installation_time'] = project.installation_time
         outputs['installation_capex'] = project.installation_capex
-
-if __name__ == '__main__':
-
-    prob = om.Problem()
-    prob.model = OrbitWisdem()
-    prob.setup()
-
-    prob.run_driver()
-
-    prob.model.list_inputs()
-    prob.model.list_outputs()
