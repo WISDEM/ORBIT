@@ -13,9 +13,10 @@ from copy import deepcopy
 import pandas as pd
 import pytest
 
+from ORBIT import ProjectManager
 from tests.data import test_weather
-from ORBIT.library import extract_library_specs
-from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.library import extract_library_specs
+from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import MooringSystemInstallation
 
 config = extract_library_specs("config", "mooring_system_install")
@@ -80,6 +81,51 @@ def test_kwargs(anchor, key):
         new_sim = MooringSystemInstallation(new, **kwargs)
         new_sim.run()
         new_time = new_sim.total_phase_time
+
+        if new_time > baseline:
+            pass
+
+        else:
+            failed.append(kw)
+
+    if failed:
+        raise Exception(f"'{failed}' not affecting results.")
+
+    else:
+        assert True
+
+
+@pytest.mark.parametrize(
+    "anchor, key",
+    [
+        ("Suction Pile", "suction_pile_install_time"),
+        ("Drag Embedment", "drag_embed_install_time"),
+    ],
+)
+def test_kwargs_in_ProjectManager(anchor, key):
+
+    base = deepcopy(config)
+    base["mooring_system"]["anchor_type"] = anchor
+    base["install_phases"] = ["MooringSystemInstallation"]
+
+    project = ProjectManager(base)
+    project.run_project()
+    baseline = project.phase_times["MooringSystemInstallation"]
+
+    keywords = ["mooring_system_load_time", "mooring_site_survey_time", key]
+
+    failed = []
+
+    for kw in keywords:
+
+        default = pt[kw]
+        processes = {kw: default + 2}
+        new_config = deepcopy(base)
+        new_config["processes"] = processes
+
+        new_project = ProjectManager(new_config)
+        new_project.run_project()
+        new_time = new_project.phase_times["MooringSystemInstallation"]
 
         if new_time > baseline:
             pass

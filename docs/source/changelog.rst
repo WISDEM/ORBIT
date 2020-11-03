@@ -3,6 +3,12 @@
 ORBIT Changelog
 ===============
 
+1.0.0
+-----
+
+- Process time kwargs should now be passed through ``ProjectManager`` in a
+  dictionary named ``processes`` in the config.
+
 0.5.0
 -----
 

@@ -12,7 +12,7 @@ from collections import Counter, OrderedDict
 import numpy as np
 from scipy.optimize import fsolve
 
-from ORBIT.library import extract_library_specs
+from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import DesignPhase
 
 
