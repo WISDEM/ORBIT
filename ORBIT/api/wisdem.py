@@ -1,14 +1,11 @@
-"""WISDEM Monopile API"""
+'''WISDEM Monopile API'''
 
-__author__ = ["Jake Nunemaker"]
-__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
-__maintainer__ = "Jake Nunemaker"
-__email__ = "jake.nunemaker@nrel.gov"
+__author__ = ['Jake Nunemaker']
+__copyright__ = 'Copyright 2020, National Renewable Energy Laboratory'
+__maintainer__ = 'Jake Nunemaker'
+__email__ = 'jake.nunemaker@nrel.gov'
 
 
-import os
-
-import yaml
 import openmdao.api as om
 
 from ORBIT import ProjectManager
@@ -37,18 +34,20 @@ class Orbit(om.Group):
         self.add_subsystem('orbit', OrbitWisdemFixed(), promotes=['*'])
         
 
-class OrbitWisdemFixed(om.ExplicitComponent):
-    """ORBIT-WISDEM Fixed Substructure API"""
+class OrbitWisdem(om.ExplicitComponent):
+    '''ORBIT-WISDEM Fixed Substructure API'''
 
     def setup(self):
-        """"""
+        ''''''
         # Inputs
         # self.add_discrete_input('weather_file', 'block_island', desc='Weather file to use for installation times.')
 
         # Vessels
         self.add_discrete_input('wtiv', 'example_wtiv', desc='Vessel configuration to use for installation of foundations and turbines.')
         self.add_discrete_input('feeder', 'future_feeder', desc='Vessel configuration to use for (optional) feeder barges.')
-        self.add_discrete_input('num_feeders', 0, desc='Number of feeder barges to use for installation of foundations and turbines.')
+        self.add_discrete_input('num_feeders', 1, desc='Number of feeder barges to use for installation of foundations and turbines.')
+        self.add_discrete_input('num_towing', 1, desc='Number of towing vessels to use for floating platforms that are assembled at port (with or without the turbine).')
+        self.add_discrete_input('num_station_keeping', 3, desc='Number of station keeping vessels that attach to floating platforms under tow-out.')
         self.add_discrete_input('oss_install_vessel', 'example_heavy_lift_vessel', desc='Vessel configuration to use for installation of offshore substations.')
 
         # Site
@@ -79,8 +78,13 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         self.add_input('blade_mass', 50., units='t', desc='mass of an individual blade.')
         self.add_input('blade_deck_space', 0., units='m**2', desc='Deck space required to transport a blade. Defaults to 0 in order to not be a constraint on installation.')
 
+        self.add_discrete_input('num_mooring_lines', 3, desc='Number of mooring lines per platform.')
+        
         # Port
         self.add_input('port_cost_per_month', 2e6, units='USD/mo', desc='Monthly port costs.')
+        self.add_input('takt_time', 0.0, units='h', desc='Substructure assembly cycle time when doing assembly at the port.')
+        self.add_discrete_input('num_assembly_lines', 1, desc='Number of assembly lines used when assembly occurs at the port.')
+        self.add_discrete_input('num_port_cranes', 1, desc='Number of cranes used at the port to load feeders / WTIVS when assembly occurs on-site or assembly cranes when assembling at port.')
 
         # Monopile
         self.add_input('monopile_length', 100., units='m', desc='Length of monopile.')
@@ -90,9 +94,17 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         self.add_input('transition_piece_mass', 250., units='t', desc='mass of an individual transition piece.')
         self.add_input('transition_piece_deck_space', 0., units='m**2', desc='Deck space required to transport a transition piece. Defaults to 0 in order to not be a constraint on installation.')
 
+        # Project
+        self.add_input('site_auction_price', 100e6, units='USD', desc='Cost to secure site lease')
+        self.add_input('site_assessment_plan_cost', 1e6, units='USD', desc='Cost to do engineering plan for site assessment')
+        self.add_input('site_assessment_cost', 25e6, units='USD', desc='Cost to execute site assessment')
+        self.add_input('construction_operations_plan_cost', 2.5e6, units='USD', desc='Cost to do construction planning')
+        self.add_input('boem_review_cost', 0.0, units='USD', desc='Cost for additional review by U.S. Dept of Interior Bureau of Ocean Energy Management (BOEM)')
+        self.add_input('design_install_plan_cost', 2.5e6, units='USD', desc='Cost to do installation planning')
+
         # Other
-        self.add_input('commissioning_pct', 0.01, desc="Commissioning percent.")
-        self.add_input('decommissioning_pct', 0.15, desc="Decommissioning percent.")
+        self.add_input('commissioning_pct', 0.01, desc='Commissioning percent.')
+        self.add_input('decommissioning_pct', 0.15, desc='Decommissioning percent.')
 
         # Outputs
         # Totals
@@ -104,14 +116,13 @@ class OrbitWisdemFixed(om.ExplicitComponent):
 
 
     def compile_orbit_config_file(self, inputs, outputs, discrete_inputs, discrete_outputs):
-        """"""
+        ''''''
 
+        floating = self.options['floating']
+            
         config = {
             # Vessels
             'wtiv': discrete_inputs['wtiv'],
-            'feeder': discrete_inputs['feeder'],
-            'num_feeders': discrete_inputs['num_feeders'],
-            'spi_vessel': 'example_scour_protection_vessel',
             'array_cable_install_vessel': 'example_cable_lay_vessel',
             'array_cable_bury_vessel': 'example_cable_lay_vessel',
             'export_cable_install_vessel': 'example_cable_lay_vessel',
@@ -131,15 +142,10 @@ class OrbitWisdemFixed(om.ExplicitComponent):
             
             'plant': {
                 'layout': 'grid',
-                'num_turbines': discrete_inputs['number_of_turbines'],
+                'num_turbines': int(discrete_inputs['number_of_turbines']),
                 'row_spacing': float(inputs['plant_row_spacing']),
                 'turbine_spacing': float(inputs['plant_turbine_spacing']),
                 'substation_distance': float(inputs['plant_substation_distance'])
-            },
-            
-            'port': {
-                'num_cranes': 1,
-                'monthly_rate': float(inputs['port_cost_per_month'])
             },
             
             # Turbine + components
@@ -163,72 +169,142 @@ class OrbitWisdemFixed(om.ExplicitComponent):
                 
                 'blade': {
                     'type': 'Blade',
-                    'number': float(discrete_inputs['number_of_blades']),
+                    'number': int(discrete_inputs['number_of_blades']),
                     'deck_space': float(inputs['blade_deck_space']),
                     'mass': float(inputs['blade_mass'])
                 }
             },
 
             # Substructure components
-            'monopile': {
-                'type': 'Monopile',
-                'length': float(inputs['monopile_length']),
-                'diameter': float(inputs['monopile_diameter']),
-                'deck_space': float(inputs['monopile_deck_space']),
-                'mass': float(inputs['monopile_mass'])
-            },
-            
             'transition_piece': {
                 'type': 'Transition Piece',
                 'deck_space': float(inputs['transition_piece_deck_space']),
                 'mass': float(inputs['transition_piece_mass'])
             },
             
-            'scour_protection_design': {
-                'cost_per_tonne': 20,
-            },
-            
             # Electrical
             'array_system_design': {
-                'cables': ['XLPE_400mm_33kV', 'XLPE_630mm_33kV']
+                'cables': ['XLPE_630mm_66kV', 'XLPE_185mm_66kV'],
             },
 
             'export_system_design': {
-                'cables': 'XLPE_500mm_132kV',
+                'cables': 'XLPE_1000m_220kV',
+                'interconnection_distance': float(inputs['interconnection_distance']),
                 'percent_added_length': .1
             },
             
             # Phase Specific
-            "OffshoreSubstationInstallation": {
-                "oss_install_vessel": 'example_heavy_lift_vessel',
-                "feeder": "future_feeder",
-                "num_feeders": 1
+            'OffshoreSubstationInstallation': {
+                'oss_install_vessel': 'example_heavy_lift_vessel',
+                'feeder': 'future_feeder',
+                'num_feeders': int(discrete_inputs['num_feeders']),
+            },
+
+            # Project development costs
+            'project_development': {
+                'site_auction_price': float(inputs['site_auction_price']), #100e6,
+                'site_assessment_plan_cost': float(inputs['site_assessment_plan_cost']), #1e6,
+                'site_assessment_cost': float(inputs['site_assessment_cost']), #25e6,
+                'construction_operations_plan_cost': float(inputs['construction_operations_plan_cost']), #2.5e6,
+                'boem_review_cost': float(inputs['boem_review_cost']), #0,
+                'design_install_plan_cost': float(inputs['design_install_plan_cost']), #2.5e6
             },
 
             # Other
-            "commissioning": float(inputs["commissioning_pct"]),
-            "decomissioning": float(inputs["decommissioning_pct"]),
-            "turbine_capex": float(inputs["turbine_capex"]),
+            'commissioning': float(inputs['commissioning_pct']),
+            'decomissioning': float(inputs['decommissioning_pct']),
+            'turbine_capex': float(inputs['turbine_capex']),
             
             # Phases
+            # Putting monopile or semisub here would override the inputs we assume to get from WISDEM
             'design_phases': [
-                "MonopileDesign",
-                "ScourProtectionDesign",
-                "ArraySystemDesign",
-                "ExportSystemDesign",
-                "OffshoreSubstationDesign"
+                'ProjectDevelopment',
+                #'MonopileDesign',
+                #'SemiSubmersibleDesign',
+                #'MooringSystemDesign',
+                #'ScourProtectionDesign',
+                'ArraySystemDesign',
+                'ExportSystemDesign',
+                'OffshoreSubstationDesign'
             ],
-            
-            'install_phases': [
-                'MonopileInstallation',
-                'ScourProtectionInstallation',
-                'TurbineInstallation',
-                'ArrayCableInstallation',
-                'ExportCableInstallation',
-                "OffshoreSubstationInstallation",
-            ]
         }
 
+        # Unique design phases
+        if floating:
+            config['install_phases'] = {
+                'ExportCableInstallation': 0,
+                'OffshoreSubstationInstallation': 0,
+                'MooringSystemInstallation': 0,
+                'MooredSubInstallation': ('MooringSystemInstallation', 0.25),
+                'ArrayCableInstallation': ('MooredSubInstallation', 0.25),
+            }
+        else:
+            config['design_phases'] += ['ScourProtectionDesign']
+            config['install_phases'] = {
+                'ExportCableInstallation': 0,
+                'OffshoreSubstationInstallation': 0,
+                'ArrayCableInstallation': 0,
+                'MonopileInstallation': 0,
+                'ScourProtectionInstallation': 0,
+                'TurbineInstallation': ('MonopileInstallation', 0.25),
+            }
+            
+        # Unique vessels
+        if floating:
+            vessels = {
+                'support_vessel': 'example_support_vessel',
+                'towing_vessel': 'example_towing_vessel',
+                'mooring_install_vessel': 'example_support_vessel',
+                
+                'towing_vessel_groups': {
+                    'towing_vessels': int(discrete_inputs['num_towing']),
+                    'station_keeping_vessels': int(discrete_inputs['num_station_keeping']),
+                },
+            }
+        else:
+            vessels = {
+                'feeder': discrete_inputs['feeder'],
+                'num_feeders': int(discrete_inputs['num_feeders']),
+                'spi_vessel': 'example_scour_protection_vessel',
+            }
+        config.update( vessels )
+
+        # Unique support structure design/assembly
+        if floating:
+            config['port'] = {
+                'sub_assembly_lines': int(discrete_inputs['num_assembly_lines']),
+                'turbine_assembly_cranes': int(discrete_inputs['num_port_cranes']),
+                'monthly_rate': float(inputs['port_cost_per_month'])
+            }
+                
+            config['substructure'] = {
+                'takt_time': float(inputs['takt_time']),
+                'towing_speed': 6  # km/h
+            }
+
+            config['mooring_system_design'] = {
+                'num_lines': int(discrete_inputs['num_mooring_lines']),
+                'anchor_type': 'Drag Embedment',
+            }
+        else:
+            config['port'] = {
+                'num_cranes': int(discrete_inputs['num_port_cranes']),
+                'monthly_rate': float(inputs['port_cost_per_month'])
+            }
+                
+            config['monopile'] = {
+                'type': 'Monopile',
+                'length': float(inputs['monopile_length']),
+                'diameter': float(inputs['monopile_diameter']),
+                'deck_space': float(inputs['monopile_deck_space']),
+                'mass': float(inputs['monopile_mass'])
+            }
+                
+            config['scour_protection_design'] = {
+                'cost_per_tonne': 20,
+            }
+        
+            
         self._orbit_config = config
         return config
 
@@ -247,10 +323,10 @@ class OrbitWisdemFixed(om.ExplicitComponent):
         outputs['installation_time'] = project.installation_time
         outputs['installation_capex'] = project.installation_capex
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     prob = om.Problem()
-    prob.model = OrbitWisdemFixed()
+    prob.model = OrbitWisdem()
     prob.setup()
 
     prob.run_driver()
