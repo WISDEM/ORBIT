@@ -11,6 +11,9 @@ import openmdao.api as om
 from ORBIT import ProjectManager
 
 class Orbit(om.Group):
+    def initialize(self):
+        self.options.declare('floating', default=False)
+        
     def setup(self):
         
         # Define all input variables from all models
@@ -31,11 +34,13 @@ class Orbit(om.Group):
         self.set_input_defaults('construction_operations_plan_cost', 2.5e6, units='USD')
         self.set_input_defaults('design_install_plan_cost', 2.5e6, units='USD')        
         
-        self.add_subsystem('orbit', OrbitWisdemFixed(), promotes=['*'])
+        self.add_subsystem('orbit', OrbitWisdemFixed(floating=self.options['floating']), promotes=['*'])
         
 
 class OrbitWisdem(om.ExplicitComponent):
     '''ORBIT-WISDEM Fixed Substructure API'''
+    def initialize(self):
+        self.options.declare('floating', default=False)
 
     def setup(self):
         ''''''
@@ -78,7 +83,13 @@ class OrbitWisdem(om.ExplicitComponent):
         self.add_input('blade_mass', 50., units='t', desc='mass of an individual blade.')
         self.add_input('blade_deck_space', 0., units='m**2', desc='Deck space required to transport a blade. Defaults to 0 in order to not be a constraint on installation.')
 
+        # Mooring
         self.add_discrete_input('num_mooring_lines', 3, desc='Number of mooring lines per platform.')
+        self.add_input('mooring_line_mass', 1e4, units='kg', desc='Total mass of a mooring line')
+        self.add_input('mooring_line_diameter', 0.1, units='m', desc='Cross-sectional diameter of a mooring line')
+        self.add_input('mooring_line_length', 1e3, units='m', desc='Unstretched mooring line length')
+        self.add_input('anchor_mass', 1e4, units='kg', desc='Total mass of an anchor')
+        self.add_discrete_input('anchor_type', 'drag_embedment', desc='Number of mooring lines per platform.')
         
         # Port
         self.add_input('port_cost_per_month', 2e6, units='USD/mo', desc='Monthly port costs.')
@@ -282,9 +293,19 @@ class OrbitWisdem(om.ExplicitComponent):
                 'towing_speed': 6  # km/h
             }
 
-            config['mooring_system_design'] = {
+            anchorstr_in = discrete_inputs['anchor_type'].lower()
+            if anchorstr_in.find('drag') >= 0:
+                anchorstr = 'Drag Embedment'
+            elif anchorstr_in.find('suction') >= 0:
+                anchorstr = 'Suction Pile'
+                
+            config['mooring_system'] = {
                 'num_lines': int(discrete_inputs['num_mooring_lines']),
-                'anchor_type': 'Drag Embedment',
+                'line_mass': 1e-3*float(inputs['mooring_line_mass']),
+                'line_diam': float(inputs['mooring_line_diameter']),
+                'line_length': float(inputs['mooring_line_length']),
+                'anchor_mass': 1e-3*float(inputs['anchor_mass']),
+                'anchor_type': anchorstr,
             }
         else:
             config['port'] = {
@@ -297,7 +318,7 @@ class OrbitWisdem(om.ExplicitComponent):
                 'length': float(inputs['monopile_length']),
                 'diameter': float(inputs['monopile_diameter']),
                 'deck_space': float(inputs['monopile_deck_space']),
-                'mass': float(inputs['monopile_mass'])
+                'mass': float(inputs['monopile_mass']),
             }
                 
             config['scour_protection_design'] = {
