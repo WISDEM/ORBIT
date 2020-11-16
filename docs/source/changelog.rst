@@ -3,11 +3,14 @@
 ORBIT Changelog
 ===============
 
-1.0.0
+0.5.1
 -----
 
 - Process time kwargs should now be passed through ``ProjectManager`` in a
   dictionary named ``processes`` in the config.
+- Revised ``prep_for_site_operations`` and related processes to allow for
+  dynamically positioned vessels.
+- Updated WISDEM API to include floating functionality.
 
 0.5.0
 -----
