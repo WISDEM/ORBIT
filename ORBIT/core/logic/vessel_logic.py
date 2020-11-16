@@ -9,7 +9,11 @@ __email__ = "jake.nunemaker@nrel.gov"
 from marmot import process
 
 from ORBIT.core.defaults import process_times as pt
-from ORBIT.core.exceptions import ItemNotFound, VesselCapacityError
+from ORBIT.core.exceptions import (
+    ItemNotFound,
+    MissingComponent,
+    VesselCapacityError,
+)
 
 
 @process
@@ -31,14 +35,8 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
         List of tasks included in preperation process.
     """
 
-    site_depth = kwargs.get("site_depth", 40)
-    extension = kwargs.get("extension", site_depth + 10)
-    jackup_time = vessel.jacksys.jacking_time(extension, site_depth)
-
     yield position_onsite(vessel, **kwargs)
-    yield vessel.task(
-        "Jackup", jackup_time, constraints=vessel.transit_limits, **kwargs
-    )
+    yield stabilize(vessel, **kwargs)
 
     if survey_required:
         survey_time = kwargs.get("rov_survey_time", pt["rov_survey_time"])
@@ -48,6 +46,71 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
             constraints=vessel.transit_limits,
             **kwargs,
         )
+
+
+@process
+def stabilize(vessel, **kwargs):
+    """
+    Task representing time required to stabilize the vessel. If the vessel
+    has a dynamic positioning system, this task does not take any time. If the
+    vessel has a jacking system, the vessel will jackup.
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Performing vessel. Requires configured `dynamic_positioning` or
+        `jacksys`.
+    """
+
+    try:
+        _ = vessel.dynamic_positioning
+        return
+
+    except MissingComponent:
+        pass
+
+    try:
+        jacksys = vessel.jacksys
+        site_depth = kwargs.get("site_depth", 40)
+        extension = kwargs.get("extension", site_depth + 10)
+        jackup_time = jacksys.jacking_time(extension, site_depth)
+        yield vessel.task(
+            "Jackup", jackup_time, constraints=vessel.transit_limits, **kwargs
+        )
+
+    except MissingComponent:
+        raise MissingComponent(
+            vessel, ["Dynamic Positioning", "Jacking System"]
+        )
+
+
+@process
+def jackdown_if_required(vessel, **kwargs):
+    """
+    Task representing time required to jackdown the vessel, if jacking system
+    is configured. If not, this task does not take anytime and the vessel is
+    released.
+
+    Parameters
+    ----------
+    vessel : Vessel
+        Performing vessel.
+    """
+
+    try:
+        jacksys = vessel.jacksys
+        site_depth = kwargs.get("site_depth", 40)
+        extension = kwargs.get("extension", site_depth + 10)
+        jackdown_time = jacksys.jacking_time(extension, site_depth)
+        yield vessel.task(
+            "Jackdown",
+            jackdown_time,
+            constraints=vessel.transit_limits,
+            **kwargs,
+        )
+
+    except MissingComponent:
+        return
 
 
 @process
@@ -88,9 +151,6 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
     """
 
     transit_time = vessel.transit_time(distance)
-    site_depth = kwargs.get("site_depth", 40)
-    extension = kwargs.get("extension", site_depth + 10)
-    jackup_time = vessel.jacksys.jacking_time(extension, site_depth)
 
     while True:
 
@@ -124,12 +184,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             yield vessel.task(
                 "Transit", transit_time, constraints=vessel.transit_limits
             )
-            yield vessel.task(
-                "Jackup",
-                jackup_time,
-                constraints=vessel.transit_limits,
-                **kwargs,
-            )
+            yield stabilize(vessel, **kwargs)
             vessel.at_site = True
 
         if vessel.at_site:
@@ -164,12 +219,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
 
             # Transit back to port
             vessel.at_site = False
-            yield vessel.task(
-                "Jackdown",
-                jackup_time,
-                constraints=vessel.transit_limits,
-                **kwargs,
-            )
+            yield jackdown_if_required(vessel, **kwargs)
             yield vessel.task(
                 "Transit", transit_time, constraints=vessel.transit_limits
             )

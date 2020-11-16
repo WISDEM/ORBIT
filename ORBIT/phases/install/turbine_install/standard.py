@@ -15,6 +15,7 @@ from marmot import process
 
 from ORBIT.core import Vessel
 from ORBIT.core.logic import (
+    jackdown_if_required,
     shuttle_items_to_queue,
     prep_for_site_operations,
     get_list_of_items_from_port,
@@ -351,21 +352,8 @@ def solo_install_turbines(
 
                     yield install_turbine_blade(vessel, blade, **kwargs)
 
-                # Jack-down
-                site_depth = kwargs.get("site_depth", None)
-                extension = kwargs.get("extension", site_depth + 10)
-                jackdown_time = vessel.jacksys.jacking_time(
-                    extension, site_depth
-                )
-
-                yield vessel.task(
-                    "Jackdown",
-                    jackdown_time,
-                    constraints=vessel.transit_limits,
-                )
-
+                yield jackdown_if_required(vessel, **kwargs)
                 vessel.submit_debug_log(progress="Turbine")
-
                 n += 1
 
             else:
@@ -455,19 +443,8 @@ def install_turbine_components_from_queue(
 
                     yield install_turbine_blade(wtiv, blade, **kwargs)
 
-                # Jack-down
-                site_depth = kwargs.get("site_depth", None)
-                extension = kwargs.get("extension", site_depth + 10)
-                jackdown_time = wtiv.jacksys.jacking_time(
-                    extension, site_depth
-                )
-
-                yield wtiv.task(
-                    "Jackdown", jackdown_time, constraints=wtiv.transit_limits
-                )
-
+                yield jackdown_if_required(wtiv, **kwargs)
                 wtiv.submit_debug_log(progress="Turbine")
-
                 n += 1
 
             else:
