@@ -13,9 +13,11 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="ORBIT",
+    author="Jake Nunemaker",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="Offshore Renewables Balance of system and Installation Tool",
+    long_description=long_description,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.7",
