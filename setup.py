@@ -12,7 +12,7 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="ORBIT",
+    name="orbit-nrel",
     author="Jake Nunemaker",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
@@ -33,7 +33,7 @@ setup(
         "scipy",
         "pandas",
         "pyyaml",
-        "openmdao>= 3.2",
+        "openmdao>=3.2",
     ],
     extras_require={
         "dev": [
