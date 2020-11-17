@@ -25,6 +25,7 @@ setup(
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
     ),
+    package_data={"": ["*.yaml"]},
     install_requires=[
         "numpy",
         "matplotlib",
