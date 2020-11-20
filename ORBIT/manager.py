@@ -105,17 +105,20 @@ class ProjectManager:
                 *config.get("install_phases", []),
             ],
         )
+        self._phases = {}
         self.config = self.resolve_project_capacity(config)
         self.weather = self.transform_weather_input(weather)
 
-        self.phase_starts = {}
-        self.phase_times = {}
-        self.phase_costs = {}
-        self._output_logs = []
-        self._phases = {}
-
         self.design_results = {}
         self.detailed_outputs = {}
+
+        self.system_costs = {}
+        self.installation_costs = {}
+
+        # TODO: Revise:
+        self.phase_starts = {}
+        self.phase_times = {}
+        self._output_logs = []
 
     def run_project(self, **kwargs):
         """
@@ -434,8 +437,6 @@ class ProjectManager:
         -------
         time : int | float
             Total phase time.
-        cost : int | float
-            Total phase cost.
         logs : list
             List of phase logs.
         """
@@ -460,10 +461,7 @@ class ProjectManager:
 
             except Exception as e:
                 print(f"\n\t - {name}: {e}")
-                self.phase_costs[name] = e.__class__.__name__
-                self.phase_times[name] = e.__class__.__name__
-
-                return None, None, None
+                return None, None
 
         else:
             phase = _class(
@@ -474,17 +472,18 @@ class ProjectManager:
         self._phases[name] = phase
 
         time = phase.total_phase_time
-        cost = phase.total_phase_cost
         logs = deepcopy(phase.env.logs)
 
         self.phase_starts[name] = start
-        self.phase_costs[name] = cost
         self.phase_times[name] = time
         self.detailed_outputs = self.merge_dicts(
             self.detailed_outputs, phase.detailed_output
         )
 
-        return cost, time, logs
+        self.system_costs[name] = phase.system_capex
+        self.installation_costs[name] = phase.installation_capex
+
+        return time, logs
 
     def get_phase_class(self, phase):
         """
@@ -539,8 +538,6 @@ class ProjectManager:
 
             except Exception as e:
                 print(f"\n\t - {name}: {e}")
-                self.phase_costs[name] = e.__class__.__name__
-                self.phase_times[name] = e.__class__.__name__
                 return
 
         else:
@@ -549,8 +546,6 @@ class ProjectManager:
 
         self._phases[name] = phase
 
-        self.phase_costs[name] = phase.total_phase_cost
-        self.phase_times[name] = phase.total_phase_time
         self.design_results = self.merge_dicts(
             self.design_results, phase.design_result, overwrite=False
         )
@@ -575,7 +570,7 @@ class ProjectManager:
         start = 0
 
         for name in phase_list:
-            _, time, logs = self.run_install_phase(name, start, **kwargs)
+            time, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
                 continue
@@ -607,7 +602,7 @@ class ProjectManager:
         # Run defined
         for name, start in defined.items():
 
-            _, _, logs = self.run_install_phase(name, start, **kwargs)
+            _, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
                 continue
@@ -653,9 +648,7 @@ class ProjectManager:
 
                 try:
                     start = self.get_dependency_start_time(target, perc)
-                    cost, time, logs = self.run_install_phase(
-                        name, start, **kwargs
-                    )
+                    _, logs = self.run_install_phase(name, start, **kwargs)
 
                     progress = True
 
@@ -1065,34 +1058,6 @@ class ProjectManager:
         return abs((a - b).days)
 
     @property
-    def phase_costs_per_kw(self):
-        """
-        Returns phase costs in CAPEX/kW.
-        """
-
-        _dict = {}
-        for k, capex in self.phase_costs.items():
-
-            try:
-                _dict[k] = capex / (self.capacity * 1000)
-
-            except TypeError:
-                pass
-
-        return _dict
-
-    @property
-    def overnight_capex(self):
-        """Returns the overnight capital cost of the project."""
-
-        design_phases = [p.__name__ for p in self._design_phases]
-        design_cost = sum(
-            [v for k, v in self.phase_costs.items() if k in design_phases]
-        )
-
-        return design_cost + self.turbine_capex
-
-    @property
     def overnight_capex_per_kw(self):
         """
         Returns overnight CAPEX/kW.
@@ -1107,25 +1072,32 @@ class ProjectManager:
         return capex
 
     @property
-    def installation_capex(self):
-        """
-        Returns installation related CAPEX.
-        """
+    def system_capex(self):
+        """Returns total system procurement CapEx."""
 
-        res = sum(
-            [
-                v
-                for k, v in self.phase_costs.items()
-                if k in self.config["install_phases"] and isinstance(v, Number)
-            ]
-        )
-        return res
+        return np.nansum([c for _, c in self.system_costs.items()])
+
+    @property
+    def system_capex_per_kw(self):
+        """Returns system CapEx/kW."""
+
+        try:
+            capex = self.system_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
+
+    @property
+    def installation_capex(self):
+        """Returns total installation related CapEx."""
+
+        return np.nansum([c for _, c in self.installation_costs.items()])
 
     @property
     def installation_capex_per_kw(self):
-        """
-        Returns installation related CAPEX/kW.
-        """
+        """Returns installation CapEx/kW."""
 
         try:
             capex = self.installation_capex / (self.capacity * 1000)
@@ -1137,17 +1109,13 @@ class ProjectManager:
 
     @property
     def bos_capex(self):
-        """
-        Returns BOS CAPEX not including commissioning and decommissioning.
-        """
+        """Returns total balance of system CapEx."""
 
-        return sum([v for _, v in self.phase_costs.items()])
+        return self.system_capex + self.installation_capex
 
     @property
     def bos_capex_per_kw(self):
-        """
-        Returns BOS CAPEX/kW not including commissioning and decommissioning.
-        """
+        """Returns balance of system CapEx/kW."""
 
         try:
             capex = self.bos_capex / (self.capacity * 1000)
@@ -1181,34 +1149,16 @@ class ProjectManager:
 
     @property
     def turbine_capex_per_kw(self):
-        """
-        Returns the turbine CAPEX/kW.
-        """
+        """Returns the turbine CapEx/kW."""
 
         _capex = self.project_params.get("turbine_capex", None)
         return _capex
 
     @property
-    def total_capex(self):
-        """
-        Returns total project CAPEX including commissioning and decommissioning.
-        """
+    def overnight_capex(self):
+        """Returns the overnight capital cost of the project."""
 
-        return self.bos_capex + self.turbine_capex + self.soft_capex
-
-    @property
-    def total_capex_per_kw(self):
-        """
-        Returns total BOS CAPEX/kW including commissioning and decommissioning.
-        """
-
-        try:
-            capex = self.total_capex / (self.capacity * 1000)
-
-        except TypeError:
-            capex = None
-
-        return capex
+        return self.system_capex + self.turbine_capex
 
     @property
     def soft_capex(self):
@@ -1238,6 +1188,24 @@ class ProjectManager:
         return sum(
             [insurance, financing, contingency, commissioning, decommissioning]
         )
+
+    @property
+    def total_capex(self):
+        """Returns total project CapEx including soft costs."""
+
+        return self.bos_capex + self.turbine_capex + self.soft_capex
+
+    @property
+    def total_capex_per_kw(self):
+        """Returns total CapEx/kW."""
+
+        try:
+            capex = self.total_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     def export_configuration(self, file_name):
         """
