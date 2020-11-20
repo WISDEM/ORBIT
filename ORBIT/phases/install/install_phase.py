@@ -114,16 +114,12 @@ class InstallPhase(BasePhase):
             return months * rate
 
     @property
-    def total_phase_cost(self):
-        """Returns total phase cost in $USD."""
+    def installation_capex(self):
+        """Returns sum of all installation costs in `self.env.actions`."""
 
-        return self.action_costs + self.port_costs
-
-    @property
-    def action_costs(self):
-        """Returns sum cost of all actions."""
-
-        return np.nansum([a["cost"] for a in self.env.actions])
+        return (
+            np.nansum([a["cost"] for a in self.env.actions]) + self.port_costs
+        )
 
     @property
     def total_phase_time(self):
