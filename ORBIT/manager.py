@@ -480,8 +480,11 @@ class ProjectManager:
             self.detailed_outputs, phase.detailed_output
         )
 
-        self.system_costs[name] = phase.system_capex
-        self.installation_costs[name] = phase.installation_capex
+        if phase.system_capex:
+            self.system_costs[name] = phase.system_capex
+
+        if phase.installation_capex:
+            self.installation_costs[name] = phase.installation_capex
 
         return time, logs
 

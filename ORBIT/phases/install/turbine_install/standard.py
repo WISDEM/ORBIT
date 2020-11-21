@@ -91,6 +91,12 @@ class TurbineInstallation(InstallPhase):
         self.initialize_turbines()
         self.setup_simulation(**kwargs)
 
+    @property
+    def system_capex(self):
+        """Returns 0 as turbine capex is handled at in ProjectManager."""
+
+        return 0
+
     def setup_simulation(self, **kwargs):
         """
         Sets up simulation infrastructure, routing to specific methods dependent
