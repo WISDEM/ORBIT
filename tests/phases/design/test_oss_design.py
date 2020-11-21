@@ -47,7 +47,7 @@ def test_parameter_sweep(depth, num_turbines, turbine_rating):
     assert 200 <= o._outputs["offshore_substation_topside"]["mass"] <= 5000
 
     # Check valid substation cost
-    assert 1e6 <= o.total_phase_cost <= 300e6
+    assert 1e6 <= o.total_cost <= 300e6
 
 
 def test_oss_kwargs():
@@ -69,7 +69,7 @@ def test_oss_kwargs():
 
     o = OffshoreSubstationDesign(base)
     o.run()
-    base_cost = o.total_phase_cost
+    base_cost = o.total_cost
 
     for k, v in test_kwargs.items():
 
@@ -79,6 +79,6 @@ def test_oss_kwargs():
 
         o = OffshoreSubstationDesign(config)
         o.run()
-        cost = o.total_phase_cost
+        cost = o.total_cost
 
         assert cost != base_cost

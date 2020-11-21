@@ -41,12 +41,17 @@ class OffshoreSubstationInstallation(InstallPhase):
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
-        "offshore_substation_topside": {"deck_space": "m2", "mass": "t"},
+        "offshore_substation_topside": {
+            "deck_space": "m2",
+            "mass": "t",
+            "cost": "USD",
+        },
         "offshore_substation_substructure": {
             "type": "Monopile",
             "deck_space": "m2",
             "mass": "t",
             "length": "m",
+            "cost": "USD",
         },
     }
 
@@ -69,6 +74,15 @@ class OffshoreSubstationInstallation(InstallPhase):
 
         self.initialize_port()
         self.setup_simulation(**kwargs)
+
+    @property
+    def system_capex(self):
+        """Returns procurement CapEx of the offshore substations."""
+
+        return self.config["num_substations"] * (
+            self.config["offshore_substation_topside"]["cost"]
+            + self.config["offshore_substation_substructure"]["cost"]
+        )
 
     def setup_simulation(self, **kwargs):
         """
