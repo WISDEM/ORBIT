@@ -54,7 +54,7 @@ class MonopileDesign(DesignPhase):
             "length": "m",
             "mass": "t",
             "deck_space": "m2",
-            "cost": "USD",
+            "unit_cost": "USD",
         },
         "transition_piece": {
             "length": "m",
@@ -231,7 +231,7 @@ class MonopileDesign(DesignPhase):
             "mass": m_tp,
             "length": L_tp,
             "deck_space": D_tp ** 2,
-            "cost": m_tp * self.tp_steel_cost,
+            "unit_cost": m_tp * self.tp_steel_cost,
         }
 
         return tp_design

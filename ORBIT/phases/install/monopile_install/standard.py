@@ -56,7 +56,7 @@ class MonopileInstallation(InstallPhase):
             "diameter": "m",
             "deck_space": "m2",
             "mass": "t",
-            "cost": "USD",
+            "unit_cost": "USD",
         },
         "transition_piece": {"deck_space": "m2", "mass": "t", "cost": "USD"},
     }
