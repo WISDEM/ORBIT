@@ -28,7 +28,9 @@ class MooringSystemInstallation(InstallPhase):
         "mooring_system": {
             "num_lines": "int",
             "line_mass": "t",
+            "line_cost": "USD",
             "anchor_mass": "t",
+            "anchor_cost": "USD",
             "anchor_type": "str (optional, default: 'Suction Pile')",
         },
     }
@@ -67,13 +69,22 @@ class MooringSystemInstallation(InstallPhase):
         depth = self.config["site"]["depth"]
         distance = self.config["site"]["distance"]
 
+        self.num_lines = self.config["mooring_system"]["num_lines"]
+        self.line_cost = self.config["mooring_system"]["line_cost"]
+        self.anchor_cost = self.config["mooring_system"]["anchor_cost"]
+
         install_mooring_systems(
-            self.vessel,
-            self.port,
-            distance,
-            depth,
-            self.number_systems,
-            **kwargs,
+            self.vessel, self.port, distance, depth, self.num_systems, **kwargs
+        )
+
+    @property
+    def system_capex(self):
+        """Returns total procurement cost of all mooring systems."""
+
+        return (
+            self.num_systems
+            * self.num_lines
+            * (self.line_cost + self.anchor_cost)
         )
 
     def initialize_installation_vessel(self):
@@ -94,9 +105,9 @@ class MooringSystemInstallation(InstallPhase):
         """Initializes the Cargo components at port."""
 
         system = MooringSystem(**self.config["mooring_system"])
-        self.number_systems = self.config["plant"]["num_turbines"]
+        self.num_systems = self.config["plant"]["num_turbines"]
 
-        for _ in range(self.number_systems):
+        for _ in range(self.num_systems):
             self.port.put(system)
 
     @property
