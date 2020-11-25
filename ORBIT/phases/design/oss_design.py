@@ -74,13 +74,13 @@ class OffshoreSubstationDesign(DesignPhase):
             "deck_space": self.substructure_deck_space,
             "mass": self.substructure_mass,
             "length": self.substructure_length,
-            "cost": self.substructure_cost,
+            "unit_cost": self.substructure_cost,
         }
 
         self._outputs["offshore_substation_topside"] = {
             "deck_space": self.topside_deck_space,
             "mass": self.topside_mass,
-            "cost": self.substation_cost,
+            "unit_cost": self.substation_cost,
         }
 
         self._outputs["num_substations"] = self.num_substations

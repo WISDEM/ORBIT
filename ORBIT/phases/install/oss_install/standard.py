@@ -44,14 +44,14 @@ class OffshoreSubstationInstallation(InstallPhase):
         "offshore_substation_topside": {
             "deck_space": "m2",
             "mass": "t",
-            "cost": "USD",
+            "unit_cost": "USD",
         },
         "offshore_substation_substructure": {
             "type": "Monopile",
             "deck_space": "m2",
             "mass": "t",
             "length": "m",
-            "cost": "USD",
+            "unit_cost": "USD",
         },
     }
 
@@ -80,8 +80,8 @@ class OffshoreSubstationInstallation(InstallPhase):
         """Returns procurement CapEx of the offshore substations."""
 
         return self.config["num_substations"] * (
-            self.config["offshore_substation_topside"]["cost"]
-            + self.config["offshore_substation_substructure"]["cost"]
+            self.config["offshore_substation_topside"]["unit_cost"]
+            + self.config["offshore_substation_substructure"]["unit_cost"]
         )
 
     def setup_simulation(self, **kwargs):
