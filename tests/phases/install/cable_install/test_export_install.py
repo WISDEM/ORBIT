@@ -184,7 +184,8 @@ def test_kwargs_for_export_install():
 def test_kwargs_for_export_install_in_ProjectManager():
 
     new_export_system = {
-        "cable": {"linear_density": 50.0, "sections": [1000], "number": 1}
+        "cable": {"linear_density": 50.0, "sections": [1000], "number": 1},
+        "system_cost": 200e6,
     }
     new_site = {"distance": 50, "depth": 20}
     base = deepcopy(base_config)
