@@ -60,7 +60,7 @@ class MonopileDesign(DesignPhase):
             "length": "m",
             "mass": "t",
             "deck_space": "m2",
-            "cost": "USD",
+            "unit_cost": "USD",
         },
     }
 
@@ -190,7 +190,7 @@ class MonopileDesign(DesignPhase):
         monopile["deck_space"] = monopile["diameter"] ** 2
 
         # Costs
-        monopile["cost"] = monopile["mass"] * self.monopile_steel_cost
+        monopile["unit_cost"] = monopile["mass"] * self.monopile_steel_cost
 
         self.monopile_sizing = monopile
         return monopile

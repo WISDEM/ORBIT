@@ -58,7 +58,11 @@ class MonopileInstallation(InstallPhase):
             "mass": "t",
             "unit_cost": "USD",
         },
-        "transition_piece": {"deck_space": "m2", "mass": "t", "cost": "USD"},
+        "transition_piece": {
+            "deck_space": "m2",
+            "mass": "t",
+            "unit_cost": "USD",
+        },
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -89,8 +93,8 @@ class MonopileInstallation(InstallPhase):
         """Returns procurement cost of the substructures."""
 
         return (
-            self.config["monopile"]["cost"]
-            + self.config["transition_piece"]["cost"]
+            self.config["monopile"]["unit_cost"]
+            + self.config["transition_piece"]["unit_cost"]
         ) * self.config["plant"]["num_turbines"]
 
     def setup_simulation(self, **kwargs):
