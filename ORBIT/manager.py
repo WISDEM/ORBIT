@@ -26,7 +26,6 @@ from ORBIT.phases.design import (
     MonopileDesign,
     ArraySystemDesign,
     ExportSystemDesign,
-    ProjectDevelopment,
     MooringSystemDesign,
     ScourProtectionDesign,
     SemiSubmersibleDesign,
@@ -58,7 +57,6 @@ class ProjectManager:
     date_format_long = "%m/%d/%Y %H:%M"
 
     _design_phases = [
-        ProjectDevelopment,
         MonopileDesign,
         ArraySystemDesign,
         CustomArraySystemDesign,
@@ -213,6 +211,10 @@ class ProjectManager:
             "contingency": "$/kW (optional, default: 316)",
             "commissioning": "$/kW (optional, default: 44)",
             "decommissioning": "$/kW (optional, default: 58)",
+            "site_auction_price": "$ (optional, default: 100e6)",
+            "site_assessment_cost": "$ (optional, default: 50e6)",
+            "construction_plan_cost": "$ (optional, default: 1e6)",
+            "installation_plan_cost": "$ (optional, default: 0.25e6)",
         }
 
         config["design_phases"] = [*design_phases.keys()]
@@ -1191,6 +1193,43 @@ class ProjectManager:
         return sum(
             [insurance, financing, contingency, commissioning, decommissioning]
         )
+
+    @property
+    def project_capex(self):
+        """
+        Returns project related CapEx line items. To override the defaults,
+        the keys below should be passed to the 'project_parameters' subdict.
+        """
+
+        site_auction = self.project_params.get("site_auction_price", 100e6)
+        site_assessment = self.project_params.get("site_assessment_cost", 50e6)
+        construction_plan = self.project_params.get(
+            "construction_plan_cost", 1e6
+        )
+        installation_plan = self.project_params.get(
+            "installation_plan_cost", 0.25e6
+        )
+
+        return sum(
+            [
+                site_auction,
+                site_assessment,
+                construction_plan,
+                installation_plan,
+            ]
+        )
+
+    @property
+    def project_capex_per_kw(self):
+        """Returns project related CapEx per kW."""
+
+        try:
+            capex = self.project_capex / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
 
     @property
     def total_capex(self):

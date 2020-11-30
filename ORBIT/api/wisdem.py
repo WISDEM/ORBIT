@@ -246,7 +246,6 @@ class OrbitWisdem(om.ExplicitComponent):
             # Phases
             # Putting monopile or semisub here would override the inputs we assume to get from WISDEM
             'design_phases': [
-                'ProjectDevelopment',
                 #'MonopileDesign',
                 #'SemiSubmersibleDesign',
                 #'MooringSystemDesign',

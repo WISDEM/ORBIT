@@ -631,3 +631,65 @@ def test_npv():
     project = ProjectManager(config)
     project.run_project()
     assert project.npv != baseline
+
+
+def test_soft_costs():
+
+    project = ProjectManager(complete_project)
+    baseline = project.soft_capex
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"construction_insurance": 50}
+    project = ProjectManager(config)
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"construction_financing": 190}
+    project = ProjectManager(config)
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"contingency": 320}
+    project = ProjectManager(config)
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"contingency": 320}
+    project = ProjectManager(config)
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"commissioning": 50}
+    project = ProjectManager(config)
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"decommissioning": 50}
+    project = ProjectManager(config)
+    assert project.soft_capex != baseline
+
+
+def test_project_costs():
+
+    project = ProjectManager(complete_project)
+    baseline = project.project_capex
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"site_auction_price": 50e6}
+    project = ProjectManager(config)
+    assert project.project_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"site_assessment_cost": 25e6}
+    project = ProjectManager(config)
+    assert project.project_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"construction_plan_cost": 25e6}
+    project = ProjectManager(config)
+    assert project.project_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"installation_plan_cost": 25e6}
+    project = ProjectManager(config)
+    assert project.project_capex != baseline
