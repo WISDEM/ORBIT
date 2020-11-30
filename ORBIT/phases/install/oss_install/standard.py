@@ -33,7 +33,7 @@ class OffshoreSubstationInstallation(InstallPhase):
     expected_config = {
         "num_substations": "int",
         "oss_install_vessel": "dict | str",
-        "num_feeders": "int",
+        "num_feeders": "int (optional, default: 1)",
         "feeder": "dict | str",
         "site": {"distance": "km", "depth": "m"},
         "port": {
@@ -156,7 +156,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         Initializes feeder barge objects.
         """
 
-        number = self.config.get("num_feeders", None)
+        number = self.config.get("num_feeders", 1)
         feeder_specs = self.config.get("feeder", None)
 
         self.feeders = []
