@@ -435,7 +435,7 @@ class CableSystem(DesignPhase):
         return cost
 
     @property
-    def total_phase_cost(self):
+    def total_cost(self):
         """
         Calculates the cost of the array cabling system.
 
@@ -448,14 +448,8 @@ class CableSystem(DesignPhase):
         return sum(self.cost_by_type.values())
 
     @property
-    def total_phase_time(self):
-        return self._design.get("design_time", 0.0)
-
-    @property
     def detailed_output(self):
-        """
-        Returns detailed design outputs.
-        """
+        """Returns detailed design outputs."""
 
         _output = {
             "length": self.total_cable_length_by_type,
@@ -488,7 +482,7 @@ class CableSystem(DesignPhase):
             raise Exception(f"Has {self.__class__.__name__} been ran?")
 
         system = "_".join((self.cable_type, "system"))
-        output = {system: {"cables": {}}}
+        output = {system: {"cables": {}, "system_cost": self.total_cost}}
         _temp = output[system]["cables"]
 
         for name, cable in self.cables.items():

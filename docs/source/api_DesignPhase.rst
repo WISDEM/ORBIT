@@ -10,7 +10,6 @@ trends but are not intended to be used for actual designs.
 .. toctree::
    :maxdepth: 2
 
-   phases/design/api_ProjectDevelopment
    phases/design/api_MonopileDesign
    phases/design/api_ScourProtectionDesign
    phases/design/api_ArraySystemDesign

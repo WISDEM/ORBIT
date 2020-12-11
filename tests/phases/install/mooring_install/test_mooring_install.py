@@ -29,7 +29,7 @@ def test_simulation_creation():
     assert sim.env
     assert sim.port
     assert sim.vessel
-    assert sim.number_systems
+    assert sim.num_systems
 
 
 @pytest.mark.parametrize(

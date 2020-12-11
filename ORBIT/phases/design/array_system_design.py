@@ -77,14 +77,13 @@ class ArraySystemDesign(CableSystem):
         },
         "turbine": {"rotor_diameter": "m", "turbine_rating": "MW"},
         "array_system_design": {
-            "design_time": "hrs (optional)",
             "cables": "list | str",
             "touchdown_distance": "m (optional, default: 0)",
             "average_exclusion_percent": "float (optional)",
         },
     }
 
-    output_config = {"array_system": {"cables": "dict"}}
+    output_config = {"array_system": {"cables": "dict", "system_cost": "USD"}}
 
     def __init__(self, config, **kwargs):
         """
@@ -534,7 +533,6 @@ class CustomArraySystemDesign(ArraySystemDesign):
         "plant": {"layout": "str", "num_turbines": "int"},
         "turbine": {"turbine_rating": "int | float"},
         "array_system_design": {
-            "design_time": "int | float (optional)",
             "cables": "list | str",
             "location_data": "str",
             "distance": "bool (optional)",

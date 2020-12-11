@@ -30,7 +30,7 @@ def test_simulation_creation():
     assert sim.port
     assert sim.spi_vessel
     assert sim.num_turbines
-    assert sim.tons_per_substructure
+    assert sim.tonnes_per_substructure
 
 
 @pytest.mark.parametrize(

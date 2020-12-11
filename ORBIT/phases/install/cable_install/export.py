@@ -114,6 +114,12 @@ class ExportCableInstallation(InstallPhase):
             **kwargs,
         )
 
+    @property
+    def system_capex(self):
+        """Returns total procurement cost of the array system."""
+
+        return self.config["export_system"]["system_cost"]
+
     def extract_distances(self):
         """Extracts distances from input configuration or default values."""
 
