@@ -4,7 +4,9 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
+import time
 from copy import deepcopy
+from random import sample
 from itertools import product
 
 import numpy as np
@@ -17,7 +19,9 @@ from ORBIT import ProjectManager
 class ParametricManager:
     """Class for configuring parametric ORBIT runs."""
 
-    def __init__(self, base, params, results, weather=None, **kwargs):
+    def __init__(
+        self, base, params, funcs, weather=None, module=None, **kwargs
+    ):
         """
         Creates an instance of `ParametricRun`.
 
@@ -28,8 +32,8 @@ class ParametricManager:
         params : dict
             Parameters and their values.
             Format: "subdict.param": [num1, num2, num3]
-        results : dict
-            List of results to save.
+        funcs : dict
+            List of functions used to save results.
             Format: "name": lambda project: project.attr
         weather : DataFrame
 
@@ -37,27 +41,40 @@ class ParametricManager:
 
         self.base = benedict(base)
         self.params = params
-        self.results = results
+        self.funcs = funcs
         self.weather = weather
+        self.results = None
+        self.module = module
 
     def run(self, **kwargs):
-        """Run the configured parametric runs and save any results in
+        """Run the configured parametric runs and save any requested results to
         `self.results`."""
 
         outputs = []
         for run in self.run_list:
+            data = self._run_config(run, **kwargs)
+            outputs.append(data)
 
-            config = deepcopy(self.base)
-            config.merge(run)
+        self.results = pd.DataFrame(outputs)
 
+    def _run_config(self, run, **kwargs):
+        """Run an individual config."""
+
+        config = deepcopy(self.base)
+        config.merge(run)
+
+        if self.module is not None:
+            project = self.module(config, weather=self.weather, **kwargs)
+            project.run()
+
+        else:
             project = ProjectManager(config, weather=self.weather, **kwargs)
             project.run_project()
 
-            results = self.map_funcs(project, self.results)
-            data = {**run, **results}
-            outputs.append(data)
+        results = self.map_funcs(project, self.funcs)
+        data = {**run, **results}
 
-        return outputs
+        return data
 
     @property
     def run_list(self):
@@ -65,6 +82,10 @@ class ParametricManager:
 
         runs = list(product(*self.params.values()))
         return [dict(zip(self.params.keys(), run)) for run in runs]
+
+    @property
+    def num_runs(self):
+        return len(self.run_list)
 
     @staticmethod
     def map_funcs(obj, funcs):
@@ -90,3 +111,33 @@ class ParametricManager:
             results[k] = res
 
         return results
+
+    def preview(self, num=10, **kwargs):
+        """
+        Runs a limited set of runs to preview the results and provide an
+        estimate for total run time.
+
+        Parameters
+        ----------
+        num : int
+            Number to run.
+        """
+
+        start = time.time()
+        outputs = []
+        if num > len(self.run_list):
+            to_run = self.run_list
+
+        else:
+            to_run = sample(self.run_list, num)
+
+        for run in to_run:
+            data = self._run_config(run, **kwargs)
+            outputs.append(data)
+
+        elapsed = time.time() - start
+        estimate = (len(self.run_list) / num) * elapsed
+        print(f"{num} runs elapsed time: {elapsed:.2f}s")
+        print(f"{self.num_runs} runs estimated time: {estimate:.2f}s")
+
+        return pd.DataFrame(outputs)
