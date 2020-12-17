@@ -19,9 +19,7 @@ from ORBIT import ProjectManager
 class ParametricManager:
     """Class for configuring parametric ORBIT runs."""
 
-    def __init__(
-        self, base, params, funcs, weather=None, module=None, **kwargs
-    ):
+    def __init__(self, base, params, funcs, weather=None, module=None):
         """
         Creates an instance of `ParametricRun`.
 
@@ -104,6 +102,12 @@ class ParametricManager:
         for k, f in funcs.items():
             try:
                 res = f(obj)
+
+            except TypeError:
+                raise TypeError(
+                    f"Result function '{f}' not structured properly. "
+                    f"Correct format: 'lambda project: project.{f}'"
+                )
 
             except AttributeError:
                 res = np.NaN
