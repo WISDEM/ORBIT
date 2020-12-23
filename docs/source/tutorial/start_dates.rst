@@ -40,7 +40,6 @@ of outputs. This feature also allows phases to overlap if required.
 
 .. code-block::
 
-
    {
       ...
 
@@ -58,6 +57,21 @@ profile, ``WeatherProfileError`` will be raised. If a simulation reaches the
 end of a weather profile before it completes, ``WeatherProfileExhuasted`` will
 be raised.
 
+The starting point of the phases can also be indexed by the location in the
+weather time series:
+
+.. code-block::
+
+   {
+      ...
+
+      'design_phases': ['MonopileDesign', 'ArraySystemDesign'],
+      'install_phases': {
+         'MonopileInstallation': 0,  # <-- Will start at the first weather data point
+         'TurbineInstallation': 2000 # <-- Starts 2000 data points later
+      }
+   }
+
 .. warning::
 
    At this time, ORBIT does not have any constraints on overlapping phases, so
@@ -69,3 +83,22 @@ be raised.
    It should also be noted that overlapping phases do not affect one another.
    Port constraints (eg. number of cranes available for loading) are applied per
    installation phase.
+
+Phase Dependencies
+------------------
+
+Phases can also be defined to start at a percentage completed for a different
+phase. For example, this could be used to have the installation of the turbines
+start when the monopiles are 50% installed:
+
+.. code-block::
+
+   {
+      ...
+
+      'design_phases': ['MonopileDesign', 'ArraySystemDesign'],
+      'install_phases': {
+         'MonopileInstallation': 0,
+         'TurbineInstallation': ('TurbineInstallation', 0.5)
+      }
+   }

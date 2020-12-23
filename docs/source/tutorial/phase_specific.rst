@@ -72,8 +72,8 @@ be defined specific to each phase using this method. When the model is run with
 in the input configuration for each of the inputs. Phase specific parameters
 always take precedence over the more general configuration.
 
-.. note::
+.. .. note::
 
-   Using the concepts above and overlapping start dates, complex phase
-   sequencing can be modeled with ORBIT. For an example of this, please see this
-   `validation case <todo>`_.
+..    Using the concepts above and overlapping start dates, complex phase
+..    sequencing can be modeled with ORBIT. For an example of this, please see this
+..    `validation case <todo>`_.
