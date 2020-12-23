@@ -15,6 +15,7 @@ from itertools import product
 import numpy as np
 import pandas as pd
 
+import ORBIT
 from ORBIT.phases import DesignPhase, InstallPhase
 from ORBIT.core.library import (
     initialize_library,
@@ -219,6 +220,7 @@ class ProjectManager:
 
         config["design_phases"] = [*design_phases.keys()]
         config["install_phases"] = [*install_phases.keys()]
+        config["orbit_version"] = str(ORBIT.__version__)
 
         return config
 
