@@ -17,9 +17,9 @@ located at:
 File Format
 -----------
 
-Both vessels and cables are stored as ``.json`` files to preserve their
+Both vessels and cables are stored as ``.yaml`` files to preserve their
 dictionary format. They can be referenced in project configurations using the
-filename preceding ``.json``. For a filename of ``example_wtiv.json``, see the
+filename preceding ``.yaml``. For a filename of ``example_wtiv.yaml``, see the
 example below:
 
 .. code-block:: python
@@ -34,7 +34,8 @@ example below:
        ]
    }
 
-For help on working with ``.json`` files, please see this `tutorial <todo>`_.
+For help on working with ``.yaml`` files, please see this
+`tutorial <https://pyyaml.org/wiki/PyYAMLDocumentation>`_.
 
 Vessel Configurations
 ---------------------
@@ -44,7 +45,7 @@ require the operating vessel to have a specific subcomponent. For example, all
 offshore lifts require the vessel to have a crane onboard, otherwise the vessel
 isn't able to perform the operation. These contraints translate into how
 vessels are defined. Within a vessel definition (either a ``dict`` or a
-``.json`` file), subcomponents are defined with another dictionary:
+``.yaml`` file), subcomponents are defined with another dictionary:
 
 .. code-block:: python
 
