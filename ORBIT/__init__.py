@@ -7,6 +7,7 @@ __status__ = "Development"
 
 from .manager import ProjectManager  # isort:skip
 from ._version import get_versions
+from .parametric import ParametricManager
 
 __version__ = get_versions()["version"]
 del get_versions
