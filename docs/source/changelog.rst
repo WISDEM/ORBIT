@@ -3,6 +3,13 @@
 ORBIT Changelog
 ===============
 
+1.0.0
+-----
+
+- `ProjectManager.project_actions` renamed to `ProjectManager.actions`
+- `ProjectManager.project_logs` renamed to `ProjectManager.logs`
+- `ProjectManager.run_project()` renamed to `ProjectManager.run()`
+
 0.5.1
 -----
 
