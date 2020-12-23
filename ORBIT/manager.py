@@ -201,7 +201,7 @@ class ProjectManager:
             config = cls.remove_keys(config, d.output_config)
 
         config["project_parameters"] = {
-            "turbine_capex": "$/kW (optional, default: 0.0)",
+            "turbine_capex": "$/kW (optional, default: 1300)",
             "ncf": "float (optional, default: 0.4)",
             "offtake_price": "$/MWh (optional, default: 80)",
             "project_lifetime": "yrs (optional, default: 25)",
@@ -946,7 +946,7 @@ class ProjectManager:
             for i in range(1, max(cash_flow.keys()) + 1)
         ]
 
-        return self.overnight_capex - sum(_npv)
+        return (self.total_capex - self.installation_capex) - sum(_npv)
 
     @property
     def progress_logs(self):
@@ -1138,18 +1138,17 @@ class ProjectManager:
         Returns the total turbine CAPEX.
         """
 
-        _capex = self.project_params.get("turbine_capex", 0.0)
+        _capex = self.project_params.get("turbine_capex", 1300)
         try:
             num_turbines = self.config["plant"]["num_turbines"]
             rating = self.config["turbine"]["turbine_rating"]
 
         except KeyError:
-            print(
-                f"Turbine CAPEX not included in commissioning. Required "
+            raise KeyError(
+                f"Total turbine CAPEX can't be calculated. Required "
                 f"parameters 'plant.num_turbines' or 'turbine.turbine_rating' "
                 f"not found."
             )
-            return 0.0
 
         capex = _capex * num_turbines * rating * 1000
         return capex
