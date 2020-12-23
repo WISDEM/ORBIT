@@ -35,6 +35,7 @@ setup(
         "pandas",
         "pyyaml",
         "openmdao>=3.2",
+        "python-benedict",
     ],
     extras_require={
         "dev": [
