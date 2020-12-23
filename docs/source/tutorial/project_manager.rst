@@ -8,7 +8,7 @@ provides the ability to configure and run one or multiple modules at a time,
 allowing the user to customize ORBIT to fit the needs of a specific project.
 It also provides a helper method to detail what inputs are required to run the
 desired configuration. The example below shows how to import
-``ProjectManager``, configure a simple project with one phase, and return the
+``ProjectManager``, configure a simple project with two phases, and return the
 required configuration parameters.
 
 .. code-block:: python
@@ -16,11 +16,12 @@ required configuration parameters.
    from ORBIT import ProjectManager
 
    phases = [
-       "MonopileDesign",  # Returns a monopile design given site information
+       "MonopileDesign",       # Returns monopile sizing given site information
+       "MonopileInstallation"  # Simulates the installation of monopiles
    ]
 
-   required_config = ProjectManager.compile_input_dict(phases)
-   required_config
+   expected_config = ProjectManager.compile_input_dict(phases)
+   expected_config
 
    >>>
 
@@ -41,14 +42,16 @@ required configuration parameters.
            ...
        },
 
+       ...
+
        'design_phases': ['MonopileDesign'],
-       'install_phases': []
+       'install_phases': ['MonopileInstallation']
    }
 
-``required_config`` contains all parameters that are required to run the
-``MonopileDesign`` phase (as well as the optional ones in the
-``monopile_design`` sub dictionary). The returned dictionary can now be filled
-out and the model can be ran:
+``expected_config`` contains all parameters that are required to run the
+``MonopileDesign`` and ``MonopileInstallation`` phases (as well as the optional
+ones in the ``monopile_design`` sub dictionary). The returned dictionary can
+now be filled out and the model can be ran:
 
 .. code-block:: python
 
@@ -69,11 +72,11 @@ out and the model can be ran:
        'monopile_design': {},
 
        'design_phases': ['MonopileDesign'],
-       'install_phases': []
+       'install_phases': ['MonopileInstallation']
    }
 
    project = ProjectManager(config)
-   project.run_project()
+   project.run()
 
    # .design_results returns the results of all design phases that were ran
    project.design_results
@@ -86,7 +89,7 @@ out and the model can be ran:
            'thickness': 0.078,          # m
            'embedment_length': 55.84,   # m
            'length': 85.84,             # m
-           'mass': 640.57,            # t
+           'mass': 640.57,              # t
            'deck_space': 5.58,          # m2
            'type': 'Monopile'
        }
