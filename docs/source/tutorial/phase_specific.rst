@@ -68,7 +68,7 @@ distance defined specific to it's namespace. Notice that the structure of the
 ``TurbineInstallation`` follows the same structure as the overall
 configuration. Any input parameter (no matter how many dictionaries down) can
 be defined specific to each phase using this method. When the model is run with
-``project.run_project()`` ORBIT will use the most specific parameter available
+``project.run()`` ORBIT will use the most specific parameter available
 in the input configuration for each of the inputs. Phase specific parameters
 always take precedence over the more general configuration.
 
