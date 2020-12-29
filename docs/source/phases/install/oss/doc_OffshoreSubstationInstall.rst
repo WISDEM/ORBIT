@@ -12,8 +12,9 @@ offshore substations and their associated substructures. ORBIT currently only
 considers monopile substructures, though future release will extend this module
 to include an option for jacket substructures. The installation of the
 substructure and substation topside is completed with an installation vessel
-while components are delivered to site using a feeder barge. The
-:ref:`process-diagram` outlining the vessel logistics involved can be seen below.
+while components are delivered to site using a feeder barge.
+
+.. The :ref:`process-diagram` outlining the vessel logistics involved can be seen below.
 
 Processes
 ---------
@@ -68,12 +69,10 @@ code the processes the installation vessel takes to complete this task:
 |                 | | ``speed_below_depth``  |            |
 +-----------------+--------------------------+------------+
 
-.. _process-diagram:
+.. Process Diagram
+.. ----------------
 
-Process Diagram
-----------------
+.. Offshore Substation Installation
+.. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Offshore Substation Installation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Coming soon!
+.. Coming soon!

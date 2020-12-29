@@ -31,7 +31,7 @@ where :math:`\gamma_L` is the load factor (defaults to 1.35),
 :math:`F_{wind,EOG}` is the total wind load on the turbine, :math:`S` is the
 water depth at site and :math:`z_{hub}` is the hub height of the turbine. The
 derivation of :math:`F_{wind,EOG}` can be seen in detail in the
-`ORBIT technical documentation <todo>`_.
+`ORBIT technical documentation <https://www.nrel.gov/docs/fy20osti/77081.pdf>`_.
 
 Initial pile dimensions are then calculated using Arany (2017) [#arany2017]_,
 API (2005) [#api2005]_, and Poulos and Davis (1980) [#PoulosDavis1980]_.

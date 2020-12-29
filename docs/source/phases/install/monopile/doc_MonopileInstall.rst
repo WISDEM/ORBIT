@@ -174,16 +174,16 @@ Process Diagrams
 Single WTIV Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../../../../images/process_diagrams/monopile_single_wtiv.png
+.. image:: ../../../images/process_diagrams/monopile_single_wtiv.png
 
 .. _monopile_install_feeders:
 
 WTIV with Feeder Barges Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../../../../images/process_diagrams/monopile_wtiv_with_feeders.png
+.. image:: ../../../images/process_diagrams/monopile_wtiv_with_feeders.png
 
 Component Installation
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../../../../images/process_diagrams/monopile_install.png
+.. image:: ../../../images/process_diagrams/monopile_install.png
