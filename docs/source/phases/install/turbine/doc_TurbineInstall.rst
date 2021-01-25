@@ -138,14 +138,14 @@ Process Diagrams
 Single WTIV Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../../../../images/process_diagrams/turbine_single_wtiv.png
+.. image:: ../../../images/process_diagrams/turbine_single_wtiv.png
 
 WTIV with Feeder Barges Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../../../../images/process_diagrams/turbine_wtiv_with_feeders.png
+.. image:: ../../../images/process_diagrams/turbine_wtiv_with_feeders.png
 
 Component Installation
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: ../../../../images/process_diagrams/turbine_install.png
+.. image:: ../../../images/process_diagrams/turbine_install.png

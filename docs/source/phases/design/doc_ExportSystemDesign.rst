@@ -44,4 +44,4 @@ to simulate the installation of the system.
 Process Diagrams
 ----------------
 
-.. image:: ../../../images/process_diagrams/ExportSystemDesign.png
+.. image:: ../../images/process_diagrams/ExportSystemDesign.png

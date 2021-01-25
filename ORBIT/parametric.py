@@ -67,7 +67,7 @@ class ParametricManager:
 
         else:
             project = ProjectManager(config, weather=self.weather, **kwargs)
-            project.run_project()
+            project.run()
 
         results = self.map_funcs(project, self.funcs)
         data = {**run, **results}

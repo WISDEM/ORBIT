@@ -28,7 +28,7 @@ def test_for_equal_results():
     config = benedict(deepcopy(complete_project))
     config["site.distance"] = 20
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
 
     parametric = ParametricManager(config, params, funcs)
     parametric.run()

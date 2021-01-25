@@ -407,7 +407,7 @@ class OrbitWisdem(om.ExplicitComponent):
         config = self.compile_orbit_config_file(inputs, outputs, discrete_inputs, discrete_outputs)
 
         project = ProjectManager(config)
-        project.run_project()
+        project.run()
 
         outputs["bos_capex"] = project.bos_capex
         outputs["total_capex"] = project.total_capex

@@ -102,4 +102,4 @@ Coming soon!
 Process Diagrams
 ----------------
 
-.. image:: ../../../../images/process_diagrams/ExportCableInstall.png
+.. image:: ../../../images/process_diagrams/ExportCableInstall.png

@@ -6,7 +6,7 @@
    :ref:`Tutorial <tutorial>`
       Basic tutorial for working with ORBIT.
 
-   :ref:`Examples <todo>`
+   `Examples <https://github.com/WISDEM/ORBIT/tree/dev/examples>`_
       Advanced examples and real world validation cases.
 
    :ref:`API Reference <api>`
