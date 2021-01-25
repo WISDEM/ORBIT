@@ -12,10 +12,12 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="ORBIT",
+    name="orbit-nrel",
+    author="Jake Nunemaker",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description="Offshore Renewables Balance of system and Installation Tool",
+    long_description=long_description,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3.7",
@@ -23,6 +25,7 @@ setup(
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
     ),
+    package_data={"": ["*.yaml"]},
     install_requires=[
         "numpy",
         "matplotlib",
@@ -31,7 +34,8 @@ setup(
         "scipy",
         "pandas",
         "pyyaml",
-        "openmdao>= 2.0",
+        "openmdao>=3.2",
+        "python-benedict",
     ],
     extras_require={
         "dev": [

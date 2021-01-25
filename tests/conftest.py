@@ -8,7 +8,7 @@ from marmot import Environment
 
 from ORBIT.core import Vessel
 from tests.data import test_weather
-from ORBIT.library import initialize_library, extract_library_specs
+from ORBIT.core.library import initialize_library, extract_library_specs
 from ORBIT.phases.install.cable_install import SimpleCable
 
 
@@ -71,3 +71,10 @@ def spi_vessel():
 def simple_cable():
 
     return SimpleCable(linear_density=50.0)
+
+
+@pytest.fixture(scope="function")
+def tmp_yaml_del():
+
+    yield
+    os.remove("tmp.yaml")

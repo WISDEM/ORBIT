@@ -11,9 +11,10 @@ from copy import deepcopy
 import pandas as pd
 import pytest
 
+from ORBIT import ProjectManager
 from tests.data import test_weather
-from ORBIT.library import extract_library_specs
-from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.library import extract_library_specs
+from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import TurbineInstallation
 
 config_wtiv = extract_library_specs("config", "turbine_install_wtiv")
@@ -23,12 +24,13 @@ config_long_mobilize = extract_library_specs(
 config_wtiv_feeder = extract_library_specs("config", "turbine_install_feeder")
 config_wtiv_multi_feeder = deepcopy(config_wtiv_feeder)
 config_wtiv_multi_feeder["num_feeders"] = 2
+floating = extract_library_specs("config", "floating_turbine_install_feeder")
 
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 def test_simulation_setup(config):
 
@@ -50,22 +52,27 @@ def test_simulation_setup(config):
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 def test_vessel_creation(config):
 
     sim = TurbineInstallation(config)
     assert sim.wtiv
-    assert sim.wtiv.jacksys
     assert sim.wtiv.crane
     assert sim.wtiv.storage
+
+    js = sim.wtiv._jacksys_specs
+    dp = sim.wtiv._dp_specs
+
+    if not any([js, dp]):
+        assert False
 
     if config.get("feeder", None) is not None:
         assert len(sim.feeders) == config["num_feeders"]
 
         for feeder in sim.feeders:
-            assert feeder.jacksys
+            # assert feeder.jacksys
             assert feeder.storage
 
 
@@ -83,8 +90,8 @@ def test_vessel_mobilize(config, expected):
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 @pytest.mark.parametrize(
     "weather", (None, test_weather), ids=["no_weather", "test_weather"]
@@ -109,8 +116,8 @@ def test_for_complete_logging(weather, config):
 
 @pytest.mark.parametrize(
     "config",
-    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder),
-    ids=["wtiv_only", "single_feeder", "multi_feeder"],
+    (config_wtiv, config_wtiv_feeder, config_wtiv_multi_feeder, floating),
+    ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 def test_for_complete_installation(config):
 
@@ -153,6 +160,56 @@ def test_kwargs():
         new_sim = TurbineInstallation(config_wtiv, **kwargs)
         new_sim.run()
         new_time = new_sim.total_phase_time
+
+        if new_time > baseline:
+            pass
+
+        else:
+            failed.append(kw)
+
+    if failed:
+        raise Exception(f"'{failed}' not affecting results.")
+
+    else:
+        assert True
+
+
+def test_kwargs_in_ProjectManager():
+
+    base = deepcopy(config_wtiv)
+    base["install_phases"] = ["TurbineInstallation"]
+
+    project = ProjectManager(base)
+    project.run_project()
+    baseline = project.phase_times["TurbineInstallation"]
+
+    keywords = [
+        "tower_section_fasten_time",
+        "tower_section_release_time",
+        "tower_section_attach_time",
+        "nacelle_fasten_time",
+        "nacelle_release_time",
+        "nacelle_attach_time",
+        "blade_fasten_time",
+        "blade_release_time",
+        "blade_attach_time",
+        "site_position_time",
+        "crane_reequip_time",
+    ]
+
+    failed = []
+
+    for kw in keywords:
+
+        default = pt[kw]
+        processes = {kw: default + 2}
+
+        new_config = deepcopy(base)
+        new_config["processes"] = processes
+
+        new_project = ProjectManager(new_config)
+        new_project.run_project()
+        new_time = new_project.phase_times["TurbineInstallation"]
 
         if new_time > baseline:
             pass

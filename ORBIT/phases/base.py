@@ -9,11 +9,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from abc import ABC, abstractmethod
 from copy import deepcopy
 
-from ORBIT.library import (
-    initialize_library,
-    extract_library_data,
-    extract_library_specs,
-)
+from ORBIT.core.library import initialize_library, extract_library_data
 from ORBIT.core.exceptions import MissingInputs
 
 
@@ -24,17 +20,6 @@ class BasePhase(ABC):
     This class is not intended to be instantiated, but define the required
     interfaces for all phases defined by subclasses. Many of the methods below
     should be overwritten in subclasses.
-
-    Attributes
-    ----------
-    phase : str
-        Name of the phase that is being used.
-    total_phase_cost : float
-        Calculates the total phase cost. Should be implemented in each subclass.
-    detailed_output : dict
-        Creates the detailed output dictionary. Should be implemented in each
-        subclass.
-    phase_dataframe : pd.DataFrame
 
     Methods
     -------
@@ -66,13 +51,6 @@ class BasePhase(ABC):
         phase_name = kwargs.get("phase_name", None)
         if phase_name is not None:
             self.phase = phase_name
-
-    def extract_defaults(self):
-        """
-        Extracts the default data from the library.
-        """
-
-        self.defaults = extract_library_specs("defaults", "project")
 
     @classmethod
     def _check_keys(cls, expected, config):
@@ -142,26 +120,5 @@ class BasePhase(ABC):
     @abstractmethod
     def run(self):
         """Main run function for phase."""
-
-        pass
-
-    @property
-    @abstractmethod
-    def total_phase_cost(self):
-        """Returns total phase cost in $USD."""
-
-        pass
-
-    @property
-    @abstractmethod
-    def total_phase_time(self):
-        """Returns total phase time in hours."""
-
-        pass
-
-    @property
-    @abstractmethod
-    def detailed_output(self):
-        """Returns detailed phase information."""
 
         pass

@@ -11,9 +11,11 @@ from itertools import groupby
 
 import numpy as np
 import simpy
+import pandas as pd
 
 from ORBIT.core import Port, Environment
 from ORBIT.phases import BasePhase
+from ORBIT.core.defaults import common_costs
 
 
 class InstallPhase(BasePhase):
@@ -25,7 +27,7 @@ class InstallPhase(BasePhase):
 
         Parameters
         ----------
-        weather : np.ndarray
+        weather : pd.DataFrame | np.ndarray
             Weather profile at site.
         """
 
@@ -41,6 +43,9 @@ class InstallPhase(BasePhase):
         weather : np.ndarray
             Weather profile at site.
         """
+
+        if isinstance(weather, pd.DataFrame):
+            weather = weather.to_records()
 
         env_name = kwargs.get("env_name", "Environment")
         self.env = Environment(name=env_name, state=weather, **kwargs)
@@ -103,22 +108,18 @@ class InstallPhase(BasePhase):
         else:
             key = "port_cost_per_month"
             port_config = self.config.get("port", {})
-            rate = port_config.get("monthly_rate", self.defaults[key])
+            rate = port_config.get("monthly_rate", common_costs[key])
 
             months = self.total_phase_time / (8760 / 12)
             return months * rate
 
     @property
-    def total_phase_cost(self):
-        """Returns total phase cost in $USD."""
+    def installation_capex(self):
+        """Returns sum of all installation costs in `self.env.actions`."""
 
-        return self.action_costs + self.port_costs
-
-    @property
-    def action_costs(self):
-        """Returns sum cost of all actions."""
-
-        return np.nansum([a["cost"] for a in self.env.actions])
+        return (
+            np.nansum([a["cost"] for a in self.env.actions]) + self.port_costs
+        )
 
     @property
     def total_phase_time(self):

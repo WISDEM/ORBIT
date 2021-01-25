@@ -55,14 +55,18 @@ class ScourProtectionDesign(DesignPhase):
         "scour_protection_design": {
             "cost_per_tonne": "USD/t",
             "rock_density": "kg/m3 (optional)",
-            "design_time": "h (optional)",
             "soil_friction_angle": "float (optional)",
             "scour_depth_equilibrium": "float (optional)",
             "scour_protection_depth": "m (optional)",
         },
     }
 
-    output_config = {"scour_protection": {"tons_per_substructure": "int"}}
+    output_config = {
+        "scour_protection": {
+            "tonnes_per_substructure": "t",
+            "cost_per_tonne": "USD/t",
+        }
+    }
 
     def __init__(self, config, **kwargs):
         """
@@ -126,10 +130,8 @@ class ScourProtectionDesign(DesignPhase):
         self.compute_scour_protection_tonnes_to_install()
 
     @property
-    def total_phase_cost(self):
-        """
-        Returns the total cost of the phase in $USD
-        """
+    def total_cost(self):
+        """Returns the total cost of the phase in $USD"""
 
         cost = (
             self._design["cost_per_tonne"]
@@ -139,21 +141,12 @@ class ScourProtectionDesign(DesignPhase):
         return cost
 
     @property
-    def total_phase_time(self):
-        """
-        Returns the total time requried for the phase, in hours.
-        """
-
-        return self._design.get("design_time", 0.0)
-
-    @property
     def detailed_output(self):
-        """
-        Returns detailed outputs of the design.
-        """
+        """Returns detailed outputs of the design."""
 
         _out = {
-            "scour_protection_per_substructure": self.scour_protection_tonnes
+            "tonnes_per_substructure": self.scour_protection_tonnes,
+            "cost_per_tonne": self._design["cost_per_tonne"],
         }
         return _out
 
@@ -170,9 +163,5 @@ class ScourProtectionDesign(DesignPhase):
                 - ``tonnes_per_substructure`` : `int`
         """
 
-        output = {
-            "scour_protection": {
-                "tons_per_substructure": self.scour_protection_tonnes
-            }
-        }
+        output = {"scour_protection": self.detailed_output}
         return output

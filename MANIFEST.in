@@ -1,2 +1,3 @@
 include versioneer.py
 include ORBIT/_version.py
+include *.yaml

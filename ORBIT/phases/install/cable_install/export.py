@@ -71,7 +71,6 @@ class ExportCableInstallation(InstallPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.extract_defaults()
 
         self.initialize_port()
         self.extract_distances()
@@ -114,6 +113,12 @@ class ExportCableInstallation(InstallPhase):
             free_cable_length=self.free_cable_length,
             **kwargs,
         )
+
+    @property
+    def system_capex(self):
+        """Returns total procurement cost of the array system."""
+
+        return self.config["export_system"]["system_cost"]
 
     def extract_distances(self):
         """Extracts distances from input configuration or default values."""

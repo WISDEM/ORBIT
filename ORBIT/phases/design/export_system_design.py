@@ -207,7 +207,8 @@ class ExportSystemDesign(CableSystem):
 
         output = {
             "export_system": {
-                "interconnection_distance": self._distance_to_interconnection
+                "interconnection_distance": self._distance_to_interconnection,
+                "system_cost": self.total_cost,
             }
         }
 

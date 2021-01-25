@@ -56,8 +56,13 @@ class MonopileInstallation(InstallPhase):
             "diameter": "m",
             "deck_space": "m2",
             "mass": "t",
+            "unit_cost": "USD",
         },
-        "transition_piece": {"deck_space": "m2", "mass": "t"},
+        "transition_piece": {
+            "deck_space": "m2",
+            "mass": "t",
+            "unit_cost": "USD",
+        },
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -77,12 +82,20 @@ class MonopileInstallation(InstallPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
-        self.extract_defaults()
 
         self.initialize_port()
         self.initialize_wtiv()
         self.initialize_monopiles()
         self.setup_simulation(**kwargs)
+
+    @property
+    def system_capex(self):
+        """Returns procurement cost of the substructures."""
+
+        return (
+            self.config["monopile"]["unit_cost"]
+            + self.config["transition_piece"]["unit_cost"]
+        ) * self.config["plant"]["num_turbines"]
 
     def setup_simulation(self, **kwargs):
         """

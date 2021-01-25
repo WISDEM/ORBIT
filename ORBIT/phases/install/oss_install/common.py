@@ -9,7 +9,8 @@ __email__ = "jake.nunemaker@nrel.gov"
 from marmot import process
 
 from ORBIT.core import Cargo
-from ORBIT.core._defaults import process_times as pt
+from ORBIT.core.logic import stabilize, jackdown_if_required
+from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install.monopile_install.common import (
     bolt_transition_piece,
     cure_transition_piece_grout,
@@ -124,9 +125,6 @@ def install_topside(vessel, topside, **kwargs):
 
     connection = kwargs.get("topside_connection_type", "bolted")
     reequip_time = vessel.crane.reequip(**kwargs)
-    site_depth = kwargs.get("site_depth", None)
-    extension = kwargs.get("extension", site_depth + 10)
-    jackdown_time = vessel.jacksys.jacking_time(extension, site_depth)
 
     yield vessel.task(
         "Crane Reequip",
@@ -137,10 +135,10 @@ def install_topside(vessel, topside, **kwargs):
     yield lift_topside(vessel)
     yield attach_topside(vessel)
 
-    if connection is "bolted":
+    if connection == "bolted":
         yield bolt_transition_piece(vessel, **kwargs)
 
-    elif connection is "grouted":
+    elif connection == "grouted":
 
         yield pump_transition_piece_grout(vessel, **kwargs)
         yield cure_transition_piece_grout(vessel, **kwargs)
@@ -151,6 +149,4 @@ def install_topside(vessel, topside, **kwargs):
             "not recognized. Must be 'bolted' or 'grouted'."
         )
 
-    yield vessel.task(
-        "Jackdown", jackdown_time, constraints=vessel.transit_limits, **kwargs
-    )
+    yield jackdown_if_required(vessel, **kwargs)

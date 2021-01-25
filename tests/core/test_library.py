@@ -10,7 +10,8 @@ from copy import deepcopy
 
 import pytest
 
-from ORBIT import ProjectManager, library
+from ORBIT import ProjectManager
+from ORBIT.core import library
 from ORBIT.core.exceptions import LibraryItemNotFoundError
 
 config = {

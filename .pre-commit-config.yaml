@@ -13,6 +13,7 @@ repos:
           name: black
           stages: [commit]
           language_version: python3.7
+          exclude: ^ORBIT/api/wisdem
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
