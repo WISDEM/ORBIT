@@ -20,7 +20,7 @@ import ORBIT
 project = "ORBIT"
 copyright = "2020, National Renewable Energy Lab"
 author = "Jake Nunemaker, Matt Shields, Rob Hammond"
-release = ORBIT.__version__
+release = ORBIT.__version__[:6]
 
 
 # -- General configuration ---------------------------------------------------
