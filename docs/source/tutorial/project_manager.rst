@@ -94,3 +94,9 @@ now be filled out and the model can be ran:
            'type': 'Monopile'
        }
    }
+
+.. note::
+
+  To include weather in the simulation, pass an hourly pandas DataFrame into
+  ``ProjectManager``. Eg. ``ProjectManager(config, weather=weather_df)``. All
+  installation phases will use this time series.
