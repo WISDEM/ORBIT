@@ -150,7 +150,7 @@ project config above:
    }
 
    project = ProjectManager(config)
-   project.run_project()
+   project.run()
 
    project.config
 

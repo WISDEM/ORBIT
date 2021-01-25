@@ -119,7 +119,7 @@ class ProjectManager:
         self.phase_times = {}
         self._output_logs = []
 
-    def run_project(self, **kwargs):
+    def run(self, **kwargs):
         """
         Main project run method.
 
@@ -827,7 +827,7 @@ class ProjectManager:
         return rating
 
     @property
-    def project_logs(self):
+    def logs(self):
         """Returns list of all logs in the project."""
 
         if not self._output_logs:
@@ -839,7 +839,7 @@ class ProjectManager:
     def project_time(self):
         """Returns total project time as the time of the last log."""
 
-        return self.project_actions[-1]["time"]
+        return self.actions[-1]["time"]
 
     @property
     def month_bins(self):
@@ -958,7 +958,7 @@ class ProjectManager:
         """Returns filtered list of logs."""
 
         filtered = []
-        for l in self.project_logs:
+        for l in self.logs:
             try:
                 filtered.append(tuple(l[k] for k in keys))
 
@@ -987,10 +987,10 @@ class ProjectManager:
         return summary
 
     @property
-    def project_actions(self):
+    def actions(self):
         """Returns list of all actions in the project."""
 
-        actions = [l for l in self.project_logs if l["level"] == "ACTION"]
+        actions = [l for l in self.logs if l["level"] == "ACTION"]
         return sorted(actions, key=lambda l: l["time"])
 
     @staticmethod

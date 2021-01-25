@@ -19,7 +19,6 @@ enough that they should not be ignored when computing BOS costs.
 Configuration
 -------------
 
-TODO
 This module is simple to configure, as the main parameter considered is the
 ``tons_per_substructure`` to install. Currently ORBIT models the simplest
 installation method, involving "Side Stone Installation Vessels" that dump
@@ -64,7 +63,7 @@ times for this operation are outlined below.
 | Drop Rocks      | ``drop_rocks_time``                  | 10h        |
 +-----------------+--------------------------------------+------------+
 
-Process Diagrams
-----------------
+.. Process Diagrams
+.. ----------------
 
-Coming soon!
+.. Coming soon!

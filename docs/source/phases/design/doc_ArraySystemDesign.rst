@@ -20,11 +20,11 @@ string and the substation. This figure is also an example of a
 "partial string" that is needed to complete the layout. The next sections will
 go into more detail of the key steps in building out the array cabling system.
 
-+------------------------------------------------------------+---------------------------------------------------------------+
-| .. image:: ../../../images/examples/full_grid_example.png  | .. image:: ../../../images/examples/partial_ring_example.png  |
-+------------------------------------------------------------+---------------------------------------------------------------+
-|    Fig 1. Grid layout with no partial strings              |    Fig 2. Ring layout with 1 partial string                   |
-+------------------------------------------------------------+---------------------------------------------------------------+
++------------------------------------------------------------+-----------------------------------------------------------+
+| .. image:: ../../images/examples/full_grid_example.png     | .. image:: ../../images/examples/partial_ring_example.png |
++------------------------------------------------------------+-----------------------------------------------------------+
+|    Fig 1. Grid layout with no partial strings              |    Fig 2. Ring layout with 1 partial string               |
++------------------------------------------------------------+-----------------------------------------------------------+
 
 Number of Strings
 -----------------
@@ -145,4 +145,4 @@ and stored in the :py:attr:`design_result`, which can be utilized by the
 Process Diagrams
 ----------------
 
-.. image:: ../../../images/process_diagrams/ArraySystemDesign.png
+.. image:: ../../images/process_diagrams/ArraySystemDesign.png

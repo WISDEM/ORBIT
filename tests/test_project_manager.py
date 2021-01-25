@@ -30,9 +30,9 @@ complete_project = extract_library_specs("config", "complete_project")
 def test_complete_run(weather):
 
     project = ProjectManager(config, weather=weather)
-    project.run_project()
+    project.run()
 
-    actions = pd.DataFrame(project.project_actions)
+    actions = pd.DataFrame(project.actions)
 
     phases = ["MonopileInstallation", "TurbineInstallation"]
     assert all(p in list(actions["phase"]) for p in phases)
@@ -76,7 +76,7 @@ def test_phase_specific_definitions():
     assert phase_config["wtiv"]["name"] == "Example WTIV"
     assert phase_config["site"]["distance"] == 50
 
-    project.run_project()
+    project.run()
 
 
 def test_expected_config_merging():
@@ -182,9 +182,9 @@ def test_chained_dependencies():
     }
 
     project = ProjectManager(config_chained)
-    project.run_project()
+    project.run()
 
-    df = pd.DataFrame(project.project_actions)
+    df = pd.DataFrame(project.actions)
     sp = list(df.loc[df["phase"] == "ScourProtectionInstallation"]["time"])
     mp = list(df.loc[df["phase"] == "MonopileInstallation"]["time"])
     tu = list(df.loc[df["phase"] == "TurbineInstallation"]["time"])
@@ -210,9 +210,9 @@ def test_index_starts(m_start, t_start):
     }
 
     project = ProjectManager(config_with_index_starts)
-    project.run_project()
+    project.run()
 
-    df = pd.DataFrame(project.project_actions)
+    df = pd.DataFrame(project.actions)
 
     _m = df.loc[df["phase"] == "MonopileInstallation"].iloc[0]
     _t = df.loc[df["phase"] == "TurbineInstallation"].iloc[0]
@@ -240,8 +240,8 @@ def test_start_dates_with_weather(m_start, t_start, expected):
     }
 
     project = ProjectManager(config_with_defined_starts, weather=weather_df)
-    project.run_project()
-    df = pd.DataFrame(project.project_actions)
+    project.run()
+    df = pd.DataFrame(project.actions)
 
     _m = df.loc[df["phase"] == "MonopileInstallation"].iloc[0]
     _t = df.loc[df["phase"] == "TurbineInstallation"].iloc[0]
@@ -268,10 +268,10 @@ def test_duplicate_phase_definitions():
     }
 
     project = ProjectManager(config_with_duplicates)
-    project.run_project()
+    project.run()
 
     df = (
-        pd.DataFrame(project.project_actions)
+        pd.DataFrame(project.actions)
         .groupby(["phase", "action"])
         .count()["time"]
     )
@@ -298,12 +298,12 @@ def test_design_phases():
     # Remove monopile sub dictionary
     _ = config_with_design.pop("monopile")
     project = ProjectManager(config_with_design)
-    project.run_project()
+    project.run()
 
     assert isinstance(project.config["monopile"], dict)
 
     project = ProjectManager(config_with_design)
-    project.run_project()
+    project.run()
 
 
 ### Outputs
@@ -386,7 +386,7 @@ def test_incomplete_config():
 
     with pytest.raises(MissingInputs):
         project = ProjectManager(incomplete_config)
-        project.run_project()
+        project.run()
 
 
 def test_wrong_phases():
@@ -396,7 +396,7 @@ def test_wrong_phases():
 
     with pytest.raises(PhaseNotFound):
         project = ProjectManager(wrong_phases)
-        project.run_project()
+        project.run()
 
 
 def test_bad_dates():
@@ -409,7 +409,7 @@ def test_bad_dates():
 
     with pytest.raises(WeatherProfileError):
         project = ProjectManager(bad_dates, weather=weather_df)
-        project.run_project()
+        project.run()
 
 
 def test_no_defined_start():
@@ -422,7 +422,7 @@ def test_no_defined_start():
 
     with pytest.raises(ValueError):
         project = ProjectManager(missing_start)
-        project.run_project()
+        project.run()
 
 
 def test_circular_dependencies():
@@ -441,7 +441,7 @@ def test_circular_dependencies():
 
     with pytest.raises(PhaseDependenciesInvalid):
         project = ProjectManager(circular_deps)
-        project.run_project()
+        project.run()
 
 
 def test_dependent_phase_ordering():
@@ -459,7 +459,7 @@ def test_dependent_phase_ordering():
     }
 
     project = ProjectManager(wrong_order)
-    project.run_project()
+    project.run()
 
     assert len(project.phase_times) == 3
 
@@ -507,7 +507,7 @@ def test_ProjectProgress():
 def test_ProjectProgress_with_incomplete_project():
 
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
 
     _ = project.progress.parse_logs("Substructure")
     _ = project.progress.parse_logs("Turbine")
@@ -522,7 +522,7 @@ def test_ProjectProgress_with_incomplete_project():
 def test_ProjectProgress_with_complete_project():
 
     project = ProjectManager(complete_project)
-    project.run_project()
+    project.run()
 
     _ = project.progress.parse_logs("Substructure")
     _ = project.progress.parse_logs("Turbine")
@@ -540,7 +540,7 @@ def test_ProjectProgress_with_complete_project():
 
     # Uneven strings
     project = ProjectManager(new)
-    project.run_project()
+    project.run()
 
     _ = project.progress.energize_points
 
@@ -548,7 +548,7 @@ def test_ProjectProgress_with_complete_project():
 def test_monthly_expenses():
 
     project = ProjectManager(complete_project)
-    project.run_project()
+    project.run()
     _ = project.monthly_expenses
 
     # Still report expenses for "incomplete" project
@@ -556,7 +556,7 @@ def test_monthly_expenses():
     _ = config["install_phases"].pop("TurbineInstallation")
 
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
 
     _ = project.monthly_expenses
 
@@ -564,7 +564,7 @@ def test_monthly_expenses():
 def test_monthly_revenue():
 
     project = ProjectManager(complete_project)
-    project.run_project()
+    project.run()
     _ = project.monthly_revenue
 
     # Can't generate revenue with "incomplete" project
@@ -572,7 +572,7 @@ def test_monthly_revenue():
     _ = config["install_phases"].pop("TurbineInstallation")
 
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
 
     with pytest.raises(ValueError):
         _ = project.monthly_revenue
@@ -581,7 +581,7 @@ def test_monthly_revenue():
 def test_cash_flow():
 
     project = ProjectManager(complete_project)
-    project.run_project()
+    project.run()
     _ = project.cash_flow
 
     # Can't generate revenue with "incomplete" project but cash flow will still
@@ -590,7 +590,7 @@ def test_cash_flow():
     _ = config["install_phases"].pop("TurbineInstallation")
 
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
 
     cash_flow = project.cash_flow
     assert all(v <= 0 for v in cash_flow.values())
@@ -599,37 +599,37 @@ def test_cash_flow():
 def test_npv():
 
     project = ProjectManager(complete_project)
-    project.run_project()
+    project.run()
     baseline = project.npv
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"ncf": 0.35}
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
     assert project.npv != baseline
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"offtake_price": 70}
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
     assert project.npv != baseline
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"project_lifetime": 30}
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
     assert project.npv != baseline
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"discount_rate": 0.03}
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
     assert project.npv != baseline
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"opex_rate": 120}
     project = ProjectManager(config)
-    project.run_project()
+    project.run()
     assert project.npv != baseline
 
 
