@@ -6,9 +6,19 @@ ORBIT Changelog
 1.0.0
 -----
 
+- New feature: ``ParametricManager`` for running parametric studies.
+- Added procurement cost inputs and total cost methods to installation phases.
+  Design phases are now only used to fill in the design and do not return a
+  cost associated with the design.
+- Refactored aggregation project level outputs in ``ProjectManager``.
+- Revised Net Present Value calculation to utilize new project outputs.
+- Added ``load_config`` and ``save_config`` functions.
+- Moved ``ORBIT.library`` to ``OBRIT.core.library``.
+- Centralized model defaults to ``ORBIT.core.defaults``.
 - ``ProjectManager.project_actions`` renamed to ``ProjectManager.actions``
 - ``ProjectManager.project_logs`` renamed to ``ProjectManager.logs``
 - ``ProjectManager.run_project()`` renamed to ``ProjectManager.run()``
+- Moved documentation hosting to gh-pages.
 
 0.5.1
 -----
