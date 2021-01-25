@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Scour Protection Installation API &mdash; ORBIT 0+untagged.1.g9ee7480 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Turbine Installation API" href="../turbine/api_TurbineInstallation.html" />
+    <link rel="prev" title="Monopile Installation API" href="../monopile/api_MonopileInstallation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../contents.html" class="icon icon-home"> ORBIT
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/api_MonopileInstallation.html">Monopile Installation API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Scour Protection Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/api_TurbineInstallation.html">Turbine Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array/api_ArrayCableInstall.html">Array Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../export/api_ExportCableInstall.html">Export Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/api_OffshoreSubstationInstall.html">Offshore Substation Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/api_MooredSubInstallation.html">Moored Substructure Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/api_MooringSystemInstallation.html">Mooring System Installation API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../contents.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a> &raquo;</li>
+        
+      <li>Scour Protection Installation API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../../_sources/source/phases/install/scour/api_ScourProtectionInstall.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scour-protection-installation-api">
+<h1>Scour Protection Installation API<a class="headerlink" href="#scour-protection-installation-api" title="Permalink to this headline">¶</a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_ScourProtectionInstall.html"><span class="doc">Scour Protection Installation Methodology</span></a>.</p>
+<dl class="py class">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation">
+<em class="property">class </em><code class="sig-prename descclassname">ORBIT.phases.install.</code><code class="sig-name descname">ScourProtectionInstallation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">weather</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scour protection installation simulation using a single vessel.</p>
+<dl class="py attribute">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation.expected_config">
+<code class="sig-name descname">expected_config</code><em class="property"> = {'plant': {'num_turbines': 'int', 'turbine_distance': 'km (optional)', 'turbine_spacing': 'rotor diameters'}, 'port': {'monthly_rate': 'USD/mo (optional)', 'name': 'str (optional)'}, 'scour_protection': {'cost_per_tonne': 'USD/t', 'tonnes_per_substructure': 't'}, 'site': {'distance': 'int'}, 'spi_vessel': 'dict | str', 'turbine': {'rotor_diameter': 'm'}}</em><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation.expected_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation.setup_simulation">
+<code class="sig-name descname">setup_simulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation.setup_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Sets up the required simulation infrastructure:</dt><dd><ul class="simple">
+<li><p>creates a port</p></li>
+<li><p>initializes a scour protection installation vessel</p></li>
+<li><p>initializes vessel storage</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation.system_capex">
+<em class="property">property </em><code class="sig-name descname">system_capex</code><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation.system_capex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns total procurement cost of scour protection material.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation.initialize_port">
+<code class="sig-name descname">initialize_port</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation.initialize_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a Port object with a simpy.Container of scour protection
+material.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation.initialize_spi_vessel">
+<code class="sig-name descname">initialize_spi_vessel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation.initialize_spi_vessel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the scouring protection isntallation (SPI) vessel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.ScourProtectionInstallation.detailed_output">
+<em class="property">property </em><code class="sig-name descname">detailed_output</code><a class="headerlink" href="#ORBIT.phases.install.ScourProtectionInstallation.detailed_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detailed outputs of the scour protection installation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../turbine/api_TurbineInstallation.html" class="btn btn-neutral float-right" title="Turbine Installation API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../monopile/api_MonopileInstallation.html" class="btn btn-neutral float-left" title="Monopile Installation API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, National Renewable Energy Lab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Monopile Installation API &mdash; ORBIT 0+untagged.1.g9ee7480 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Scour Protection Installation API" href="../scour/api_ScourProtectionInstall.html" />
+    <link rel="prev" title="Install Phases - ORBIT.phases.install" href="../../../api_InstallPhase.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../contents.html" class="icon icon-home"> ORBIT
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Monopile Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scour/api_ScourProtectionInstall.html">Scour Protection Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/api_TurbineInstallation.html">Turbine Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array/api_ArrayCableInstall.html">Array Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../export/api_ExportCableInstall.html">Export Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/api_OffshoreSubstationInstall.html">Offshore Substation Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/api_MooredSubInstallation.html">Moored Substructure Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/api_MooringSystemInstallation.html">Mooring System Installation API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../contents.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../api.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a> &raquo;</li>
+        
+      <li>Monopile Installation API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../../_sources/source/phases/install/monopile/api_MonopileInstallation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="monopile-installation-api">
+<h1>Monopile Installation API<a class="headerlink" href="#monopile-installation-api" title="Permalink to this headline">¶</a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_MonopileInstall.html"><span class="doc">Monopile Installation Methodology</span></a>.</p>
+<span class="target" id="module-ORBIT.phases.install.monopile_install.standard"></span><p><cite>MonopileInstallation</cite> class and related processes.</p>
+<dl class="py class">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation">
+<em class="property">class </em><code class="sig-prename descclassname">ORBIT.phases.install.monopile_install.standard.</code><code class="sig-name descname">MonopileInstallation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">weather</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard monopile installation module using a Wind Turbine Installation
+Vessel (WTIV). If input <cite>feeder</cite> and <cite>num_feeders</cite> are not supplied, the
+WTIV will perform all transport and installation tasks. If the above inputs
+are defined, feeder barges will transport monopile components from port to
+site.</p>
+<dl class="py attribute">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.expected_config">
+<code class="sig-name descname">expected_config</code><em class="property"> = {'feeder': 'dict | str (optional)', 'monopile': {'deck_space': 'm2', 'diameter': 'm', 'length': 'm', 'mass': 't', 'unit_cost': 'USD'}, 'num_feeders': 'int (optional)', 'plant': {'num_turbines': 'int'}, 'port': {'monthly_rate': 'USD/mo (optional)', 'name': 'str (optional)', 'num_cranes': 'int (optional, default: 1)'}, 'site': {'depth': 'm', 'distance': 'km'}, 'transition_piece': {'deck_space': 'm2', 'mass': 't', 'unit_cost': 'USD'}, 'turbine': {'hub_height': 'm'}, 'wtiv': 'dict | str'}</em><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.expected_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.system_capex">
+<em class="property">property </em><code class="sig-name descname">system_capex</code><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.system_capex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns procurement cost of the substructures.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.setup_simulation">
+<code class="sig-name descname">setup_simulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.setup_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up simulation infrastructure, routing to specific methods dependent
+on number of feeders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.setup_simulation_without_feeders">
+<code class="sig-name descname">setup_simulation_without_feeders</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.setup_simulation_without_feeders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up infrastructure for turbine installation without feeder barges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.setup_simulation_with_feeders">
+<code class="sig-name descname">setup_simulation_with_feeders</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.setup_simulation_with_feeders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets up infrastructure for turbine installation using feeder barges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_wtiv">
+<code class="sig-name descname">initialize_wtiv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_wtiv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the WTIV simulation object and the onboard vessel storage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_feeders">
+<code class="sig-name descname">initialize_feeders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_feeders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes feeder barge objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_monopiles">
+<code class="sig-name descname">initialize_monopiles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_monopiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes monopile and transition piece objects at port.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_queue">
+<code class="sig-name descname">initialize_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.initialize_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the queue, modeled as a <code class="docutils literal notranslate"><span class="pre">SimPy.Resource</span></code> that feeders
+join at site. This limits the simulation to one active feeder at a time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.install.monopile_install.standard.MonopileInstallation.detailed_output">
+<em class="property">property </em><code class="sig-name descname">detailed_output</code><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.MonopileInstallation.detailed_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns detailed outputs of the monopile installation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="ORBIT.phases.install.monopile_install.standard.solo_install_monopiles">
+<code class="sig-prename descclassname">ORBIT.phases.install.monopile_install.standard.</code><code class="sig-name descname">solo_install_monopiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vessel</span></em>, <em class="sig-param"><span class="n">port</span></em>, <em class="sig-param"><span class="n">distance</span></em>, <em class="sig-param"><span class="n">monopiles</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.solo_install_monopiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO:
+Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
+monopile installation process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vessel</strong> (<em>vessels.Vessel</em>) – Vessel object that represents the WTIV.</p></li>
+<li><p><strong>port</strong> (<em>Port</em>)</p></li>
+<li><p><strong>distance</strong> (<em>int | float</em>) – Distance between port and site (km).</p></li>
+<li><p><strong>monopiles</strong> (<em>int</em>) – Total monopiles to install.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="ORBIT.phases.install.monopile_install.standard.install_monopiles_from_queue">
+<code class="sig-prename descclassname">ORBIT.phases.install.monopile_install.standard.</code><code class="sig-name descname">install_monopiles_from_queue</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">wtiv</span></em>, <em class="sig-param"><span class="n">queue</span></em>, <em class="sig-param"><span class="n">monopiles</span></em>, <em class="sig-param"><span class="n">distance</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.monopile_install.standard.install_monopiles_from_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logic that a Wind Turbine Installation Vessel (WTIV) uses to install
+monopiles and transition pieces from queue of feeder barges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>simulation.Environment</em>) – SimPy environment that the simulation runs in.</p></li>
+<li><p><strong>wtiv</strong> (<em>vessels.Vessel</em>) – Vessel object that represents the WTIV.</p></li>
+<li><p><strong>queue</strong> (<em>simpy.Resource</em>) – Queue object to interact with active feeder barge.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Total monopiles to install.</p></li>
+<li><p><strong>distance</strong> (<em>int | float</em>) – Distance from site to port (km).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../scour/api_ScourProtectionInstall.html" class="btn btn-neutral float-right" title="Scour Protection Installation API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../../api_InstallPhase.html" class="btn btn-neutral float-left" title="Install Phases - ORBIT.phases.install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, National Renewable Energy Lab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

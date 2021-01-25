@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Semi-Submersible Design API &mdash; ORBIT 0+untagged.1.g9ee7480 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Spar Design API" href="api_SparDesign.html" />
+    <link rel="prev" title="Offshore Substation Design API" href="api_OffshoreSubstationDesign.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../contents.html" class="icon icon-home"> ORBIT
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="api_MonopileDesign.html">Monopile Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ScourProtectionDesign.html">Scour Protection Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ArraySystemDesign.html">Array System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ExportSystemDesign.html">Export System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_OffshoreSubstationDesign.html">Offshore Substation Design API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Semi-Submersible Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SparDesign.html">Spar Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_MooringSystemDesign.html">Mooring System Design API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../contents.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../api.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a> &raquo;</li>
+        
+      <li>Semi-Submersible Design API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../../_sources/source/phases/design/api_SemiSubmersibleDesign.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="semi-submersible-design-api">
+<h1>Semi-Submersible Design API<a class="headerlink" href="#semi-submersible-design-api" title="Permalink to this headline">¶</a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_SemiSubmersibleDesign.html"><span class="doc">Semi-Submersible Design</span></a>.</p>
+<dl class="py class">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign">
+<em class="property">class </em><code class="sig-prename descclassname">ORBIT.phases.design.</code><code class="sig-name descname">SemiSubmersibleDesign</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Semi-Submersible Substructure Design</p>
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main run function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.stiffened_column_mass">
+<em class="property">property </em><code class="sig-name descname">stiffened_column_mass</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.stiffened_column_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the mass of the stiffened column for a single
+semi-submersible in tonnes. From original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.stiffened_column_cost">
+<em class="property">property </em><code class="sig-name descname">stiffened_column_cost</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.stiffened_column_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the cost of the stiffened column for a single
+semi-submersible. From original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.truss_mass">
+<em class="property">property </em><code class="sig-name descname">truss_mass</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.truss_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the truss mass for a single semi-submersible in tonnes. From
+original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.truss_cost">
+<em class="property">property </em><code class="sig-name descname">truss_cost</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.truss_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the cost of the truss for a signle semi-submerisble. From
+original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.heave_plate_mass">
+<em class="property">property </em><code class="sig-name descname">heave_plate_mass</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.heave_plate_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the heave plate mass for a single semi-submersible in tonnes.
+From original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.heave_plate_cost">
+<em class="property">property </em><code class="sig-name descname">heave_plate_cost</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.heave_plate_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the heave plate cost for a single semi-submersible. From
+original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.secondary_steel_mass">
+<em class="property">property </em><code class="sig-name descname">secondary_steel_mass</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.secondary_steel_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the mass of the required secondary steel for a single
+semi-submersible. From original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.secondary_steel_cost">
+<em class="property">property </em><code class="sig-name descname">secondary_steel_cost</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.secondary_steel_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the cost of the required secondary steel for a single
+semi-submersible. For original OffshoreBOS model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.substructure_mass">
+<em class="property">property </em><code class="sig-name descname">substructure_mass</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.substructure_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns single substructure mass.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.substructure_cost">
+<em class="property">property </em><code class="sig-name descname">substructure_cost</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.substructure_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns single substructure cost.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.total_substructure_mass">
+<em class="property">property </em><code class="sig-name descname">total_substructure_mass</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.total_substructure_mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns mass of all substructures.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.design_result">
+<em class="property">property </em><code class="sig-name descname">design_result</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.design_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the result of <cite>self.run()</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.total_cost">
+<em class="property">property </em><code class="sig-name descname">total_cost</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.total_cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns total phase cost in $USD.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="ORBIT.phases.design.SemiSubmersibleDesign.detailed_output">
+<em class="property">property </em><code class="sig-name descname">detailed_output</code><a class="headerlink" href="#ORBIT.phases.design.SemiSubmersibleDesign.detailed_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns detailed phase information.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api_SparDesign.html" class="btn btn-neutral float-right" title="Spar Design API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api_OffshoreSubstationDesign.html" class="btn btn-neutral float-left" title="Offshore Substation Design API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, National Renewable Energy Lab.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
