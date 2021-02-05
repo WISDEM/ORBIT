@@ -80,6 +80,7 @@ class MooredSubInstallation(InstallPhase):
         self.distance = self.config["site"]["distance"]
         self.num_turbines = self.config["plant"]["num_turbines"]
 
+        self.initialize_port()
         self.initialize_substructure_production()
         self.initialize_turbine_assembly()
         self.initialize_queue()
