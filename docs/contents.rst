@@ -13,6 +13,7 @@ Contents:
    index
    source/intro/index
    source/tutorial/index
+   source/examples
    source/api
    source/methods
    source/publications/index
