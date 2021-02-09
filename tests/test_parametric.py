@@ -88,3 +88,24 @@ def test_bad_result_structure():
 
     with pytest.raises(TypeError):
         parametric.run()
+
+
+def test_product_option():
+
+    params = {"site.distance": [20, 40, 60], "site.depth": [20, 40, 60]}
+
+    parametric = ParametricManager(
+        complete_project, params, funcs, module=TurbineInstallation
+    )
+
+    assert parametric.num_runs == 3
+
+    product = ParametricManager(
+        complete_project,
+        params,
+        funcs,
+        module=TurbineInstallation,
+        product=True,
+    )
+
+    assert product.num_runs == 9
