@@ -3,6 +3,17 @@
 ORBIT Changelog
 ===============
 
+1.0.1
+-----
+
+- Default behavior of ``ParametricManager`` has been changed. Input parameters
+  are now zipped together and ran as a discrete set of configs. To use the past
+  functionality (finding the product of all input parameters), use the option
+  ``product=True``
+- Bugfix: Added port costs to floating substructure installation modules.
+- Revised docs for running the Example notebooks and added link to a tutorial
+  about working with jupyter notebooks.
+
 1.0.0
 -----
 
