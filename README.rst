@@ -4,15 +4,23 @@ ORBIT
 Offshore Renewables Balance of system and Installation Tool
 
 
-:Version: 1.0.0
+:Version: 1.0.1
 :Authors: `Jake Nunemaker <https://www.linkedin.com/in/jake-nunemaker/>`_, `Matt Shields <https://www.linkedin.com/in/matt-shields-834a6b66/>`_, `Rob Hammond <https://www.linkedin.com/in/rob-hammond-33583756/>`_
 :Documentation: `ORBIT Docs <https://wisdem.github.io/ORBIT/>`_
 
 Installation
 ------------
 
-Environment Setup
-~~~~~~~~~~~~~~~~~
+As of version 0.5.2, ORBIT is now pip installable with ``pip install orbit-nrel``.
+
+Development Setup
+-----------------
+
+The steps below are for more advanced users that would like to modify and
+and contribute to ORBIT.
+
+Environment
+~~~~~~~~~~~
 
 A couple of notes before you get started:
  - It is assumed that you will be using the terminal on MacOS/Linux or the
@@ -24,38 +32,6 @@ A couple of notes before you get started:
    to get started. An alternative setup that doesn't rely on Anaconda for
    setting up an environment can be followed
    `here <https://realpython.com/python-virtual-environments-a-primer/#managing-virtual-environments-with-virtualenvwrapper>`_.
-
-
-Dependencies
-~~~~~~~~~~~~
-
-- Python 3.7+
-- simpy-agents
-- marmot-agents
-- NumPy
-- SciPy
-- Matplotlib
-- OpenMDAO (>=3.2)
-
-Development
-~~~~~~~~~~~
-
-- black
-- isort
-- pre-commit
-- pytest
-- pytest-xdist
-- pytest-cov
-- sphinx
-- sphinx-rtd-theme
-
-
-Recommended packages for easy iteration and running of code:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-- jupyterlab
-- pandas
-
 
 Instructions
 ~~~~~~~~~~~~
@@ -96,3 +72,30 @@ Instructions
     .. code-block:: console
 
         pre-commit install
+
+Dependencies
+~~~~~~~~~~~~
+
+- Python 3.7+
+- marmot-agents
+- NumPy
+- SciPy
+- Matplotlib
+- OpenMDAO (>=3.2)
+
+Development Specific
+~~~~~~~~~~~~~~~~~~~~
+
+- black
+- isort
+- pre-commit
+- pytest
+- sphinx
+- sphinx-rtd-theme
+
+
+Recommended packages for easy iteration and running of code:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- jupyterlab
+- pandas
