@@ -19,7 +19,9 @@ from ORBIT import ProjectManager
 class ParametricManager:
     """Class for configuring parametric ORBIT runs."""
 
-    def __init__(self, base, params, funcs, weather=None, module=None):
+    def __init__(
+        self, base, params, funcs, weather=None, module=None, product=False
+    ):
         """
         Creates an instance of `ParametricRun`.
 
@@ -43,6 +45,7 @@ class ParametricManager:
         self.weather = weather
         self.results = None
         self.module = module
+        self.product = product
 
     def run(self, **kwargs):
         """Run the configured parametric runs and save any requested results to
@@ -78,7 +81,12 @@ class ParametricManager:
     def run_list(self):
         """Returns list of configured parametric runs."""
 
-        runs = list(product(*self.params.values()))
+        if self.product:
+            runs = list(product(*self.params.values()))
+
+        else:
+            runs = list(zip(*self.params.values()))
+
         return [dict(zip(self.params.keys(), run)) for run in runs]
 
     @property
