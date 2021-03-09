@@ -249,58 +249,12 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
         if queue_time > 0:
             vessel.submit_action_log("Queue", queue_time)
 
-        if port.items:
-            while True:
-                buffer = []
-                for i in items:
-                    item = port.get_item(i)
-                    buffer.append(item)
+        for i in items:
+            item = yield port.get(lambda x: x.type == i)
+            action, time = item.fasten(**kwargs)
+            vessel.storage.put_item(item)
 
-                # Calculate deck space and mass of one complete turbine
-                total_deck_space = sum([item.deck_space for item in buffer])
-                proposed_deck_space = (
-                    vessel.storage.current_deck_space + total_deck_space
+            if time > 0:
+                yield vessel.task(
+                    action, time, constraints=vessel.transit_limits, **kwargs
                 )
-
-                total_mass = sum([item.mass for item in buffer])
-                proposed_mass = vessel.storage.current_cargo_mass + total_mass
-
-                if proposed_deck_space > vessel.storage.max_deck_space:
-                    vessel.submit_debug_log(message="Full")
-
-                    for item in buffer:
-                        port.put(item)
-
-                    if vessel.storage.current_cargo_mass > 0:
-                        break
-
-                    else:
-                        raise VesselCapacityError(vessel, items)
-
-                elif proposed_mass > vessel.storage.max_cargo_mass:
-                    vessel.submit_debug_log(message="Full")
-
-                    for item in buffer:
-                        port.put(item)
-
-                    if vessel.storage.current_cargo_mass > 0:
-                        break
-
-                    else:
-                        raise VesselCapacityError(vessel, items)
-
-                else:
-                    for item in buffer:
-                        action, time = item.fasten(**kwargs)
-                        vessel.storage.put_item(item)
-
-                        if time > 0:
-                            yield vessel.task(
-                                action,
-                                time,
-                                constraints=vessel.transit_limits,
-                                **kwargs,
-                            )
-
-        else:
-            raise ItemNotFound(items)

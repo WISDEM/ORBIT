@@ -6,15 +6,17 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+import numpy as np
 import simpy
+from marmot import Agent, le, process
 
 from ORBIT.core.exceptions import ItemNotFound
 
 
-class Port(simpy.FilterStore):
+class Port:
     """Port Class"""
 
-    def __init__(self, env, **kwargs):
+    def __init__(self, env, laydown_area=float("inf"), num_cranes=1, **kwargs):
         """
         Creates an instance of Port.
 
@@ -24,45 +26,119 @@ class Port(simpy.FilterStore):
             SimPy environment that simulation runs on.
         """
 
-        capacity = kwargs.get("capacity", float("inf"))
-        super().__init__(env, capacity)
+        self.env = env
+        self.crane = simpy.Resource(self.env, num_cranes)
+        self.laydown = LaydownArea(self.env, laydown_area)
 
-    def get_item(self, _type):
+    # def get_item(self, _type):
+    #     """
+    #     Checks self.items for an item satisfying `item.type = _type`, otherwise
+    #     returns `ItemNotFound`.
+
+    #     Parameters
+    #     ----------
+    #     _type : str
+    #         Type of item to match. Checks `item.type`.
+
+    #     Returns
+    #     -------
+    #     res.value : FilterStoreGet.value
+    #         Returned item.
+
+    #     Raises
+    #     ------
+    #     ItemNotFound
+    #     """
+
+    #     target = None
+    #     for i in self.items:
+    #         try:
+    #             if i.type == _type:
+    #                 target = i
+    #                 break
+
+    #         except AttributeError:
+    #             continue
+
+    #     if not target:
+    #         raise ItemNotFound(_type)
+
+    #     else:
+    #         res = self.get(lambda x: x == target)
+    #         return res.value
+
+
+class LaydownArea(simpy.FilterStore):
+    """Laydown Area Class."""
+
+    def __init__(self, env, area, buffer=0, **kwargs):
         """
-        Checks self.items for an item satisfying `item.type = _type`, otherwise
-        returns `ItemNotFound`.
+        Creates an instance of LaydownArea.
 
         Parameters
         ----------
-        _type : str
-            Type of item to match. Checks `item.type`.
-
-        Returns
-        -------
-        res.value : FilterStoreGet.value
-            Returned item.
-
-        Raises
-        ------
-        ItemNotFound
+        area : int | float
+            Available area in m2.
         """
 
-        target = None
-        for i in self.items:
-            try:
-                if i.type == _type:
-                    target = i
-                    break
+        self.buffer = buffer
+        self.env = env
+        self.pending = []
+        self.max_area = area
+        super().__init__(self.env)
 
-            except AttributeError:
-                continue
+    @property
+    def available_area(self):
+        """Returns available area for component storage."""
 
-        if not target:
-            raise ItemNotFound(_type)
+        return self.max_area - self.used_area
 
-        else:
-            res = self.get(lambda x: x == target)
-            return res.value
+    @property
+    def used_area(self):
+        """"""
+
+        return sum([i.area for i in self.items])
+
+    @property
+    def utilization(self):
+
+        return self.used_area / self.max_area
+
+    def update_pending(self):
+        """"""
+
+        items = [c.type for c in self.items]
+        pending = [c.type for c in self.pending]
+        self.buffer = max([self.buffer, *[p.area for p in self.pending]])
+
+        for item in np.unique(pending):
+            if items and item not in items:
+                idx = pending.index(item)
+                self.pending.insert(0, self.pending.pop(idx))
+
+        try:
+            if self.pending[0].type not in items:
+                available = self.available_area
+
+            else:
+                available = self.available_area - self.buffer
+
+            if self.pending[0].area <= available:
+                component = self.pending.pop(0)
+                self.put(component)
+                if self.env.now > component.arrived:
+                    self.env._submit_log(
+                        {
+                            "agent": f"{component.type} Component Set",
+                            "action": "Delay: Waiting for Laydown",
+                            "duration": self.env.now - component.arrived,
+                            "cost": 0,
+                        },
+                        level="ACTION",
+                    )
+
+        except IndexError:
+            pass
 
 
 class WetStorage(simpy.Store):
@@ -71,6 +147,22 @@ class WetStorage(simpy.Store):
     def __init__(self, env, capacity):
         """
         Creates an instance of WetStorage.
+
+        Parameters
+        ----------
+        capacity : int
+            Number of substructures or assemblies that can be stored.
+        """
+
+        super().__init__(env, capacity)
+
+
+class DryStorage(simpy.FilterStore):
+    """Storage infrastructure for fixed substructures."""
+
+    def __init__(self, env, capacity):
+        """
+        Creates an instance of DryStorage.
 
         Parameters
         ----------
