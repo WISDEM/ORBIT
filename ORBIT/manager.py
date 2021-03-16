@@ -81,6 +81,18 @@ class ProjectManager:
         GravityBasedInstallation,
     ]
 
+    _capex_categories = {
+        "MonopileInstallation": "Substructure",
+        "TurbineInstallation": "Turbine",
+        "OffshoreSubstationInstallation": "Offshore Substation",
+        "ArrayCableInstallation": "Array System",
+        "ExportCableInstallation": "Export System",
+        "ScourProtectionInstallation": "Scour Protection",
+        "MooredSubInstallation": "Substructure",
+        "MooringSystemInstallation": "Mooring System",
+        "GravityBasedInstallation": "Substructure",
+    }
+
     def __init__(self, config, library_path=None, weather=None):
         """
         Creates and instance of ProjectManager.
@@ -1115,6 +1127,61 @@ class ProjectManager:
         return capex
 
     @property
+    def capex_breakdown(self):
+        """Returns CapEx breakdown by category."""
+
+        unique = np.unique(
+            [*self.system_costs.keys(), *self.installation_costs.keys()]
+        )
+        categories = {}
+
+        for phase in unique:
+            for base, cat in self._capex_categories.items():
+                if base in phase:
+                    categories[phase] = cat
+                    break
+
+        missing = [p for p in unique if p not in categories.keys()]
+        if missing:
+            print(
+                f"Warning: CapEx category not found for {missing}. "
+                f"Added to 'Misc.'"
+            )
+
+            for phase in missing:
+                categories[phase] = "Misc."
+
+        outputs = {}
+        for phase, cost in self.system_costs.items():
+            name = categories[phase]
+            if name in outputs.keys():
+                outputs[name] += cost
+
+            else:
+                outputs[name] = cost
+
+        for phase, cost in self.installation_costs.items():
+            name = categories[phase] + " Installation"
+            if name in outputs.keys():
+                outputs[name] += cost
+
+            else:
+                outputs[name] = cost
+
+        outputs["Turbine"] = self.turbine_capex
+
+        return outputs
+
+    @property
+    def capex_breakdown_per_kw(self):
+        """Returns CapEx per kW breakdown by category."""
+
+        return {
+            k: v / (self.capacity * 1000)
+            for k, v in self.capex_breakdown.items()
+        }
+
+    @property
     def bos_capex(self):
         """Returns total balance of system CapEx."""
 
@@ -1134,9 +1201,7 @@ class ProjectManager:
 
     @property
     def turbine_capex(self):
-        """
-        Returns the total turbine CAPEX.
-        """
+        """Returns the total turbine CAPEX."""
 
         _capex = self.project_params.get("turbine_capex", 1300)
         try:
