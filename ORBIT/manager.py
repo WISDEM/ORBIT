@@ -173,10 +173,6 @@ class ProjectManager:
                 out[p.__name__] = p.capex_category
 
             except AttributeError:
-                print(
-                    f"Warning: CapEx category not found for '{p.__name__}'."
-                    f"Assigning to 'Misc.'"
-                )
                 out[p.__name__] = "Misc."
 
         return out
@@ -1219,6 +1215,8 @@ class ProjectManager:
                 outputs[name] = cost
 
         outputs["Turbine"] = self.turbine_capex
+        outputs["Soft"] = self.soft_capex
+        outputs["Project"] = self.project_capex
 
         return outputs
 
