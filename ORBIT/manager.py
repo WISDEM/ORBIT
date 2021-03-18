@@ -1271,7 +1271,7 @@ class ProjectManager:
     def turbine_capex_per_kw(self):
         """Returns the turbine CapEx/kW."""
 
-        _capex = self.project_params.get("turbine_capex", None)
+        _capex = self.project_params.get("turbine_capex", 1300)
         return _capex
 
     @property
