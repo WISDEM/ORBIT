@@ -81,18 +81,6 @@ class ProjectManager:
         GravityBasedInstallation,
     ]
 
-    _capex_categories = {
-        "MonopileInstallation": "Substructure",
-        "TurbineInstallation": "Turbine",
-        "OffshoreSubstationInstallation": "Offshore Substation",
-        "ArrayCableInstallation": "Array System",
-        "ExportCableInstallation": "Export System",
-        "ScourProtectionInstallation": "Scour Protection",
-        "MooredSubInstallation": "Substructure",
-        "MooringSystemInstallation": "Mooring System",
-        "GravityBasedInstallation": "Substructure",
-    }
-
     def __init__(self, config, library_path=None, weather=None):
         """
         Creates and instance of ProjectManager.
@@ -174,6 +162,24 @@ class ProjectManager:
         """Returns dict of phases that have been ran."""
 
         return self._phases
+
+    @property
+    def _capex_categories(self):
+        """Returns CapEx categories for phases in `self._install_phases`."""
+
+        out = {}
+        for p in self._install_phases:
+            try:
+                out[p.__name__] = p.capex_category
+
+            except AttributeError:
+                print(
+                    f"Warning: CapEx category not found for '{p.__name__}'."
+                    f"Assigning to 'Misc.'"
+                )
+                out[p.__name__] = "Misc."
+
+        return out
 
     @property
     def project_params(self):
