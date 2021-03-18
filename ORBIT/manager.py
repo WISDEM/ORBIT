@@ -808,6 +808,50 @@ class ProjectManager:
 
         return self.weather.iloc[ceil(start) :].copy().to_records()
 
+    def outputs(self, include_logs=False, npv_detailed=False):
+        """Returns dict of all available outputs."""
+
+        out = {
+            # Times
+            "project_time": self.project_time,
+            "installation_time": self.installation_time,
+            # Costs
+            "capex_breakdown": self.capex_breakdown,
+            "capex_breakdown_per_kw": self.capex_breakdown_per_kw,
+            "turbine_capex": self.turbine_capex,
+            "turbine_capex_per_kw": self.turbine_capex_per_kw,
+            "installation_capex": self.installation_capex,
+            "installation_capex_per_kw": self.installation_capex_per_kw,
+            "system_capex": self.system_capex,
+            "system_capex_per_kw": self.system_capex_per_kw,
+            "overnight_capex": self.overnight_capex,
+            "overnight_capex_per_kw": self.overnight_capex_per_kw,
+            "soft_capex": self.soft_capex,
+            "soft_capex_per_kw": self.soft_capex_per_kw,
+            "bos_capex": self.bos_capex,
+            "bos_capex_per_kw": self.bos_capex_per_kw,
+            "project_capex": self.project_capex,
+            "project_capex_per_kw": self.project_capex_per_kw,
+            "total_capex": self.total_capex,
+            "total_capex_per_kw": self.total_capex_per_kw,
+            "npv": self.npv,
+        }
+
+        if include_logs:
+            out["logs"] = self.actions
+
+        if npv_detailed:
+            out = {
+                **out,
+                **{
+                    "cash_flow": self.cash_flow,
+                    "monthly_revenue": self.monthly_revenue,
+                    "monthly_expenses": self.monthly_expenses,
+                },
+            }
+
+        return out
+
     @property
     def capacity(self):
         """Returns project capacity in MW."""
