@@ -4,6 +4,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
+import os
 import re
 import datetime as dt
 import collections.abc as collections
@@ -1375,6 +1376,38 @@ class ProjectManager:
         """
 
         export_library_specs("config", file_name, self.config)
+
+    def export_project_logs(self, filepath, level="ACTION"):
+        """
+        Exports the project logs to a .csv file.
+
+        Parameters
+        ----------
+        filepath : str
+            Filepath to save logs at.
+        level : str, optional
+            Log level to save.
+            Options: 'ACTION' | 'DEBUG'
+            Default: 'ACTION'
+        """
+
+        dirs = os.path.split(filepath)[0]
+        if dirs and not os.path.isdir(dirs):
+            os.makedirs(dirs)
+
+        if level == "ACTION":
+            out = pd.DataFrame(self.actions)
+
+        elif level == "DEBUG":
+            out = pd.DataFrame(self.logs)
+
+        else:
+            raise ValueError(
+                f"Unrecognized level '{level}'."
+                " Must be 'ACTION' or 'DEBUG'."
+            )
+
+        out.to_csv(filepath, index=False)
 
 
 class ProjectProgress:
