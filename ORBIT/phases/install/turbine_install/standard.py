@@ -43,6 +43,7 @@ class TurbineInstallation(InstallPhase):
     """
 
     phase = "Turbine Installation"
+    capex_category = "Turbine"
 
     #:
     expected_config = {

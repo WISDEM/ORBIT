@@ -22,6 +22,7 @@ class GravityBasedInstallation(InstallPhase):
     """
 
     phase = "Gravity Based Foundation Installation"
+    capex_category = "Substructure"
 
     #:
     expected_config = {

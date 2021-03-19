@@ -22,6 +22,7 @@ class MooredSubInstallation(InstallPhase):
     """
 
     phase = "Moored Substructure Installation"
+    capex_category = "Substructure"
 
     #:
     expected_config = {

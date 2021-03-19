@@ -693,3 +693,23 @@ def test_project_costs():
     config["project_parameters"] = {"installation_plan_cost": 25e6}
     project = ProjectManager(config)
     assert project.project_capex != baseline
+
+
+def test_capex_categories():
+
+    project = ProjectManager(complete_project)
+    project.run()
+    baseline = project.capex_breakdown
+    _ = project.capex_breakdown_per_kw
+
+    new_config = deepcopy(complete_project)
+    new_config["install_phases"]["ExportCableInstallation_1"] = 0
+    new_project = ProjectManager(new_config)
+    new_project.run()
+    new_breakdown = new_project.capex_breakdown
+
+    assert new_breakdown["Export System"] > baseline["Export System"]
+    assert (
+        new_breakdown["Export System Installation"]
+        > baseline["Export System Installation"]
+    )
