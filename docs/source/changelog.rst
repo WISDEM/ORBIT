@@ -3,6 +3,11 @@
 ORBIT Changelog
 ===============
 
+1.0.2
+-----
+
+- Added ``ProjectManager.capex_breakdown``.
+
 1.0.1
 -----
 
