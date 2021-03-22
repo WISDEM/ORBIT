@@ -19,6 +19,7 @@ class MooringSystemInstallation(InstallPhase):
     """Module to model the installation of mooring systems at sea."""
 
     phase = "Mooring System Installation"
+    capex_category = "Mooring System"
 
     #:
     expected_config = {

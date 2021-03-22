@@ -34,6 +34,7 @@ class ArrayCableInstallation(InstallPhase):
     """Array Cable Installation Phase"""
 
     phase = "Array Cable Installation"
+    capex_category = "Array System"
 
     #:
     expected_config = {
