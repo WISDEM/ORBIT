@@ -470,11 +470,12 @@ class ProjectManager:
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
         processes = _config.pop("processes", {})
+        kwargs = {**kwargs, **processes}
 
         if _catch:
             try:
                 phase = _class(
-                    _config, weather=weather, phase_name=name, **processes
+                    _config, weather=weather, phase_name=name, **kwargs
                 )
                 phase.run()
 
@@ -483,9 +484,7 @@ class ProjectManager:
                 return None, None
 
         else:
-            phase = _class(
-                _config, weather=weather, phase_name=name, **processes
-            )
+            phase = _class(_config, weather=weather, phase_name=name, **kwargs)
             phase.run()
 
         self._phases[name] = phase
@@ -639,7 +638,7 @@ class ProjectManager:
                 self._output_logs.extend(logs)
 
         # Run remaining phases
-        self.run_dependent_phases(variable, zero)
+        self.run_dependent_phases(variable, zero, **kwargs)
 
     def run_dependent_phases(self, _phases, zero, **kwargs):
         """

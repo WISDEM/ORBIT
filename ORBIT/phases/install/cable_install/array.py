@@ -123,7 +123,7 @@ class ArrayCableInstallation(InstallPhase):
         vessel_specs = self.config.get("array_cable_install_vessel", None)
         name = vessel_specs.get("name", "Array Cable Installation Vessel")
 
-        vessel = Vessel(name, vessel_specs)
+        vessel = self.initialize_vessel(name, vessel_specs)
         self.env.register(vessel)
 
         vessel.initialize()
@@ -141,7 +141,7 @@ class ArrayCableInstallation(InstallPhase):
             return
         name = vessel_specs.get("name", "Array Cable Burial Vessel")
 
-        vessel = Vessel(name, vessel_specs)
+        vessel = self.initialize_vessel(name, vessel_specs)
         self.env.register(vessel)
 
         vessel.initialize()
@@ -159,7 +159,7 @@ class ArrayCableInstallation(InstallPhase):
             return
         name = vessel_specs.get("name", "Array Cable Trench Vessel")
 
-        vessel = Vessel(name, vessel_specs)
+        vessel = self.initialize_vessel(name, vessel_specs)
         self.env.register(vessel)
 
         vessel.initialize()
