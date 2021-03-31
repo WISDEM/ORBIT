@@ -846,7 +846,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         if missing:
             raise ValueError(
                 "The following columns must be included in the location ",
-                f"data: {missing}"
+                f"data: {missing}",
             )
 
         self._format_windfarm_data()
