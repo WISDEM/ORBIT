@@ -406,7 +406,7 @@ class ArraySystemDesign(CableSystem):
                 for j in range(self.num_turbines_full_string)
             ]
         )
-        if self.num_turbines_partial_string:
+        try:
             strings.extend(
                 [
                     (i, j)
@@ -414,6 +414,8 @@ class ArraySystemDesign(CableSystem):
                     for j in range(self.num_turbines_partial_string)
                 ]
             )
+        except AttributeError:
+            pass
         layout_df[["string", "order"]] = strings
 
         coords = np.array(
