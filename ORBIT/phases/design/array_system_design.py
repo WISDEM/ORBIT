@@ -406,13 +406,14 @@ class ArraySystemDesign(CableSystem):
                 for j in range(self.num_turbines_full_string)
             ]
         )
-        strings.extend(
-            [
-                (i, j)
-                for i in range(self.num_full_strings, self.num_strings)
-                for j in range(self.num_turbines_partial_string)
-            ]
-        )
+        if self.num_turbines_partial_string:
+            strings.extend(
+                [
+                    (i, j)
+                    for i in range(self.num_full_strings, self.num_strings)
+                    for j in range(self.num_turbines_partial_string)
+                ]
+            )
         layout_df[["string", "order"]] = strings
 
         coords = np.array(
