@@ -40,7 +40,7 @@ def prep_for_site_operations(vessel, survey_required=False, **kwargs):
 
     if survey_required:
         survey_time = kwargs.get("rov_survey_time", pt["rov_survey_time"])
-        yield vessel.task(
+        yield vessel.task_wrapper(
             "RovSurvey",
             survey_time,
             constraints=vessel.transit_limits,
@@ -74,7 +74,7 @@ def stabilize(vessel, **kwargs):
         site_depth = kwargs.get("site_depth", 40)
         extension = kwargs.get("extension", site_depth + 10)
         jackup_time = jacksys.jacking_time(extension, site_depth)
-        yield vessel.task(
+        yield vessel.task_wrapper(
             "Jackup", jackup_time, constraints=vessel.transit_limits, **kwargs
         )
 
@@ -102,7 +102,7 @@ def jackdown_if_required(vessel, **kwargs):
         site_depth = kwargs.get("site_depth", 40)
         extension = kwargs.get("extension", site_depth + 10)
         jackdown_time = jacksys.jacking_time(extension, site_depth)
-        yield vessel.task(
+        yield vessel.task_wrapper(
             "Jackdown",
             jackdown_time,
             constraints=vessel.transit_limits,
@@ -126,7 +126,7 @@ def position_onsite(vessel, **kwargs):
 
     position_time = kwargs.get("site_position_time", pt["site_position_time"])
 
-    yield vessel.task(
+    yield vessel.task_wrapper(
         "Position Onsite", position_time, constraints=vessel.transit_limits
     )
 
@@ -181,7 +181,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             # Transit to site
             vessel.update_trip_data()
             vessel.at_port = False
-            yield vessel.task(
+            yield vessel.task_wrapper(
                 "Transit", transit_time, constraints=vessel.transit_limits
             )
             yield stabilize(vessel, **kwargs)
@@ -220,7 +220,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             # Transit back to port
             vessel.at_site = False
             yield jackdown_if_required(vessel, **kwargs)
-            yield vessel.task(
+            yield vessel.task_wrapper(
                 "Transit", transit_time, constraints=vessel.transit_limits
             )
             vessel.at_port = True
@@ -295,7 +295,7 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                         vessel.storage.put_item(item)
 
                         if time > 0:
-                            yield vessel.task(
+                            yield vessel.task_wrapper(
                                 action,
                                 time,
                                 constraints=vessel.transit_limits,
