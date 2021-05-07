@@ -9,9 +9,10 @@ __email__ = "jake.nunemaker@nrel.gov"
 from abc import ABC, abstractmethod
 from copy import deepcopy
 
+from benedict import benedict
+
 from ORBIT.core.library import initialize_library, extract_library_data
 from ORBIT.core.exceptions import MissingInputs
-from benedict import benedict
 
 
 class BasePhase(ABC):

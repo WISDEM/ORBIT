@@ -11,8 +11,8 @@ from itertools import product
 
 import numpy as np
 import pandas as pd
-from benedict import benedict
 import statsmodels.api as sm
+from benedict import benedict
 
 from ORBIT import ProjectManager
 
@@ -21,7 +21,14 @@ class ParametricManager:
     """Class for configuring parametric ORBIT runs."""
 
     def __init__(
-        self, base, params, funcs, weather=None, module=None, product=False, keep_inputs=[]
+        self,
+        base,
+        params,
+        funcs,
+        weather=None,
+        module=None,
+        product=False,
+        keep_inputs=[],
     ):
         """
         Creates an instance of `ParametricRun`.
@@ -83,7 +90,7 @@ class ParametricManager:
     def _get_kept_inputs(self, config):
         """
         Extract inputs in `self.keep` from `config`.
-        
+
         Parameters
         ----------
         config : dict
@@ -191,7 +198,7 @@ class LinearModel:
     def __init__(self, data, x, y):
         """
         Creates an instance of `LinearModel`.
-        
+
         Parameters
         ----------
         data : pd.DataFrame
@@ -215,7 +222,7 @@ class LinearModel:
     def predict(self, inputs):
         """
         Predicts the output value of `inputs` given the underlying linear model
-        developed using `self.data`, `self.x` and `self.y`.        
+        developed using `self.data`, `self.x` and `self.y`.
 
         Parameters
         ----------
