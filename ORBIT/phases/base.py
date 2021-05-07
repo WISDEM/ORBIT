@@ -11,6 +11,7 @@ from copy import deepcopy
 
 from ORBIT.core.library import initialize_library, extract_library_data
 from ORBIT.core.exceptions import MissingInputs
+from benedict import benedict
 
 
 class BasePhase(ABC):
@@ -115,7 +116,7 @@ class BasePhase(ABC):
             raise MissingInputs(missing)
 
         else:
-            return config
+            return benedict(config)
 
     @abstractmethod
     def run(self):
