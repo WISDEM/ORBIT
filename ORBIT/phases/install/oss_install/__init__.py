@@ -5,3 +5,4 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from .standard import OffshoreSubstationInstallation
+from .floating import FloatingSubstationInstallation
