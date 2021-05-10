@@ -4,5 +4,5 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from .standard import OffshoreSubstationInstallation
 from .floating import FloatingSubstationInstallation
+from .standard import OffshoreSubstationInstallation

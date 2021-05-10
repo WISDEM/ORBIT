@@ -189,17 +189,9 @@ def install_floating_substations(
             constraints=vessel.operational_limits,
         )
         yield position_onsite(vessel)
-        yield perform_mooring_site_survey(
-            vessel
-        )
-        yield install_mooring_anchor(
-            vessel,
-            depth,
-            "Suction Pile",
-        )
-        yield install_mooring_line(
-            vessel, depth
-        )
+        yield perform_mooring_site_survey(vessel)
+        yield install_mooring_anchor(vessel, depth, "Suction Pile")
+        yield install_mooring_line(vessel, depth)
         yield vessel.transit(distance)
 
 

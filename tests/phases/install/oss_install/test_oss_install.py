@@ -15,7 +15,10 @@ from ORBIT import ProjectManager
 from tests.data import test_weather
 from ORBIT.core.library import extract_library_specs
 from ORBIT.core.defaults import process_times as pt
-from ORBIT.phases.install import OffshoreSubstationInstallation, FloatingSubstationInstallation
+from ORBIT.phases.install import (
+    FloatingSubstationInstallation,
+    OffshoreSubstationInstallation,
+)
 from ORBIT.core.exceptions import MissingComponent
 
 config_single = extract_library_specs("config", "oss_install")
