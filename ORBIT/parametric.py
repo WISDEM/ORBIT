@@ -4,14 +4,17 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
+import re
 import time
 from copy import deepcopy
 from random import sample
 from itertools import product
 
+import yaml
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+from yaml import Loader
 from benedict import benedict
 
 from ORBIT import ProjectManager
@@ -190,6 +193,41 @@ class ParametricManager:
             print("`ParametricManager hasn't been ran yet.")
 
         return LinearModel(self.results, x, y)
+
+    @classmethod
+    def from_config(cls, data):
+        """"""
+
+        outputs = data.pop("outputs", {})
+
+        funcs = {}
+        for k, v in outputs.items():
+
+            split = v.split("[")
+            attr = split[0]
+
+            try:
+                key = re.sub("[^A-Za-z ]", "", split[1])
+
+            except IndexError:
+                key = None
+
+            if key is None:
+                funcs[k] = lambda run: getattr(run, attr)
+
+            else:
+                funcs[k] = lambda run: getattr(run, attr)[key]
+
+        data["funcs"] = funcs
+
+        module_name = data.pop("module", None)
+        if module_name is not None:
+            module = ProjectManager.phase_dict()[module_name]
+            data["module"] = module
+
+        # TODO: Weather
+
+        return cls(**data, product=True)
 
 
 class LinearModel:
