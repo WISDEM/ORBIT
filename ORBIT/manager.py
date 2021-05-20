@@ -44,6 +44,7 @@ from ORBIT.phases.install import (
     MooringSystemInstallation,
     ScourProtectionInstallation,
     OffshoreSubstationInstallation,
+    FloatingSubstationInstallation
 )
 from ORBIT.core.exceptions import (
     PhaseNotFound,
@@ -80,6 +81,7 @@ class ProjectManager:
         MooredSubInstallation,
         MooringSystemInstallation,
         GravityBasedInstallation,
+        FloatingSubstationInstallation
     ]
 
     def __init__(self, config, library_path=None, weather=None):

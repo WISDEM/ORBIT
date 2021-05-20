@@ -6,7 +6,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import Agent, process
+from marmot import Agent, process, le
 from marmot._exceptions import AgentNotRegistered
 
 from ORBIT.core import WetStorage
@@ -144,7 +144,8 @@ class FloatingSubstationInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        pass
+        
+        return {}
 
 
 @process
@@ -189,9 +190,29 @@ def install_floating_substations(
             constraints=vessel.operational_limits,
         )
         yield position_onsite(vessel)
-        yield perform_mooring_site_survey(vessel)
-        yield install_mooring_anchor(vessel, depth, "Suction Pile")
-        yield install_mooring_line(vessel, depth)
+        yield vessel.task_wrapper(
+            "Ballast to Operational Draft",
+            6,
+            constraints={"windspeed": le(15), "waveheight": le(2.5)},
+        )
+
+        for _ in range (3):
+            yield perform_mooring_site_survey(vessel)
+            yield install_mooring_anchor(vessel, depth, "Suction Pile")
+            yield install_mooring_line(vessel, depth)
+            yield vessel.task_wrapper(
+                "Connect Mooring Lines",
+                22,
+                suspendable=True,
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            )
+            yield vessel.task_wrapper(
+                "Check Mooring Lines",
+                12,
+                suspendable=True,
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            )
+
         yield vessel.transit(distance)
 
 
