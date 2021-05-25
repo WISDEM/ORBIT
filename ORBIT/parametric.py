@@ -225,7 +225,10 @@ class ParametricManager:
             module = ProjectManager.phase_dict()[module_name]
             data["module"] = module
 
-        # TODO: Weather
+        weather_file = data.pop("weather", None)
+        if weather_file is not None:
+            weather = pd.read_csv(weather_file, parse_dates=["datetime"])
+            data["weather"] = weather
 
         return cls(**data, product=True)
 
