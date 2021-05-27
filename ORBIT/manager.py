@@ -15,6 +15,7 @@ from itertools import product
 
 import numpy as np
 import pandas as pd
+from benedict import benedict
 
 import ORBIT
 from ORBIT.phases import DesignPhase, InstallPhase
@@ -106,7 +107,8 @@ class ProjectManager:
             ],
         )
         self._phases = {}
-        self.config = self.resolve_project_capacity(config)
+        self.config = benedict(config)
+        self.resolve_project_capacity()
         self.weather = self.transform_weather_input(weather)
 
         self.design_results = {}
@@ -239,30 +241,25 @@ class ProjectManager:
 
         return config
 
-    @staticmethod
-    def resolve_project_capacity(config):
+    def resolve_project_capacity(self):
         """
         Resolves the relationship between 'project_capacity', 'num_turbines'
         and 'turbine_rating' and verifies that input and calculated values
-        match. Adds missing values that can be calculated to the 'config'.
-
-        Parameters
-        ----------
-        config : dict
+        match. Adds missing values that can be calculated to the 'self.config'.
         """
 
         try:
-            project_capacity = config["plant"]["capacity"]
+            project_capacity = self.config["plant"]["capacity"]
         except KeyError:
             project_capacity = None
 
         try:
-            turbine_rating = config["turbine"]["turbine_rating"]
+            turbine_rating = self.config["turbine"]["turbine_rating"]
         except KeyError:
             turbine_rating = None
 
         try:
-            num_turbines = config["plant"]["num_turbines"]
+            num_turbines = self.config["plant"]["num_turbines"]
         except KeyError:
             num_turbines = None
 
@@ -275,21 +272,19 @@ class ProjectManager:
         else:
             if all((project_capacity, turbine_rating)):
                 num_turbines = ceil(project_capacity / turbine_rating)
-                config["plant"]["num_turbines"] = num_turbines
+                self.config["plant"]["num_turbines"] = num_turbines
 
             elif all((project_capacity, num_turbines)):
                 turbine_rating = project_capacity / num_turbines
                 try:
-                    config["turbine"]["turbine_rating"] = turbine_rating
+                    self.config["turbine"]["turbine_rating"] = turbine_rating
 
                 except KeyError:
-                    config["turbine"] = {"turbine_rating": turbine_rating}
+                    self.config["turbine"] = {"turbine_rating": turbine_rating}
 
             elif all((num_turbines, turbine_rating)):
                 project_capacity = turbine_rating * num_turbines
-                config["plant"]["capacity"] = project_capacity
-
-        return config
+                self.config["plant"]["capacity"] = project_capacity
 
     @classmethod
     def find_key_match(cls, target):
