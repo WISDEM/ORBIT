@@ -173,7 +173,7 @@ class TurbineInstallation(InstallPhase):
         wtiv_specs = self.config.get("wtiv", None)
         name = wtiv_specs.get("name", "WTIV")
 
-        wtiv = Vessel(name, wtiv_specs)
+        wtiv = self.initialize_vessel(name, wtiv_specs)
         self.env.register(wtiv)
 
         wtiv.initialize()
@@ -194,7 +194,7 @@ class TurbineInstallation(InstallPhase):
             # TODO: Add in option for named feeders.
             name = "Feeder {}".format(n)
 
-            feeder = Vessel(name, feeder_specs)
+            feeder = self.initialize_vessel(name, feeder_specs)
             self.env.register(feeder)
 
             feeder.initialize()
@@ -343,13 +343,13 @@ def solo_install_turbines(
                 )
 
                 # Install nacelle
-                yield vessel.task(
+                yield vessel.task_wrapper(
                     "Reequip", reequip_time, constraints=vessel.transit_limits
                 )
                 yield install_nacelle(vessel, nacelle, **kwargs)
 
                 # Install turbine blades
-                yield vessel.task(
+                yield vessel.task_wrapper(
                     "Reequip", reequip_time, constraints=vessel.transit_limits
                 )
                 for _ in range(num_blades):
@@ -431,13 +431,13 @@ def install_turbine_components_from_queue(
                 )
 
                 # Install nacelle
-                yield wtiv.task(
+                yield wtiv.task_wrapper(
                     "Reequip", reequip_time, constraints=wtiv.transit_limits
                 )
                 yield install_nacelle(wtiv, nacelle, **kwargs)
 
                 # Install turbine blades
-                yield wtiv.task(
+                yield wtiv.task_wrapper(
                     "Reequip", reequip_time, constraints=wtiv.transit_limits
                 )
 

@@ -73,7 +73,7 @@ def lift_topside(vessel, **kwargs):
     crane_rate = vessel.crane.crane_rate(**kwargs)
     lift_time = lift_height / crane_rate
 
-    yield vessel.task(
+    yield vessel.task_wrapper(
         "Lift Topside", lift_time, constraints=vessel.operational_limits
     )
 
@@ -100,7 +100,7 @@ def attach_topside(vessel, **kwargs):
     key = "topside_attach_time"
     attach_time = kwargs.get(key, pt[key])
 
-    yield vessel.task(
+    yield vessel.task_wrapper(
         "Attach Topside", attach_time, constraints=vessel.operational_limits
     )
 
@@ -126,7 +126,7 @@ def install_topside(vessel, topside, **kwargs):
     connection = kwargs.get("topside_connection_type", "bolted")
     reequip_time = vessel.crane.reequip(**kwargs)
 
-    yield vessel.task(
+    yield vessel.task_wrapper(
         "Crane Reequip",
         reequip_time,
         constraints=vessel.transit_limits,

@@ -36,6 +36,7 @@ setup(
         "pyyaml",
         "openmdao>=3.2",
         "python-benedict",
+        "statsmodels",
     ],
     extras_require={
         "dev": [

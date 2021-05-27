@@ -3,6 +3,13 @@
 ORBIT Changelog
 ===============
 
+1.0.4
+-----
+
+- Added ability to directly prescribe weather downtime through the
+  ``availability`` keyword
+- Added support for generating linear models using ``ParametricManager``
+
 1.0.2
 -----
 

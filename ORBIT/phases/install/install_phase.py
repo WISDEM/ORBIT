@@ -13,7 +13,7 @@ import numpy as np
 import simpy
 import pandas as pd
 
-from ORBIT.core import Port, Environment
+from ORBIT.core import Port, Vessel, Environment
 from ORBIT.phases import BasePhase
 from ORBIT.core.defaults import common_costs
 
@@ -33,6 +33,7 @@ class InstallPhase(BasePhase):
 
         self.extract_phase_kwargs(**kwargs)
         self.initialize_environment(weather, **kwargs)
+        self.availability = kwargs.get("availability", None)
 
     def initialize_environment(self, weather, **kwargs):
         """
@@ -49,6 +50,20 @@ class InstallPhase(BasePhase):
 
         env_name = kwargs.get("env_name", "Environment")
         self.env = Environment(name=env_name, state=weather, **kwargs)
+
+    def initialize_vessel(self, name, specs):
+        """"""
+
+        avail = getattr(self, "availability")
+        if avail is None:
+            return Vessel(name, specs)
+
+        elif isinstance(avail, dict):
+            default = avail.get("default", 1)
+            return Vessel(name, specs, avail.get(name, default))
+
+        else:
+            return Vessel(name, specs, avail)
 
     @abstractmethod
     def setup_simulation(self):
