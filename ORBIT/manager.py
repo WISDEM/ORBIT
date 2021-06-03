@@ -1344,7 +1344,12 @@ class ProjectManager:
     def total_capex(self):
         """Returns total project CapEx including soft costs."""
 
-        return self.bos_capex + self.turbine_capex + self.soft_capex
+        return (
+            self.bos_capex
+            + self.turbine_capex
+            + self.soft_capex
+            + self.project_capex
+        )
 
     @property
     def total_capex_per_kw(self):
