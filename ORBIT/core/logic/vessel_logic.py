@@ -9,11 +9,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from marmot import process
 
 from ORBIT.core.defaults import process_times as pt
-from ORBIT.core.exceptions import (
-    ItemNotFound,
-    MissingComponent,
-    VesselCapacityError,
-)
+from ORBIT.core.exceptions import ItemNotFound, MissingComponent
 
 
 @process
@@ -233,12 +229,12 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
 
     Parameters
     ----------
-    TODO:
+    vessel : Vessel
+    port : Port
+        Port simulation object to retrieve items from.
     items : list
         List of tuples representing items to get from port.
         - ('key': 'value')
-    port : Port
-        Port object to get items from.
     """
 
     with port.crane.request() as req:
@@ -265,42 +261,33 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
                 total_mass = sum([item.mass for item in buffer])
                 proposed_mass = vessel.storage.current_cargo_mass + total_mass
 
-                if proposed_deck_space > vessel.storage.max_deck_space:
-                    vessel.submit_debug_log(message="Full")
+                if vessel.storage.current_cargo_mass == 0:
+                    # Alawys allow first set
+                    pass
 
+                elif proposed_deck_space > vessel.storage.max_deck_space:
+                    vessel.submit_debug_log(message="Full")
                     for item in buffer:
                         port.put(item)
-
-                    if vessel.storage.current_cargo_mass > 0:
-                        break
-
-                    else:
-                        raise VesselCapacityError(vessel, items)
+                    break
 
                 elif proposed_mass > vessel.storage.max_cargo_mass:
                     vessel.submit_debug_log(message="Full")
-
                     for item in buffer:
                         port.put(item)
+                    break
 
-                    if vessel.storage.current_cargo_mass > 0:
-                        break
+                for item in buffer:
+                    action, time = item.fasten(**kwargs)
+                    vessel.storage.put_item(item)
 
-                    else:
-                        raise VesselCapacityError(vessel, items)
-
-                else:
-                    for item in buffer:
-                        action, time = item.fasten(**kwargs)
-                        vessel.storage.put_item(item)
-
-                        if time > 0:
-                            yield vessel.task_wrapper(
-                                action,
-                                time,
-                                constraints=vessel.transit_limits,
-                                **kwargs,
-                            )
+                    if time > 0:
+                        yield vessel.task_wrapper(
+                            action,
+                            time,
+                            constraints=vessel.transit_limits,
+                            **kwargs,
+                        )
 
         else:
             raise ItemNotFound(items)
