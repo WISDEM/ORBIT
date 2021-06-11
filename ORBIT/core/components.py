@@ -8,12 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 import simpy
 
 from ORBIT.core.defaults import process_times as pt
-from ORBIT.core.exceptions import (
-    ItemNotFound,
-    CargoMassExceeded,
-    DeckSpaceExceeded,
-    InsufficientCable,
-)
+from ORBIT.core.exceptions import ItemNotFound, InsufficientCable
 
 # TODO: __str__ methods for Components
 
@@ -237,19 +232,6 @@ class VesselStorage(simpy.FilterStore):
         item : dict
             Dictionary of item properties.
         """
-
-        # if any(x not in item.keys() for x in self.required_keys):
-        #     raise ItemPropertyNotDefined(item, self.required_keys)
-
-        if self.current_deck_space + item.deck_space > self.max_deck_space:
-            raise DeckSpaceExceeded(
-                self.max_deck_space, self.current_deck_space, item
-            )
-
-        if self.current_cargo_mass + item.mass > self.max_cargo_mass:
-            raise CargoMassExceeded(
-                self.max_cargo_mass, self.current_cargo_mass, item
-            )
 
         self.put(item)
 

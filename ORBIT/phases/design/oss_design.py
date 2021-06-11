@@ -145,11 +145,14 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _design = self.config.get("substation_design", {})
-        self.num_substations = _design.get("num_substations", 1)
 
         num_turbines = self.config["plant"]["num_turbines"]
         turbine_rating = self.config["turbine"]["turbine_rating"]
+        capacity = num_turbines * turbine_rating
 
+        self.num_substations = _design.get(
+            "num_substations", int(np.ceil(capacity / 500))
+        )
         self.num_mpt = np.ceil(
             num_turbines * turbine_rating / (250 * self.num_substations)
         )

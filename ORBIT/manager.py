@@ -160,6 +160,24 @@ class ProjectManager:
         if install_phases:
             self.progress = ProjectProgress(self.progress_logs)
 
+        self._print_warnings()
+
+    def _print_warnings(self):
+
+        try:
+            df = pd.DataFrame(self.logs)
+            df = df.loc[~df["message"].isnull()]
+            df = df.loc[df["message"].str.contains("Exceeded")]
+
+            for msg in df["message"].unique():
+
+                idx = df.loc[df["message"] == msg].index[0]
+                phase = df.loc[idx, "phase"]
+                print(f"{phase}:\n\t {msg}")
+
+        except KeyError:
+            pass
+
     @property
     def phases(self):
         """Returns dict of phases that have been ran."""
@@ -1344,7 +1362,12 @@ class ProjectManager:
     def total_capex(self):
         """Returns total project CapEx including soft costs."""
 
-        return self.bos_capex + self.turbine_capex + self.soft_capex
+        return (
+            self.bos_capex
+            + self.turbine_capex
+            + self.soft_capex
+            + self.project_capex
+        )
 
     @property
     def total_capex_per_kw(self):

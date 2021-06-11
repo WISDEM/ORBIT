@@ -213,10 +213,10 @@ class ParametricManager:
                 key = None
 
             if key is None:
-                funcs[k] = lambda run: getattr(run, attr)
+                funcs[k] = lambda run, a=attr: getattr(run, a)
 
             else:
-                funcs[k] = lambda run: getattr(run, attr)[key]
+                funcs[k] = lambda run, a=attr, k=key: getattr(run, a)[k]
 
         data["funcs"] = funcs
 
