@@ -370,7 +370,9 @@ class CableSystem(DesignPhase):
     def free_cable_length(self):
         """Returns the length of the vertical portion of a cable section in km."""
 
+        _design = f"{self.cable_type}_system_design"
         depth = self.config["site"]["depth"]
+        cable_depth = self.config[_design].get("floating_cable_depth", depth)
 
         if not self.touchdown:
             return depth / 1000
