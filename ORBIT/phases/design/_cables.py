@@ -333,6 +333,7 @@ class CableSystem(DesignPhase):
 
             else:
                 self.touchdown = depth * 0.3
+                #TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
 
     @staticmethod
     def _catenary(a, *data):
@@ -363,7 +364,7 @@ class CableSystem(DesignPhase):
                 "Warning: Catenary calculation failed. Reverting to simple vertical profile."
             )
             return d
-        print("catnary  lenght: ", np.trapz(np.sqrt(1 + np.gradient(y, x) ** 2), x))
+
         return np.trapz(np.sqrt(1 + np.gradient(y, x) ** 2), x)
 
     @property
@@ -372,16 +373,13 @@ class CableSystem(DesignPhase):
 
         _design = f"{self.cable_type}_system_design"
         depth = self.config["site"]["depth"]
-
         _cable_depth = self.config[_design].get("floating_cable_depth", depth)
-        print(_cable_depth)
+
         # Select prescribed cable depth if it is less than or equal to overall water dpeth
         if _cable_depth > depth:
             cable_depth = depth
         else:
             cable_depth = _cable_depth
-
-        print(cable_depth)
 
         if not self.touchdown:
             return cable_depth / 1000
