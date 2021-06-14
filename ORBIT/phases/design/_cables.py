@@ -363,7 +363,7 @@ class CableSystem(DesignPhase):
                 "Warning: Catenary calculation failed. Reverting to simple vertical profile."
             )
             return d
-
+        print("catnary  lenght: ", np.trapz(np.sqrt(1 + np.gradient(y, x) ** 2), x))
         return np.trapz(np.sqrt(1 + np.gradient(y, x) ** 2), x)
 
     @property
@@ -372,12 +372,21 @@ class CableSystem(DesignPhase):
 
         _design = f"{self.cable_type}_system_design"
         depth = self.config["site"]["depth"]
-        cable_depth = self.config[_design].get("floating_cable_depth", depth)
+
+        _cable_depth = self.config[_design].get("floating_cable_depth", depth)
+        print(_cable_depth)
+        # Select prescribed cable depth if it is less than or equal to overall water dpeth
+        if _cable_depth > depth:
+            cable_depth = depth
+        else:
+            cable_depth = _cable_depth
+
+        print(cable_depth)
 
         if not self.touchdown:
-            return depth / 1000
+            return cable_depth / 1000
 
-        return self._get_catenary_length(depth, self.touchdown) / 1000
+        return self._get_catenary_length(cable_depth, self.touchdown) / 1000
 
     @property
     def cable_lengths_by_type(self):
