@@ -132,7 +132,9 @@ def position_onsite(vessel, **kwargs):
 
 
 @process
-def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
+def shuttle_items_to_queue(
+    vessel, port, queue, distance, items, per_trip, assigned, **kwargs
+):
     """
     Shuttles a list of items from port to queue.
 
@@ -148,74 +150,56 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
     items : list
         List of components stored as tuples to shuttle.
         - ('key', 'value')
+    per_trip : int
+    assigned : int
     """
 
     transit_time = vessel.transit_time(distance)
 
-    while True:
+    n = 0
+    while n < assigned:
 
-        if vessel.at_port:
-            vessel.submit_debug_log(message=f"{vessel} is at port.")
+        vessel.submit_debug_log(message=f"{vessel} is at port.")
 
-            if not port.items:
-                vessel.submit_debug_log(
-                    message="No items at port. Shutting down."
-                )
-                break
+        # Get list of items
+        per_trip = max([per_trip, 1])
+        yield get_list_of_items_from_port(
+            vessel, port, items * per_trip, **kwargs
+        )
 
-            # Get list of items
-            try:
-                yield get_list_of_items_from_port(
-                    vessel, port, items, **kwargs
-                )
+        # Transit to site
+        vessel.update_trip_data()
+        yield vessel.task(
+            "Transit", transit_time, constraints=vessel.transit_limits
+        )
+        yield stabilize(vessel, **kwargs)
 
-            except ItemNotFound:
-                # If no items are at port and vessel.storage.items is empty,
-                # the job is done
-                if not vessel.storage.items:
-                    vessel.submit_debug_log(
-                        message="Items not found. Shutting down."
-                    )
-                    break
+        vessel.submit_debug_log(message=f"{vessel} is at site.")
 
-            # Transit to site
-            vessel.update_trip_data()
-            vessel.at_port = False
-            yield vessel.task(
-                "Transit", transit_time, constraints=vessel.transit_limits
+        # Join queue to be active feeder at site
+        with queue.request() as req:
+            queue_start = vessel.env.now
+            yield req
+
+            queue_time = vessel.env.now - queue_start
+            if queue_time > 0:
+                vessel.submit_action_log("Queue", queue_time, location="Site")
+
+            queue.vessel = vessel
+            active_start = vessel.env.now
+            queue.activate.succeed()
+
+            # Released by WTIV when objects are depleted
+            vessel.release = vessel.env.event()
+            yield vessel.release
+            active_time = vessel.env.now - active_start
+
+            vessel.submit_action_log(
+                "ActiveFeeder", active_time, location="Site"
             )
-            yield stabilize(vessel, **kwargs)
-            vessel.at_site = True
 
-        if vessel.at_site:
-            vessel.submit_debug_log(message=f"{vessel} is at site.")
-
-            # Join queue to be active feeder at site
-            with queue.request() as req:
-                queue_start = vessel.env.now
-                yield req
-
-                queue_time = vessel.env.now - queue_start
-                if queue_time > 0:
-                    vessel.submit_action_log(
-                        "Queue", queue_time, location="Site"
-                    )
-
-                queue.vessel = vessel
-                active_start = vessel.env.now
-                queue.activate.succeed()
-
-                # Released by WTIV when objects are depleted
-                vessel.release = vessel.env.event()
-                yield vessel.release
-                active_time = vessel.env.now - active_start
-
-                vessel.submit_action_log(
-                    "ActiveFeeder", active_time, location="Site"
-                )
-
-                queue.vessel = None
-                queue.activate = vessel.env.event()
+            queue.vessel = None
+            queue.activate = vessel.env.event()
 
             # Transit back to port
             vessel.at_site = False
@@ -223,7 +207,8 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             yield vessel.task(
                 "Transit", transit_time, constraints=vessel.transit_limits
             )
-            vessel.at_port = True
+
+        n += per_trip
 
 
 @process
@@ -233,7 +218,8 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
 
     Parameters
     ----------
-    TODO:
+    vessel : Vessel
+    port : Port
     items : list
         List of tuples representing items to get from port.
         - ('key': 'value')
