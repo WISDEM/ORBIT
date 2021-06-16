@@ -10,12 +10,8 @@ import numpy as np
 import simpy
 from marmot import le, process
 
-from ORBIT.core import (
-    Vessel,
-    DryStorage,
-    ComponentDelivery,
-    MonopileAssemblyLine,
-)
+from ORBIT.core import Vessel, DryStorage, AssemblyLine, ComponentDelivery
+from ORBIT.core.cargo import Monopile, TransitionPiece
 from ORBIT.core.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
@@ -56,8 +52,6 @@ class MonopileInstallation(InstallPhase):
             "num_cranes": "int (optional, default: 1)",
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
-            "laydown_area": "m2 (optional, default: 50000)",
-            "laydown_cost": "$/m2/day (optional, default: 10)",
         },
         "monopile": {
             "length": "m",
@@ -71,15 +65,19 @@ class MonopileInstallation(InstallPhase):
             "mass": "t",
             "unit_cost": "USD",
         },
+        "transport_vessel": {
+            "day_rate": "$/day (optional, default: 20000)",
+            "constaints": "dict (optional)",
+        },
         "monopile_supply_chain": {
             "enabled": "(optional, default: False)",
             "component_time": "h (optional, default: 168)",
             "component_lines": "(optional, default: 1)",
+            "component_line_rate": "(optional, default: 10)",
             "transit_time": "h (optional, default: 0)",
             "assembly_time": "h (optional, default: 168)",
             "assembly_lines": "(optional, default: 1)",
-            "storage_berths": "(optional, default: 4)",
-            "space_required": "m2",
+            "assembly_line_rate": "(optional, default: 10)",
         },
     }
 
@@ -123,10 +121,11 @@ class MonopileInstallation(InstallPhase):
             self.initialize_substructure_assembly()
 
         else:
-            self.port.storage = DryStorage(self.env, float("inf"))
+            self.storage = DryStorage(self.env, float("inf"))
+            self.storage.crane = simpy.Resource(self.env, 1)
             for _ in range(self.num_monopiles):
-                self.port.storage.put(monopile)
-                self.port.storage.put(tp)
+                self.storage.put(monopile)
+                self.storage.put(tp)
 
     def initialize_substructure_delivery(self):
         """"""
@@ -134,58 +133,53 @@ class MonopileInstallation(InstallPhase):
         component_time = self.supply_chain.get("component_time", 168)
         component_lines = self.supply_chain.get("component_lines", 1)
         transit_time = self.supply_chain.get("transit_time", 0)
-        vessel = self.config["transport_vessel"]
-        constraints = {k: le(v) for k, v in vessel["constraints"].items()}
+        assembly_rate = self.supply_chain.get("component_line_rate", 10)
+        vessel = self.config.get("transport_vessel", {})
+        constr = {k: le(v) for k, v in vessel.get("constraints", {}).items()}
 
-        assignments = [
-            self.num_monopiles // component_lines
-            + (1 if x < self.num_monopiles % component_lines else 0)
-            for x in range(component_lines)
-        ]
-
-        self.substructure_delivery = []
-        for n, assigned in zip(range(component_lines), assignments):
-            delivery_line = ComponentDelivery(
-                component="Monopile",
-                num=n + 1,
-                area=self.config["monopile_supply_chain"]["space_required"],
-                sets=assigned,
-                takt_time=component_time,
-                takt_day_rate=10,  # TODO
-                transit_time=transit_time,
-                target=self.port.laydown,
-                transit_constraints=constraints,
-                transit_day_rate=vessel["day_rate"],
-            )
-            self.env.register(delivery_line)
-            delivery_line.start()
-
-            self.substructure_delivery.append(delivery_line)
+        self.component_delivery = ComponentDelivery(
+            component="Monopile",
+            num=self.num_monopiles,
+            num_parallel=component_lines,
+            takt_time=component_time,
+            takt_day_rate=assembly_rate,
+            transit_time=transit_time,
+            transit_constraints=constr,
+            transit_day_rate=vessel.get("day_rate", 20000),
+        )
+        self.env.register(self.component_delivery)
+        self.component_delivery.initialize_staging_area()
+        self.component_delivery.start()
 
     def initialize_substructure_assembly(self):
         """"""
 
+        mp = self.config["monopile"]
+        tp = self.config["transition_piece"]
+
+        class MonopileAssemblyLine(AssemblyLine):
+
+            component = "Monopile"
+            outputs = [Monopile(**mp), TransitionPiece(**tp)]
+
         assembly_time = self.supply_chain.get("assembly_time", 168)
         assembly_lines = self.supply_chain.get("assembly_lines", 1)
         storage_berths = self.supply_chain.get("storage_berths", 4)
+        assembly_rate = self.supply_chain.get("component_line_rate", 10)
 
-        self.wet_storage = DryStorage(self.env, storage_berths)
-        self.wet_storage.crane = simpy.Resource(self.env, 1)
+        self.storage = DryStorage(self.env, storage_berths)
+        self.storage.crane = simpy.Resource(self.env, 1)
 
-        day_rate = 1000  # TODO
         to_assemble = [1] * self.num_monopiles
 
         self.sub_assembly_lines = []
         for i in range(int(assembly_lines)):
             a = MonopileAssemblyLine(
-                to_assemble,
-                self.port.laydown,
-                assembly_time,
-                self.wet_storage,
-                i + 1,
-                day_rate,
-                self.config["monopile"],
-                self.config["transition_piece"],
+                assigned=to_assemble,
+                pull_from=self.component_delivery.staging_area,
+                time=assembly_time,
+                target=self.storage,
+                day_rate=assembly_rate,
             )
 
             self.env.register(a)
@@ -236,7 +230,7 @@ class MonopileInstallation(InstallPhase):
 
         solo_install_monopiles(
             self.wtiv,
-            port=self.wet_storage,
+            port=self.storage,
             distance=site_distance,
             monopiles=self.num_monopiles,
             site_depth=site_depth,
