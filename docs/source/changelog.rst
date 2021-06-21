@@ -3,6 +3,13 @@
 ORBIT Changelog
 ===============
 
+1.0.5
+-----
+
+- Added initial floating offshore substation installation module.
+- Added option to specific floating cable depth in cable design modules.
+- Bugfix in ``project.total_capex``.
+
 1.0.4
 -----
 

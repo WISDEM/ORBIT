@@ -80,6 +80,7 @@ class ArraySystemDesign(CableSystem):
             "cables": "list | str",
             "touchdown_distance": "m (optional, default: 0)",
             "average_exclusion_percent": "float (optional)",
+            "floating_cable_depth": "m (optional, default: water depth)",
         },
     }
 
