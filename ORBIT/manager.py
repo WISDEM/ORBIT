@@ -44,8 +44,8 @@ from ORBIT.phases.install import (
     GravityBasedInstallation,
     MooringSystemInstallation,
     ScourProtectionInstallation,
+    FloatingSubstationInstallation,
     OffshoreSubstationInstallation,
-    FloatingSubstationInstallation
 )
 from ORBIT.core.exceptions import (
     PhaseNotFound,
@@ -82,7 +82,7 @@ class ProjectManager:
         MooredSubInstallation,
         MooringSystemInstallation,
         GravityBasedInstallation,
-        FloatingSubstationInstallation
+        FloatingSubstationInstallation,
     ]
 
     def __init__(self, config, library_path=None, weather=None):
@@ -902,9 +902,6 @@ class ProjectManager:
     @property
     def logs(self):
         """Returns list of all logs in the project."""
-
-        if not self._output_logs:
-            raise Exception("Project hasn't been ran yet.")
 
         return sorted(self._output_logs, key=lambda l: l["time"])
 
