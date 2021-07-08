@@ -10,6 +10,7 @@ from .design_phase import DesignPhase  # isort:skip
 from .oss_design import OffshoreSubstationDesign
 from .spar_design import SparDesign
 from .monopile_design import MonopileDesign
+from .electrical_export import ElectricalDesign
 from .array_system_design import ArraySystemDesign, CustomArraySystemDesign
 from .export_system_design import ExportSystemDesign
 from .mooring_system_design import MooringSystemDesign
