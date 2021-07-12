@@ -71,6 +71,26 @@ class ElectricalDesign(DesignPhase):
 
         self.result = var1 + var2
         self._outputs["example_output"] = self.result
+        
+    def number_cables(self):
+        """Returns number of export cables."""
+        
+        # max_cap = 181.5 MW  **220kV * 825A**
+        # project_cap = self.config[""]
+        # 
+        # num_cables = ceiling(project_cap/max_cap)
+        #
+        #
+        
+    def cable_current(self):
+        """Returns cabel current rating."""
+        
+        # cable_cap = project_cap / num_cables
+        # cable_current = cable_cap / cable_voltage
+        # 
+        # current -> diameter
+        #
+        #
 
     def initialize_cables(self):
 
