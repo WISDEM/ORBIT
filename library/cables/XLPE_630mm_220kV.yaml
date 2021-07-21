@@ -2,7 +2,7 @@ ac_resistance: 0.25     # ohm/km
 capacitance: 160        # nF/km
 conductor_size: 630     # mm^2
 cost_per_km: 850000     # $
-current_capacity: 655   # A
+current_capacity: 715   # A
 inductance: 0.41        # mH/km
 linear_density: 90      # t/km
 name: XLPE_630mm_220kV

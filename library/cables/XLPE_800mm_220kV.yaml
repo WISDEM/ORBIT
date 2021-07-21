@@ -2,7 +2,7 @@ ac_resistance: 0.20     # ohm/km
 capacitance: 170        # nF/km
 conductor_size: 800     # mm^2
 cost_per_km: 850000     # $
-current_capacity: 655   # A
+current_capacity: 775   # A
 inductance: 0.40        # mH/km
 linear_density: 90      # t/km
 name: XLPE_800mm_220kV
