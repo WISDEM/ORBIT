@@ -75,11 +75,14 @@ class ElectricalDesign(DesignPhase):
 
         self.initialize_cables()
         self.cable = self.cables[[*self.cables][0]]
-        self.compute_number_cables()
-        self.compute_cable_diameter()
-        self.compute_cable_length()
+        self.calc_number_cables()
+        self.calc_cable_diameter()
+        self.calc_cable_length()
         
-    def compute_number_cables(self):
+        
+        #################### CABLES ########################
+        
+    def calc_number_cables(self):
         """
         Calculate the total number of required and redundant cables to
         transmit power to the onshore interconnection.
@@ -89,17 +92,8 @@ class ElectricalDesign(DesignPhase):
         num_redundant = self._design.get("num_redundant", 0)
 
         self.num_cables = int(num_required + num_redundant)
-        
-    def compute_cable_current(self):
-        """Computes cable diameter."""
-        
-        cable_cap = self._plant_capacity / self.num_cables
-        self.cable_current = cable_cap / self.cable.rated_voltage  # cable_voltage
-        
-        # Using line of best fit
-        # self.cable_diameter = 36.958 * np.exp(0.004 * cable_current)
      
-    def compute_cable_length(self):
+    def calc_cable_length(self):
         """
         Calculates the total distance an export cable must travel.
         """
@@ -115,22 +109,69 @@ class ElectricalDesign(DesignPhase):
             10,
         )
         
-    def compute_oss_electrical_components(self):
-        """"Computes number of offshore substation electrical components."""
-        
-        self.num_switchgear = self.num_cables * 2
-        
-        # dependent on plant capacity
-        self.num_transformers = int
-        self.num_compensation = int
-
-
     def initialize_cables(self):
 
         self.cable = extract_library_specs(
             "cables", self._export_design["cables"]
         )
         
+        #################### SUBSTATION ####################
+        
+        
+    def calc_num_substation(self):
+        """Computes number of substations"""
+        self.num_substations = self._plant_capacity / 800 # store this somewhere else?
+        
+
+
+        
+        
+    @property
+    def substation_cost(self):
+        """Returns total procuremet cost of the topside."""
+
+        return (
+            self.mpt_cost
+            + self.shunt_reactor_cost
+            + self.switchgear_costs
+            + self.topside_cost
+            + self.ancillary_system_costs
+            + self.land_assembly_cost
+        )
+    
+    def calc_mpt_cost(self):
+        """Computes transformer cost"""
+        num_mpt = self.num_cables
+        # self.mpt_cost = num_mpt * cost_mpt(cable)
+        
+        
+    def calc_shunt_reactor_cost(self):
+        """Computes shunt reactor cost"""
+        # get distance to shore
+        dist2shore = self._export_design.touchdown_distance # meters
+        # compensation = dist2shore * scaling_factor  # MW
+        # self.shunt_reactor_cost = cost_sr(MW) * compensation
+        
+    def calc_switchgear_costs(self):
+        """Computes switchgear cost"""
+        
+        num_swtichgear = self.num_cables
+        # self.swtichgear_costs = num_switchgear * cost_sg(cable)
+        
+    def calc_topside_cost(self):
+        """Computes topside cost"""
+        
+        
+    def calc_ancillary_system_cost(self):
+        """Copmutes ancillary system cost"""
+        
+        
+    # def calc_land_assembly_cost(self):  include?
+        # """Computes land assembly cost"""
+    
+    
+    
+    
     
 
     @property
