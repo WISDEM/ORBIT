@@ -121,10 +121,7 @@ class ElectricalDesign(DesignPhase):
     def calc_num_substation(self):
         """Computes number of substations"""
         self.num_substations = self._plant_capacity / 800 # store this somewhere else?
-        
-
-
-        
+            
         
     @property
     def substation_cost(self):
@@ -142,21 +139,20 @@ class ElectricalDesign(DesignPhase):
     def calc_mpt_cost(self):
         """Computes transformer cost"""
         num_mpt = self.num_cables
-        # self.mpt_cost = num_mpt * cost_mpt(cable)
+        self.mpt_cost = num_mpt * 1750000
         
         
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost"""
         # get distance to shore
-        dist2shore = self._export_design.touchdown_distance # meters
-        # compensation = dist2shore * scaling_factor  # MW
-        # self.shunt_reactor_cost = cost_sr(MW) * compensation
+        compensation = self.export_system_design.touchdown_distance * self.cables.compensation_factor  # MW
+        self.shunt_reactor_cost = compensation * 120000
         
     def calc_switchgear_costs(self):
         """Computes switchgear cost"""
         
-        num_swtichgear = self.num_cables
-        # self.swtichgear_costs = num_switchgear * cost_sg(cable)
+        num_switchgear = self.num_cables
+        self.swtichgear_costs = num_switchgear * 134000
         
     def calc_topside_cost(self):
         """Computes topside cost"""

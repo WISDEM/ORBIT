@@ -36,6 +36,8 @@ class Cable:
         Cable capacitance, :math:`\\frac{nF}{km}`.
     linear_density : float
         Dry mass per kilometer, :math:`\\frac{tonnes}{km}`.
+    compensation_factor : float
+        Required reactive power compensation per km, :math: `\\frac{MVAr}{km}
     cost_per_km : int
         Cable cost per kilometer, :math:`\\frac{USD}{km}`.
     char_impedance : float
@@ -56,6 +58,7 @@ class Cable:
         "inductance",
         "capacitance",
         "linear_density",
+        "compensation_factor",
         "cost_per_km",
         "name",
     )
