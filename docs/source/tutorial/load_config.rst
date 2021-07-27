@@ -3,11 +3,11 @@ Working with ORBIT Modules and Projects
 
 ORBIT is made up of many different modules representing the design and
 installation of offshore wind components. Each module can be ran indepenently
-or within a project and using :ref:`ProjectManager <manager>`. Modules and
+or within a project using :ref:`ProjectManager <manager>`. Modules and
 projects are configured with a set of nested dictionaries.
 
-Running Individual Phases
--------------------------
+Running Individual Modules
+--------------------------
 
 To run a module indepenently:
 
@@ -32,7 +32,7 @@ To run a module indepenently:
    phase.run()
    print(phase.total_cost)
 
-The inputs required for all modules are stored in ``expected_config``.
+The inputs required for each module are stored in ``expected_config``.
 For example:
 
 .. code-block:: python
