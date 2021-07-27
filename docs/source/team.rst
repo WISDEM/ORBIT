@@ -11,12 +11,12 @@ Authors
 - Rob Hammond (NREL)
 - Patrick Duffy (NREL)
 
-Contributors
-------------
+.. Contributors
+.. ------------
 
-Coming soon!
+.. Coming soon!
 
-Reviewers
----------
+.. Reviewers
+.. ---------
 
-Coming soon!
+.. Coming soon!
