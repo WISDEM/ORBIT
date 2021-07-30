@@ -128,7 +128,6 @@ class ElectricalDesign(DesignPhase, CableSystem):
         #     "system_cost": self.total_cost,
         # }
         
-        
         # SUBSTATION
         self.calc_substructure_length()
         self.calc_substructure_deck_space()
