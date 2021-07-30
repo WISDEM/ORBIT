@@ -36,8 +36,6 @@ class Cable:
         Cable capacitance, :math:`\\frac{nF}{km}`.
     linear_density : float
         Dry mass per kilometer, :math:`\\frac{tonnes}{km}`.
-    compensation_factor : float
-        Required reactive power compensation per km, :math: `\\frac{MVAr}{km}
     cost_per_km : int
         Cable cost per kilometer, :math:`\\frac{USD}{km}`.
     char_impedance : float
@@ -58,7 +56,6 @@ class Cable:
         "inductance",
         "capacitance",
         "linear_density",
-        "compensation_factor",
         "cost_per_km",
         "name",
     )
@@ -92,6 +89,7 @@ class Cable:
         self.calc_char_impedance(**kwargs)
         self.calc_power_factor()
         self.calc_cable_power()
+        self.calc_compensation_factor()
 
     def calc_char_impedance(self):
         """
@@ -131,7 +129,16 @@ class Cable:
             * self.power_factor
             / 1000
         )
-
+    
+    def calc_compensation_factor(self):
+        """
+        Calculate compensation factor for shunt reactor cost
+        """
+        capacitive_reactance = 1 / (2 * np.pi * self.line_frequency * (self.capacitance / 10e6))
+        capacitive_losses = self.rated_voltage ** 2 / capacitive_reactance
+        inductive_reactance = 2 * np.pi * self.line_frequency * (self.inductance / 1000)
+        inductive_losses = 3 * inductive_reactance * self.current_capacity ** 2 
+        self.compensation_factor = capacitive_losses - inductive_losses
 
 class Plant:
     """
