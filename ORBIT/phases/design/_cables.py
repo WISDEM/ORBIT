@@ -134,10 +134,10 @@ class Cable:
         """
         Calculate compensation factor for shunt reactor cost
         """
-        capacitive_reactance = 1 / (2 * np.pi * self.line_frequency * (self.capacitance / 10e6))
+        capacitive_reactance = 1 / (2 * np.pi * self.line_frequency * (self.capacitance / 10e8))
         capacitive_losses = self.rated_voltage ** 2 / capacitive_reactance
         inductive_reactance = 2 * np.pi * self.line_frequency * (self.inductance / 1000)
-        inductive_losses = 3 * inductive_reactance * self.current_capacity ** 2 
+        inductive_losses = 3 * inductive_reactance * (self.current_capacity / 1000) ** 2 
         self.compensation_factor = capacitive_losses - inductive_losses
 
 class Plant:

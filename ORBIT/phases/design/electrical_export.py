@@ -297,7 +297,7 @@ class ElectricalDesign(CableSystem):
         self.mpt_cost = self.num_mpt * 1750000
         self.mpt_rating = (
             round(
-                (self._plant_capacity / (self.num_mpt * self.num_substations))
+                (self._plant_capacity / self.num_mpt)
                 / 10.0
             )
             * 10.0
@@ -306,10 +306,10 @@ class ElectricalDesign(CableSystem):
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost"""
         # get distance to shore
-
+        touchdown = self.config["site"]["distance_to_landfall"]
         for name, cable in self.cables.items():
-            compensation = self.touchdown * cable.compensation_factor  # MW
-
+            compensation = touchdown * cable.compensation_factor  # MW
+            print(touchdown)
         self.shunt_reactor_cost = compensation * 120000
 
     def calc_switchgear_costs(self):
@@ -317,10 +317,6 @@ class ElectricalDesign(CableSystem):
 
         num_switchgear = self.num_cables
         self.switchgear_costs = num_switchgear * 134000
-
-    def calc_topside_cost(self):
-        """Computes topside cost"""
-        self.topside_cost = 1
 
     def calc_ancillary_system_cost(self):
         """
@@ -428,9 +424,3 @@ class ElectricalDesign(CableSystem):
             self.topside_mass * topside_fab_cost_rate + topside_design_cost
         )
 
-    @property
-    def total_oss_cost(self):
-        """Returns total cost of subcomponent(s)."""
-
-        num_turbines = 100  # Where applicable
-        return self.result * num_turbines
