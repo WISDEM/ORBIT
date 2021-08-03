@@ -6,14 +6,13 @@ __email__ = []
 import numpy as np
 
 # from ORBIT.core.library import extract_library_specs
-from ORBIT.phases.design import DesignPhase
 from ORBIT.phases.design._cables import CableSystem
 
 
-class ElectricalDesign(DesignPhase, CableSystem):
+class ElectricalDesign(CableSystem):
     """
     Design phase for export cabling and offshore substation systems.
-    
+
     Attributes
     ----------
     num_cables : int
@@ -33,7 +32,7 @@ class ElectricalDesign(DesignPhase, CableSystem):
         An array of `cable`.
     sections_lengths : np.ndarray, shape: (`num_cables, )
         An array of `length`.
-    
+
     """
 
     expected_config = {
@@ -51,7 +50,7 @@ class ElectricalDesign(DesignPhase, CableSystem):
             "topside_fab_cost_rate": "USD/t (optional)",
             "topside_design_cost": "USD (optional)",
             "shunt_cost_rate": "USD/MW (optional)",
-            "switchgear_cost": "USD (optional)",
+            "switchgear_costs": "USD (optional)",
             "backup_gen_cost": "USD (optional)",
             "workspace_cost": "USD (optional)",
             "other_ancillary_cost": "USD (optional)",
@@ -63,12 +62,11 @@ class ElectricalDesign(DesignPhase, CableSystem):
     }
 
     output_config = {
-        
         "num_substations": "int",
         "offshore_substation_topside": "dict",
         "offshore_substation_substructure": "dict",
-        
         "export_system": {
+            "system_cost": "USD",
             "cable": {
                 "linear_density": "t/km",
                 "sections": [("length, km", "speed, km/h (optional)")],
@@ -86,7 +84,7 @@ class ElectricalDesign(DesignPhase, CableSystem):
 
         # CABLES
         super().__init__(config, "export", **kwargs)
-        
+
         for name in self.expected_config["site"]:
             setattr(self, "".join(("_", name)), config["site"][name])
         self._depth = config["site"]["depth"]
@@ -100,13 +98,18 @@ class ElectricalDesign(DesignPhase, CableSystem):
             ]
         except KeyError:
             self._distance_to_interconnection = 3
-            
+
         # SUBSTATION
         self._outputs = {}
 
     def run(self):
         """Main run function."""
-        
+
+        self.export_system_design = self.config["export_system_design"]
+        self.offshore_substation_design = self.config.get(
+            "offshore_substation_design", {}
+        )
+
         # CABLES
         self._initialize_cables()
         self.cable = self.cables[[*self.cables][0]]
@@ -114,30 +117,32 @@ class ElectricalDesign(DesignPhase, CableSystem):
         self.compute_cable_length()
         self.compute_cable_mass()
         self.compute_total_cable()
-        
+
+        self._outputs["export_system"] = {"system_cost": self.total_cable_cost}
         for name, cable in self.cables.items():
             self._outputs["export_system"]["cable"] = {
-                    "linear_density": cable.linear_density,
-                    "sections": [self.length],
-                    "number": self.num_cables,
-                    "cable_power": cable.cable_power,
-                }
+                "linear_density": cable.linear_density,
+                "sections": [self.length],
+                "number": self.num_cables,
+                "cable_power": cable.cable_power,
+            }
+
         # self._outputs["export_system"] = {
         #     "power_factor": self.cables.power_factor,
         #     "interconnection_distance": self._distance_to_interconnection,
         #     "system_cost": self.total_cost,
         # }
-        
+
         # SUBSTATION
+        self.calc_num_substations()
         self.calc_substructure_length()
         self.calc_substructure_deck_space()
         self.calc_topside_deck_space()
 
-        self.calc_num_mpt_and_rating()
         self.calc_mpt_cost()
         self.calc_topside_mass_and_cost()
         self.calc_shunt_reactor_cost()
-        self.calc_switchgear_cost()
+        self.calc_switchgear_costs()
         self.calc_ancillary_system_cost()
         self.calc_assembly_cost()
         self.calc_substructure_mass_and_cost()
@@ -157,7 +162,6 @@ class ElectricalDesign(DesignPhase, CableSystem):
         }
 
         self._outputs["num_substations"] = self.num_substations
-        
 
     @property
     def detailed_output(self):
@@ -177,8 +181,8 @@ class ElectricalDesign(DesignPhase, CableSystem):
             "substation_substructure_cost": self.substructure_cost,
         }
 
-        return _output 
-    
+        return _output
+
     @property
     def design_result(self):
         """
@@ -190,13 +194,12 @@ class ElectricalDesign(DesignPhase, CableSystem):
         return self._outputs
 
         #################### CABLES ########################
-        
+
     @property
     def total_cable_cost(self):
         """Returns total array system cable cost."""
 
         return sum(self.cost_by_type.values())
-
 
     def compute_number_cables(self):
         """
@@ -266,20 +269,15 @@ class ElectricalDesign(DesignPhase, CableSystem):
 
         return np.full(self.num_cables, self.cable.name)
 
-    
-    
-    
         #################### SUBSTATION ####################
-        
-        
-    def calc_num_substation(self):
+
+    def calc_num_substations(self):
         """Computes number of substations"""
-        _design = self.config.get("substation_design",{})
+        _design = self.config.get("substation_design", {})
         self.num_substations = _design.get(
             "num_substations", int(np.ceil(self._plant_capacity / 800))
         )
-            
-        
+
     @property
     def substation_cost(self):
         """Returns total procuremet cost of the topside."""
@@ -287,47 +285,43 @@ class ElectricalDesign(DesignPhase, CableSystem):
         return (
             self.mpt_cost
             + self.shunt_reactor_cost
-            + self.switchgear_cost
+            + self.switchgear_costs
             + self.topside_cost
             + self.ancillary_system_cost
             + self.land_assembly_cost
         )
-    
+
     def calc_mpt_cost(self):
         """Computes transformer cost"""
-        num_mpt = self.num_cables
-        self.mpt_cost = num_mpt * 1750000
+        self.num_mpt = self.num_cables
+        self.mpt_cost = self.num_mpt * 1750000
         self.mpt_rating = (
             round(
-                (  
-                    self._plant_capacity / (num_mpt * self.num_substation)
-                )
-                /10.0
-            ) 
+                (self._plant_capacity / (self.num_mpt * self.num_substations))
+                / 10.0
+            )
             * 10.0
         )
-        
-        
+
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost"""
         # get distance to shore
-        compensation = (
-            self.export_system_design.touchdown_distance 
-            * self.cables.compensation_factor
-        )  # MW
+
+        for name, cable in self.cables.items():
+            compensation = self.touchdown * cable.compensation_factor  # MW
+
         self.shunt_reactor_cost = compensation * 120000
-        
-    def calc_switchgear_cost(self):
+
+    def calc_switchgear_costs(self):
         """Computes switchgear cost"""
-        
+
         num_switchgear = self.num_cables
-        self.swtichgear_costs = num_switchgear * 134000
-        
+        self.switchgear_costs = num_switchgear * 134000
+
     def calc_topside_cost(self):
         """Computes topside cost"""
         self.topside_cost = 1
-        
-        
+
     def calc_ancillary_system_cost(self):
         """
         Calculates cost of ancillary systems.
@@ -344,10 +338,10 @@ class ElectricalDesign(DesignPhase, CableSystem):
         workspace_cost = _design.get("workspace_cost", 2e6)
         other_ancillary_cost = _design.get("other_ancillary_cost", 3e6)
 
-        self.ancillary_system_costs = (
+        self.ancillary_system_cost = (
             backup_gen_cost + workspace_cost + other_ancillary_cost
         )
-        
+
     def calc_assembly_cost(self):
         """
         Calculates the cost of assembly on land.
@@ -362,9 +356,9 @@ class ElectricalDesign(DesignPhase, CableSystem):
         self.land_assembly_cost = (
             self.switchgear_costs
             + self.shunt_reactor_cost
-            + self.ancillary_system_costs
+            + self.ancillary_system_cost
         ) * topside_assembly_factor
-        
+
     def calc_substructure_mass_and_cost(self):
         """
         Calculates the mass and associated cost of the substation substructure.
@@ -388,8 +382,8 @@ class ElectricalDesign(DesignPhase, CableSystem):
             + substructure_pile_mass * oss_pile_cost_rate
         )
 
-        self.substructure_mass = substructure_mass + substructure_pile_mass    
-    
+        self.substructure_mass = substructure_mass + substructure_pile_mass
+
     def calc_substructure_length(self):
         """
         Calculates substructure length as the site depth + 10m
@@ -414,7 +408,7 @@ class ElectricalDesign(DesignPhase, CableSystem):
         """
 
         self.topside_deck_space = 1
-    
+
     def calc_topside_mass_and_cost(self):
         """
         Calculates the mass and cost of the substation topsides.
@@ -440,4 +434,3 @@ class ElectricalDesign(DesignPhase, CableSystem):
 
         num_turbines = 100  # Where applicable
         return self.result * num_turbines
-

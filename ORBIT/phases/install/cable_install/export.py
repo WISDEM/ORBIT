@@ -46,6 +46,7 @@ class ExportCableInstallation(InstallPhase):
         "plant": {"num_turbines": "int"},
         "turbine": {"turbine_rating": "MW"},
         "export_system": {
+            "system_cost": "USD",
             "cable": {
                 "linear_density": "t/km",
                 "sections": [("length, km", "speed, km/h (optional)")],
