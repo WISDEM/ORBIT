@@ -1,11 +1,11 @@
 Vessels and Cable Definitions
 =============================
 
-Most installation modules require individual vessels or cables to be defined to
-complete the required configuration. These definitions are composed of several
-nested dictionaries (representing vessel subcomponents) that can be cumbersome
-to define within the project level configuration. As such, there are two helper
-libraries included with ORBIT that allow vessels/cables to be defined
+Most installation modules require individual vessels, cables or turbines to be
+defined to complete the required configuration. These definitions are composed
+of several nested dictionaries (representing vessel subcomponents) that can be
+cumbersome to define within the project level configuration. As such, there are
+helper libraries included with ORBIT that allow vessels/cables to be defined
 elsewhere and referenced with their name. By default, these libraries are
 located at:
 
@@ -13,6 +13,28 @@ located at:
 
    /path/to/orbit/library/cables/
    /path/to/orbit/library/vessels/
+   /path/to/orbit/library/turbines/
+
+External Libraries
+------------------
+
+It is possible to have ORBIT look in external folders for library items. To
+configure an external library, use the ``initialize_library`` function. It is
+recommended that any proprietary vessel or cable files be located outside
+of the main repository.
+
+.. code-block:: python
+
+   from ORBIT.core.library import initialize_library
+   initialize_library("path/to/external/library/")
+
+.. note::
+
+   If an external library is defined, ORBIT will search for a configured
+   library item there first and then search the library defined within ORBIT if
+   the item is not found. This is so that generic library items do not need to
+   be copied to the external library but can still be used within a project
+   definition.
 
 File Format
 -----------
@@ -73,18 +95,3 @@ following subcomponents and their use cases are available to be configured:
   for all fixed substructure and turbine installations.
 - ``'crane_specs'`` - Crane related parameters and constraints. Required for
   any offshore lifts.
-
-Changing Library Location
--------------------------
-
-It is recommended that any proprietary vessel or cable files be located outside
-of the main repository. To accomplish this, the library path can be changed by
-passing in the ``"library_path"`` parameter.
-
-.. code-block::
-
-   # ProjectManager
-   project = ProjectManager(config, library_path="/User/path/to/library/")
-
-   # Individual Phase
-   phase = MonopileInstallation(config, library_path="/User/path/to/library/")

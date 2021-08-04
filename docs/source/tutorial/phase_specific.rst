@@ -4,7 +4,7 @@ Phase Specific Configurations
 By default, ``ProjectManager.compile_input_dict()`` returns the minimum
 required configuration, combining the same parameter that is needed for
 multiple phases into one input. This isn't always a desired outcome as there
-are cases when inputs need to be different for each phase. The
+are cases when inputs need to be different for each phase. For example, the
 ``distance_to_shore`` parameter may be different for each installation phase
 if different ports are used to stage monopiles and turbines or the
 installations may use different installation vessels. In these cases, it is

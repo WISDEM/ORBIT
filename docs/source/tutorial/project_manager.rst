@@ -100,3 +100,10 @@ now be filled out and the model can be ran:
   To include weather in the simulation, pass an hourly pandas DataFrame into
   ``ProjectManager``. Eg. ``ProjectManager(config, weather=weather_df)``. All
   installation phases will use this time series.
+
+Design Modules
+--------------
+
+For a more detailed description of design modules and the interaction with
+installation modules, please see the :ref:`Design Phases <design_modules>`
+documentation.
