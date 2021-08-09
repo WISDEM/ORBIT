@@ -62,11 +62,8 @@ def install_jacket(vessel, jacket, **kwargs):
         "Lift Jacket", 4, constraints=vessel.transit_limits, **kwargs
     )
     yield vessel.task_wrapper(
-        "Lower Jacket",
-        reequip_time,
-        constraints=vessel.transit_limits,
-        **kwargs,
+        "Lower Jacket", 4, constraints=vessel.transit_limits, **kwargs
     )
     yield vessel.task_wrapper(
-        "Fasten Jacket", 10, constraints=vessel.transit_limits, **kwargs
+        "Drive Piles", 12, constraints=vessel.transit_limits, **kwargs
     )
