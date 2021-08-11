@@ -13,26 +13,6 @@ class ElectricalDesign(CableSystem):
     """
     Design phase for export cabling and offshore substation systems.
 
-    Attributes
-    ----------
-    num_cables : int
-        Total number of cables required for transmitting power.
-    length : float
-        Length of a single cable connecting the OSS to the interconnection in km.
-    mass : float
-        Mass of `length` in tonnes.
-    cable : `Cable`
-        Instance of `ORBIT.phases.design.Cable`. An export system will
-        only require a single type of cable.
-    total_length : float
-        Total length of cable required to trasmit power.
-    total_mass : float
-        Total mass of cable required to transmit power.
-    sections_cables : np.ndarray, shape: (`num_cables, )
-        An array of `cable`.
-    sections_lengths : np.ndarray, shape: (`num_cables, )
-        An array of `length`.
-
     """
 
     expected_config = {
@@ -211,6 +191,7 @@ class ElectricalDesign(CableSystem):
         num_redundant = self._design.get("num_redundant", 0)
 
         self.num_cables = int(num_required + num_redundant)
+        #print(self.num_cables)
 
     def compute_cable_length(self):
         """
@@ -273,8 +254,8 @@ class ElectricalDesign(CableSystem):
 
     def calc_num_substations(self):
         """Computes number of substations"""
-        _design = self.config.get("substation_design", {})
-        self.num_substations = _design.get(
+        self._design = self.config.get("substation_design", {})
+        self.num_substations = self._design.get(
             "num_substations", int(np.ceil(self._plant_capacity / 800))
         )
 
@@ -294,7 +275,9 @@ class ElectricalDesign(CableSystem):
     def calc_mpt_cost(self):
         """Computes transformer cost"""
         self.num_mpt = self.num_cables
-        self.mpt_cost = self.num_mpt * 1750000
+        self.mpt_cost = (
+            self.num_mpt * self._design.get("mpt_cost_rate", 1750000)
+        )
         self.mpt_rating = (
             round(
                 (self._plant_capacity / self.num_mpt)
@@ -309,15 +292,18 @@ class ElectricalDesign(CableSystem):
         touchdown = self.config["site"]["distance_to_landfall"]
         for name, cable in self.cables.items():
             compensation = touchdown * cable.compensation_factor  # MW
-            print(touchdown)
-        self.shunt_reactor_cost = compensation * 120000
-
+        self.shunt_reactor_cost = (
+            compensation * self._design.get("shunt_cost_rate", 120000)
+        )
+        
     def calc_switchgear_costs(self):
         """Computes switchgear cost"""
 
         num_switchgear = self.num_cables
-        self.switchgear_costs = num_switchgear * 134000
-
+        self.switchgear_costs = (
+            num_switchgear * self._design.get("switchgear_costs", 134000)
+        )
+        
     def calc_ancillary_system_cost(self):
         """
         Calculates cost of ancillary systems.
