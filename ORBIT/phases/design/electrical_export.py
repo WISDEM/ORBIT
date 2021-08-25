@@ -168,9 +168,6 @@ class ElectricalDesign(CableSystem):
         """
         Returns the results of self.run().
         """
-        if not self._outputs:
-            raise Exception("Has OffshoreSubstationDesign been ran yet?")
-
         return self._outputs
 
         #################### CABLES ########################
@@ -264,9 +261,10 @@ class ElectricalDesign(CableSystem):
         """Returns total procuremet cost of the topside."""
 
         return (
-            self.mpt_cost
+            (self.mpt_cost
             + self.shunt_reactor_cost
             + self.switchgear_costs
+            ) / self.num_substations
             + self.topside_cost
             + self.ancillary_system_cost
             + self.land_assembly_cost
@@ -280,7 +278,8 @@ class ElectricalDesign(CableSystem):
         )
         self.mpt_rating = (
             round(
-                (self._plant_capacity / self.num_mpt)
+                (self._plant_capacity * 1.15
+                 / self.num_mpt)
                 / 10.0
             )
             * 10.0
@@ -293,7 +292,8 @@ class ElectricalDesign(CableSystem):
         for name, cable in self.cables.items():
             compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
-            compensation * self._design.get("shunt_cost_rate", 120000)
+            compensation * self._design.get("shunt_cost_rate", 99000) 
+            * self.num_cables
         )
         
     def calc_switchgear_costs(self):
@@ -336,8 +336,8 @@ class ElectricalDesign(CableSystem):
         _design = self.config.get("substation_design", {})
         topside_assembly_factor = _design.get("topside_assembly_factor", 0.075)
         self.land_assembly_cost = (
-            self.switchgear_costs
-            + self.shunt_reactor_cost
+            self.switchgear_costs / self.num_substations
+            + self.shunt_reactor_cost / self.num_substations
             + self.ancillary_system_cost
         ) * topside_assembly_factor
 
@@ -405,8 +405,9 @@ class ElectricalDesign(CableSystem):
         topside_fab_cost_rate = _design.get("topside_fab_cost_rate", 14500)
         topside_design_cost = _design.get("topside_design_cost", 4.5e6)
 
-        self.topside_mass = 3.85 * self.mpt_rating * self.num_mpt + 285
+        self.topside_mass = 3.85 * (self.mpt_rating * self.num_mpt) / self.num_substations + 285
         self.topside_cost = (
             self.topside_mass * topside_fab_cost_rate + topside_design_cost
         )
 
+    
