@@ -34,6 +34,7 @@ class ElectricalDesign(CableSystem):
             "backup_gen_cost": "USD (optional)",
             "workspace_cost": "USD (optional)",
             "other_ancillary_cost": "USD (optional)",
+            "converter_cost": "USD (optional)",
             "topside_assembly_factor": "float (optional)",
             "oss_substructure_cost_rate": "USD/t (optional)",
             "oss_pile_cost_rate": "USD/t (optional)",
@@ -126,6 +127,7 @@ class ElectricalDesign(CableSystem):
         self.calc_ancillary_system_cost()
         self.calc_assembly_cost()
         self.calc_substructure_mass_and_cost()
+        self.calc_converter_cost()
 
         self._outputs["offshore_substation_substructure"] = {
             "type": "Monopile",  # Substation install only supports monopiles
@@ -183,7 +185,8 @@ class ElectricalDesign(CableSystem):
         Calculate the total number of required and redundant cables to
         transmit power to the onshore interconnection.
         """
-
+        if self.cable.cable_type == 'HVDC':
+            print("Design uses HVDC cable")
         num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
         num_redundant = self._design.get("num_redundant", 0)
 
@@ -264,6 +267,7 @@ class ElectricalDesign(CableSystem):
             (self.mpt_cost
             + self.shunt_reactor_cost
             + self.switchgear_costs
+            + self.converter_cost
             ) / self.num_substations
             + self.topside_cost
             + self.ancillary_system_cost
@@ -287,10 +291,14 @@ class ElectricalDesign(CableSystem):
 
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost"""
-        # get distance to shore
+        # get distance to shore  
         touchdown = self.config["site"]["distance_to_landfall"]
-        for name, cable in self.cables.items():
-            compensation = touchdown * cable.compensation_factor  # MW
+        
+        if self.cable.cable_type == "HVDC":
+            compensation = 0
+        else:
+            for name, cable in self.cables.items():
+                compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
             compensation * self._design.get("shunt_cost_rate", 99000) 
             * self.num_cables
@@ -315,14 +323,24 @@ class ElectricalDesign(CableSystem):
         other_ancillary_cost : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        backup_gen_cost = _design.get("backup_gen_cost", 1e6)
-        workspace_cost = _design.get("workspace_cost", 2e6)
-        other_ancillary_cost = _design.get("other_ancillary_cost", 3e6)
+        backup_gen_cost = self._design.get("backup_gen_cost", 1e6)
+        workspace_cost = self._design.get("workspace_cost", 2e6)
+        other_ancillary_cost = self._design.get("other_ancillary_cost", 3e6)
 
         self.ancillary_system_cost = (
             backup_gen_cost + workspace_cost + other_ancillary_cost
         )
+    
+    def calc_converter_cost(self): 
+        
+        if self.cable.cable_type == "HVDC":
+            self.converter_cost = (
+                self.num_cables * self._design.get("converter_cost", 137e6)
+            )
+        else:
+            self.converter_cost = 0
+    
+    
 
     def calc_assembly_cost(self):
         """

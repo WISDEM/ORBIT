@@ -58,6 +58,7 @@ class Cable:
         "linear_density",
         "cost_per_km",
         "name",
+        "cable_type",
     )
 
     def __init__(self, cable_specs, **kwargs):
@@ -86,16 +87,19 @@ class Cable:
         self.line_frequency = cable_specs.get("line_frequency", 60)
 
         # Calc additional cable specs
-        self.calc_char_impedance(**kwargs)
-        self.calc_power_factor()
+        if self.cable_type == 'HVAC':
+            self.calc_char_impedance(**kwargs)
+            self.calc_power_factor()
+            self.calc_compensation_factor()
         self.calc_cable_power()
-        self.calc_compensation_factor()
 
     def calc_char_impedance(self):
         """
         Calculate characteristic impedance of cable.
         """
-
+#        if self.cable_type == 'HVDC':
+#            self.char_impedance = 0
+#        else:
         conductance = 1 / self.ac_resistance
 
         num = complex(
@@ -122,13 +126,19 @@ class Cable:
         Calculate maximum power transfer through 3-phase cable in :math:`MW`.
         """
 
-        self.cable_power = (
-            np.sqrt(3)
-            * self.rated_voltage
-            * self.current_capacity
-            * self.power_factor
-            / 1000
-        )
+        if self.cable_type == 'HVDC':
+            self.cable_power = (
+                self.current_capacity * self.rated_voltage * 2 / 1000
+            )
+        else:
+            self.cable_power = (
+                np.sqrt(3)
+                * self.rated_voltage
+                * self.current_capacity
+                * self.power_factor
+                / 1000
+            )
+        
     
     def calc_compensation_factor(self):
         """
