@@ -185,13 +185,12 @@ class ElectricalDesign(CableSystem):
         Calculate the total number of required and redundant cables to
         transmit power to the onshore interconnection.
         """
-        if self.cable.cable_type == 'HVDC':
-            print("Design uses HVDC cable")
+#        if self.cable.cable_type == 'HVDC':
+#            print("Design uses HVDC cable")
         num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
         num_redundant = self._design.get("num_redundant", 0)
 
         self.num_cables = int(num_required + num_redundant)
-        #print(self.num_cables)
 
     def compute_cable_length(self):
         """
