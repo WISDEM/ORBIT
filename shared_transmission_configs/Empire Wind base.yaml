@@ -1,0 +1,21 @@
+array_system:
+  cables:
+  - XLPE_630mm_66kV
+design_phases: !!set
+  ElectricalDesign: null
+export_cable_install_vessel: example_cable_lay_vessel
+export_system_design:
+  cables: XLPE_630mm_220kV
+feeder: future_feeder
+install_phases: !!set
+  ExportCableInstallation: null
+  OffshoreSubstationInstallation: null
+oss_install_vessel: example_heavy_lift_vessel
+plant:
+  capacity: 816
+site:
+  depth: 43
+  distance: 295
+  distance_to_landfall: 32.0
+turbine:
+  turbine_rating: 12

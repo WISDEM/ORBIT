@@ -263,11 +263,10 @@ class ElectricalDesign(CableSystem):
         """Returns total procuremet cost of the topside."""
 
         return (
-            (self.mpt_cost
+            self.mpt_cost
             + self.shunt_reactor_cost
             + self.switchgear_costs
             + self.converter_cost
-            ) / self.num_substations
             + self.topside_cost
             + self.ancillary_system_cost
             + self.land_assembly_cost
@@ -327,7 +326,7 @@ class ElectricalDesign(CableSystem):
         other_ancillary_cost = self._design.get("other_ancillary_cost", 3e6)
 
         self.ancillary_system_cost = (
-            backup_gen_cost + workspace_cost + other_ancillary_cost
+            (backup_gen_cost + workspace_cost + other_ancillary_cost) * self.num_substations
         )
     
     def calc_converter_cost(self): 
@@ -353,8 +352,8 @@ class ElectricalDesign(CableSystem):
         _design = self.config.get("substation_design", {})
         topside_assembly_factor = _design.get("topside_assembly_factor", 0.075)
         self.land_assembly_cost = (
-            self.switchgear_costs / self.num_substations
-            + self.shunt_reactor_cost / self.num_substations
+            self.switchgear_costs
+            + self.shunt_reactor_cost
             + self.ancillary_system_cost
         ) * topside_assembly_factor
 
@@ -379,7 +378,7 @@ class ElectricalDesign(CableSystem):
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
-        )
+        ) * self.num_substations
 
         self.substructure_mass = substructure_mass + substructure_pile_mass
 
@@ -410,8 +409,8 @@ class ElectricalDesign(CableSystem):
 
     def calc_topside_mass_and_cost(self):
         """
-        Calculates the mass and cost of the substation topsides.
-
+        Calculates the mass and cost of the substation topsides. 
+        
         Parameters
         ----------
         topside_fab_cost_rate : int | float
@@ -424,7 +423,7 @@ class ElectricalDesign(CableSystem):
 
         self.topside_mass = 3.85 * (self.mpt_rating * self.num_mpt) / self.num_substations + 285
         self.topside_cost = (
-            self.topside_mass * topside_fab_cost_rate + topside_design_cost
+            (self.topside_mass * topside_fab_cost_rate + topside_design_cost) * self.num_substations
         )
 
     
