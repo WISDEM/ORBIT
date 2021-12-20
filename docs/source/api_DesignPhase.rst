@@ -14,6 +14,7 @@ trends but are not intended to be used for actual designs.
    phases/design/api_ScourProtectionDesign
    phases/design/api_ArraySystemDesign
    phases/design/api_ExportSystemDesign
+   phases/design/api_ElectricalDesign
    phases/design/api_OffshoreSubstationDesign
    phases/design/api_SemiSubmersibleDesign
    phases/design/api_SparDesign
