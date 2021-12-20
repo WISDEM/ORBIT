@@ -58,7 +58,7 @@ class Cable:
         "linear_density",
         "cost_per_km",
         "name",
-        "cable_type",
+        # "cable_type",
     )
 
     def __init__(self, cable_specs, **kwargs):
@@ -85,6 +85,7 @@ class Cable:
             raise ValueError(f"{needs_value} must be defined in cable_specs")
 
         self.line_frequency = cable_specs.get("line_frequency", 60)
+        self.cable_type = cable_specs.get("cable_type", "HVAC")
 
         # Calc additional cable specs
         if self.cable_type == 'HVAC':
