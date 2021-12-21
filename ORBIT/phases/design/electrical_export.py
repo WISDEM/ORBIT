@@ -5,7 +5,6 @@ __email__ = []
 
 import numpy as np
 
-# from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design._cables import CableSystem
 
 
@@ -108,12 +107,6 @@ class ElectricalDesign(CableSystem):
                 "cable_power": cable.cable_power,
             }
 
-        # self._outputs["export_system"] = {
-        #     "power_factor": self.cables.power_factor,
-        #     "interconnection_distance": self._distance_to_interconnection,
-        #     "system_cost": self.total_cost,
-        # }
-
         # SUBSTATION
         self.calc_num_substations()
         self.calc_substructure_length()
@@ -185,8 +178,7 @@ class ElectricalDesign(CableSystem):
         Calculate the total number of required and redundant cables to
         transmit power to the onshore interconnection.
         """
-#        if self.cable.cable_type == 'HVDC':
-#            print("Design uses HVDC cable")
+        
         num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
         num_redundant = self._design.get("num_redundant", 0)
 
@@ -253,6 +245,7 @@ class ElectricalDesign(CableSystem):
 
     def calc_num_substations(self):
         """Computes number of substations"""
+        
         self._design = self.config.get("substation_design", {})
         self.num_substations = self._design.get(
             "num_substations", int(np.ceil(self._plant_capacity / 800))
@@ -274,6 +267,7 @@ class ElectricalDesign(CableSystem):
 
     def calc_mpt_cost(self):
         """Computes transformer cost"""
+        
         self.num_mpt = self.num_cables
         self.mpt_cost = (
             self.num_mpt * self._design.get("mpt_cost_rate", 1750000)
@@ -289,7 +283,7 @@ class ElectricalDesign(CableSystem):
 
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost"""
-        # get distance to shore  
+        
         touchdown = self.config["site"]["distance_to_landfall"]
         
         if self.cable.cable_type == "HVDC":
@@ -330,6 +324,7 @@ class ElectricalDesign(CableSystem):
         )
     
     def calc_converter_cost(self): 
+        """Computes converter cost"""
         
         if self.cable.cable_type == "HVDC":
             self.converter_cost = (
@@ -337,8 +332,6 @@ class ElectricalDesign(CableSystem):
             )
         else:
             self.converter_cost = 0
-    
-    
 
     def calc_assembly_cost(self):
         """

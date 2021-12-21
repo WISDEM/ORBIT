@@ -58,7 +58,7 @@ class Cable:
         "linear_density",
         "cost_per_km",
         "name",
-        # "cable_type",
+        "cable_type",
     )
 
     def __init__(self, cable_specs, **kwargs):
@@ -98,19 +98,19 @@ class Cable:
         """
         Calculate characteristic impedance of cable.
         """
-#        if self.cable_type == 'HVDC':
-#            self.char_impedance = 0
-#        else:
-        conductance = 1 / self.ac_resistance
-
-        num = complex(
-            self.ac_resistance,
-            2 * math.pi * self.line_frequency * self.inductance,
-        )
-        den = complex(
-            conductance, 2 * math.pi * self.line_frequency * self.capacitance
-        )
-        self.char_impedance = np.sqrt(num / den)
+        if self.cable_type == 'HVDC':
+            self.char_impedance = 0
+        else:
+            conductance = 1 / self.ac_resistance
+    
+            num = complex(
+                self.ac_resistance,
+                2 * math.pi * self.line_frequency * self.inductance,
+            )
+            den = complex(
+                conductance, 2 * math.pi * self.line_frequency * self.capacitance
+            )
+            self.char_impedance = np.sqrt(num / den)
 
     def calc_power_factor(self):
         """
