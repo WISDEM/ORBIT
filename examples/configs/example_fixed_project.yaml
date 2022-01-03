@@ -54,6 +54,7 @@ install_phases:
   - MonopileInstallation
   - 0.1
 # Project Inputs
-turbine_capex: 1200
-commissioning: 0.01
-decommissioning: 0.15
+project_parameters:
+  turbine_capex: 1500
+  commissioning: 0.01
+  decommissioning: 0.15
