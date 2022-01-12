@@ -6,7 +6,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import process
+from marmot import false, process
 
 from ORBIT.core import Cargo
 from ORBIT.core.logic import jackdown_if_required
@@ -162,11 +162,10 @@ def drive_monopile(vessel, **kwargs):
 
     drive_time = mono_embed_len / mono_drive_rate
 
+    constraints = {**vessel.operational_limits, "whales": false()}
+
     yield vessel.task_wrapper(
-        "Drive Monopile",
-        drive_time,
-        constraints=vessel.operational_limits,
-        **kwargs,
+        "Drive Monopile", drive_time, constraints=constraints, **kwargs
     )
 
 
