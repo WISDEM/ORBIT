@@ -12,16 +12,17 @@ from itertools import groupby
 import numpy as np
 import simpy
 import pandas as pd
-
+from marmot import ge, le, true, false
 from ORBIT.core import Port, Vessel, Environment
 from ORBIT.phases import BasePhase
+from ORBIT.core.defaults import processes as default_processes
 from ORBIT.core.defaults import common_costs
 
 
 class InstallPhase(BasePhase):
     """BasePhase subclass for install modules."""
 
-    def __init__(self, weather, **kwargs):
+    def __init__(self, weather, processes={}, **kwargs):
         """
         Creates an instance of `InstallPhase`.
 
@@ -33,7 +34,67 @@ class InstallPhase(BasePhase):
 
         self.extract_phase_kwargs(**kwargs)
         self.initialize_environment(weather, **kwargs)
+
+        self.processes = self.build_processes(processes)
         self.availability = kwargs.get("availability", None)
+
+    def build_processes(self, input):
+        """
+
+        Parameters
+        ----------
+        input :
+        """
+
+        processes = {**default_processes, **input}
+
+        new = {}
+        for key, process in processes.items():
+            new[key] = self._validate_process(key, process)
+
+        return new
+
+    def _validate_process(self, key, process):
+        """
+
+        Parameters
+        ----------
+        key :
+        process :
+        """
+
+        required = ["name", "duration"]
+
+        missing = [k for k in required if k not in process.keys()]
+        if missing:
+            raise ValueError(
+                f"Missing value(s) for '{missing}' in process '{key}'."
+            )
+
+        constraints = process.pop("constraints", {})
+
+        new = {**process}
+        new["constraints"] = {}
+
+        for k, v in constraints.items():
+
+            if k.startswith("max_"):
+                new["constraints"][self.split_key(k)] = le(v)
+
+            elif k.startswith("min_"):
+                new["constraints"][self.split_key(k)] = ge(v)
+
+            elif v in ["True", "true", True]:
+                new["constraints"][k] = true()
+
+            elif v in ["False", "false", False]:
+                new["constraints"][k] = false()
+
+        return new
+
+    @staticmethod
+    def split_key(k):
+        return "_".join(k.split("_")[1:])
 
     def initialize_environment(self, weather, **kwargs):
         """

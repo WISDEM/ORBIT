@@ -7,10 +7,8 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import process
-
 from ORBIT.core import Cargo
 from ORBIT.core.logic import jackdown_if_required
-from ORBIT.core.defaults import process_times as pt
 
 
 class Monopile(Cargo):
@@ -32,19 +30,15 @@ class Monopile(Cargo):
     def fasten(**kwargs):
         """Returns time required to fasten a monopile at port."""
 
-        key = "mono_fasten_time"
-        time = kwargs.get(key, pt[key])
-
-        return "Fasten Monopile", time
+        process = kwargs.get("processes")["fasten_mono"]
+        return process["name"], process["duration"]
 
     @staticmethod
     def release(**kwargs):
         """Returns time required to release tmonopile from fastenings."""
 
-        key = "mono_release_time"
-        time = kwargs.get(key, pt[key])
-
-        return "Release Monopile", time
+        process = kwargs.get("processes")["release_mono"]
+        return process["name"], process["duration"]
 
 
 class TransitionPiece(Cargo):
@@ -62,19 +56,15 @@ class TransitionPiece(Cargo):
     def fasten(**kwargs):
         """Returns time required to fasten a transition piece at port."""
 
-        key = "tp_fasten_time"
-        time = kwargs.get(key, pt[key])
-
-        return "Fasten Transition Piece", time
+        process = kwargs.get("processes")["fasten_tp"]
+        return process["name"], process["duration"]
 
     @staticmethod
     def release(**kwargs):
         """Returns time required to release transition piece from fastenings."""
 
-        key = "tp_release_time"
-        time = kwargs.get(key, pt[key])
-
-        return "Release Transition Piece", time
+        process = kwargs.get("processes")["release_tp"]
+        return process["name"], process["duration"]
 
 
 @process
@@ -94,13 +84,19 @@ def upend_monopile(vessel, length, **kwargs):
     vessel.task representing time to "Upend Monopile".
     """
 
-    crane_rate = vessel.crane.crane_rate(**kwargs)
-    upend_time = length / crane_rate
+    process = kwargs.get("processes")["upend_mono"]
+
+    if process["duration"] == "dynamic":
+        crane_rate = vessel.crane.crane_rate(**kwargs)
+        upend_time = length / crane_rate
+
+    else:
+        upend_time = process["duration"]
 
     yield vessel.task_wrapper(
-        "Upend Monopile",
+        process["name"],
         upend_time,
-        constraints=vessel.operational_limits,
+        constraints=process["constraints"],
         **kwargs,
     )
 
@@ -122,16 +118,23 @@ def lower_monopile(vessel, **kwargs):
     vessel.task representing time to "Lower Monopile".
     """
 
-    depth = kwargs.get("site_depth", None)
-    rate = vessel.crane.crane_rate(**kwargs)
+    process = kwargs.get("processes")["lower_mono"]
 
-    height = (depth + 10) / rate  # Assumed 10m deck height added to site depth
-    lower_time = height / rate
+    if process["duration"] == "dynamic":
+        depth = kwargs.get("site_depth", None)
+        rate = vessel.crane.crane_rate(**kwargs)
+        height = (
+            depth + 10
+        ) / rate  # Assumed 10m deck height added to site depth
+        lower_time = height / rate
+
+    else:
+        lower_time = process["duration"]
 
     yield vessel.task_wrapper(
-        "Lower Monopile",
+        process["name"],
         lower_time,
-        constraints=vessel.operational_limits,
+        constraints=process["constraints"],
         **kwargs,
     )
 
@@ -156,16 +159,20 @@ def drive_monopile(vessel, **kwargs):
     """
 
     _ = vessel.crane
+    process = kwargs.get("processes")["drive_mono"]
 
-    mono_embed_len = kwargs.get("mono_embed_len", pt["mono_embed_len"])
-    mono_drive_rate = kwargs.get("mono_drive_rate", pt["mono_drive_rate"])
+    if process["duration"] == "dynamic":
+        mono_embed_len = process["mono_embed_len"]
+        mono_drive_rate = process["mono_drive_rate"]
+        drive_time = mono_embed_len / mono_drive_rate
 
-    drive_time = mono_embed_len / mono_drive_rate
+    else:
+        drive_time = process["duration"]
 
     yield vessel.task_wrapper(
-        "Drive Monopile",
+        process["name"],
         drive_time,
-        constraints=vessel.operational_limits,
+        constraints=process["constraints"],
         **kwargs,
     )
 
@@ -185,9 +192,8 @@ def lower_transition_piece(vessel, **kwargs):
     vessel.task representing time to "Lower Transition Piece".
     """
 
-    yield vessel.task_wrapper(
-        "Lower TP", 1, constraints=vessel.operational_limits, **kwargs
-    )
+    process = kwargs.get("processes")["lower_tp"]
+    yield vessel.task_wrapper(**process)
 
 
 @process
@@ -207,12 +213,8 @@ def bolt_transition_piece(vessel, **kwargs):
     vessel.task representing time to "Bolt TP".
     """
 
-    key = "tp_bolt_time"
-    bolt_time = kwargs.get(key, pt[key])
-
-    yield vessel.task_wrapper(
-        "Bolt TP", bolt_time, constraints=vessel.operational_limits, **kwargs
-    )
+    process = kwargs.get("processes")["bolt_tp"]
+    yield vessel.task_wrapper(**process)
 
 
 @process
@@ -230,15 +232,8 @@ def pump_transition_piece_grout(vessel, **kwargs):
     vessel.task representing time to "Pump TP Grout".
     """
 
-    key = "grout_pump_time"
-    pump_time = kwargs.get(key, pt[key])
-
-    yield vessel.task_wrapper(
-        "Pump TP Grout",
-        pump_time,
-        constraints=vessel.operational_limits,
-        **kwargs,
-    )
+    process = kwargs.get("processes")["pump_grout"]
+    yield vessel.task_wrapper(**process)
 
 
 @process
@@ -256,12 +251,10 @@ def cure_transition_piece_grout(vessel, **kwargs):
     vessel.task representing time to "Cure TP Grout".
     """
 
-    key = "grout_cure_time"
-    cure_time = kwargs.get(key, pt[key])
-
+    process = kwargs.get("processes")["cure_grout"]
     yield vessel.task_wrapper(
-        "Cure TP Grout", cure_time, constraints=vessel.transit_limits, **kwargs
-    )
+        **process
+    )  # TODO: Does kwargs need to be passed here still?
 
 
 @process
@@ -327,21 +320,15 @@ def install_transition_piece(vessel, tp, **kwargs):
     """
 
     connection = kwargs.get("tp_connection_type", "bolted")
-    reequip_time = vessel.crane.reequip(**kwargs)
+    reequip = kwargs.get("processes")["crane_reequip"]
 
-    yield vessel.task_wrapper(
-        "Crane Reequip",
-        reequip_time,
-        constraints=vessel.transit_limits,
-        **kwargs,
-    )
+    yield vessel.task_wrapper(**reequip)
     yield lower_transition_piece(vessel, **kwargs)
 
     if connection == "bolted":
         yield bolt_transition_piece(vessel, **kwargs)
 
     elif connection == "grouted":
-
         yield pump_transition_piece_grout(vessel, **kwargs)
         yield cure_transition_piece_grout(vessel)
 

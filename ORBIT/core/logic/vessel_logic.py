@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import process
-
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.core.exceptions import ItemNotFound, MissingComponent
 
@@ -58,26 +57,20 @@ def stabilize(vessel, **kwargs):
         `jacksys`.
     """
 
-    try:
-        _ = vessel.dynamic_positioning
-        return
+    process = kwargs.get("processes")["stabilize"]
 
-    except MissingComponent:
-        pass
-
-    try:
+    if process["duration"] == "dynamic":
         jacksys = vessel.jacksys
         site_depth = kwargs.get("site_depth", 40)
         extension = kwargs.get("extension", site_depth + 10)
-        jackup_time = jacksys.jacking_time(extension, site_depth)
-        yield vessel.task_wrapper(
-            "Jackup", jackup_time, constraints=vessel.transit_limits, **kwargs
-        )
+        time = jacksys.jacking_time(extension, site_depth)
 
-    except MissingComponent:
-        raise MissingComponent(
-            vessel, ["Dynamic Positioning", "Jacking System"]
-        )
+    else:
+        time = process["duration"]
+
+    yield vessel.task_wrapper(
+        process["name"], time, constraints=process["constraints"], **kwargs
+    )
 
 
 @process
@@ -146,6 +139,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
         - ('key', 'value')
     """
 
+    transit = kwargs.get("processes")["transit"]
     transit_time = vessel.transit_time(distance)
 
     while True:
@@ -178,7 +172,9 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             vessel.update_trip_data()
             vessel.at_port = False
             yield vessel.task_wrapper(
-                "Transit", transit_time, constraints=vessel.transit_limits
+                transit["name"],
+                transit_time,
+                constraints=transit["constraints"],
             )
             yield stabilize(vessel, **kwargs)
             vessel.at_site = True

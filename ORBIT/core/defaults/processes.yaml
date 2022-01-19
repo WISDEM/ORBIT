@@ -1,0 +1,82 @@
+cure_grout:
+  name: Cure Grout
+  duration: 24
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+  suspendable: True
+pump_grout:
+  name: Pump Grout
+  duration: 2
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+fasten_mono:
+  name: Fasten Monopile
+  duration: 12
+release_mono:
+  name: Release Monopile
+  duration: 3
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+bolt_tp:
+  name: Bolt TP
+  duration: 4
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+fasten_tp:
+  name: Fasten TP
+  duration: 8
+release_tp:
+  name: Release TP
+  duration: 2
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+upend_mono:
+  name: Upend Monopile
+  duration: dynamic
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+lower_mono:
+  name: Lower Monopile
+  duration: dynamic
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+lower_tp:
+  name: Lower Transition Piece
+  duration: 1
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+drive_mono:
+  name: Drive Monopile
+  duration: dynamic
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+    whales: False
+  mono_embed_len: 30
+  mono_drive_rate: 20
+crane_reequip:
+  name: Crane Reequip
+  duration: 1
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 12.5
+transit:
+  name: Transition
+  duration: dynamic
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 20
+stabilize:
+  name: Jackup
+  duration: dynamic
+  constraints:
+    max_waveheight: 2.5
+    max_windspeed: 20

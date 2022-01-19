@@ -8,8 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 from marmot import process
-
-from ORBIT.core import Vessel
 from ORBIT.core.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
@@ -79,7 +77,8 @@ class MonopileInstallation(InstallPhase):
             Expects columns 'max_waveheight' and 'max_windspeed'.
         """
 
-        super().__init__(weather, **kwargs)
+        processes = kwargs.pop("processes", {})
+        super().__init__(weather, processes, **kwargs)
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
@@ -87,6 +86,7 @@ class MonopileInstallation(InstallPhase):
         self.initialize_port()
         self.initialize_wtiv()
         self.initialize_monopiles()
+
         self.setup_simulation(**kwargs)
 
     @property
@@ -129,6 +129,7 @@ class MonopileInstallation(InstallPhase):
             monopiles=self.num_monopiles,
             site_depth=site_depth,
             hub_height=hub_height,
+            processes=self.processes,
             **kwargs,
         )
 
@@ -147,6 +148,7 @@ class MonopileInstallation(InstallPhase):
             monopiles=self.num_monopiles,
             distance=site_distance,
             site_depth=site_depth,
+            processes=self.processes,
             **kwargs,
         )
 
@@ -157,6 +159,7 @@ class MonopileInstallation(InstallPhase):
                 queue=self.active_feeder,
                 distance=site_distance,
                 items=component_list,
+                processes=self.processes,
                 **kwargs,
             )
 

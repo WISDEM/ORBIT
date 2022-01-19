@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 import os
 
 import yaml
-
 from ORBIT.core.library import loader
 
 DIR = os.path.split(__file__)[0]
@@ -19,3 +18,7 @@ with open(os.path.join(DIR, "process_times.yaml"), "r") as f:
 
 with open(os.path.join(DIR, "common_costs.yaml"), "r") as f:
     common_costs = yaml.load(f, Loader=loader)
+
+
+with open(os.path.join(DIR, "processes.yaml"), "r") as f:
+    processes = yaml.load(f, Loader=loader)
