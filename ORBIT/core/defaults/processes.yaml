@@ -69,7 +69,7 @@ crane_reequip:
     max_waveheight: 2.5
     max_windspeed: 12.5
 transit:
-  name: Transition
+  name: Transit
   duration: dynamic
   constraints:
     max_waveheight: 2.5
