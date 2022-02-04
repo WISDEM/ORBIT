@@ -50,9 +50,9 @@ class JacketInstallation(InstallPhase):
             "unit_cost": "USD",
         },
         "transition_piece": {
-            "deck_space": "m2",
-            "mass": "t",
-            "unit_cost": "USD",
+            "deck_space": "m2 (optional)",
+            "mass": "t (optional)",
+            "unit_cost": "USD (optional)",
         },
     }
 
@@ -83,10 +83,17 @@ class JacketInstallation(InstallPhase):
     def system_capex(self):
         """Returns procurement cost of the substructures."""
 
-        return (
-            self.config["jacket"]["unit_cost"]
-            + self.config["transition_piece"]["unit_cost"]
-        ) * self.config["plant"]["num_turbines"]
+        jacket_unit_cost = self.config["jacket"]["unit_cost"]
+
+        if self.tp:
+            tp_unit_cost = self.config["transition_piece"]["unit_cost"]
+
+        else:
+            tp_unit_cost = 0.0
+
+        return (jacket_unit_cost + tp_unit_cost) * self.config["plant"][
+            "num_turbines"
+        ]
 
     def setup_simulation(self, **kwargs):
         """
@@ -112,6 +119,10 @@ class JacketInstallation(InstallPhase):
         site_depth = self.config["site"]["depth"]
         hub_height = self.config["turbine"]["hub_height"]
 
+        component_list = ["Jacket"]
+        if self.tp:
+            component_list += "TransitionPiece"
+
         solo_install_jackets(
             self.wtiv,
             port=self.port,
@@ -119,6 +130,7 @@ class JacketInstallation(InstallPhase):
             jackets=self.num_jackets,
             site_depth=site_depth,
             hub_height=hub_height,
+            component_list=component_list,
             **kwargs,
         )
 
@@ -129,7 +141,10 @@ class JacketInstallation(InstallPhase):
 
         site_distance = self.config["site"]["distance"]
         site_depth = self.config["site"]["depth"]
-        component_list = ["Jacket", "TransitionPiece"]
+
+        component_list = ["Jacket"]
+        if self.tp:
+            component_list += "TransitionPiece"
 
         install_jackets_from_queue(
             self.wtiv,
@@ -137,6 +152,7 @@ class JacketInstallation(InstallPhase):
             jackets=self.num_jackets,
             distance=site_distance,
             site_depth=site_depth,
+            component_list=component_list,
             **kwargs,
         )
 
@@ -192,12 +208,20 @@ class JacketInstallation(InstallPhase):
         """
 
         jacket = Jacket(**self.config["jacket"])
-        tp = TransitionPiece(**self.config["transition_piece"])
         self.num_jackets = self.config["plant"]["num_turbines"]
+
+        tp_data = self.config.get("transition_piece")
+        if tp_data:
+            self.tp = TransitionPiece(**tp_data)
+
+        else:
+            self.tp = None
 
         for _ in range(self.num_jackets):
             self.port.put(jacket)
-            self.port.put(tp)
+
+            if self.tp:
+                self.port.put(self.tp)
 
     def initialize_queue(self):
         """
@@ -231,7 +255,9 @@ class JacketInstallation(InstallPhase):
 
 
 @process
-def solo_install_jackets(vessel, port, distance, jackets, **kwargs):
+def solo_install_jackets(
+    vessel, port, distance, jackets, component_list, **kwargs
+):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
     jacket installation process.
@@ -245,9 +271,9 @@ def solo_install_jackets(vessel, port, distance, jackets, **kwargs):
         Distance between port and site (km).
     jackets : int
         Total number of jackets to install.
+    component_list : list
+        List of components to pick up at port.
     """
-
-    component_list = ["Jacket", "TransitionPiece"]
 
     n = 0
     while n < jackets:
@@ -286,12 +312,15 @@ def solo_install_jackets(vessel, port, distance, jackets, **kwargs):
 
                 yield install_jacket(vessel, jacket, **kwargs)
 
-                # Get transition piece from internal storage
-                tp = yield vessel.get_item_from_storage(
-                    "TransitionPiece", **kwargs
-                )
+                # Get transition piece from internal storage if needed
+                if "Transition Piece" in component_list:
+                    tp = yield vessel.get_item_from_storage(
+                        "TransitionPiece", **kwargs
+                    )
 
-                yield install_transition_piece(vessel, tp, **kwargs)
+                    yield install_transition_piece(vessel, tp, **kwargs)
+
+                # Submit progress log
                 vessel.submit_debug_log(progress="Substructure")
                 n += 1
 
@@ -305,7 +334,9 @@ def solo_install_jackets(vessel, port, distance, jackets, **kwargs):
 
 
 @process
-def install_jackets_from_queue(wtiv, queue, jackets, distance, **kwargs):
+def install_jackets_from_queue(
+    wtiv, queue, jackets, distance, component_list, **kwargs
+):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses to install
     jackets and transition pieces from queue of feeder barges.
@@ -322,6 +353,8 @@ def install_jackets_from_queue(wtiv, queue, jackets, distance, **kwargs):
         Total number of jackets to install.
     distance : int | float
         Distance from site to port (km).
+    component_list : list
+        List of components to pick up at port.
     """
 
     n = 0
@@ -349,15 +382,18 @@ def install_jackets_from_queue(wtiv, queue, jackets, distance, **kwargs):
                 yield install_jacket(wtiv, jacket, **kwargs)
 
                 # Get transition piece from active feeder
-                tp = yield wtiv.get_item_from_storage(
-                    "TransitionPiece",
-                    vessel=queue.vessel,
-                    release=True,
-                    **kwargs,
-                )
+                if "Transition Piece" in component_list:
+                    tp = yield wtiv.get_item_from_storage(
+                        "TransitionPiece",
+                        vessel=queue.vessel,
+                        release=True,
+                        **kwargs,
+                    )
 
-                # Install transition piece
-                yield install_transition_piece(wtiv, tp, **kwargs)
+                    # Install transition piece
+                    yield install_transition_piece(wtiv, tp, **kwargs)
+
+                # Submit progress log
                 wtiv.submit_debug_log(progress="Substructure")
                 n += 1
 
