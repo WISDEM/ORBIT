@@ -55,10 +55,13 @@ def install_jacket(vessel, jacket, **kwargs):
     reequip_time = vessel.crane.reequip(**kwargs)
     # TODO:
     yield vessel.task_wrapper(
-        "Lift Jacket", 4, constraints=vessel.transit_limits, **kwargs
+        "Lift Jacket", 4, constraints=vessel.operational_limits, **kwargs
     )
     yield vessel.task_wrapper(
-        "Lower Jacket", 4, constraints=vessel.transit_limits, **kwargs
+        "Lower and Position Jacket",
+        8,
+        constraints=vessel.operational_limits,
+        **kwargs,
     )
 
     pile_time = kwargs.get("drive_piles_time", 3)
@@ -66,6 +69,6 @@ def install_jacket(vessel, jacket, **kwargs):
         yield vessel.task_wrapper(
             "Drive Pile",
             pile_time,
-            constraints=vessel.transit_limits,
+            constraints=vessel.operational_limits,
             **kwargs,
         )

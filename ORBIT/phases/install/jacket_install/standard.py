@@ -122,7 +122,7 @@ class JacketInstallation(InstallPhase):
 
         component_list = ["Jacket"]
         if self.tp:
-            component_list += "TransitionPiece"
+            component_list.append("TransitionPiece")
 
         solo_install_jackets(
             self.wtiv,
@@ -145,7 +145,7 @@ class JacketInstallation(InstallPhase):
 
         component_list = ["Jacket"]
         if self.tp:
-            component_list += "TransitionPiece"
+            component_list.append("TransitionPiece")
 
         install_jackets_from_queue(
             self.wtiv,
@@ -308,13 +308,20 @@ def solo_install_jackets(
                     vessel, survey_required=True, **kwargs
                 )
 
+                yield vessel.task_wrapper(
+                    "Lay Pin Template",
+                    4,
+                    constraints=vessel.operational_limits,
+                    **kwargs,
+                )
+
                 # Get jacket from internal storage
                 jacket = yield vessel.get_item_from_storage("Jacket", **kwargs)
 
                 yield install_jacket(vessel, jacket, **kwargs)
 
                 # Get transition piece from internal storage if needed
-                if "Transition Piece" in component_list:
+                if "TransitionPiece" in component_list:
                     tp = yield vessel.get_item_from_storage(
                         "TransitionPiece", **kwargs
                     )
@@ -375,15 +382,22 @@ def install_jackets_from_queue(
                     wtiv, survey_required=True, **kwargs
                 )
 
-                # Get jacket
-                jacket = yield wtiv.get_item_from_storage(
-                    "Jacket", vessel=queue.vessel, **kwargs
+                yield wtiv.task_wrapper(
+                    "Lay Pin Template",
+                    4,
+                    constraints=wtiv.operational_limits,
+                    **kwargs,
                 )
 
-                yield install_jacket(wtiv, jacket, **kwargs)
+                # Get jacket and tp
+                if "TransitionPiece" in component_list:
+                    jacket = yield wtiv.get_item_from_storage(
+                        "Jacket", vessel=queue.vessel, **kwargs
+                    )
 
-                # Get transition piece from active feeder
-                if "Transition Piece" in component_list:
+                    yield install_jacket(wtiv, jacket, **kwargs)
+
+                    # Get transition piece from active feeder
                     tp = yield wtiv.get_item_from_storage(
                         "TransitionPiece",
                         vessel=queue.vessel,
@@ -393,6 +407,13 @@ def install_jackets_from_queue(
 
                     # Install transition piece
                     yield install_transition_piece(wtiv, tp, **kwargs)
+
+                else:
+                    jacket = yield wtiv.get_item_from_storage(
+                        "Jacket", vessel=queue.vessel, release=True, **kwargs
+                    )
+
+                    yield install_jacket(wtiv, jacket, **kwargs)
 
                 # Submit progress log
                 wtiv.submit_debug_log(progress="Substructure")
