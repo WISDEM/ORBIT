@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 import simpy
 from marmot import process
 
-from ORBIT.core import Vessel
 from ORBIT.core.logic import (
     shuttle_items_to_queue,
     prep_for_site_operations,
@@ -15,13 +14,12 @@ from ORBIT.core.logic import (
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
-
-from .common import (
-    Jacket,
+from ORBIT.phases.install.monopile_install.common import (
     TransitionPiece,
-    install_jacket,
     install_transition_piece,
 )
+
+from .common import Jacket, install_jacket
 
 
 class JacketInstallation(InstallPhase):

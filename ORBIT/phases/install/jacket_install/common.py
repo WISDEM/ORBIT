@@ -7,12 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from marmot import process
 
 from ORBIT.core import Cargo
-from ORBIT.core.logic import jackdown_if_required
 from ORBIT.core.defaults import process_times as pt
-from ORBIT.phases.install.monopile_install.common import (
-    TransitionPiece,
-    install_transition_piece,
-)
 
 
 class Jacket(Cargo):
@@ -64,6 +59,8 @@ def install_jacket(vessel, jacket, **kwargs):
     yield vessel.task_wrapper(
         "Lower Jacket", 4, constraints=vessel.transit_limits, **kwargs
     )
+
+    pile_time = kwargs.get("drive_piles_time", 12)
     yield vessel.task_wrapper(
-        "Drive Piles", 12, constraints=vessel.transit_limits, **kwargs
+        "Drive Piles", pile_time, constraints=vessel.transit_limits, **kwargs
     )
