@@ -48,6 +48,7 @@ class JacketInstallation(InstallPhase):
             "deck_space": "m2",
             "mass": "t",
             "unit_cost": "USD",
+            "num_legs": "N (optional, default: 4)",
         },
         "transition_piece": {
             "deck_space": "m2 (optional)",

@@ -19,6 +19,7 @@ class Jacket(Cargo):
         self.height = height
         self.mass = mass
         self.deck_space = deck_space
+        self.num_legs = kwargs.get("num_legs", 4)
 
     @staticmethod
     def fasten(**kwargs):
@@ -60,7 +61,11 @@ def install_jacket(vessel, jacket, **kwargs):
         "Lower Jacket", 4, constraints=vessel.transit_limits, **kwargs
     )
 
-    pile_time = kwargs.get("drive_piles_time", 12)
-    yield vessel.task_wrapper(
-        "Drive Piles", pile_time, constraints=vessel.transit_limits, **kwargs
-    )
+    pile_time = kwargs.get("drive_piles_time", 3)
+    for _ in range(jacket.num_legs):
+        yield vessel.task_wrapper(
+            "Drive Pile",
+            pile_time,
+            constraints=vessel.transit_limits,
+            **kwargs,
+        )
