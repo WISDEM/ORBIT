@@ -36,6 +36,7 @@ from ORBIT.phases.design import (
     OffshoreSubstationDesign,
 )
 from ORBIT.phases.install import (
+    JacketInstallation,
     TurbineInstallation,
     MonopileInstallation,
     MooredSubInstallation,
@@ -83,6 +84,7 @@ class ProjectManager:
         MooringSystemInstallation,
         GravityBasedInstallation,
         FloatingSubstationInstallation,
+        JacketInstallation,
     ]
 
     def __init__(self, config, library_path=None, weather=None):

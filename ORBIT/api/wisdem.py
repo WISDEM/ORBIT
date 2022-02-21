@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import openmdao.api as om
+
 from ORBIT import ProjectManager
 
 
@@ -340,6 +341,11 @@ class OrbitWisdem(om.ExplicitComponent):
             }
         else:
             fixedStr = "JacketInstallation" if jacket_flag else "MonopileInstallation"
+
+            if jacket_flag:
+                monopile = config.get("monopile", {})
+                monopile["diameter"] = 10
+                config["monopile"] = monopile
 
             config["design_phases"] += ["ScourProtectionDesign"]
             config["install_phases"] = {
