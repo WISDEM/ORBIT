@@ -59,11 +59,30 @@ def install_piles(vessel, jacket, **kwargs):
     jacket : dict
     """
 
-    drive_time = kwargs.get("drive_piles_time", 6)
+    reposition_time = kwargs.get(
+        "jacket_vessel_reposition", pt["jacket_vessel_reposition"]
+    )
+    position_pile_time = kwargs.get(
+        "jacket_position_pile", pt["jacket_position_pile"]
+    )
+    drive_time = kwargs.get(
+        "jacket_pile_drive_time", pt["jacket_pile_drive_time"]
+    )
+    pin_template_time = kwargs.get(
+        "jacket_pin_template_time", pt["jacket_pin_template_time"]
+    )
+
+    yield vessel.task_wrapper(
+        "Lay Pin Template",
+        pin_template_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
+
     for i in range(jacket.num_legs):
         yield vessel.task_wrapper(
             "Position Pile",
-            6,
+            position_pile_time,
             constraints={**vessel.operational_limits},
             **kwargs,
         )
@@ -79,7 +98,7 @@ def install_piles(vessel, jacket, **kwargs):
         if i < (jacket.num_legs - 1):
             yield vessel.task_wrapper(
                 "Move to Next Leg",
-                4,
+                reposition_time,
                 constraints=vessel.transit_limits,
                 suspendable=True,
                 **kwargs,
@@ -97,11 +116,17 @@ def install_suction_buckets(vessel, jacket, **kwargs):
     jacket : dict
     """
 
-    suction_bucket_install_time = kwargs.get("suction_bucket_install_time", 24)
+    reposition_time = kwargs.get(
+        "jacket_vessel_reposition", pt["jacket_vessel_reposition"]
+    )
+    install_time = kwargs.get(
+        "jacket_suction_bucket", pt["jacket_suction_bucket"]
+    )
+
     for i in range(jacket.num_legs):
         yield vessel.task_wrapper(
             "Install Suction Bucket",
-            suction_bucket_install_time,
+            install_time,
             constraints={**vessel.operational_limits},
             **kwargs,
         )
@@ -109,7 +134,7 @@ def install_suction_buckets(vessel, jacket, **kwargs):
         if i < (jacket.num_legs - 1):
             yield vessel.task_wrapper(
                 "Move to Next Leg",
-                4,
+                reposition_time,
                 constraints=vessel.transit_limits,
                 suspendable=True,
                 **kwargs,
@@ -138,17 +163,23 @@ def install_jacket(vessel, jacket, **kwargs):
             "Input 'jacket.foundation_type' must be 'piles' or 'suction'."
         )
 
+    lift_time = kwargs.get("jacket_lift_time", pt["jacket_lift_time"])
     yield vessel.task_wrapper(
-        "Lift Jacket", 4, constraints=vessel.operational_limits, **kwargs
-    )
-
-    yield vessel.task_wrapper(
-        "Lower and Position Jacket",
-        8,
+        "Lift Jacket",
+        lift_time,
         constraints=vessel.operational_limits,
         **kwargs,
     )
 
+    lower_time = kwargs.get("jacket_lower_time", pt["jacket_lower_time"])
     yield vessel.task_wrapper(
-        "Grout Jacket", 8, constraints=vessel.transit_limits, **kwargs
+        "Lower and Position Jacket",
+        lower_time,
+        constraints=vessel.operational_limits,
+        **kwargs,
+    )
+
+    grout_time = kwargs.get("jacket_grout_time", pt["jacket_grout_time"])
+    yield vessel.task_wrapper(
+        "Grout Jacket", grout_time, constraints=vessel.transit_limits, **kwargs
     )

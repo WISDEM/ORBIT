@@ -313,16 +313,8 @@ def solo_install_jackets(
                     vessel, survey_required=True, **kwargs
                 )
 
-                yield vessel.task_wrapper(
-                    "Lay Pin Template",
-                    4,
-                    constraints=vessel.operational_limits,
-                    **kwargs,
-                )
-
                 # Get jacket from internal storage
                 jacket = yield vessel.get_item_from_storage("Jacket", **kwargs)
-
                 yield install_jacket(vessel, jacket, **kwargs)
 
                 # Get transition piece from internal storage if needed
@@ -385,13 +377,6 @@ def install_jackets_from_queue(
                 # Prep for jacket install
                 yield prep_for_site_operations(
                     wtiv, survey_required=True, **kwargs
-                )
-
-                yield wtiv.task_wrapper(
-                    "Lay Pin Template",
-                    4,
-                    constraints=wtiv.operational_limits,
-                    **kwargs,
                 )
 
                 # Get jacket and tp
