@@ -24,7 +24,11 @@ from .common import Jacket, install_jacket
 
 class JacketInstallation(InstallPhase):
     """
-    TODO:
+    Standard jacket installation module using a Wind Turbine Installation
+    Vessel (WTIV). If input `feeder` and `num_feeders` are not supplied, the
+    WTIV will perform all transport and installation tasks. If the above inputs
+    are defined, feeder barges will transport completed jackets from port to
+    site vertically.
     """
 
     phase = "Jacket Installation"
@@ -49,6 +53,7 @@ class JacketInstallation(InstallPhase):
             "mass": "t",
             "unit_cost": "USD",
             "num_legs": "N (optional, default: 4)",
+            "foundation_type": "str (optional, 'piles' | 'suction', default: 'piles')",
         },
         "transition_piece": {
             "deck_space": "m2 (optional)",

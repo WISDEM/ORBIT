@@ -13,13 +13,21 @@ from ORBIT.core.defaults import process_times as pt
 class Jacket(Cargo):
     """Jacket Cargo"""
 
-    def __init__(self, height=None, mass=None, deck_space=None, **kwargs):
+    def __init__(
+        self,
+        height=None,
+        mass=None,
+        deck_space=None,
+        foundation_type="piles",
+        **kwargs,
+    ):
         """Creats an instance of `Jacket`."""
 
         self.height = height
         self.mass = mass
         self.deck_space = deck_space
         self.num_legs = kwargs.get("num_legs", 4)
+        self.foundation_type = foundation_type
 
     @staticmethod
     def fasten(**kwargs):
@@ -41,24 +49,20 @@ class Jacket(Cargo):
 
 
 @process
-def install_jacket(vessel, jacket, **kwargs):
+def install_piles(vessel, jacket, **kwargs):
     """
-    Process logic for installing a jacket at site.
+    Process logic for installing piles at site.
 
     Parameters
     ----------
-    env : Environment
     vessel : Vessel
     jacket : dict
     """
 
-    reequip_time = vessel.crane.reequip(**kwargs)
-    # TODO:
-
-    pile_time = kwargs.get("drive_piles_time", 6)
+    drive_time = kwargs.get("drive_piles_time", 6)
     for i in range(jacket.num_legs):
         yield vessel.task_wrapper(
-            "Install Pile",
+            "Position Pile",
             6,
             constraints={**vessel.operational_limits},
             **kwargs,
@@ -66,7 +70,7 @@ def install_jacket(vessel, jacket, **kwargs):
 
         yield vessel.task_wrapper(
             "Drive Pile",
-            pile_time,
+            drive_time,
             constraints={**vessel.operational_limits, "night": false()},
             suspendable=True,
             **kwargs,
@@ -74,12 +78,65 @@ def install_jacket(vessel, jacket, **kwargs):
 
         if i < (jacket.num_legs - 1):
             yield vessel.task_wrapper(
-                "Move Between Piles",
+                "Move to Next Leg",
                 4,
                 constraints=vessel.transit_limits,
                 suspendable=True,
                 **kwargs,
             )
+
+
+@process
+def install_suction_buckets(vessel, jacket, **kwargs):
+    """
+    Process logic for installing suction buckets at site.
+
+    Parameters
+    ----------
+    vessel : Vessel
+    jacket : dict
+    """
+
+    suction_bucket_install_time = kwargs.get("suction_bucket_install_time", 24)
+    for i in range(jacket.num_legs):
+        yield vessel.task_wrapper(
+            "Install Suction Bucket",
+            suction_bucket_install_time,
+            constraints={**vessel.operational_limits},
+            **kwargs,
+        )
+
+        if i < (jacket.num_legs - 1):
+            yield vessel.task_wrapper(
+                "Move to Next Leg",
+                4,
+                constraints=vessel.transit_limits,
+                suspendable=True,
+                **kwargs,
+            )
+
+
+@process
+def install_jacket(vessel, jacket, **kwargs):
+    """
+    Process logic for installing a jacket at site.
+
+    Parameters
+    ----------
+    vessel : Vessel
+    jacket : dict
+    """
+
+    if jacket.foundation_type == "piles":
+        yield install_piles(vessel, jacket, **kwargs)
+
+    elif jacket.foundation_type == "suction":
+        yield install_suction_buckets(vessel, jacket, **kwargs)
+
+    else:
+        return ValueError(
+            "Input 'jacket.foundation_type' must be 'piles' or 'suction'."
+        )
 
     yield vessel.task_wrapper(
         "Lift Jacket", 4, constraints=vessel.operational_limits, **kwargs
