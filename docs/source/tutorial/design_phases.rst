@@ -1,11 +1,14 @@
-Design Phases
-=============
+.. _design_modules:
 
-There are two types of modules within ORBIT, design phases and installation
-phases. Installation phases require a number of inputs, setup a simulation and
+
+Design Modules
+==============
+
+There are two types of modules within ORBIT, design and installation.
+Installation modules require a number of inputs, setup a simulation and
 model the installation of offshore wind components. Alternatively, design
-phases model the design of an offshore wind components and can produce inputs.
-Within the context of ``ProjectManager``, a design phase can remove inputs from
+modules model the design of an offshore wind components and can produce inputs.
+Within the context of ``ProjectManager``, a design module can remove inputs from
 the required configuration for a project. The following example will illustrate
 this feature and how it is used within ``ProjectManager``.
 
@@ -13,7 +16,7 @@ this feature and how it is used within ``ProjectManager``.
 
    Design phase modules in ORBIT are intended to capture broad scaling trends
    for offshore wind components and do not represent the required fidelity of a
-   full design.
+   full engineering design.
 
 Example
 -------
@@ -134,7 +137,7 @@ project config above:
 
        'monopile': {               # <-- 'monopile' isn't required but can be
            'type': 'Monopile',     #     added to include known project parameters.
-           'mass': 800,          #     Other inputs produced by MonopileDesign will
+           'mass': 800,            #     Other inputs produced by MonopileDesign will
            'length': 100           #     be added to the config.
        },
 

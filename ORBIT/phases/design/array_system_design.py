@@ -130,6 +130,8 @@ class ArraySystemDesign(CableSystem):
             "array_system_length_by_type": self.total_cable_length_by_type,
             "array_system_total_cost": self.total_cable_cost,
             "array_system_cost_by_type": self.cost_by_type,
+            "array_system_num_turbines_full_string": self.num_turbines_full_string,
+            "array_system_num_full_strings": self.num_full_strings,
         }
 
         return _output
