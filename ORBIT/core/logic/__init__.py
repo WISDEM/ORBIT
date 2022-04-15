@@ -11,8 +11,8 @@ from .vessel_logic import (  # shuttle_items_to_queue
     position_onsite,
     jackdown_if_required,
     shuttle_items_to_queue,
-    shuttle_items_to_queue_wait,
     prep_for_site_operations,
     get_list_of_items_from_port,
+    shuttle_items_to_queue_wait,
     get_list_of_items_from_port_wait,
 )

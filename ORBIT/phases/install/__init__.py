@@ -14,9 +14,9 @@ from .cable_install import ArrayCableInstallation, ExportCableInstallation
 from .jacket_install import JacketInstallation
 from .mooring_install import MooringSystemInstallation
 from .turbine_install import TurbineInstallation
-from .monopile_install.standard import MonopileInstallation
 from .quayside_assembly_tow import (
     MooredSubInstallation,
     GravityBasedInstallation,
 )
 from .scour_protection_install import ScourProtectionInstallation
+from .monopile_install.standard import MonopileInstallation

@@ -6,14 +6,14 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-import simpy
 import numpy as np
+import simpy
 from marmot import process
 
 from ORBIT.core import SubstructureDelivery
 from ORBIT.core.logic import (
-    shuttle_items_to_queue_wait,
     prep_for_site_operations,
+    shuttle_items_to_queue_wait,
     get_list_of_items_from_port_wait,
 )
 from ORBIT.phases.install import InstallPhase
@@ -69,7 +69,7 @@ class MonopileInstallation(InstallPhase):
             "enabled": "(optional, default: False)",
             "substructure_delivery_time": "h (optional, default: 168)",
             "num_substructures_delivered": "int (optional: default: 1)",
-            "substructure_storage": "int (optional, default: inf)"
+            "substructure_storage": "int (optional, default: inf)",
         },
     }
 
@@ -107,7 +107,7 @@ class MonopileInstallation(InstallPhase):
 
     def initialize_substructure_delivery(self):
         """
-        
+
         """
 
         monopile = Monopile(**self.config["monopile"])
@@ -120,7 +120,9 @@ class MonopileInstallation(InstallPhase):
 
         if self.supply_chain.get("enabled", False):
 
-            delivery_time = self.supply_chain.get("substructure_delivery_time", 168)
+            delivery_time = self.supply_chain.get(
+                "substructure_delivery_time", 168
+            )
             # storage = self.supply_chain.get("substructure_storage", "inf")
             supply_chain = SubstructureDelivery(
                 "Monopile",
@@ -128,9 +130,11 @@ class MonopileInstallation(InstallPhase):
                 delivery_time,
                 self.port,
                 [monopile, tp],
-                num_parallel=self.supply_chain.get("num_substructures_delivered", 1)
+                num_parallel=self.supply_chain.get(
+                    "num_substructures_delivered", 1
+                ),
             )
-    
+
             self.env.register(supply_chain)
             supply_chain.start()
 
