@@ -7,13 +7,14 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import simpy
+import numpy as np
 from marmot import process
 
-from ORBIT.core import Vessel
+from ORBIT.core import SubstructureDelivery
 from ORBIT.core.logic import (
-    shuttle_items_to_queue,
+    shuttle_items_to_queue_wait,
     prep_for_site_operations,
-    get_list_of_items_from_port,
+    get_list_of_items_from_port_wait,
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
@@ -64,6 +65,12 @@ class MonopileInstallation(InstallPhase):
             "mass": "t",
             "unit_cost": "USD",
         },
+        "monopile_supply_chain": {
+            "enabled": "(optional, default: False)",
+            "substructure_delivery_time": "h (optional, default: 168)",
+            "num_substructures_delivered": "int (optional: default: 1)",
+            "substructure_storage": "int (optional, default: inf)"
+        },
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -85,8 +92,8 @@ class MonopileInstallation(InstallPhase):
         self.config = self.validate_config(config)
 
         self.initialize_port()
+        self.initialize_substructure_delivery()
         self.initialize_wtiv()
-        self.initialize_monopiles()
         self.setup_simulation(**kwargs)
 
     @property
@@ -97,6 +104,40 @@ class MonopileInstallation(InstallPhase):
             self.config["monopile"]["unit_cost"]
             + self.config["transition_piece"]["unit_cost"]
         ) * self.config["plant"]["num_turbines"]
+
+    def initialize_substructure_delivery(self):
+        """
+        
+        """
+
+        monopile = Monopile(**self.config["monopile"])
+        tp = TransitionPiece(**self.config["transition_piece"])
+        self.set_mass = monopile.mass + tp.mass
+        self.set_deck_space = monopile.deck_space + tp.deck_space
+
+        self.num_monopiles = self.config["plant"]["num_turbines"]
+        self.supply_chain = self.config.get("monopile_supply_chain", {})
+
+        if self.supply_chain.get("enabled", False):
+
+            delivery_time = self.supply_chain.get("substructure_delivery_time", 168)
+            # storage = self.supply_chain.get("substructure_storage", "inf")
+            supply_chain = SubstructureDelivery(
+                "Monopile",
+                self.num_monopiles,
+                delivery_time,
+                self.port,
+                [monopile, tp],
+                num_parallel=self.supply_chain.get("num_substructures_delivered", 1)
+            )
+    
+            self.env.register(supply_chain)
+            supply_chain.start()
+
+        else:
+            for _ in range(self.num_monopiles):
+                self.port.put(monopile)
+                self.port.put(tp)
 
     def setup_simulation(self, **kwargs):
         """
@@ -122,6 +163,15 @@ class MonopileInstallation(InstallPhase):
         site_depth = self.config["site"]["depth"]
         hub_height = self.config["turbine"]["hub_height"]
 
+        self.sets_per_trip = int(
+            min(
+                np.floor(self.wtiv.storage.max_cargo_mass / self.set_mass),
+                np.floor(
+                    self.wtiv.storage.max_deck_space / self.set_deck_space
+                ),
+            )
+        )
+
         solo_install_monopiles(
             self.wtiv,
             port=self.port,
@@ -129,6 +179,7 @@ class MonopileInstallation(InstallPhase):
             monopiles=self.num_monopiles,
             site_depth=site_depth,
             hub_height=hub_height,
+            per_trip=self.sets_per_trip,
             **kwargs,
         )
 
@@ -141,6 +192,18 @@ class MonopileInstallation(InstallPhase):
         site_depth = self.config["site"]["depth"]
         component_list = ["Monopile", "TransitionPiece"]
 
+        self.sets_per_trip = int(
+            min(
+                np.floor(
+                    self.feeders[0].storage.max_cargo_mass / self.set_mass
+                ),
+                np.floor(
+                    self.feeders[0].storage.max_deck_space
+                    / self.set_deck_space
+                ),
+            )
+        )
+
         install_monopiles_from_queue(
             self.wtiv,
             queue=self.active_feeder,
@@ -150,13 +213,21 @@ class MonopileInstallation(InstallPhase):
             **kwargs,
         )
 
-        for feeder in self.feeders:
-            shuttle_items_to_queue(
+        assignments = [
+            self.num_monopiles // len(self.feeders)
+            + (1 if x < self.num_monopiles % len(self.feeders) else 0)
+            for x in range(len(self.feeders))
+        ]
+
+        for assigned, feeder in zip(assignments, self.feeders):
+            shuttle_items_to_queue_wait(
                 feeder,
                 port=self.port,
                 queue=self.active_feeder,
                 distance=site_distance,
                 items=component_list,
+                per_trip=self.sets_per_trip,
+                assigned=assigned,
                 **kwargs,
             )
 
@@ -195,19 +266,6 @@ class MonopileInstallation(InstallPhase):
             feeder.at_port = True
             feeder.at_site = False
             self.feeders.append(feeder)
-
-    def initialize_monopiles(self):
-        """
-        Initializes monopile and transition piece objects at port.
-        """
-
-        monopile = Monopile(**self.config["monopile"])
-        tp = TransitionPiece(**self.config["transition_piece"])
-        self.num_monopiles = self.config["plant"]["num_turbines"]
-
-        for _ in range(self.num_monopiles):
-            self.port.put(monopile)
-            self.port.put(tp)
 
     def initialize_queue(self):
         """
@@ -264,7 +322,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
         if vessel.at_port:
             try:
                 # Get substructure + transition piece from port
-                yield get_list_of_items_from_port(
+                yield get_list_of_items_from_port_wait(
                     vessel, port, component_list, **kwargs
                 )
 
