@@ -114,14 +114,14 @@ class OrbitWisdem(om.ExplicitComponent):
         self.add_input("tower_length", 100.0, units="m", desc="Total length of the tower.")
         self.add_input(
             "tower_deck_space",
-            0.0,
+            25.0,
             units="m**2",
             desc="Deck space required to transport the tower. Defaults to 0 in order to not be a constraint on installation.",
         )
         self.add_input("nacelle_mass", 500.0, units="t", desc="mass of the rotor nacelle assembly (RNA).")
         self.add_input(
             "nacelle_deck_space",
-            0.0,
+            25.0,
             units="m**2",
             desc="Deck space required to transport the rotor nacelle assembly (RNA). Defaults to 0 in order to not be a constraint on installation.",
         )
@@ -129,7 +129,7 @@ class OrbitWisdem(om.ExplicitComponent):
         self.add_input("blade_mass", 50.0, units="t", desc="mass of an individual blade.")
         self.add_input(
             "blade_deck_space",
-            0.0,
+            100.0,
             units="m**2",
             desc="Deck space required to transport a blade. Defaults to 0 in order to not be a constraint on installation.",
         )
@@ -168,7 +168,7 @@ class OrbitWisdem(om.ExplicitComponent):
         self.add_input("monopile_cost", 4e6, units="USD", desc="Monopile unit cost.")
         self.add_input(
             "monopile_deck_space",
-            0.0,
+            36.0,
             units="m**2",
             desc="Deck space required to transport a monopile. Defaults to 0 in order to not be a constraint on installation.",
         )
@@ -180,7 +180,7 @@ class OrbitWisdem(om.ExplicitComponent):
         self.add_input("jacket_cost", 4e6, units="USD", desc="Jacket unit cost.")
         self.add_input(
             "jacket_deck_space",
-            0.0,
+            40.0,
             units="m**2",
             desc="Deck space required to transport a jacket. Defaults to 0 in order to not be a constraint on installation.",
         )
@@ -189,7 +189,7 @@ class OrbitWisdem(om.ExplicitComponent):
         self.add_input("transition_piece_mass", 250.0, units="t", desc="mass of an individual transition piece.")
         self.add_input(
             "transition_piece_deck_space",
-            0.0,
+            25.0,
             units="m**2",
             desc="Deck space required to transport a transition piece. Defaults to 0 in order to not be a constraint on installation.",
         )
