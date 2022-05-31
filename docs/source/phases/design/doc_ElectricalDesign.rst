@@ -7,9 +7,9 @@ For details of the code implementation, please see
 Overview
 --------
 
-Below is an overview of the process used to design an export cable system and 
-offshore substation in ORBIT. For more detail on the helper classes used to 
-support this design please see :doc:`Cabling Helper Classes <doc_CableHelpers>`, 
+Below is an overview of the process used to design an export cable system and
+offshore substation in ORBIT. For more detail on the helper classes used to
+support this design please see :doc:`Cabling Helper Classes <doc_CableHelpers>`,
 specifically :class:`Cable` and :class:`CableSystem`.
 
 
@@ -36,21 +36,21 @@ impractical.
 Number of Required Power Transformer and Tranformer Rating
 ---------
 The number of power transformers required is assumed to be equal to the number
-of required export cables. The transformer rating is calculated by dividing the 
+of required export cables. The transformer rating is calculated by dividing the
 windfarm's capacity by the number of power transformers.
 
 
 Shunt Reactors and Reactive Power Compensation
 ---------
 The shunt reactor cost is dependent on the amount of reactive power compensation
-required based on the distance of the substation to shore. There is assumed to be 
-one shunt reactor for each HVAC export cable. HVDC export systems do not require 
+required based on the distance of the substation to shore. There is assumed to be
+one shunt reactor for each HVAC export cable. HVDC export systems do not require
 reactive power compensation, thus the shunt reactor cost is zero for HVDC systems.
 
 
 Number of Required Switchgears
 ---------
-The number of shunt reactors required is assumed to be equal to the number of 
+The number of shunt reactors required is assumed to be equal to the number of
 required export cables.
 
 
@@ -62,23 +62,19 @@ is assumed to be equal to the number of HVDC export cables.
 
 Cable Crossing Cost
 ---------
-Optional inputs for both number of cable crossings and unit cost per cable 
-crossing.  The default number of cable crossings is 0 and cost per cable 
-crossing is $500,000. This cost includes materials, installation, etc. Crossing 
-cost is calculated as product of number of crossings and unit cost. 
+Optional inputs for both number of cable crossings and unit cost per cable
+crossing.  The default number of cable crossings is 0 and cost per cable
+crossing is $500,000. This cost includes materials, installation, etc. Crossing
+cost is calculated as product of number of crossings and unit cost.
 
 
 Design Result
 ---------
-The result of this design module (:py:attr:`design_result`) includes the 
-specifications for both the export cables and offshore substation. This includes 
-a list of cable sections and their lengths and masses that represent the export 
-cable system, as well as the offshore substation substructure and topside mass 
+The result of this design module (:py:attr:`design_result`) includes the
+specifications for both the export cables and offshore substation. This includes
+a list of cable sections and their lengths and masses that represent the export
+cable system, as well as the offshore substation substructure and topside mass
 and cost, and number of substations. This result can then be passed to the
 :doc:`export cable installation module <../install/export/doc_ExportCableInstall>` and
 :doc:`offshore substation installation module <../install/export/doc_OffshoreSubstationInstall>`
 to simulate the installation of the export system.
-
-
-
-

@@ -10,7 +10,6 @@ from copy import deepcopy
 from math import ceil
 
 from marmot import process
-
 from ORBIT.core import Vessel
 from ORBIT.core.logic import position_onsite
 from ORBIT.phases.install import InstallPhase
@@ -51,7 +50,7 @@ class ExportCableInstallation(InstallPhase):
                 "linear_density": "t/km",
                 "sections": [("length, km", "speed, km/h (optional)")],
                 "number": "int (optional)",
-                "cable_type": "str"
+                "cable_type": "str",
             },
             "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
@@ -94,7 +93,7 @@ class ExportCableInstallation(InstallPhase):
         self.cable = Cable(system["cable"]["linear_density"])
         self.cable_type = system["cable"]["cable_type"]
         self.sections = system["cable"]["sections"]
-        
+
         if self.cable_type == "HVDC-monopole":
             self.number = int(system["cable"].get("number", 2) / 2)
         else:
@@ -194,7 +193,7 @@ class ExportCableInstallation(InstallPhase):
         onshore_substation_cost = (
             0.165 * 1e6
         ) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
-        onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
+        onshore_misc_cost = 11795 * capacity**0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
         )

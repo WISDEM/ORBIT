@@ -11,7 +11,6 @@ from collections import Counter, OrderedDict
 
 import numpy as np
 from scipy.optimize import fsolve
-
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import DesignPhase
 
@@ -88,7 +87,7 @@ class Cable:
         self.cable_type = cable_specs.get("cable_type", "HVAC")
 
         # Calc additional cable specs
-        if self.cable_type == 'HVAC':
+        if self.cable_type == "HVAC":
             self.calc_char_impedance(**kwargs)
             self.calc_power_factor()
             self.calc_compensation_factor()
@@ -98,17 +97,18 @@ class Cable:
         """
         Calculate characteristic impedance of cable.
         """
-        if self.cable_type == 'HVDC':
+        if self.cable_type == "HVDC":
             self.char_impedance = 0
         else:
             conductance = 1 / self.ac_resistance
-    
+
             num = complex(
                 self.ac_resistance,
                 2 * math.pi * self.line_frequency * self.inductance,
             )
             den = complex(
-                conductance, 2 * math.pi * self.line_frequency * self.capacitance
+                conductance,
+                2 * math.pi * self.line_frequency * self.capacitance,
             )
             self.char_impedance = np.sqrt(num / den)
 
@@ -127,7 +127,7 @@ class Cable:
         Calculate maximum power transfer through 3-phase cable in :math:`MW`.
         """
 
-        if self.cable_type == 'HVDC-monopole' or 'HVDC-bipole':
+        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
             self.cable_power = (
                 self.current_capacity * self.rated_voltage * 2 / 1000
             )
@@ -139,17 +139,23 @@ class Cable:
                 * self.power_factor
                 / 1000
             )
-        
-    
+
     def calc_compensation_factor(self):
         """
         Calculate compensation factor for shunt reactor cost
         """
-        capacitive_reactance = 1 / (2 * np.pi * self.line_frequency * (self.capacitance / 10e8))
-        capacitive_losses = self.rated_voltage ** 2 / capacitive_reactance
-        inductive_reactance = 2 * np.pi * self.line_frequency * (self.inductance / 1000)
-        inductive_losses = 3 * inductive_reactance * (self.current_capacity / 1000) ** 2 
+        capacitive_reactance = 1 / (
+            2 * np.pi * self.line_frequency * (self.capacitance / 10e8)
+        )
+        capacitive_losses = self.rated_voltage**2 / capacitive_reactance
+        inductive_reactance = (
+            2 * np.pi * self.line_frequency * (self.inductance / 1000)
+        )
+        inductive_losses = (
+            3 * inductive_reactance * (self.current_capacity / 1000) ** 2
+        )
         self.compensation_factor = capacitive_losses - inductive_losses
+
 
 class Plant:
     """
@@ -354,7 +360,7 @@ class CableSystem(DesignPhase):
 
             else:
                 self.touchdown = depth * 0.3
-                #TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
+                # TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
 
     @staticmethod
     def _catenary(a, *data):
