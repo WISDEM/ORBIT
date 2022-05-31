@@ -51,6 +51,7 @@ class ExportCableInstallation(InstallPhase):
                 "linear_density": "t/km",
                 "sections": [("length, km", "speed, km/h (optional)")],
                 "number": "int (optional)",
+                "cable_type": "str"
             },
             "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
@@ -91,8 +92,13 @@ class ExportCableInstallation(InstallPhase):
         self.free_cable_length = system.get("free_cable_length", depth / 1000)
 
         self.cable = Cable(system["cable"]["linear_density"])
+        self.cable_type = system["cable"]["cable_type"]
         self.sections = system["cable"]["sections"]
-        self.number = system["cable"].get("number", 1)
+        
+        if self.cable_type == "HVDC-monopole":
+            self.number = int(system["cable"].get("number", 2) / 2)
+        else:
+            self.number = system["cable"].get("number", 1)
 
         self.initialize_installation_vessel()
         self.initialize_burial_vessel()
@@ -193,14 +199,14 @@ class ExportCableInstallation(InstallPhase):
             distance ** (1 - 0.1063)
         )
 
-        onshore_transmission_cost = (
+        self.onshore_transmission_cost = (
             switchyard_cost
             + onshore_substation_cost
             + onshore_misc_cost
             + transmission_line_cost
         )
 
-        return onshore_transmission_cost
+        return self.onshore_transmission_cost
 
     def initialize_installation_vessel(self):
         """Creates the export cable installation vessel."""

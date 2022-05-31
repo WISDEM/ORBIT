@@ -127,7 +127,7 @@ class Cable:
         Calculate maximum power transfer through 3-phase cable in :math:`MW`.
         """
 
-        if self.cable_type == 'HVDC':
+        if self.cable_type == 'HVDC-monopole' or 'HVDC-bipole':
             self.cable_power = (
                 self.current_capacity * self.rated_voltage * 2 / 1000
             )

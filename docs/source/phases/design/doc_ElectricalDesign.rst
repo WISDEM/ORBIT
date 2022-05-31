@@ -30,17 +30,17 @@ user defined :py:attr`percent_added_length` to account for any exclusions or
 geotechnical design considerations that make a straight line cable route
 impractical.
 
-:math:`length = (d + distance_\text{landfall} + distance_\text{interconnection} * (1 + length_\text{percent_added})`
+:math:`length = (d + distance_\text{landfall} + distance_\text{interconnection}) * (1 + length_\text{percent_added})`
 
 
-Number of Required Power Transformer adn Tranformer Rating
+Number of Required Power Transformer and Tranformer Rating
 ---------
 The number of power transformers required is assumed to be equal to the number
 of required export cables. The transformer rating is calculated by dividing the 
 windfarm's capacity by the number of power transformers.
 
 
-Shunt Reactors and Reactive Power Compenation
+Shunt Reactors and Reactive Power Compensation
 ---------
 The shunt reactor cost is dependent on the amount of reactive power compensation
 required based on the distance of the substation to shore. There is assumed to be 
@@ -59,6 +59,13 @@ Number of Required AC\DC Converters
 AC\DC converters are only required for HVDC export cables. The number of converters
 is assumed to be equal to the number of HVDC export cables.
 
+
+Cable Crossing Cost
+---------
+Optional inputs for both number of cable crossings and unit cost per cable 
+crossing.  The default number of cable crossings is 0 and cost per cable 
+crossing is $500,000. This cost includes materials, installation, etc. Crossing 
+cost is calculated as product of number of crossings and unit cost. 
 
 
 Design Result

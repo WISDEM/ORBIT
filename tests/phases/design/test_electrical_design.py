@@ -1,4 +1,4 @@
-__author__ = "Jake Nunemaker"
+__author__ = "Jake Nunemaker, Sophie Bredenkamp"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "Jake.Nunemaker@nrel.gov"
@@ -57,7 +57,7 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
     assert 1e6 <= o.total_cost <= 1e9
 
 
-def test_oss_kwargs():
+def test_ac_oss_kwargs():
 
     test_kwargs = {
         "mpt_cost_rate": 13500, 
@@ -72,12 +72,11 @@ def test_oss_kwargs():
         "oss_substructure_cost_rate": 7250, 
         "oss_pile_cost_rate": 2500, 
         "num_substations": 4, 
-        "converter_cost": 300e6 
     }
 
     o = ElectricalDesign(base)
     o.run()
-    base_cost = o.total_cost
+    base_cost = o.detailed_output["total_substation_cost"]
 
     for k, v in test_kwargs.items():
 
@@ -87,11 +86,35 @@ def test_oss_kwargs():
 
         o = ElectricalDesign(config)
         o.run()
-        cost = o.total_cost
-
+        cost = o.detailed_output["total_substation_cost"]
+        print("passed")
         assert cost != base_cost
         
-        
+def test_dc_oss_kwargs():
+    test_kwargs = {
+            "converter_cost": 300e6,
+            "dc_breaker_cost": 300e6
+            }
+    dc_base = deepcopy(base)
+    dc_base["export_system_design"]["cables"] = "XLPE_1200m_300kV_DC"
+    o = ElectricalDesign(dc_base)
+    o.run()
+    base_cost = o.detailed_output["total_substation_cost"]
+
+    for k, v in test_kwargs.items():
+
+        config = deepcopy(base)
+        config["export_system_design"]["cables"] = "XLPE_1200m_300kV_DC"
+        config["substation_design"] = {}
+        config["substation_design"][k] = v
+
+        o = ElectricalDesign(config)
+        o.run()
+        cost = o.detailed_output["total_substation_cost"]
+        print("passed")
+        assert cost != base_cost
+
+    
 def test_hvdc_substation():
      config = deepcopy(base)
      config["export_system_design"] = {"cables": "XLPE_1200m_300kV_DC"}
@@ -99,6 +122,17 @@ def test_hvdc_substation():
      o.run()
      assert o.converter_cost != 0
      assert o.shunt_reactor_cost == 0
+     assert o.dc_breaker_cost != 0
+     assert o.switchgear_cost == 0
+     assert o.num_converters / o.num_cables == 2
+     
+     config = deepcopy(base)
+     config["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
+     
+     o = ElectricalDesign(config)
+     o.run()
+     
+     assert o.num_converters == o.num_cables
 
 
 # EXPORT CABLE TESTING
@@ -134,7 +168,7 @@ def test_export_system_creation():
     export = ElectricalDesign(config)
     export.run()
 
-    assert export.num_cables
+    assert isinstance(export.num_cables, int)
     assert export.length
     assert export.mass
     assert export.cable
@@ -233,12 +267,49 @@ def test_floating_length_calculations():
     assert new.total_length < base_length
 
 
+def test_HVDC_cable():
+    
+    base = deepcopy(config)
+    base["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
+    
+    sim = ElectricalDesign(base)
+    sim.run()
+    
+    assert sim.num_cables % 2 == 0
+    
+    base = deepcopy(config)
+    base["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
+    
+    sim = ElectricalDesign(base)
+    sim.run()
+    
+    assert sim.num_cables % 2 == 0
 
+def test_num_crossing():
+ 
+    base_sim = ElectricalDesign(config)
+    base_sim.run()
+    
+    cross = deepcopy(config)
+    cross["export_system_design"]["cable_crossings"] = {"crossing_number": 2}
+    
+    cross_sim = ElectricalDesign(cross)
+    cross_sim.run()
+    
+    assert cross_sim.crossing_cost != base_sim.crossing_cost
 
-
-
-
-
+def test_cost_crossing():
+ 
+    base_sim = ElectricalDesign(config)
+    base_sim.run()
+    
+    cross = deepcopy(config)
+    cross["export_system_design"]["cable_crossings"] = {"crossing_unit_cost": 100000}
+    
+    cross_sim = ElectricalDesign(cross)
+    cross_sim.run()
+    
+    assert cross_sim.crossing_cost != base_sim.crossing_cost
 
 
 
