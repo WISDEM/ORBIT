@@ -128,6 +128,7 @@ class ElectricalDesign(CableSystem):
         self.calc_substructure_mass_and_cost()
         self.calc_converter_cost()
         self.calc_dc_breaker_cost()
+        self.calc_onshore_cost()
 
         self._outputs["offshore_substation_substructure"] = {
             "type": "Monopile",  # Substation install only supports monopiles
@@ -484,3 +485,14 @@ class ElectricalDesign(CableSystem):
         self.topside_cost = (
             self.topside_mass * topside_fab_cost_rate + topside_design_cost
         ) * self.num_substations
+                
+                
+    def calc_onshore_cost(self):
+        """ Minimum Cost of Onshore Substation Connection """
+        
+        self.onshore_cost = (
+                self.converter_cost
+                + self.dc_breaker_cost
+                + self.mpt_cost
+                + self.switchgear_cost
+                )
