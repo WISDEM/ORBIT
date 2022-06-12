@@ -370,6 +370,12 @@ class ProjectManager:
                 new[k] = cls.merge_dicts(
                     new[k], right[k], overwrite=overwrite, add_keys=add_keys
                 )
+            elif (
+                k in new
+                and isinstance(new[k], list)
+                and isinstance(right[k], list)
+            ):
+                new[k].extend(right[k])
             else:
                 if overwrite or k not in new:
                     new[k] = right[k]
