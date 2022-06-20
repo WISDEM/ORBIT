@@ -1,4 +1,3 @@
-
 """Provides the `ExportSystemDesign` class."""
 
 __author__ = "Rob Hammond"
