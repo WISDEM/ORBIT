@@ -72,6 +72,8 @@ def install_piles(vessel, jacket, **kwargs):
         "jacket_pin_template_time", pt["jacket_pin_template_time"]
     )
 
+    num_legs = int(jacket.num_legs)
+
     yield vessel.task_wrapper(
         "Lay Pin Template",
         pin_template_time,
@@ -79,7 +81,7 @@ def install_piles(vessel, jacket, **kwargs):
         **kwargs,
     )
 
-    for i in range(jacket.num_legs):
+    for i in range(num_legs):
         yield vessel.task_wrapper(
             "Position Pile",
             position_pile_time,
@@ -95,7 +97,7 @@ def install_piles(vessel, jacket, **kwargs):
             **kwargs,
         )
 
-        if i < (jacket.num_legs - 1):
+        if i < (num_legs - 1):
             yield vessel.task_wrapper(
                 "Move to Next Leg",
                 reposition_time,
@@ -123,7 +125,9 @@ def install_suction_buckets(vessel, jacket, **kwargs):
         "jacket_suction_bucket", pt["jacket_suction_bucket"]
     )
 
-    for i in range(jacket.num_legs):
+    num_legs = int(jacket.num_legs)
+
+    for i in range(num_legs):
         yield vessel.task_wrapper(
             "Install Suction Bucket",
             install_time,
@@ -131,7 +135,7 @@ def install_suction_buckets(vessel, jacket, **kwargs):
             **kwargs,
         )
 
-        if i < (jacket.num_legs - 1):
+        if i < (num_legs - 1):
             yield vessel.task_wrapper(
                 "Move to Next Leg",
                 reposition_time,
