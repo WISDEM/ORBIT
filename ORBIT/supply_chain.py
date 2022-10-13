@@ -13,15 +13,15 @@ from ORBIT import ProjectManager
 DEFAULT_MULTIPLIERS = {
         "blades": {
             "domestic": .026,
-            "imported": .31
+            "imported": .30
         },
         "nacelle": {
             "domestic": .025,
-            "imported": .07
+            "imported": .10
         },
         "tower": {
             "domestic": .04,
-            "imported": .12,
+            "imported": .20,
             "tariffs": .25,
         },
         "monopile": {
@@ -31,15 +31,15 @@ DEFAULT_MULTIPLIERS = {
         },
         "transition_piece": {
             "domestic": .169,
-            "imported": .18,
+            "imported": .17,
             "tariffs": .25,
         },
         "array_cable": {
-            "domestic": .074,
+            "domestic": .19,
             "imported": 0.
         },
         "export_cable": {
-            "domestic": .128,
+            "domestic": .231,
             "imported": 0.
         },
         "oss_topside": {
@@ -76,10 +76,10 @@ class SupplyChainManager:
 
         Parameters
         ----------
-        configuration : dict        
+        configuration : dict
         """
 
-        self.sc_config = supply_chain_configuration 
+        self.sc_config = supply_chain_configuration
         self.multipliers = kwargs.get("multipliers", DEFAULT_MULTIPLIERS)
         self.labor_split = kwargs.get("labor_split", LABOR_SPLIT)
         self.turbine_split = kwargs.get("turbine_split", TURBINE_CAPEX_SPLIT)
@@ -145,7 +145,7 @@ class SupplyChainManager:
         Parameters
         ----------
         config : dict
-            ORBIT configuration.        
+            ORBIT configuration.
         """
 
         blade_scenario = self.sc_config['blades']
@@ -165,7 +165,7 @@ class SupplyChainManager:
         raw_cost = config.get('project_parameters.turbine_capex', 1300)
         blade_adder = raw_cost * self.turbine_split['blades'] * blade_mult
         nacelle_adder = raw_cost * self.turbine_split['nacelle'] * nacelle_mult
-        
+
         if tower_scenario == "domestic, imported steel":
             tower_adder = self.multipliers["tower"]["domestic"] * raw_cost
             tower_tariffs = raw_cost * self.turbine_split['tower'] *\
@@ -188,7 +188,7 @@ class SupplyChainManager:
             tower_tariffs
         ])
 
-        return config       
+        return config
 
     def process_monopile_capex(self, config):
         """
@@ -197,9 +197,9 @@ class SupplyChainManager:
         Parameters
         ----------
         config : dict
-            ORBIT configuration.  
+            ORBIT configuration.
         """
-        
+
         raw_cost = config['monopile.unit_cost']
         scenario = self.sc_config['monopile']
 
@@ -233,7 +233,7 @@ class SupplyChainManager:
         Parameters
         ----------
         config : dict
-            ORBIT configuration.  
+            ORBIT configuration.
         """
 
         raw_cost = config['transition_piece.unit_cost']
@@ -269,7 +269,7 @@ class SupplyChainManager:
         Parameters
         ----------
         config : dict
-            ORBIT configuration.  
+            ORBIT configuration.
         """
 
         raw_cost = config['offshore_substation_topside.unit_cost']
