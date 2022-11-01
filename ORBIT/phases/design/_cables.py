@@ -97,7 +97,7 @@ class Cable:
         """
         Calculate characteristic impedance of cable.
         """
-        if self.cable_type == "HVDC":
+        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
             self.char_impedance = 0
         else:
             conductance = 1 / self.ac_resistance

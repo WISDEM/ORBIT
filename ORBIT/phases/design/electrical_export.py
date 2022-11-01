@@ -32,7 +32,8 @@ class ElectricalDesign(CableSystem):
             "topside_fab_cost_rate": "USD/t (optional)",
             "topside_design_cost": "USD (optional)",
             "shunt_cost_rate": "USD/MW (optional)",
-            "switchgear_costs": "USD (optional)",
+            "switchgear_cost": "USD (optional)",
+            "dc_breaker_cost": "int (optional)",
             "backup_gen_cost": "USD (optional)",
             "workspace_cost": "USD (optional)",
             "other_ancillary_cost": "USD (optional)",
@@ -360,7 +361,7 @@ class ElectricalDesign(CableSystem):
         else:
             num_dc_breaker = self.num_cables
         self.dc_breaker_cost = num_dc_breaker * self._design.get(
-            "dc_breaker_cost", 4000000
+            "dc_breaker_cost", 40000000
         )  # 4e6
 
     def calc_ancillary_system_cost(self):
@@ -485,14 +486,13 @@ class ElectricalDesign(CableSystem):
         self.topside_cost = (
             self.topside_mass * topside_fab_cost_rate + topside_design_cost
         ) * self.num_substations
-                
-                
+
     def calc_onshore_cost(self):
-        """ Minimum Cost of Onshore Substation Connection """
-        
+        """Minimum Cost of Onshore Substation Connection"""
+
         self.onshore_cost = (
-                self.converter_cost
-                + self.dc_breaker_cost
-                + self.mpt_cost
-                + self.switchgear_cost
-                )
+            self.converter_cost
+            + self.dc_breaker_cost
+            + self.mpt_cost
+            + self.switchgear_cost
+        )

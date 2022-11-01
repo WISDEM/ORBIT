@@ -199,10 +199,10 @@ class ExportCableInstallation(InstallPhase):
         )
 
         self.onshore_transmission_cost = (
-            switchyard_cost
-            + onshore_substation_cost
-            + onshore_misc_cost
-            + transmission_line_cost
+            transmission_line_cost
+            #            + switchyard_cost
+            #            + onshore_substation_cost
+            #            + onshore_misc_cost
         )
 
         return self.onshore_transmission_cost
