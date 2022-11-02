@@ -117,10 +117,13 @@ class Cable:
         Calculate power factor.
         """
 
-        phase_angle = math.atan(
-            np.imag(self.char_impedance) / np.real(self.char_impedance)
-        )
-        self.power_factor = math.cos(phase_angle)
+        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+            self.power_factor = 0
+        else:
+            phase_angle = math.atan(
+                np.imag(self.char_impedance) / np.real(self.char_impedance)
+            )
+            self.power_factor = math.cos(phase_angle)
 
     def calc_cable_power(self):
         """
