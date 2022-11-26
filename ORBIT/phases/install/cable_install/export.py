@@ -50,7 +50,7 @@ class ExportCableInstallation(InstallPhase):
                 "linear_density": "t/km",
                 "sections": [("length, km", "speed, km/h (optional)")],
                 "number": "int (optional)",
-                "cable_type": "str",
+                "cable_type": "str(optional, defualt: 'HVAC')",
             },
             "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
@@ -91,7 +91,7 @@ class ExportCableInstallation(InstallPhase):
         self.free_cable_length = system.get("free_cable_length", depth / 1000)
 
         self.cable = Cable(system["cable"]["linear_density"])
-        self.cable_type = system["cable"]["cable_type"]
+        self.cable_type = system["cable"].get("cable_type", "HVAC")
         self.sections = system["cable"]["sections"]
 
         if self.cable_type == "HVDC-monopole":
@@ -200,9 +200,9 @@ class ExportCableInstallation(InstallPhase):
 
         self.onshore_transmission_cost = (
             transmission_line_cost
-            #            + switchyard_cost
-            #            + onshore_substation_cost
-            #            + onshore_misc_cost
+            #                        + switchyard_cost
+            #                        + onshore_substation_cost
+            #                        + onshore_misc_cost
         )
 
         return self.onshore_transmission_cost

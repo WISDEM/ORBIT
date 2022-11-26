@@ -62,7 +62,7 @@ class ElectricalDesign(CableSystem):
     }
 
     def __init__(self, config, **kwargs):
-        """Creates an instance of `TemplateDesign`."""
+        """Creates an instance of ElectricalDesign."""
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)

@@ -8,19 +8,26 @@ Overview
 --------
 
 Below is an overview of the process used to design an export cable system and
-offshore substation in ORBIT. For more detail on the helper classes used to
-support this design please see :doc:`Cabling Helper Classes <doc_CableHelpers>`,
-specifically :class:`Cable` and :class:`CableSystem`.
+offshore substation in ORBIT using the ElectricalDesign module. This module is to be
+used in place of both the ExportSystemDesign module and the OffshoreSubstationDesign
+module as it codesigns the export cables and offshore substation. For more detail on the
+helper classes used to support this design please see :doc:`Cabling Helper Classes
+<doc_CableHelpers>`, specifically :class:`Cable` and :class:`CableSystem`.
 
 
 Number of Required Cables
 ---------
-The number of export cables required is calculated by dividing the windfarm's
+The number of export cables required for HVAC is calculated by dividing the windfarm's
 capacity by the configured export cable's power rating and adding any user
 defined redundnacy as seen below.
 
 :math:`num\_cables = \lceil\frac{plant\_capacity}{cable\_power}\rceil + num\_redundant`
 
+For HVDC cables (both monopole and bipole), the number of cables is twice the number as
+calculated abpve because HVDC systems require a pair of cables per implementation.
+The equation for this calculation is shown below.
+
+:math:`num\_cables = 2 * \lceil\frac{plant\_capacity}{cable\_power}\rceil + num\_redundant`
 
 Export Cable Length
 ---------
