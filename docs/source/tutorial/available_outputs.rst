@@ -4,7 +4,7 @@ Available Outputs
 ``ProjectManager`` is used to run a collection of ORBIT modules representing a
 complete offshore wind project installation. The outputs of each module are
 then aggregated into several different project-level outputs available via
-the ``ProjectManager`` api.
+the ``ProjectManager`` API.
 
 System and Installation CapEx
 -----------------------------
@@ -33,7 +33,7 @@ installation simulation.
 
 Installation CapEx is a dynamic result based on the installation simulation and
 is based on the times associated with each subsystem installation, day rates of
-any vessels/ports and accrued weather delays.
+any vessels/ports and any accrued weather delays.
 
 BOS CapEx
 ---------

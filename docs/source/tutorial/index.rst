@@ -17,9 +17,9 @@ GitHub.
 
    load_config
    project_manager
-   available_outputs
    design_phases
    phase_specific
+   available_outputs
    start_dates
    define_vessels
    parametric_manager

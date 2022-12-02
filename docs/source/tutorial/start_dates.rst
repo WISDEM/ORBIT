@@ -7,7 +7,7 @@ Default Configuration
 By default, ``ProjectManager`` will run phases in the order that they are
 defined in the lists ``'design_phases'``, then ``'install_phases'`` located in
 the project configuration. This order also determines the sequence of phases in
-the outputs, including the project level action log ``.project_dataframe``. If
+the outputs, including the project level action log ``.actions``. If
 the project is configured with a weather file, any installation phases will
 start at the beginning of the weather profile.
 
@@ -88,8 +88,8 @@ Phase Dependencies
 ------------------
 
 Phases can also be defined to start at a percentage completed for a different
-phase. For example, this could be used to have the installation of the turbines
-start when the monopiles are 50% installed:
+phase. For example, the following config could be used to have the installation
+of the turbines start when the monopiles are 50% installed:
 
 .. code-block::
 
