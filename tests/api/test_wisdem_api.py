@@ -12,7 +12,7 @@ from ORBIT.api.wisdem import Orbit
 
 def test_wisdem_monopile_api_default():
 
-    prob = om.Problem()
+    prob = om.Problem(reports=False)
     prob.model = Orbit(floating=False, jacket=False, jacket_legs=0)
     prob.setup()
 
@@ -24,7 +24,7 @@ def test_wisdem_monopile_api_default():
 
 def test_wisdem_jacket_api_default():
 
-    prob = om.Problem()
+    prob = om.Problem(reports=False)
     prob.model = Orbit(floating=False, jacket=True, jacket_legs=3)
     prob.setup()
 
@@ -36,7 +36,7 @@ def test_wisdem_jacket_api_default():
 
 def test_wisdem_floating_api_default():
 
-    prob = om.Problem()
+    prob = om.Problem(reports=False)
     prob.model = Orbit(floating=True, jacket=False, jacket_legs=0)
     prob.setup()
 
