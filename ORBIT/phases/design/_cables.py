@@ -57,7 +57,6 @@ class Cable:
         "linear_density",
         "cost_per_km",
         "name",
-        "cable_type",
     )
 
     def __init__(self, cable_specs, **kwargs):
