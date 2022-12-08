@@ -11,6 +11,7 @@ from .oss_install import (
     OffshoreSubstationInstallation,
 )
 from .cable_install import ArrayCableInstallation, ExportCableInstallation
+from .jacket_install import JacketInstallation
 from .mooring_install import MooringSystemInstallation
 from .turbine_install import TurbineInstallation
 from .monopile_install import MonopileInstallation

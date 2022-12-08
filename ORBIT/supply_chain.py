@@ -110,12 +110,18 @@ class SupplyChainManager:
     def pre_process(self, config):
         """"""
 
+        # Save original plant design
+        plant = deepcopy(config['plant'])
+
         # Run ProjectManager without install phases to generate design results
         install_phases = config['install_phases']
         config['install_phases'] = []
         project = ProjectManager(config)
         project.run()
         config = deepcopy(project.config)
+
+        # Replace calculated plant design with original
+        config['plant'] = plant
 
         # Run pre ORBIT supply chain adjustments
         config = self.process_turbine_capex(config)

@@ -45,14 +45,10 @@ design_phases:
 install_phases:
   ArrayCableInstallation: 0
   ExportCableInstallation: 2000
-  MonopileInstallation: !!python/tuple
-  - ScourProtectionInstallation
-  - 0.5
+  MonopileInstallation: 0
   OffshoreSubstationInstallation: 0
   ScourProtectionInstallation: 0
-  TurbineInstallation: !!python/tuple
-  - MonopileInstallation
-  - 0.1
+  TurbineInstallation: 0
 # Project Inputs
 project_parameters:
   turbine_capex: 1500
