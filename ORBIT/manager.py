@@ -61,7 +61,7 @@ class ProjectManager:
     date_format_short = "%m/%d/%Y"
     date_format_long = "%m/%d/%Y %H:%M"
 
-    _design_phases = [
+    _design_phases = (
         MonopileDesign,
         ArraySystemDesign,
         CustomArraySystemDesign,
@@ -71,9 +71,9 @@ class ProjectManager:
         MooringSystemDesign,
         SemiSubmersibleDesign,
         SparDesign,
-    ]
+    )
 
-    _install_phases = [
+    _install_phases = (
         MonopileInstallation,
         TurbineInstallation,
         OffshoreSubstationInstallation,
@@ -85,7 +85,7 @@ class ProjectManager:
         GravityBasedInstallation,
         FloatingSubstationInstallation,
         JacketInstallation,
-    ]
+    )
 
     def __init__(self, config, library_path=None, weather=None):
         """
@@ -210,7 +210,7 @@ class ProjectManager:
         if len(re.split("[_ ]", phase.__name__)) > 1:
             raise ValueError(f"Registered phase name must not include a '_'.")
 
-        cls._design_phases.append(phase)
+        cls._design_phases = (*cls._design_phases, phase)
 
     @classmethod
     def register_install_phase(cls, phase):
@@ -234,7 +234,7 @@ class ProjectManager:
         if len(re.split("[_ ]", phase.__name__)) > 1:
             raise ValueError(f"Registered phase name must not include a '_'.")
 
-        cls._install_phases.append(phase)
+        cls._install_phases = (*cls._install_phases, phase)
 
     @property
     def _capex_categories(self):

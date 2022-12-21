@@ -109,11 +109,11 @@ def test_expected_config_merging():
 
 
 def test_find_key_match():
-    class SpecificTurbineInstallation:
+    class SpecificTurbineInstallation(InstallPhase):
         expected_config = {}
 
     TestProjectManager = deepcopy(ProjectManager)
-    TestProjectManager._install_phases.append(SpecificTurbineInstallation)
+    TestProjectManager.register_install_phase(SpecificTurbineInstallation)
 
     phase_dict = TestProjectManager.phase_dict()
     assert "SpecificTurbineInstallation" in phase_dict.keys()
