@@ -188,6 +188,54 @@ class ProjectManager:
 
         return self._phases
 
+    @classmethod
+    def register_design_phase(cls, phase):
+        """
+        Add a custom design phase to the `ProjectManager` class.
+
+        Parameters
+        ----------
+        phase : ORBIT.phases.DesignPhase
+        """
+
+        if not issubclass(phase, DesignPhase):
+            raise ValueError(
+                "Registered design phase must be a subclass of "
+                "'ORBIT.phases.DesignPhase'."
+            )
+
+        if phase.__name__ in [c.__name__ for c in cls._design_phases]:
+            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+
+        if len(re.split("[_ ]", phase.__name__)) > 1:
+            raise ValueError(f"Registered phase name must not include a '_'.")
+
+        cls._design_phases.append(phase)
+
+    @classmethod
+    def register_install_phase(cls, phase):
+        """
+        Add a custom install phase to the `ProjectManager` class.
+
+        Parameters
+        ----------
+        phase : ORBIT.phases.InstallPhase
+        """
+
+        if not issubclass(phase, InstallPhase):
+            raise ValueError(
+                "Registered install phase must be a subclass of "
+                "'ORBIT.phases.InstallPhase'."
+            )
+
+        if phase.__name__ in [c.__name__ for c in cls._install_phases]:
+            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+
+        if len(re.split("[_ ]", phase.__name__)) > 1:
+            raise ValueError(f"Registered phase name must not include a '_'.")
+
+        cls._install_phases.append(phase)
+
     @property
     def _capex_categories(self):
         """Returns CapEx categories for phases in `self._install_phases`."""

@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 
 from ORBIT import ProjectManager
+from ORBIT.phases import InstallPhase, DesignPhase
 from tests.data import test_weather
 from ORBIT.manager import ProjectProgress
 from ORBIT.core.library import extract_library_specs
@@ -280,6 +281,83 @@ def test_duplicate_phase_definitions():
     assert df.loc[("MonopileInstallation_2", "Drive Monopile")] == 5
     assert df.loc[("TurbineInstallation", "Attach Tower Section")] == 10
 
+
+def test_custom_install_phases():
+
+    # Not a subclass
+    class CustomInstallPhase:
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_design_phase(CustomInstallPhase)
+
+    # Wrong subclass
+    class CustomDesignPhase(DesignPhase):
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_install_phase(CustomDesignPhase)
+
+    # Name already taken
+    class MonopileInstallation(InstallPhase):
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_install_phase(MonopileInstallation)
+
+
+    # Bad name format
+    class MonopileInstallation_Custom(InstallPhase):
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_install_phase(MonopileInstallation_Custom)
+
+    # Successful registration
+    class CustomInstallPhase(InstallPhase):
+        pass
+
+    ProjectManager.register_install_phase(CustomInstallPhase)
+    assert ProjectManager.find_key_match("CustomInstallPhase") == CustomInstallPhase
+
+
+def test_custom_design_phases():
+
+    # Not a subclass
+    class CustomDesignPhase:
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_design_phase(CustomDesignPhase)
+
+    # Wrong subclass
+    class CustomInstallPhase(InstallPhase):
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_design_phase(CustomInstallPhase)
+
+    # Name already taken
+    class MonopileDesign(DesignPhase):
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_install_phase(MonopileDesign)
+
+
+    # Bad name format
+    class MonopileDesign_Custom(DesignPhase):
+        pass
+
+    with pytest.raises(ValueError):
+        ProjectManager.register_install_phase(MonopileDesign_Custom)
+
+    # Successful registration
+    class CustomDesignPhase(DesignPhase):
+        pass
+
+    ProjectManager.register_design_phase(CustomDesignPhase)
+    assert ProjectManager.find_key_match("CustomDesignPhase") == CustomDesignPhase
 
 ### Design Phase Interactions
 def test_design_phases():
