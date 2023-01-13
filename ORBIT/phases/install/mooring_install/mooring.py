@@ -268,7 +268,7 @@ def install_mooring_line(vessel, depth, **kwargs):
     ------
     vessel.task representing time to install mooring line.
     """
-
+    
     install_time = 0.005 * depth
 
     yield vessel.task_wrapper(
@@ -320,6 +320,7 @@ class MooringSystem(Cargo):
 
         return "", 0
 
+''' # commented anchor_install_time because this overwrites what is called from process_times.yaml . 
     def anchor_install_time(self, depth):
         """
         Returns time to install anchor. Varies by depth.
@@ -342,3 +343,4 @@ class MooringSystem(Cargo):
             )
 
         return fixed + 0.005 * depth
+''' 

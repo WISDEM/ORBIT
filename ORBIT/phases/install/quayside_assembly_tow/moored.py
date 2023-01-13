@@ -383,14 +383,14 @@ def install_moored_substructures(
                 constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task_wrapper(
-                "Connect Mooring Lines",
-                22,
+                "Connect Mooring Lines, Pre-tension and pre-stretch",
+                20,
                 suspendable=True,
                 constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
             yield vessel.task_wrapper(
                 "Check Mooring Lines",
-                12,
+                6,
                 suspendable=True,
                 constraints={"windspeed": le(15), "waveheight": le(2.5)},
             )
