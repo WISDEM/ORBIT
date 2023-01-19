@@ -29,7 +29,7 @@ class MooringSystemDesign(DesignPhase):
     output_config = {
         "mooring_system": {
             "num_lines": "int",
-            "line_diam": "m, float",
+            #"line_diam": "m, float",
             "line_mass": "t",
             "line_cost": "USD",
             "line_length": "m",
@@ -64,7 +64,7 @@ class MooringSystemDesign(DesignPhase):
         """
 
         self.determine_mooring_line()
-        self.calculate_breaking_load()
+        #self.calculate_breaking_load()
         self.calculate_line_length_mass()
         self.calculate_anchor_mass_cost()
 
@@ -75,48 +75,24 @@ class MooringSystemDesign(DesignPhase):
         Returns the diameter of the mooring lines based on the turbine rating.
         """
 
-        tr = self.config["turbine"]["turbine_rating"]
-        fit = -0.0004 * (tr ** 2) + 0.0132 * tr + 0.0536
+        self.line_cost = 999 # this is the result of a function of depth
 
-        if fit <= 0.09:
-            self.line_diam = 0.09
-            self.line_mass_per_m = 0.161
-            self.line_cost_rate = 399.0
+    #def calculate_breaking_load(self):
+    #    """
+    #    Returns the mooring line breaking load.
+    #    """
 
-        elif fit <= 0.12:
-            self.line_diam = 0.12
-            self.line_mass_per_m = 0.288
-            self.line_cost_rate = 721.0
-
-        else:
-            self.line_diam = 0.15
-            self.line_mass_per_m = 0.450
-            self.line_cost_rate = 1088.0
-
-    def calculate_breaking_load(self):
-        """
-        Returns the mooring line breaking load.
-        """
-
-        self.breaking_load = (
-            419449 * (self.line_diam ** 2) + 93415 * self.line_diam - 3577.9
-        )
+    #    self.breaking_load = (
+    #        419449 * (self.line_diam ** 2) + 93415 * self.line_diam - 3577.9
+    #    )
 
     def calculate_line_length_mass(self):
         """
         Returns the mooring line length and mass.
         """
 
-        if self.anchor_type == "Drag Embedment":
-            fixed = self._design.get("drag_embedment_fixed_length", 500)
-
-        else:
-            fixed = 0
-
         depth = self.config["site"]["depth"]
-        self.line_length = (
-            0.0002 * (depth ** 2) + 1.264 * depth + 47.776 + fixed
-        )
+        self.line_length = 999 # fill this in with fitted eqn result of total semitaut line length
 
         self.line_mass = self.line_length * self.line_mass_per_m
 
@@ -134,7 +110,7 @@ class MooringSystemDesign(DesignPhase):
 
         else:
             self.anchor_mass = 50
-            self.anchor_cost = sqrt(self.breaking_load / 9.81 / 1250) * 150000
+            self.anchor_cost = 999 # make this output the cost as a function of depth (Matt H.) # sqrt(self.breaking_load / 9.81 / 1250) * 150000
 
     @property
     def line_cost(self):
@@ -158,7 +134,7 @@ class MooringSystemDesign(DesignPhase):
 
         return {
             "num_lines": self.num_lines,
-            "line_diam": self.line_diam,
+            #"line_diam": self.line_diam,
             "line_mass": self.line_mass,
             "line_length": self.line_length,
             "line_cost": self.line_cost,
