@@ -41,7 +41,7 @@ export_system_design:
 design_phases:
 - ArraySystemDesign
 - ExportSystemDesign
-- MooringSystemDesign
+- SemiTautMooringSystemDesign
 - OffshoreSubstationDesign
 - SemiSubmersibleDesign
 install_phases:
