@@ -30,6 +30,7 @@ from ORBIT.phases.design import (
     ArraySystemDesign,
     ExportSystemDesign,
     MooringSystemDesign,
+    SemiTautMooringSystemDesign,
     ScourProtectionDesign,
     SemiSubmersibleDesign,
     CustomArraySystemDesign,
@@ -69,6 +70,7 @@ class ProjectManager:
         ScourProtectionDesign,
         OffshoreSubstationDesign,
         MooringSystemDesign,
+	SemiTautMooringSystemDesign,
         SemiSubmersibleDesign,
         SparDesign,
     )

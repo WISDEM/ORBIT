@@ -13,5 +13,6 @@ from .monopile_design import MonopileDesign
 from .array_system_design import ArraySystemDesign, CustomArraySystemDesign
 from .export_system_design import ExportSystemDesign
 from .mooring_system_design import MooringSystemDesign
+from .SemiTaut_mooring_system_design import SemiTautMooringSystemDesign
 from .scour_protection_design import ScourProtectionDesign
 from .semi_submersible_design import SemiSubmersibleDesign

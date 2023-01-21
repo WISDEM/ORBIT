@@ -1,13 +1,10 @@
 """`MooringSystemDesign` and related functionality."""
 
-__author__ = "Jake Nunemaker"
+__author__ = "Jake Nunemaker, modified by Becca F."
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
-__email__ = "jake.nunemaker@nrel.gov"
+__email__ = "jake.nunemaker@nrel.gov & rebecca.fuchs@nrel.gov"
 
-
-from math import sqrt
-from scipy import optimize
 from scipy.interpolate import interp1d
 import numpy as np
 
@@ -78,9 +75,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
         """
 
         depth = self.config["site"]["depth"]
-        chain_diam = self.config["mooring_system"]["chain_diameter"]
-        rope_diam = self.config["mooring_system"]["rope_diameter"]
-        
+
         # Input hybrid mooring system design from Cooperman et al. (2022), https://www.nrel.gov/docs/fy22osti/82341.pdf 'Assessment of Offshore Wind Energy Leasing Areas for Humboldt and Moorow Bay Wind Energy Areas, California
         depths = np.array([500, 750, 1000, 1250, 1500])
         rope_lengths = np.array([478.41, 830.34, 1229.98, 1183.93, 1079.62])
@@ -106,7 +101,9 @@ class SemiTautMooringSystemDesign(DesignPhase):
         chain_kg_per_m = 19900 * (self.chain_diameter**2) # 19,900 kg/m^2 (diameter)/m (length)
         rope_kg_per_m = 797.8 * (self.rope_diameter**2) # 797.8 kg/ m^2 (diameter) / m (length) 
         self.line_mass = (self.chain_length * chain_kg_per_m) + (self.rope_length * rope_kg_per_m) # kg
-        print('total hybrid line mass is ' + str(self.line_mass))
+        print('total hybrid line mass is ' + str(self.line_mass) + 'kg')
+        # convert kg to metric tonnes
+        self.line_mass = self.line_mass/1e3
         
     def calculate_anchor_mass_cost(self):
         """
@@ -127,8 +124,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
             finterp_anchor_cost = interp1d(depths, anchor_costs)
             self.anchor_cost = finterp_anchor_cost(depth) # replace this with interp. function based on depth of hybrid mooring line
 
-    @property
-    def line_cost(self):
+    def determine_mooring_line_cost(self):
         """Returns cost of one line mooring line."""
         # Input hybrid mooring system design from Cooperman et al. (2022), https://www.nrel.gov/docs/fy22osti/82341.pdf 'Assessment of Offshore Wind Energy Leasing Areas for Humboldt and Moorow Bay Wind Energy Areas, California
         depths = np.array([500, 750, 1000, 1250, 1500]) # [m]
