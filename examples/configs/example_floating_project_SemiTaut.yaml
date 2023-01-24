@@ -1,6 +1,6 @@
 # Site + Plant Parameters
 site:
-  depth: 900
+  depth: 500
   distance: 100
   distance_to_landfall: 100
 plant:
