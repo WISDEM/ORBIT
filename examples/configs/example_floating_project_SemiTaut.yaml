@@ -1,6 +1,6 @@
 # Site + Plant Parameters
 site:
-  depth: 500
+  depth: 900
   distance: 100
   distance_to_landfall: 100
 plant:
@@ -40,7 +40,6 @@ design_phases:
 - ArraySystemDesign
 - ExportSystemDesign
 - SemiTautMooringSystemDesign
-# OffshoreFloatingSubstationDesign takes the mooring system unit cost of SemiTautMooringSystemDesign, so that needs to be run first
 - OffshoreFloatingSubstationDesign 
 - SemiSubmersibleDesign
 install_phases:
@@ -49,6 +48,5 @@ install_phases:
   MooredSubInstallation: 0
   MooringSystemInstallation: 0
   FloatingSubstationInstallation: 0
-  #TurbineInstallation: 0 # We assume the turbine is installed at quayside onto the substructure so the necessary steps are in 'MooredSubInstallation'
 # Project Inputs
 turbine: 12MW_generic
