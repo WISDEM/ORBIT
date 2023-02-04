@@ -27,8 +27,6 @@ wtiv: floating_heavy_lift_vessel
 # Module Specific
 substructure:
   takt_time: 168
-OffshoreSubstationInstallation:
-  feeder: floating_barge
 array_system:
   free_cable_length: 0.5
 array_system_design:
@@ -42,14 +40,15 @@ design_phases:
 - ArraySystemDesign
 - ExportSystemDesign
 - SemiTautMooringSystemDesign
-- OffshoreSubstationDesign
+# OffshoreFloatingSubstationDesign takes the mooring system unit cost of SemiTautMooringSystemDesign, so that needs to be run first
+- OffshoreFloatingSubstationDesign 
 - SemiSubmersibleDesign
 install_phases:
   ArrayCableInstallation: 0
   ExportCableInstallation: 0
   MooredSubInstallation: 0
   MooringSystemInstallation: 0
-  OffshoreSubstationInstallation: 0
-  TurbineInstallation: 0
+  FloatingSubstationInstallation: 0
+  #TurbineInstallation: 0 # We assume the turbine is installed at quayside onto the substructure so the necessary steps are in 'MooredSubInstallation'
 # Project Inputs
 turbine: 12MW_generic
