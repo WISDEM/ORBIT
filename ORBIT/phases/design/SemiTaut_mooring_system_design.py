@@ -101,7 +101,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
         chain_kg_per_m = 19900 * (self.chain_diameter**2) # 19,900 kg/m^2 (diameter)/m (length)
         rope_kg_per_m = 797.8 * (self.rope_diameter**2) # 797.8 kg/ m^2 (diameter) / m (length) 
         self.line_mass = (self.chain_length * chain_kg_per_m) + (self.rope_length * rope_kg_per_m) # kg
-        print('total hybrid line mass is ' + str(self.line_mass) + 'kg')
+        #print('total hybrid line mass is ' + str(self.line_mass) + 'kg')
         # convert kg to metric tonnes
         self.line_mass = self.line_mass/1e3
         

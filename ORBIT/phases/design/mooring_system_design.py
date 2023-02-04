@@ -36,6 +36,7 @@ class MooringSystemDesign(DesignPhase):
             "anchor_mass": "t",
             "anchor_type": "str",
             "anchor_cost": "USD",
+            "system_cost": "USD",
         }
     }
 

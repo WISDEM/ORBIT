@@ -35,6 +35,7 @@ from ORBIT.phases.design import (
     SemiSubmersibleDesign,
     CustomArraySystemDesign,
     OffshoreSubstationDesign,
+    OffshoreFloatingSubstationDesign,
 )
 from ORBIT.phases.install import (
     JacketInstallation,
@@ -69,6 +70,7 @@ class ProjectManager:
         ExportSystemDesign,
         ScourProtectionDesign,
         OffshoreSubstationDesign,
+	OffshoreFloatingSubstationDesign,
         MooringSystemDesign,
 	SemiTautMooringSystemDesign,
         SemiSubmersibleDesign,

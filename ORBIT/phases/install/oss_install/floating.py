@@ -25,7 +25,7 @@ class FloatingSubstationInstallation(InstallPhase):
     and tow-out processes.
     """
 
-    phase = "Offshore Substation Installation"
+    phase = "Offshore Floating Substation Installation"
     capex_category = "Offshore Substation"
 
     #:
@@ -41,9 +41,10 @@ class FloatingSubstationInstallation(InstallPhase):
             "type": "Floating",
             "takt_time": "int | float (optional, default: 0)",
             "unit_cost": "USD",
-            "mooring_cost": "USD",
-            "towing_speed": "int | float (optional, default: 6 km/h)",
-        },
+            #"mooring_cost": "USD",
+            "towing_speed": "int | float (optional, default: 6 km/h)"
+	},
+	"mooring_system": {"system_cost": "USD"},
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -89,8 +90,8 @@ class FloatingSubstationInstallation(InstallPhase):
         substructure = self.config["offshore_substation_substructure"][
             "unit_cost"
         ]
-        mooring = self.config["offshore_substation_substructure"][
-            "mooring_cost"
+        mooring = self.config["mooring_system"][
+            "system_cost"
         ]
 
         return self.num_substations * (topside + substructure + mooring)
