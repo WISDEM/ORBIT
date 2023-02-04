@@ -93,7 +93,9 @@ class FloatingSubstationInstallation(InstallPhase):
         mooring = self.config["mooring_system"][
             "system_cost"
         ]
-
+        print('topside: ' + str(topside))
+        print('oss substructure' + str(substructure))
+        print('mooring system' + str(mooring))
         return self.num_substations * (topside + substructure + mooring)
 
     def initialize_substructure_production(self):

@@ -290,7 +290,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
         )
-        print('substructure cost:' + str(self.substructure_cost))
+        #print('substructure cost:' + str(self.substructure_cost))
         self.substructure_mass = substructure_mass + substructure_pile_mass
 
     @property
