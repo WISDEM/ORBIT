@@ -48,8 +48,8 @@ class FloatingSubstationInstallation(InstallPhase):
             #"system_cost": "USD", "}, # system cost is for all moorings in the whole farm, so you dont want this to be added to each substation
             "num_lines", "int",
             "line_cost", "USD",
-            "anchor_cost", "USD"
-    }
+            "anchor_cost", "USD"}
+        }
 
     def __init__(self, config, weather=None, **kwargs):
         """
@@ -101,7 +101,7 @@ class FloatingSubstationInstallation(InstallPhase):
         mooring_system_for_each_oss = num_mooring_lines*(line_cost + anchor_cost)
         print('topside: ' + str(topside))
         print('oss substructure' + str(substructure))
-        print('mooring system' + str(mooring))
+        print('mooring system' + str(mooring_system_for_each_oss))
         return self.num_substations * (topside + substructure + mooring_system_for_each_oss)
 
     def initialize_substructure_production(self):
