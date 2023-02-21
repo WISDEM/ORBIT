@@ -1,5 +1,5 @@
 export_system_design:
-  cables: XLPE_300mm_33kV
+  cables: XLPE_630mm_33kV
   percent_added_length: 0.01
   percent_redundant: 0.0
 plant:
