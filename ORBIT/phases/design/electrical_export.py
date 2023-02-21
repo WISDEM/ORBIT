@@ -28,6 +28,7 @@ class ElectricalDesign(CableSystem):
             },
         },
         "substation_design": {
+            "floating_oss": "T/F (optional, default: False)",
             "mpt_cost_rate": "USD/MW (optional)",
             "topside_fab_cost_rate": "USD/t (optional)",
             "topside_design_cost": "USD (optional)",
@@ -85,6 +86,7 @@ class ElectricalDesign(CableSystem):
             self._distance_to_interconnection = 3
 
         # SUBSTATION
+        self._floating_oss = config["substation_design"]["floating_oss"]
         self._outputs = {}
 
     def run(self):
@@ -432,7 +434,11 @@ class ElectricalDesign(CableSystem):
         oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
 
         substructure_mass = 0.4 * self.topside_mass
-        substructure_pile_mass = 8 * substructure_mass**0.5574
+        if self._floating_oss == False:
+            substructure_pile_mass = 8 * substructure_mass**0.5574
+        else:
+            substructure_pile_mass = 0 # No piles for floating OSS
+        print('OSS sub mass', substructure_pile_mass)
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
