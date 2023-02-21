@@ -438,7 +438,7 @@ class ElectricalDesign(CableSystem):
             substructure_pile_mass = 8 * substructure_mass**0.5574
         else:
             substructure_pile_mass = 0 # No piles for floating OSS
-        print('OSS sub mass', substructure_pile_mass)
+
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
