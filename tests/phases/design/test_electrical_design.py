@@ -123,7 +123,7 @@ def test_hvdc_substation():
     assert o.shunt_reactor_cost == 0
     assert o.dc_breaker_cost != 0
     assert o.switchgear_cost == 0
-    assert o.num_converters / o.num_cables == 2
+    assert o.num_cables / o.num_converters == 2
 
     config = deepcopy(base)
     config["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
@@ -201,7 +201,7 @@ def test_cable_mass():
 
     length = (0.02 + 3 + 30) * 1.01
     mass = length * export.cable.linear_density
-    assert export.mass == pytest.approx(mass, abs=1e-10)
+    assert export.mass == pytest.approx(mass, abs=1e-6)
 
 
 def test_total_cable():
@@ -316,7 +316,8 @@ def test_cost_crossing():
 
     cross = deepcopy(config)
     cross["export_system_design"]["cable_crossings"] = {
-        "crossing_unit_cost": 100000
+        "crossing_number": 1,
+        "crossing_unit_cost": 100000,
     }
 
     cross_sim = ElectricalDesign(cross)

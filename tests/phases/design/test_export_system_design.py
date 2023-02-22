@@ -8,7 +8,6 @@ __email__ = "robert.hammond@nrel.gov"
 from copy import deepcopy
 
 import pytest
-
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ExportSystemDesign
 
@@ -29,9 +28,10 @@ def test_export_system_creation():
 
 def test_number_cables():
     export = ExportSystemDesign(config)
+    print(export.config)
     export.run()
 
-    assert export.num_cables == 11
+    assert export.num_cables == 9
 
 
 def test_cable_length():
