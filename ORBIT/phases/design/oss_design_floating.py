@@ -7,7 +7,6 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 
 import numpy as np
-
 from ORBIT.phases.design import DesignPhase
 
 
@@ -37,7 +36,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
     output_config = {
         "num_substations": "int",
         "offshore_substation_topside": "dict",
-	#"offshore_substation_substructure", "dict",
+        # "offshore_substation_substructure", "dict",
     }
 
     def __init__(self, config, **kwargs):
@@ -284,13 +283,13 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
         oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
 
         substructure_mass = 0.4 * self.topside_mass
-        #substructure_pile_mass = 8 * substructure_mass ** 0.5574
-        substructure_pile_mass = 0 # the monopiles are no longer needed because there is s mooring system
+        # substructure_pile_mass = 8 * substructure_mass ** 0.5574
+        substructure_pile_mass = 0  # the monopiles are no longer needed because there is s mooring system
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
         )
-        #print('substructure cost:' + str(self.substructure_cost))
+        # print('substructure cost:' + str(self.substructure_cost))
         self.substructure_mass = substructure_mass + substructure_pile_mass
 
     @property

@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 from marmot import process
-
 from ORBIT.core import Vessel
 from ORBIT.core.logic import shuttle_items_to_queue, prep_for_site_operations
 from ORBIT.phases.install import InstallPhase
@@ -230,9 +229,7 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
             vessel.at_site = True
 
         if vessel.at_site:
-
             if queue.vessel:
-
                 # Prep for monopile install
                 yield prep_for_site_operations(
                     vessel, survey_required=True, **kwargs

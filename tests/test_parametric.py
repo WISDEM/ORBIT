@@ -7,9 +7,8 @@ from copy import deepcopy
 
 import pandas as pd
 import pytest
-from benedict import benedict
-
 from ORBIT import ProjectManager, ParametricManager
+from benedict import benedict
 from tests.data import test_weather
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.install import TurbineInstallation
@@ -24,7 +23,6 @@ funcs = {"bos_capex": lambda project: project.bos_capex}
 
 
 def test_for_equal_results():
-
     config = benedict(deepcopy(complete_project))
     config["site.distance"] = 20
     project = ProjectManager(config)
@@ -37,7 +35,6 @@ def test_for_equal_results():
 
 
 def test_weather():
-
     without = ParametricManager(complete_project, params, funcs)
     without.run()
 
@@ -50,7 +47,6 @@ def test_weather():
 
 
 def test_individual_phase():
-
     config = benedict(deepcopy(complete_project))
     config["site.distance"] = 20
     phase = TurbineInstallation(config)
@@ -67,7 +63,6 @@ def test_individual_phase():
 
 
 def test_bad_result_attribute():
-
     funcs = {"result": lambda phase: phase.nonexistent_result}
 
     parametric = ParametricManager(
@@ -79,7 +74,6 @@ def test_bad_result_attribute():
 
 
 def test_bad_result_structure():
-
     funcs = {"result": "bos_capex"}
 
     parametric = ParametricManager(
@@ -91,7 +85,6 @@ def test_bad_result_structure():
 
 
 def test_product_option():
-
     params = {"site.distance": [20, 40, 60], "site.depth": [20, 40, 60]}
 
     parametric = ParametricManager(

@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import pandas as pd
 import pytest
-
 from tests.data import test_weather
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.install import MooredSubInstallation
@@ -18,7 +17,6 @@ no_supply = extract_library_specs("config", "moored_install_no_supply")
 
 
 def test_simulation_setup():
-
     sim = MooredSubInstallation(config)
     assert sim.config == config
     assert sim.env
@@ -41,7 +39,6 @@ def test_simulation_setup():
 )
 @pytest.mark.parametrize("config", (config, no_supply))
 def test_for_complete_logging(weather, config):
-
     sim = MooredSubInstallation(config, weather=weather)
     sim.run()
 

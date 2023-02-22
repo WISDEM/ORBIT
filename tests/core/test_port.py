@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import pytest
 from marmot import Environment
-
 from ORBIT.core import Port, Cargo
 from ORBIT.core.exceptions import ItemNotFound
 
@@ -19,7 +18,6 @@ class SampleItem(Cargo):
 
 
 def test_port_creation():
-
     env = Environment()
     port = Port(env)
     item = SampleItem()
@@ -32,7 +30,6 @@ def test_port_creation():
 
 
 def test_get_item():
-
     env = Environment()
     port = Port(env)
     item = SampleItem()

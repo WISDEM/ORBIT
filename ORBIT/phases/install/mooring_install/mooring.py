@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import process
-
 from ORBIT.core import Cargo, Vessel
 from ORBIT.core.logic import position_onsite, get_list_of_items_from_port
 from ORBIT.core.defaults import process_times as pt
@@ -161,9 +160,7 @@ def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
             vessel.at_site = True
 
         if vessel.at_site:
-
             if vessel.storage.items:
-
                 system = yield vessel.get_item_from_storage(
                     "MooringSystem", **kwargs
                 )
@@ -268,7 +265,7 @@ def install_mooring_line(vessel, depth, **kwargs):
     ------
     vessel.task representing time to install mooring line.
     """
-    
+
     install_time = 0.005 * depth
 
     yield vessel.task_wrapper(
@@ -320,7 +317,8 @@ class MooringSystem(Cargo):
 
         return "", 0
 
-''' # commented anchor_install_time because this overwrites what is called from process_times.yaml . 
+
+''' # commented anchor_install_time because this overwrites what is called from process_times.yaml .
     def anchor_install_time(self, depth):
         """
         Returns time to install anchor. Varies by depth.
@@ -343,4 +341,4 @@ class MooringSystem(Cargo):
             )
 
         return fixed + 0.005 * depth
-''' 
+'''

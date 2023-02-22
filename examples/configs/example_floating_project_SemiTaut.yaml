@@ -40,7 +40,7 @@ design_phases:
 - ArraySystemDesign
 - ExportSystemDesign
 - SemiTautMooringSystemDesign
-- OffshoreFloatingSubstationDesign 
+- OffshoreFloatingSubstationDesign
 - SemiSubmersibleDesign
 install_phases:
   ArrayCableInstallation: 0

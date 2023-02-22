@@ -77,7 +77,7 @@ class MooringSystemDesign(DesignPhase):
         """
 
         tr = self.config["turbine"]["turbine_rating"]
-        fit = -0.0004 * (tr ** 2) + 0.0132 * tr + 0.0536
+        fit = -0.0004 * (tr**2) + 0.0132 * tr + 0.0536
 
         if fit <= 0.09:
             self.line_diam = 0.09
@@ -100,7 +100,7 @@ class MooringSystemDesign(DesignPhase):
         """
 
         self.breaking_load = (
-            419449 * (self.line_diam ** 2) + 93415 * self.line_diam - 3577.9
+            419449 * (self.line_diam**2) + 93415 * self.line_diam - 3577.9
         )
 
     def calculate_line_length_mass(self):
@@ -116,7 +116,7 @@ class MooringSystemDesign(DesignPhase):
 
         depth = self.config["site"]["depth"]
         self.line_length = (
-            0.0002 * (depth ** 2) + 1.264 * depth + 47.776 + fixed
+            0.0002 * (depth**2) + 1.264 * depth + 47.776 + fixed
         )
 
         self.line_mass = self.line_length * self.line_mass_per_m

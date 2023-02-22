@@ -14,10 +14,9 @@ from numbers import Number
 from itertools import product
 
 import numpy as np
+import ORBIT
 import pandas as pd
 from benedict import benedict
-
-import ORBIT
 from ORBIT.phases import DesignPhase, InstallPhase
 from ORBIT.core.library import (
     initialize_library,
@@ -31,11 +30,11 @@ from ORBIT.phases.design import (
     ArraySystemDesign,
     ExportSystemDesign,
     MooringSystemDesign,
-    SemiTautMooringSystemDesign,
     ScourProtectionDesign,
     SemiSubmersibleDesign,
     CustomArraySystemDesign,
     OffshoreSubstationDesign,
+    SemiTautMooringSystemDesign,
     OffshoreFloatingSubstationDesign,
 )
 from ORBIT.phases.install import (
@@ -71,9 +70,9 @@ class ProjectManager:
         ExportSystemDesign,
         ScourProtectionDesign,
         OffshoreSubstationDesign,
-	    OffshoreFloatingSubstationDesign,
+        OffshoreFloatingSubstationDesign,
         MooringSystemDesign,
-	    SemiTautMooringSystemDesign,
+        SemiTautMooringSystemDesign,
         SemiSubmersibleDesign,
         SparDesign,
         ElectricalDesign,
@@ -173,14 +172,12 @@ class ProjectManager:
         self._print_warnings()
 
     def _print_warnings(self):
-
         try:
             df = pd.DataFrame(self.logs)
             df = df.loc[~df["message"].isnull()]
             df = df.loc[df["message"].str.contains("Exceeded")]
 
             for msg in df["message"].unique():
-
                 idx = df.loc[df["message"] == msg].index[0]
                 phase = df.loc[idx, "phase"]
                 print(f"{phase}:\n\t {msg}")
@@ -211,7 +208,9 @@ class ProjectManager:
             )
 
         if phase.__name__ in [c.__name__ for c in cls._design_phases]:
-            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+            raise ValueError(
+                f"A phase with name '{phase.__name__}' already exists."
+            )
 
         if len(re.split("[_ ]", phase.__name__)) > 1:
             raise ValueError(f"Registered phase name must not include a '_'.")
@@ -235,7 +234,9 @@ class ProjectManager:
             )
 
         if phase.__name__ in [c.__name__ for c in cls._install_phases]:
-            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+            raise ValueError(
+                f"A phase with name '{phase.__name__}' already exists."
+            )
 
         if len(re.split("[_ ]", phase.__name__)) > 1:
             raise ValueError(f"Registered phase name must not include a '_'.")
@@ -459,7 +460,6 @@ class ProjectManager:
         right = {k: right[k] for k in set(new).intersection(set(right))}
 
         for k, val in right.items():
-
             if isinstance(new.get(k, None), dict) and isinstance(val, dict):
                 new[k] = cls.remove_keys(new[k], val)
 
@@ -506,7 +506,6 @@ class ProjectManager:
 
     @property
     def phase_ends(self):
-
         ret = {}
         for k, t in self.phase_times.items():
             try:
@@ -699,7 +698,6 @@ class ProjectManager:
 
         # Run defined
         for name, start in defined.items():
-
             _, logs = self.run_install_phase(name, start, **kwargs)
 
             if logs is None:
@@ -733,7 +731,6 @@ class ProjectManager:
         skipped = {}
 
         while True:
-
             phases = {**phases, **skipped}
             if not phases:
                 break
@@ -832,7 +829,6 @@ class ProjectManager:
         depends = {}
 
         for k, v in phases.items():
-
             if isinstance(v, (int, float)):
                 defined[k] = ceil(v)
 
@@ -1110,7 +1106,6 @@ class ProjectManager:
 
         summary = {}
         for i in range(1, len(self.month_bins)):
-
             unique, counts = np.unique(
                 arr["progress"][dig == i], return_counts=True
             )
@@ -1146,7 +1141,6 @@ class ProjectManager:
         dates = {}
 
         for phase, _start in self.config["install_phases"].items():
-
             start = dt.datetime.strptime(_start, self.date_format_short)
             end = start + dt.timedelta(hours=ceil(self.phase_times[phase]))
 

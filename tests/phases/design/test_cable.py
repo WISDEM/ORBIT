@@ -11,7 +11,6 @@ import itertools
 
 import numpy as np
 import pytest
-
 from ORBIT.phases.design._cables import Cable, Plant
 
 cables = {
@@ -112,7 +111,6 @@ def test_power_factor():
         np.arange(0, 1, 0.15),  # inductance
         range(100, 1001, 150),  # capacitance
     ):
-
         c["conductor_size"] = i[0]
         c["ac_resistance"] = i[1]
         c["inductance"] = i[2]
@@ -124,15 +122,16 @@ def test_power_factor():
     if any((a < 0) | (a > 1) for a in results):
         raise Exception("Invalid Power Factor.")
 
+
 def test_cable_power():
     cable = Cable(cables["passes"])
-    assert cable.cable_power == pytest.approx(34.1341, abs=2e-1) 
-    
+    assert cable.cable_power == pytest.approx(34.1341, abs=2e-1)
+
     c = copy.deepcopy(cables["passes"])
     c["cable_type"] = "HVDC"
-    cable = Cable(c) 
+    cable = Cable(c)
     print(c)
-    assert cable.cable_power == pytest.approx(39.6,abs=2e-1)
+    assert cable.cable_power == pytest.approx(39.6, abs=2e-1)
 
 
 @pytest.mark.parametrize(
