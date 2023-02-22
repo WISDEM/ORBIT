@@ -86,7 +86,11 @@ class ElectricalDesign(CableSystem):
             self._distance_to_interconnection = 3
 
         # SUBSTATION
-        self._floating_oss = config["substation_design"]["floating_oss"]
+        try:
+            self._floating_oss = config["substation_design"]["floating_oss"]
+        except KeyError:
+            self._floating_oss = False
+
         self._outputs = {}
 
     def run(self):
