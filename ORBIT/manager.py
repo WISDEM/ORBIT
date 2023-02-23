@@ -37,6 +37,7 @@ from ORBIT.phases.design import (
     OffshoreSubstationDesign,
 )
 from ORBIT.phases.install import (
+    JacketInstallation,
     TurbineInstallation,
     MonopileInstallation,
     MooredSubInstallation,
@@ -61,7 +62,7 @@ class ProjectManager:
     date_format_short = "%m/%d/%Y"
     date_format_long = "%m/%d/%Y %H:%M"
 
-    _design_phases = [
+    _design_phases = (
         MonopileDesign,
         ArraySystemDesign,
         CustomArraySystemDesign,
@@ -72,9 +73,9 @@ class ProjectManager:
         SemiSubmersibleDesign,
         SparDesign,
         ElectricalDesign,
-    ]
+    )
 
-    _install_phases = [
+    _install_phases = (
         MonopileInstallation,
         TurbineInstallation,
         OffshoreSubstationInstallation,
@@ -85,7 +86,8 @@ class ProjectManager:
         MooringSystemInstallation,
         GravityBasedInstallation,
         FloatingSubstationInstallation,
-    ]
+        JacketInstallation,
+    )
 
     def __init__(self, config, library_path=None, weather=None):
         """
@@ -187,6 +189,54 @@ class ProjectManager:
         """Returns dict of phases that have been ran."""
 
         return self._phases
+
+    @classmethod
+    def register_design_phase(cls, phase):
+        """
+        Add a custom design phase to the `ProjectManager` class.
+
+        Parameters
+        ----------
+        phase : ORBIT.phases.DesignPhase
+        """
+
+        if not issubclass(phase, DesignPhase):
+            raise ValueError(
+                "Registered design phase must be a subclass of "
+                "'ORBIT.phases.DesignPhase'."
+            )
+
+        if phase.__name__ in [c.__name__ for c in cls._design_phases]:
+            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+
+        if len(re.split("[_ ]", phase.__name__)) > 1:
+            raise ValueError(f"Registered phase name must not include a '_'.")
+
+        cls._design_phases = (*cls._design_phases, phase)
+
+    @classmethod
+    def register_install_phase(cls, phase):
+        """
+        Add a custom install phase to the `ProjectManager` class.
+
+        Parameters
+        ----------
+        phase : ORBIT.phases.InstallPhase
+        """
+
+        if not issubclass(phase, InstallPhase):
+            raise ValueError(
+                "Registered install phase must be a subclass of "
+                "'ORBIT.phases.InstallPhase'."
+            )
+
+        if phase.__name__ in [c.__name__ for c in cls._install_phases]:
+            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+
+        if len(re.split("[_ ]", phase.__name__)) > 1:
+            raise ValueError(f"Registered phase name must not include a '_'.")
+
+        cls._install_phases = (*cls._install_phases, phase)
 
     @property
     def _capex_categories(self):
@@ -370,6 +420,12 @@ class ProjectManager:
                 new[k] = cls.merge_dicts(
                     new[k], right[k], overwrite=overwrite, add_keys=add_keys
                 )
+            elif (
+                k in new
+                and isinstance(new[k], list)
+                and isinstance(right[k], list)
+            ):
+                new[k].extend(right[k])
             else:
                 if overwrite or k not in new:
                     new[k] = right[k]

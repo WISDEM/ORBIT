@@ -18,5 +18,3 @@ the model.
    phases/design/doc_SemiSubmersibleDesign
    phases/design/doc_SparDesign
    phases/design/doc_MooringSystemDesign
-
-..    phases/design/doc_JacketDesign
