@@ -32,7 +32,6 @@ base = {
     ),
 )
 def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
-
     config = {
         "site": {"distance_to_landfall": distance_to_landfall, "depth": depth},
         "plant": {"capacity": plant_cap},
@@ -59,7 +58,6 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
 
 
 def test_ac_oss_kwargs():
-
     test_kwargs = {
         "mpt_cost_rate": 13500,
         "topside_fab_cost_rate": 17000,
@@ -80,7 +78,6 @@ def test_ac_oss_kwargs():
     base_cost = o.detailed_output["total_substation_cost"]
 
     for k, v in test_kwargs.items():
-
         config = deepcopy(base)
         config["substation_design"] = {}
         config["substation_design"][k] = v
@@ -101,7 +98,6 @@ def test_dc_oss_kwargs():
     base_cost = o.detailed_output["total_substation_cost"]
 
     for k, v in test_kwargs.items():
-
         config = deepcopy(base)
         config["export_system_design"]["cables"] = "XLPE_1200m_300kV_DC"
         config["substation_design"] = {}
@@ -138,7 +134,6 @@ def test_hvdc_substation():
 
 
 def test_export_kwargs():
-
     test_kwargs = {
         "num_redundant": 2,
         "touchdown_distance": 50,
@@ -150,7 +145,6 @@ def test_export_kwargs():
     base_cost = o.total_cost
 
     for k, v in test_kwargs.items():
-
         config = deepcopy(base)
         config["export_system_design"] = {"cables": "XLPE_630mm_220kV"}
         config["export_system_design"][k] = v
@@ -257,7 +251,6 @@ def test_design_result():
 
 
 def test_floating_length_calculations():
-
     base = deepcopy(config)
     base["site"]["depth"] = 250
     base["export_system_design"]["touchdown_distance"] = 0
@@ -277,7 +270,6 @@ def test_floating_length_calculations():
 
 
 def test_HVDC_cable():
-
     base = deepcopy(config)
     base["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
 
@@ -296,7 +288,6 @@ def test_HVDC_cable():
 
 
 def test_num_crossing():
-
     base_sim = ElectricalDesign(config)
     base_sim.run()
 
@@ -310,7 +301,6 @@ def test_num_crossing():
 
 
 def test_cost_crossing():
-
     base_sim = ElectricalDesign(config)
     base_sim.run()
 

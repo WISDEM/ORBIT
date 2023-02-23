@@ -104,7 +104,6 @@ def test_design_result():
 
 
 def test_floating_length_calculations():
-
     base = deepcopy(config)
     base["site"]["depth"] = 250
     base["export_system_design"]["touchdown_distance"] = 0

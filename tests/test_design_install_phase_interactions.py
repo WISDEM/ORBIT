@@ -6,9 +6,8 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from copy import deepcopy
 
-from numpy.testing import assert_almost_equal
-
 from ORBIT import ProjectManager
+from numpy.testing import assert_almost_equal
 from ORBIT.core.library import extract_library_specs
 
 fixed = extract_library_specs("config", "complete_project")
@@ -16,7 +15,6 @@ floating = extract_library_specs("config", "complete_floating_project")
 
 
 def test_fixed_phase_cost_passing():
-
     project = ProjectManager(fixed)
     project.run()
 
@@ -47,7 +45,6 @@ def test_fixed_phase_cost_passing():
 
 
 def test_floating_phase_cost_passing():
-
     project = ProjectManager(floating)
     project.run()
 

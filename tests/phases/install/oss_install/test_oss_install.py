@@ -10,7 +10,6 @@ from copy import deepcopy
 
 import pandas as pd
 import pytest
-
 from ORBIT import ProjectManager
 from tests.data import test_weather
 from ORBIT.core.library import extract_library_specs
@@ -33,7 +32,6 @@ config_multi["num_feeders"] = 2
     ids=["single_feeder", "multi_feeder"],
 )
 def test_simulation_setup(config):
-
     sim = OffshoreSubstationInstallation(config)
     assert sim.config == config
     assert sim.env
@@ -45,7 +43,6 @@ def test_simulation_setup(config):
 
 
 def test_floating_simulation_setup():
-
     sim = FloatingSubstationInstallation(config_floating)
     assert sim.config == config_floating
     assert sim.env
@@ -58,7 +55,6 @@ def test_floating_simulation_setup():
     ids=["single_feeder", "multi_feeder"],
 )
 def test_vessel_initialization(config):
-
     sim = OffshoreSubstationInstallation(config)
     assert sim.oss_vessel
     assert sim.oss_vessel.crane
@@ -82,7 +78,6 @@ def test_vessel_initialization(config):
     "weather", (None, test_weather), ids=["no_weather", "test_weather"]
 )
 def test_for_complete_logging(weather, config):
-
     # No weather
     sim = OffshoreSubstationInstallation(config, weather=weather)
     sim.run()
@@ -104,7 +99,6 @@ def test_for_complete_logging(weather, config):
     "weather", (None, test_weather), ids=["no_weather", "test_weather"]
 )
 def test_for_complete_logging_floating(weather):
-
     sim = FloatingSubstationInstallation(config_floating, weather=weather)
     sim.run()
 
@@ -118,7 +112,6 @@ def test_for_complete_logging_floating(weather):
 
 
 def test_kwargs():
-
     sim = OffshoreSubstationInstallation(config_single)
     sim.run()
     baseline = sim.total_phase_time
@@ -139,7 +132,6 @@ def test_kwargs():
     failed = []
 
     for kw in keywords:
-
         default = pt[kw]
 
         if kw == "mono_drive_rate":
@@ -171,7 +163,6 @@ def test_kwargs():
 
 
 def test_kwargs_in_ProjectManager():
-
     base = deepcopy(config_single)
     base["install_phases"] = ["OffshoreSubstationInstallation"]
 
@@ -195,7 +186,6 @@ def test_kwargs_in_ProjectManager():
     failed = []
 
     for kw in keywords:
-
         default = pt[kw]
 
         if kw == "mono_drive_rate":
