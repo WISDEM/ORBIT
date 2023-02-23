@@ -11,7 +11,6 @@ import itertools
 
 import numpy as np
 import pytest
-
 from ORBIT.phases.design._cables import Cable, Plant
 
 cables = {
@@ -111,7 +110,6 @@ def test_power_factor():
         np.arange(0, 1, 0.15),  # inductance
         range(100, 1001, 150),  # capacitance
     ):
-
         c["conductor_size"] = i[0]
         c["ac_resistance"] = i[1]
         c["inductance"] = i[2]

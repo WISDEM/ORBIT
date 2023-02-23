@@ -12,12 +12,10 @@ class TemplateDesign(DesignPhase):
 
     expected_config = {
         "required_input": "unit",
-        "optional_input": "unit, (optional, default: 'default')"
+        "optional_input": "unit, (optional, default: 'default')",
     }
 
-    output_config = {
-        "example_output": "unit"
-    }
+    output_config = {"example_output": "unit"}
 
     def __init__(self, config, **kwargs):
         """Creates an instance of `TemplateDesign`."""
@@ -45,9 +43,7 @@ class TemplateDesign(DesignPhase):
     def detailed_output(self):
         """Returns detailed output dictionary."""
 
-        return {
-            "example_detailed_output": self.result
-        }
+        return {"example_detailed_output": self.result}
 
     @property
     def total_cost(self):
@@ -60,9 +56,7 @@ class TemplateDesign(DesignPhase):
     def design_result(self):
         """Must match `self.output_config` structure."""
 
-        return {
-            "example_output": self.result
-        }
+        return {"example_output": self.result}
 
 
 # === Annotated Example ===
@@ -75,18 +69,21 @@ class SparDesign(DesignPhase):
     # that ProjectManager doesn't raise a warning if doesn't find the input in
     # a project level config.
     expected_config = {
-        "site": {"depth": "m"},                                        # For common inputs that will be shared across many modules,
-        "plant": {"num_turbines": "int"},                              # it's best to look up how the variable is named in existing modules
-        "turbine": {"turbine_rating": "MW"},                           # so the user doesn't have to input the same thing twice. For example, avoid adding
-                                                                       # 'number_turbines' if 'num_turbines' is already used throughout ORBIT
-
-
-
+        "site": {
+            "depth": "m"
+        },  # For common inputs that will be shared across many modules,
+        "plant": {
+            "num_turbines": "int"
+        },  # it's best to look up how the variable is named in existing modules
+        "turbine": {
+            "turbine_rating": "MW"
+        },  # so the user doesn't have to input the same thing twice. For example, avoid adding
+        # 'number_turbines' if 'num_turbines' is already used throughout ORBIT
         # Inputs can be grouped into dictionaries like the following:
         "spar_design": {
-            "stiffened_column_CR": "$/t (optional, default: 3120)",    # I tend to group module specific cost rates
-            "tapered_column_CR": "$/t (optional, default: 4220)",      # into dictionaries named after the component being considered
-            "ballast_material_CR": "$/t (optional, default: 100)",     # eg. spar_design, gbf_design, etc.
+            "stiffened_column_CR": "$/t (optional, default: 3120)",  # I tend to group module specific cost rates
+            "tapered_column_CR": "$/t (optional, default: 4220)",  # into dictionaries named after the component being considered
+            "ballast_material_CR": "$/t (optional, default: 100)",  # eg. spar_design, gbf_design, etc.
             "secondary_steel_CR": "$/t (optional, default: 7250)",
             "towing_speed": "km/h (optional, default: 6)",
         },
@@ -97,8 +94,8 @@ class SparDesign(DesignPhase):
     # results are used as inputs to installation modules. As such, these output
     # names should match the input names of the respective installation module
     output_config = {
-        "substructure": {            # Typically a design phase ouptuts a component design
-            "mass": "t",             # grouped into a dictionary, eg. "substructure" dict to the left.
+        "substructure": {  # Typically a design phase ouptuts a component design
+            "mass": "t",  # grouped into a dictionary, eg. "substructure" dict to the left.
             "ballasted_mass": "t",
             "unit_cost": "USD",
             "towing_speed": "km/h",
@@ -114,13 +111,18 @@ class SparDesign(DesignPhase):
         config : dict
         """
 
-        config = self.initialize_library(config, **kwargs)    # These first two lines are required in all modules. They initialize the library 
-        self.config = self.validate_config(config)            # if it hasn't already been and validate the config against '.expected_config' from above
-    
+        config = self.initialize_library(
+            config, **kwargs
+        )  # These first two lines are required in all modules. They initialize the library
+        self.config = self.validate_config(
+            config
+        )  # if it hasn't already been and validate the config against '.expected_config' from above
 
-        self._design = self.config.get("spar_design", {})     # Not required, but I often save module specific outputs to "_design" for later use
-                                                              # If the "spar_design" sub dictionary isn't found, an empty one is returned to
-                                                              # work with later methods.    
+        self._design = self.config.get(
+            "spar_design", {}
+        )  # Not required, but I often save module specific outputs to "_design" for later use
+        # If the "spar_design" sub dictionary isn't found, an empty one is returned to
+        # work with later methods.
         self._outputs = {}
 
     def run(self):
@@ -152,7 +154,7 @@ class SparDesign(DesignPhase):
         rating = self.config["turbine"]["turbine_rating"]
         depth = self.config["site"]["depth"]
 
-        mass = 535.93 + 17.664 * rating ** 2 + 0.02328 * depth * log(depth)
+        mass = 535.93 + 17.664 * rating**2 + 0.02328 * depth * log(depth)
 
         return mass
 
@@ -174,8 +176,10 @@ class SparDesign(DesignPhase):
         Calculates the cost of the stiffened column for a single spar. From original OffshoreBOS model.
         """
 
-        cr = self._design.get("stiffened_column_CR", 3120)     # This is how I typically handle outputs. This will look for the key in 
-                                                               # self._design, and return default value if it isn't found.
+        cr = self._design.get(
+            "stiffened_column_CR", 3120
+        )  # This is how I typically handle outputs. This will look for the key in
+        # self._design, and return default value if it isn't found.
         return self.stiffened_column_mass * cr
 
     @property
@@ -194,7 +198,7 @@ class SparDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -16.536 * rating ** 2 + 1261.8 * rating - 1554.6
+        mass = -16.536 * rating**2 + 1261.8 * rating - 1554.6
 
         return mass
 
@@ -219,7 +223,7 @@ class SparDesign(DesignPhase):
 
         mass = exp(
             3.58
-            + 0.196 * (rating ** 0.5) * log(rating)
+            + 0.196 * (rating**0.5) * log(rating)
             + 0.00001 * depth * log(depth)
         )
 
@@ -267,7 +271,7 @@ class SparDesign(DesignPhase):
     # The following properties are required methods for a DesignPhase
 
     # .detailed_output returns any relevant detailed outputs from the module
-    # in a dictionary. 
+    # in a dictionary.
     @property
     def detailed_output(self):
         """Returns detailed phase information."""
