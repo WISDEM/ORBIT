@@ -151,7 +151,7 @@ class OffshoreSubstationDesign(DesignPhase):
         capacity = num_turbines * turbine_rating
 
         self.num_substations = _design.get(
-            "num_substations", int(np.ceil(capacity / 500))
+            "num_substations", int(np.ceil(capacity / 800))
         )
         self.num_mpt = np.ceil(
             num_turbines * turbine_rating / (250 * self.num_substations)

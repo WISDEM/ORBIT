@@ -11,7 +11,6 @@ from collections import Counter, OrderedDict
 
 import numpy as np
 from scipy.optimize import fsolve
-
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import DesignPhase
 
@@ -84,50 +83,80 @@ class Cable:
             raise ValueError(f"{needs_value} must be defined in cable_specs")
 
         self.line_frequency = cable_specs.get("line_frequency", 60)
+        self.cable_type = cable_specs.get("cable_type", "HVAC")
 
         # Calc additional cable specs
-        self.calc_char_impedance(**kwargs)
-        self.calc_power_factor()
+        if self.cable_type == "HVAC":
+            self.calc_char_impedance(**kwargs)
+            self.calc_power_factor()
+            self.calc_compensation_factor()
         self.calc_cable_power()
 
     def calc_char_impedance(self):
         """
         Calculate characteristic impedance of cable.
         """
+        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+            self.char_impedance = 0
+        else:
+            conductance = 1 / self.ac_resistance
 
-        conductance = 1 / self.ac_resistance
-
-        num = complex(
-            self.ac_resistance,
-            2 * math.pi * self.line_frequency * self.inductance,
-        )
-        den = complex(
-            conductance, 2 * math.pi * self.line_frequency * self.capacitance
-        )
-        self.char_impedance = np.sqrt(num / den)
+            num = complex(
+                self.ac_resistance,
+                2 * math.pi * self.line_frequency * self.inductance,
+            )
+            den = complex(
+                conductance,
+                2 * math.pi * self.line_frequency * self.capacitance,
+            )
+            self.char_impedance = np.sqrt(num / den)
 
     def calc_power_factor(self):
         """
         Calculate power factor.
         """
 
-        phase_angle = math.atan(
-            np.imag(self.char_impedance) / np.real(self.char_impedance)
-        )
-        self.power_factor = math.cos(phase_angle)
+        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+            self.power_factor = 0
+        else:
+            phase_angle = math.atan(
+                np.imag(self.char_impedance) / np.real(self.char_impedance)
+            )
+            self.power_factor = math.cos(phase_angle)
 
     def calc_cable_power(self):
         """
         Calculate maximum power transfer through 3-phase cable in :math:`MW`.
         """
 
-        self.cable_power = (
-            np.sqrt(3)
-            * self.rated_voltage
-            * self.current_capacity
-            * self.power_factor
-            / 1000
+        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+            self.cable_power = (
+                self.current_capacity * self.rated_voltage * 2 / 1000
+            )
+        else:
+            self.cable_power = (
+                np.sqrt(3)
+                * self.rated_voltage
+                * self.current_capacity
+                * self.power_factor
+                / 1000
+            )
+
+    def calc_compensation_factor(self):
+        """
+        Calculate compensation factor for shunt reactor cost
+        """
+        capacitive_reactance = 1 / (
+            2 * np.pi * self.line_frequency * (self.capacitance / 10e8)
         )
+        capacitive_losses = self.rated_voltage**2 / capacitive_reactance
+        inductive_reactance = (
+            2 * np.pi * self.line_frequency * (self.inductance / 1000)
+        )
+        inductive_losses = (
+            3 * inductive_reactance * (self.current_capacity / 1000) ** 2
+        )
+        self.compensation_factor = capacitive_losses - inductive_losses
 
 
 class Plant:
@@ -333,7 +362,7 @@ class CableSystem(DesignPhase):
 
             else:
                 self.touchdown = depth * 0.3
-                #TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
+                # TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
 
     @staticmethod
     def _catenary(a, *data):

@@ -10,7 +10,6 @@ from copy import deepcopy
 from math import ceil
 
 from marmot import process
-
 from ORBIT.core.logic import position_onsite
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import InsufficientCable
@@ -44,10 +43,12 @@ class ExportCableInstallation(InstallPhase):
         "site": {"distance": "km"},
         "plant": {"capacity": "MW"},
         "export_system": {
+            "system_cost": "USD",
             "cable": {
                 "linear_density": "t/km",
                 "sections": [("length, km", "speed, km/h (optional)")],
                 "number": "int (optional)",
+                "cable_type": "str(optional, defualt: 'HVAC')",
             },
             "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
@@ -88,8 +89,13 @@ class ExportCableInstallation(InstallPhase):
         self.free_cable_length = system.get("free_cable_length", depth / 1000)
 
         self.cable = Cable(system["cable"]["linear_density"])
+        self.cable_type = system["cable"].get("cable_type", "HVAC")
         self.sections = system["cable"]["sections"]
-        self.number = system["cable"].get("number", 1)
+
+        if self.cable_type == "HVDC-monopole":
+            self.number = int(system["cable"].get("number", 2) / 2)
+        else:
+            self.number = system["cable"].get("number", 1)
 
         self.initialize_installation_vessel()
         self.initialize_burial_vessel()
@@ -183,19 +189,19 @@ class ExportCableInstallation(InstallPhase):
         onshore_substation_cost = (
             0.165 * 1e6
         ) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
-        onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
+        onshore_misc_cost = 11795 * capacity**0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
         )
 
-        onshore_transmission_cost = (
-            switchyard_cost
-            + onshore_substation_cost
-            + onshore_misc_cost
-            + transmission_line_cost
+        self.onshore_transmission_cost = (
+            transmission_line_cost
+            #                        + switchyard_cost
+            #                        + onshore_substation_cost
+            #                        + onshore_misc_cost
         )
 
-        return onshore_transmission_cost
+        return self.onshore_transmission_cost
 
     def initialize_installation_vessel(self):
         """Creates the export cable installation vessel."""
