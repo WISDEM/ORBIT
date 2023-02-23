@@ -1017,7 +1017,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 self.sections_bury_speeds[
                     string, order
                 ] = data.bury_speed.values[order]
-            i += string + 1
+            i = string + 1
 
         # Ensure any point in array without a turbine is set to None
         no_turbines = self.location_data_x == 0
