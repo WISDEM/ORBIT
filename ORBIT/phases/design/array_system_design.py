@@ -843,10 +843,14 @@ class CustomArraySystemDesign(ArraySystemDesign):
     def _initialize_custom_data(self):
         windfarm = self.config["array_system_design"]["location_data"]
 
-        self.location_data = extract_library_specs(
-            "cables", windfarm, file_type="csv"
-        )
-
+        try:
+            self.location_data = extract_library_specs(
+                "cables", windfarm, file_type="csv"
+            )
+        except LibraryItemNotFoundError:
+            self.location_data = extract_library_specs(
+                "project/plant", windfarm, file_type="csv"
+            )
         # Make sure no data is missing
         missing = set(self.COLUMNS).difference(self.location_data.columns)
         if missing:
