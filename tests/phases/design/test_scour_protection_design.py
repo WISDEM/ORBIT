@@ -10,6 +10,7 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
+
 from ORBIT.phases.design import ScourProtectionDesign
 
 config_min_defined = {

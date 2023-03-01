@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import false, process
+
 from ORBIT.core import Cargo
 from ORBIT.core.logic import jackdown_if_required
 from ORBIT.core.defaults import process_times as pt
@@ -339,6 +340,7 @@ def install_transition_piece(vessel, tp, **kwargs):
         yield bolt_transition_piece(vessel, **kwargs)
 
     elif connection == "grouted":
+
         yield pump_transition_piece_grout(vessel, **kwargs)
         yield cure_transition_piece_grout(vessel)
 

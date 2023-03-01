@@ -10,6 +10,7 @@ from copy import deepcopy
 from itertools import product
 
 import pytest
+
 from ORBIT.phases.design import MonopileDesign
 
 base = {
@@ -36,6 +37,7 @@ turbines = [
     product(range(10, 51, 10), range(8, 13, 1), turbines),
 )
 def test_paramater_sweep(depth, mean_ws, turbine):
+
     config = {
         "site": {"depth": depth, "mean_windspeed": mean_ws},
         "plant": {"num_turbines": 20},
@@ -59,6 +61,7 @@ def test_paramater_sweep(depth, mean_ws, turbine):
 
 
 def test_monopile_kwargs():
+
     test_kwargs = {
         "yield_stress": 400000000,
         "load_factor": 1.25,
@@ -77,6 +80,7 @@ def test_monopile_kwargs():
     base_results = m._outputs["monopile"]
 
     for k, v in test_kwargs.items():
+
         config = deepcopy(base)
         config["monopile_design"] = {}
         config["monopile_design"][k] = v
@@ -89,6 +93,7 @@ def test_monopile_kwargs():
 
 
 def test_transition_piece_kwargs():
+
     test_kwargs = {
         # Transition piece specific
         "monopile_tp_connection_thickness": 0.005,
@@ -102,6 +107,7 @@ def test_transition_piece_kwargs():
     base_results = m._outputs["transition_piece"]
 
     for k, v in test_kwargs.items():
+
         config = deepcopy(base)
         config["monopile_design"] = {}
         config["monopile_design"][k] = v
