@@ -41,7 +41,6 @@ class SubstructureDelivery(Agent):
 
     @process
     def start(self):
-
         n = 0
         while n < self.num:
             yield self.task(

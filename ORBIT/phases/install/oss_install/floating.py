@@ -6,11 +6,10 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import Agent, process, le
-from marmot._exceptions import AgentNotRegistered
-
+from marmot import Agent, le, process
 from ORBIT.core import WetStorage
 from ORBIT.core.logic import position_onsite
+from marmot._exceptions import AgentNotRegistered
 from ORBIT.phases.install import InstallPhase
 from ORBIT.phases.install.mooring_install.mooring import (
     install_mooring_line,
@@ -144,7 +143,6 @@ class FloatingSubstationInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        
         return {}
 
 
@@ -175,7 +173,6 @@ def install_floating_substations(
     travel_time = distance / towing_speed
 
     for _ in range(number):
-
         start = vessel.env.now
         yield feed.get()
         delay = vessel.env.now - start
@@ -196,7 +193,7 @@ def install_floating_substations(
             constraints={"windspeed": le(15), "waveheight": le(2.5)},
         )
 
-        for _ in range (3):
+        for _ in range(3):
             yield perform_mooring_site_survey(vessel)
             yield install_mooring_anchor(vessel, depth, "Suction Pile")
             yield install_mooring_line(vessel, depth)

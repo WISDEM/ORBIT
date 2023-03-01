@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import openmdao.api as om
-
 from ORBIT import ProjectManager
 
 

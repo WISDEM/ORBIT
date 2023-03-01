@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import process
-
 from ORBIT.core import Cargo, Vessel
 from ORBIT.core.logic import position_onsite, get_list_of_items_from_port
 from ORBIT.core.defaults import process_times as pt
@@ -161,9 +160,7 @@ def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
             vessel.at_site = True
 
         if vessel.at_site:
-
             if vessel.storage.items:
-
                 system = yield vessel.get_item_from_storage(
                     "MooringSystem", **kwargs
                 )

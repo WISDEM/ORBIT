@@ -11,7 +11,6 @@ from collections import Counter, OrderedDict
 
 import numpy as np
 from scipy.optimize import fsolve
-
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import DesignPhase
 
@@ -333,7 +332,7 @@ class CableSystem(DesignPhase):
 
             else:
                 self.touchdown = depth * 0.3
-                #TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
+                # TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
 
     @staticmethod
     def _catenary(a, *data):

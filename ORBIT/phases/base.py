@@ -10,7 +10,6 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 
 from benedict import benedict
-
 from ORBIT.core.library import initialize_library, extract_library_data
 from ORBIT.core.exceptions import MissingInputs
 
@@ -70,7 +69,6 @@ class BasePhase(ABC):
         missing = []
 
         for k, v in expected.items():
-
             if isinstance(k, str) and "variable" in k:
                 continue
 

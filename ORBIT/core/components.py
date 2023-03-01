@@ -6,7 +6,6 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
-
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.core.exceptions import ItemNotFound, InsufficientCable
 
