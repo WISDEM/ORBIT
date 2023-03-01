@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 import pandas as pd
 import pytest
 from marmot import le
+
 from ORBIT.core import Environment
 from tests.data import test_weather as _weather
 

@@ -9,6 +9,7 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 
 import pytest
+
 from ORBIT.core.exceptions import MissingComponent
 from ORBIT.phases.install.cable_install.common import (
     tow_plow,
@@ -27,6 +28,7 @@ from ORBIT.phases.install.cable_install.common import (
 
 
 def test_load_cable_on_vessel(env, cable_vessel, feeder, simple_cable):
+
     env.register(cable_vessel)
     cable_vessel.initialize(mobilize=False)
 
@@ -57,6 +59,7 @@ def test_load_cable_on_vessel(env, cable_vessel, feeder, simple_cable):
     ],
 )
 def test_task(env, cable_vessel, task, log, args):
+
     env.register(cable_vessel)
     cable_vessel.initialize(mobilize=False)
 

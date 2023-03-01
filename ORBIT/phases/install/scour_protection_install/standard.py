@@ -10,6 +10,7 @@ from math import ceil
 
 import simpy
 from marmot import process
+
 from ORBIT.core import Vessel
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase

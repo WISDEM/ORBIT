@@ -10,6 +10,7 @@ from copy import deepcopy
 
 import numpy as np
 from marmot import process
+
 from ORBIT.core import Vessel
 from ORBIT.core.logic import position_onsite
 from ORBIT.phases.install import InstallPhase
@@ -236,6 +237,7 @@ def install_array_cables(
                 trench_vessel.at_site = True
 
             elif trench_vessel.at_site:
+
                 try:
                     # Dig trench along each cable section distance
                     trench_distance = trench_sections.pop(0)
@@ -267,6 +269,7 @@ def install_array_cables(
                 vessel.at_site = True
 
             elif vessel.at_site:
+
                 try:
                     length, num_sections, *extra = sections.pop(0)
                     if extra:
@@ -288,10 +291,12 @@ def install_array_cables(
                     break
 
                 for _ in range(num_sections):
+
                     try:
                         section = vessel.cable_storage.get_cable(length)
 
                     except InsufficientCable:
+
                         yield vessel.transit(distance, **kwargs)
                         yield load_cable_on_vessel(vessel, cable, **kwargs)
                         yield vessel.transit(distance, **kwargs)

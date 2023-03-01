@@ -10,6 +10,7 @@ from copy import deepcopy
 
 import numpy as np
 import pytest
+
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ArraySystemDesign, CustomArraySystemDesign
 from ORBIT.core.exceptions import LibraryItemNotFoundError
@@ -208,6 +209,7 @@ def test_correct_turbines():
 
 
 def test_floating_calculations():
+
     base = deepcopy(config_full_ring)
     base["site"]["depth"] = 50
     number = base["plant"]["num_turbines"]
