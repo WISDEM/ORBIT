@@ -144,7 +144,7 @@ class FloatingSubstationInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        
+
         return {}
 
 

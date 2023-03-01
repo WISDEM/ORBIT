@@ -114,13 +114,13 @@ class SparDesign(DesignPhase):
         config : dict
         """
 
-        config = self.initialize_library(config, **kwargs)    # These first two lines are required in all modules. They initialize the library 
+        config = self.initialize_library(config, **kwargs)    # These first two lines are required in all modules. They initialize the library
         self.config = self.validate_config(config)            # if it hasn't already been and validate the config against '.expected_config' from above
-    
+
 
         self._design = self.config.get("spar_design", {})     # Not required, but I often save module specific outputs to "_design" for later use
                                                               # If the "spar_design" sub dictionary isn't found, an empty one is returned to
-                                                              # work with later methods.    
+                                                              # work with later methods.
         self._outputs = {}
 
     def run(self):
@@ -174,7 +174,7 @@ class SparDesign(DesignPhase):
         Calculates the cost of the stiffened column for a single spar. From original OffshoreBOS model.
         """
 
-        cr = self._design.get("stiffened_column_CR", 3120)     # This is how I typically handle outputs. This will look for the key in 
+        cr = self._design.get("stiffened_column_CR", 3120)     # This is how I typically handle outputs. This will look for the key in
                                                                # self._design, and return default value if it isn't found.
         return self.stiffened_column_mass * cr
 
@@ -267,7 +267,7 @@ class SparDesign(DesignPhase):
     # The following properties are required methods for a DesignPhase
 
     # .detailed_output returns any relevant detailed outputs from the module
-    # in a dictionary. 
+    # in a dictionary.
     @property
     def detailed_output(self):
         """Returns detailed phase information."""
