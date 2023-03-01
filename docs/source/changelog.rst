@@ -3,6 +3,15 @@
 ORBIT Changelog
 ===============
 
+1.0.8
+-----
+
+- Added explicit methods for adding custom design or install phases to
+  ProjectManager.
+- Added WOMBAT compatibility for custom array system files.
+- Fixed bug in custom array cable system design that breaks for plants with
+  more than two substations.
+
 1.0.7
 -----
 
