@@ -12,7 +12,6 @@ from itertools import groupby
 import numpy as np
 import simpy
 import pandas as pd
-
 from ORBIT.core import Port, Vessel, Environment
 from ORBIT.phases import BasePhase
 from ORBIT.core.defaults import common_costs
