@@ -384,7 +384,7 @@ class ArraySystemDesign(CableSystem):
         -------
         pd.DataFrame
             The DataFrame with the layout data.
-        
+
         Raises
         ------
         ValueError
@@ -744,7 +744,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         ----------
         save_name : [type]
             [description]
-        
+
         Raises
         ------
         ValueError
