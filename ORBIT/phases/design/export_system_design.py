@@ -6,6 +6,7 @@ __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
 import numpy as np
+
 from ORBIT.phases.design._cables import CableSystem
 
 
@@ -212,6 +213,7 @@ class ExportSystemDesign(CableSystem):
         }
 
         for name, cable in self.cables.items():
+
             output["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
                 "sections": [self.length],

@@ -8,6 +8,7 @@ __email__ = "robert.hammond@nrel.gov"
 from copy import deepcopy
 
 import pytest
+
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ExportSystemDesign
 
@@ -103,6 +104,7 @@ def test_design_result():
 
 
 def test_floating_length_calculations():
+
     base = deepcopy(config)
     base["site"]["depth"] = 250
     base["export_system_design"]["touchdown_distance"] = 0

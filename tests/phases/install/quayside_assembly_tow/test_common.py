@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import pandas as pd
 import pytest
+
 from ORBIT.core import WetStorage
 from ORBIT.phases.install.quayside_assembly_tow.common import (
     TurbineAssemblyLine,
@@ -27,6 +28,7 @@ from ORBIT.phases.install.quayside_assembly_tow.common import (
     ],
 )
 def test_SubstructureAssemblyLine(env, num, assigned, expected):
+
     _assigned = len(assigned)
     storage = WetStorage(env, capacity=float("inf"))
 
@@ -52,6 +54,7 @@ def test_SubstructureAssemblyLine(env, num, assigned, expected):
     ],
 )
 def test_TurbineAssemblyLine(env, num, assigned):
+
     _assigned = len(assigned)
     feed = WetStorage(env, capacity=float("inf"))
     target = WetStorage(env, capacity=float("inf"))
@@ -89,6 +92,7 @@ def test_TurbineAssemblyLine(env, num, assigned):
     ],
 )
 def test_Sub_to_Turbine_assembly_interaction(env, sub_lines, turb_lines):
+
     num_turbines = 50
     assigned = [1] * num_turbines
 

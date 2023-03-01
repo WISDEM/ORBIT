@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 import os
 
 import yaml
+
 from ORBIT.core.library import loader
 
 DIR = os.path.split(__file__)[0]

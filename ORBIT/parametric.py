@@ -15,8 +15,9 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from yaml import Loader
-from ORBIT import ProjectManager
 from benedict import benedict
+
+from ORBIT import ProjectManager
 
 
 class ParametricManager:
@@ -201,6 +202,7 @@ class ParametricManager:
 
         funcs = {}
         for k, v in outputs.items():
+
             split = v.split("[")
             attr = split[0]
 
@@ -296,6 +298,7 @@ class LinearModel:
 
         out = ""
         for i, (k, v) in enumerate(params.items()):
+
             if i == 0:
                 pre = ""
 

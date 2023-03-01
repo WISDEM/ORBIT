@@ -12,6 +12,7 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
 from ORBIT.core.library import export_library_specs, extract_library_specs
 from ORBIT.core.exceptions import LibraryItemNotFoundError
 from ORBIT.phases.design._cables import Plant, CableSystem
@@ -383,7 +384,7 @@ class ArraySystemDesign(CableSystem):
         -------
         pd.DataFrame
             The DataFrame with the layout data.
-
+        
         Raises
         ------
         ValueError
@@ -578,6 +579,7 @@ class ArraySystemDesign(CableSystem):
 
         for i, row in enumerate(self.sections_cables):
             for cable, width in zip(max_string, string_widths):
+
                 ix_to_plot = np.where(row == cable)[0]
                 if ix_to_plot.size == 0:
                     continue
@@ -742,7 +744,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         ----------
         save_name : [type]
             [description]
-
+        
         Raises
         ------
         ValueError
@@ -812,6 +814,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         export_library_specs(folder, save_name, rows, file_ext="csv")
 
     def _format_windfarm_data(self):
+
         # Separate the OSS data where substaion_id is equal to id
         substation_filter = (
             self.location_data.substation_id == self.location_data.id
@@ -1059,6 +1062,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
             self.sections_distance = self._compute_haversine_distance()
 
     def run(self):
+
         self._initialize_cables()
         self.create_strings()
         self._initialize_custom_data()

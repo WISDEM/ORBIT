@@ -9,6 +9,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 import numpy as np
 import simpy
 from marmot import process
+
 from ORBIT.core import SubstructureDelivery
 from ORBIT.core.logic import (
     prep_for_site_operations,
@@ -105,7 +106,9 @@ class MonopileInstallation(InstallPhase):
         ) * self.config["plant"]["num_turbines"]
 
     def initialize_substructure_delivery(self):
-        """ """
+        """
+
+        """
 
         monopile = Monopile(**self.config["monopile"])
         tp = TransitionPiece(**self.config["transition_piece"])
@@ -116,6 +119,7 @@ class MonopileInstallation(InstallPhase):
         self.supply_chain = self.config.get("monopile_supply_chain", {})
 
         if self.supply_chain.get("enabled", False):
+
             delivery_time = self.supply_chain.get(
                 "substructure_delivery_time", 168
             )
@@ -342,6 +346,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
             vessel.at_site = True
 
         if vessel.at_site:
+
             if vessel.storage.items:
                 # Prep for monopile install
                 yield prep_for_site_operations(
@@ -403,7 +408,9 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
             wtiv.at_site = True
 
         if wtiv.at_site:
+
             if queue.vessel:
+
                 # Prep for monopile install
                 yield prep_for_site_operations(
                     wtiv, survey_required=True, **kwargs

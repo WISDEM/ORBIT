@@ -10,6 +10,7 @@ from copy import deepcopy
 from math import ceil
 
 from marmot import process
+
 from ORBIT.core.logic import position_onsite
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import InsufficientCable
@@ -182,7 +183,7 @@ class ExportCableInstallation(InstallPhase):
         onshore_substation_cost = (
             0.165 * 1e6
         ) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
-        onshore_misc_cost = 11795 * capacity**0.3549 + 350000
+        onshore_misc_cost = 11795 * capacity ** 0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
         )
