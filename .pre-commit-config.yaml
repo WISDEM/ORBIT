@@ -1,3 +1,6 @@
+ci:
+    skip: [isort, black, pylint]
+
 repos:
 -   repo: https://github.com/timothycrosley/isort
     rev: 4.3.21
