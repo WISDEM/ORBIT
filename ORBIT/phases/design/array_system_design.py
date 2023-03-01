@@ -874,8 +874,8 @@ class CustomArraySystemDesign(ArraySystemDesign):
         missing = set(self.COLUMNS).difference(self.location_data.columns)
         if missing:
             raise ValueError(
-                "The following columns must be included in the location ",
-                f"data: {missing}",
+                "The following columns must be included in the location "
+                f"data: {missing}"
             )
 
         self._format_windfarm_data()
@@ -908,9 +908,9 @@ class CustomArraySystemDesign(ArraySystemDesign):
         # Ensure the number of turbines matches what's expected
         if self.location_data.shape[0] != self.system.num_turbines:
             raise ValueError(
-                "The provided number of turbines ",
-                f"({self.location_data.shape[0]}) does not match the plant ",
-                f"data ({self.system.num_turbines}).",
+                "The provided number of turbines "
+                f"({self.location_data.shape[0]}) does not match the plant "
+                f"data ({self.system.num_turbines})."
             )
 
         n_coords = self.location_data.groupby(
@@ -1040,7 +1040,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 self.sections_bury_speeds[
                     string, order
                 ] = data.bury_speed.values[order]
-            i += string + 1
+            i = string + 1
 
         # Ensure any point in array without a turbine is set to None
         no_turbines = self.location_data_x == 0
