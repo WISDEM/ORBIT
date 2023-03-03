@@ -441,7 +441,7 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log("Delay", delay_time, location="Site")
+                wtiv.submit_action_log("Delay: Not enough vessels for monopiles", delay_time, location="Site")
 
     # Transit to port
     wtiv.at_site = False
