@@ -2,15 +2,15 @@ ci:
     skip: [isort, black, pylint]
 
 repos:
--   repo: https://github.com/timothycrosley/isort
-    rev: 4.3.21
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
     hooks:
         - id: isort
           name: isort
           stages: [commit]
 
 -   repo: https://github.com/psf/black
-    rev: stable
+    rev: 23.1.0
     hooks:
         - id: black
           name: black
@@ -34,7 +34,7 @@ repos:
         args: [--autofix]
 
 -   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.1.1
+    rev: v3.0.0a5
     hooks:
     -   id: pylint
         exclude: ^tests/
