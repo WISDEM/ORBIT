@@ -4,7 +4,7 @@ ORBIT
 Offshore Renewables Balance of system and Installation Tool
 
 
-:Version: 1.0.7
+:Version: 1.0.8
 :Authors: `Jake Nunemaker <https://www.linkedin.com/in/jake-nunemaker/>`_, `Matt Shields <https://www.linkedin.com/in/matt-shields-834a6b66/>`_, `Rob Hammond <https://www.linkedin.com/in/rob-hammond-33583756/>`_
 :Documentation: `ORBIT Docs <https://wisdem.github.io/ORBIT/>`_
 
