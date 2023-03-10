@@ -789,7 +789,37 @@ class ProjectManager:
         start = self.phase_starts[target]
         elapsed = self.phase_times[target]
 
-        return start + elapsed * perc
+        if isinstance(perc, (int, float)):
+
+            if (perc < 0.) or (perc > 1.):
+                raise ValueError(f"Dependent phase perc must be between 0. and 1.")
+            
+            return start + elapsed * perc
+            
+        if isinstance(perc, str):
+
+            try:
+                delta = dt.timedelta(
+                    **{
+                        v.split("=")[0].strip(): float(v.split("=")[1])
+                        for v in perc.split(";")
+                    }
+                )
+
+                return start + delta.days * 24 + delta.seconds / 3600
+
+            except TypeError:
+                raise ValueError(
+                    f"Dependent phase amount must be defined with this format: "
+                    "'weeks=1;hours=12'. Accepted entries: 'weeks', 'days', 'hours'."  
+                )
+
+        else:
+            raise ValueError(
+                f"Unrecognized dependent phase amount: '{perc}'. "
+                f"Must be float between 0. and 1.0 or str with format "
+                "'weeks=1;days=0;hours=12'"
+            )
 
     @staticmethod
     def transform_weather_input(weather):
@@ -875,7 +905,8 @@ class ProjectManager:
                     raise WeatherProfileError(_dt, self.weather)
                 
             else:
-                defined[k] = (_dt - self.start_date).days * 24
+                delta = (_dt - self.start_date)
+                defined[k] = delta.days * 24 + delta.seconds / 3600
         
         return defined, depends
 
