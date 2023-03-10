@@ -831,20 +831,7 @@ class ProjectManager:
                 defined[k] = ceil(v)
 
             elif isinstance(v, str):
-                _dt = dt.datetime.strptime(v, self.date_format_short)
-
-                try:
-                    i = self.weather.index.get_loc(_dt)
-                    defined[k] = i
-
-                except AttributeError:
-                    raise ValueError(
-                        f"No weather profile configured "
-                        f"for '{k}': '{v}' input type."
-                    )
-
-                except KeyError:
-                    raise WeatherProfileError(_dt, self.weather)
+                defined[k] = v
 
             elif isinstance(v, tuple) and len(v) == 2:
                 depends[k] = v
@@ -854,6 +841,34 @@ class ProjectManager:
 
         if not defined:
             raise ValueError("No phases have a defined start index/date.")
+        
+        if len(set(type(i) for i in defined.values())) > 1:
+            raise ValueError(
+                "Defined start date types can't be mixed. "
+                "All must be an int (index location) or str (format: '%m/%d/%Y'). "
+                "This does not apply to the dependent phases defined as tuples."
+            )
+        
+        for k, v in defined.items():
+
+            if isinstance(v, int):
+                continue
+
+            _dt = dt.datetime.strptime(v, self.date_format_short)
+
+            try:
+                i = self.weather.index.get_loc(_dt)
+                defined[k] = i
+
+            except AttributeError:
+                raise ValueError(
+                    f"No weather profile configured "
+                    f"for '{k}': '{v}' input type."
+                )
+
+            except KeyError:
+                raise WeatherProfileError(_dt, self.weather)
+        
 
         return defined, depends
 

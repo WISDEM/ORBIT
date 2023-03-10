@@ -148,11 +148,11 @@ def test_find_key_match():
 
 
 ### Overlapping Install Phases
-def test_install_phase_start_parsing():
+def test_install_phase_start_parsing__dates():
 
     config_mixed_starts = deepcopy(config)
     config_mixed_starts["install_phases"] = {
-        "MonopileInstallation": 0,
+        "MonopileInstallation": "10/22/2010",
         "TurbineInstallation": "10/22/2009",
         "ArrayCableInstallation": ("MonopileInstallation", 0.5),
     }
@@ -164,8 +164,28 @@ def test_install_phase_start_parsing():
     assert len(defined) == 2
     assert len(depends) == 1
 
-    assert defined["MonopileInstallation"] == 0
+    assert defined["MonopileInstallation"] == 8761
     assert defined["TurbineInstallation"] == 1
+
+
+def test_install_phase_start_parsing__ints():
+
+    config_mixed_starts = deepcopy(config)
+    config_mixed_starts["install_phases"] = {
+        "MonopileInstallation": 0,
+        "TurbineInstallation": 100,
+        "ArrayCableInstallation": ("MonopileInstallation", 0.5),
+    }
+
+    project = ProjectManager(config_mixed_starts, weather=weather_df)
+    defined, depends = project._parse_install_phase_values(
+        config_mixed_starts["install_phases"]
+    )
+    assert len(defined) == 2
+    assert len(depends) == 1
+
+    assert defined["MonopileInstallation"] == 0
+    assert defined["TurbineInstallation"] == 100
 
 
 def test_chained_dependencies():
@@ -227,7 +247,6 @@ def test_index_starts(m_start, t_start):
     [
         (0, 0, 0),
         (0, 1000, 1000),
-        (0, "05/01/2010", 4585),
         ("03/01/2010", "03/01/2010", 0),
         ("03/01/2010", "05/01/2010", 1464),
     ],
@@ -250,6 +269,26 @@ def test_start_dates_with_weather(m_start, t_start, expected):
     _diff = (_t["time"] - _t["duration"]) - (_m["time"] - _m["duration"])
     assert _diff == expected
 
+
+@pytest.mark.parametrize(
+    "m_start, t_start",
+    [
+        (0, "03/01/2010"),
+        ("03/01/2010", 0),
+    ],
+)
+def test_mixed_start_date_types(m_start, t_start):
+
+    config_with_defined_starts = deepcopy(config)
+    config_with_defined_starts["install_phases"] = {
+        "MonopileInstallation": m_start,
+        "TurbineInstallation": t_start,
+        "ArrayCableInstallation": ("MonopileInstallation", 0.5),
+    }
+
+    with pytest.raises(ValueError):
+        project = ProjectManager(config_with_defined_starts, weather_df)
+        project.run()
 
 def test_duplicate_phase_definitions():
     config_with_duplicates = deepcopy(config)
