@@ -126,6 +126,17 @@ class ProjectManager:
         self.phase_times = {}
         self._output_logs = []
 
+    @property
+    def start_date(self):
+        """Return start date for the analysis. If weather is configured, the
+        first date in the weather profile is used. If weather is not configured,
+        an arbitary start date is assumed and used to index phase times."""
+
+        if self.weather is not None:
+            return self.weather.index[0].to_pydatetime()
+
+        return dt.datetime(2010, 1, 1, 0, 0)
+
     def run(self, **kwargs):
         """
         Main project run method.
@@ -857,19 +868,14 @@ class ProjectManager:
             _dt = dt.datetime.strptime(v, self.date_format_short)
 
             try:
-                i = self.weather.index.get_loc(_dt)
-                defined[k] = i
+                defined[k] = self.weather.index.get_loc(_dt)
 
             except AttributeError:
-                raise ValueError(
-                    f"No weather profile configured "
-                    f"for '{k}': '{v}' input type."
-                )
+                defined[k] = (_dt - self.start_date).days * 24
 
             except KeyError:
                 raise WeatherProfileError(_dt, self.weather)
         
-
         return defined, depends
 
     def get_weather_profile(self, start):
@@ -1156,7 +1162,12 @@ class ProjectManager:
 
         for phase, _start in self.config["install_phases"].items():
 
-            start = dt.datetime.strptime(_start, self.date_format_short)
+            try:
+                start = dt.datetime.strptime(_start, self.date_format_short)
+
+            except TypeError:
+                start = self.start_date + dt.timedelta(hours=ceil(self.phase_starts[phase]))
+
             end = start + dt.timedelta(hours=ceil(self.phase_times[phase]))
 
             dates[phase] = {
