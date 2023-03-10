@@ -867,14 +867,15 @@ class ProjectManager:
 
             _dt = dt.datetime.strptime(v, self.date_format_short)
 
-            try:
-                defined[k] = self.weather.index.get_loc(_dt)
+            if self.weather is not None:
+                try:
+                    defined[k] = self.weather.index.get_loc(_dt)
 
-            except AttributeError:
+                except KeyError:
+                    raise WeatherProfileError(_dt, self.weather)
+                
+            else:
                 defined[k] = (_dt - self.start_date).days * 24
-
-            except KeyError:
-                raise WeatherProfileError(_dt, self.weather)
         
         return defined, depends
 
