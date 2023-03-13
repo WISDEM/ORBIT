@@ -808,7 +808,7 @@ class ProjectManager:
 
                 return start + delta.days * 24 + delta.seconds / 3600
 
-            except TypeError:
+            except (TypeError, IndexError):
                 raise ValueError(
                     f"Dependent phase amount must be defined with this format: "
                     "'weeks=1;hours=12'. Accepted entries: 'weeks', 'days', 'hours'."  

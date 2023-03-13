@@ -187,6 +187,48 @@ def test_install_phase_start_parsing__ints():
     assert defined["MonopileInstallation"] == 0
     assert defined["TurbineInstallation"] == 100
 
+@pytest.mark.parametrize("weather", (None, weather_df))
+@pytest.mark.parametrize("defined", (0, "10/22/2009"))
+@pytest.mark.parametrize(
+    "amount_str, diff",
+    [
+        ("hours=10", 10),
+        ("days=1", 24),
+        ("days=1;hours=10", 34),
+        ("weeks=1", 168),
+        ("weeks=1;days=1;hours=10", 202),
+    ]
+)
+def test_dependent_install_phases_fixed_amounts(weather, defined, amount_str, diff):
+
+    new = deepcopy(config)
+    new["install_phases"] = {
+        "MonopileInstallation": defined,
+        "TurbineInstallation": ("MonopileInstallation", amount_str),
+    }
+
+    project = ProjectManager(new, weather=weather)
+    project.run()
+
+    diff_calc = project.phase_starts["TurbineInstallation"] - project.phase_starts["MonopileInstallation"]
+
+    assert diff_calc == diff
+
+
+@pytest.mark.parametrize("input_val", (-1, 1.2, "years=10", "days:10"))
+def test_dependent_install_phases_bad_inputs(input_val):
+
+    new = deepcopy(config)
+    new["install_phases"] = {
+        "MonopileInstallation": 0,
+        "TurbineInstallation": ("MonopileInstallation", input_val),
+    }
+
+    project = ProjectManager(new)
+
+    with pytest.raises(ValueError):
+        project.run()
+
 
 def test_chained_dependencies():
 
