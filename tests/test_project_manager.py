@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from copy import deepcopy
 
 import pandas as pd
+import datetime as dt
 import pytest
 
 from ORBIT import ProjectManager
@@ -228,6 +229,29 @@ def test_dependent_install_phases_bad_inputs(input_val):
 
     with pytest.raises(ValueError):
         project.run()
+
+
+@pytest.mark.parametrize("weather", (None, weather_df))
+@pytest.mark.parametrize("defined", (0, "10/22/2009"))
+@pytest.mark.parametrize("input_val", (0.5, "hours=10", "days=1;hours=10"))
+def test_dependent_install_phases_phase_dates(weather, defined, input_val):
+
+    new = deepcopy(config)
+    new["install_phases"] = {
+        "MonopileInstallation": defined,
+        "TurbineInstallation": ("MonopileInstallation", input_val),
+    }
+
+    project = ProjectManager(new, weather=weather)
+    project.run()
+
+    phase_dates = project.phase_dates
+    for p in ["MonopileInstallation", "TurbineInstallation"]:
+        assert p in phase_dates
+
+        for key in ["start", "end"]:
+            _ = dt.datetime.strptime(phase_dates[p][key], project.date_format_long)
+            assert True
 
 
 def test_chained_dependencies():
