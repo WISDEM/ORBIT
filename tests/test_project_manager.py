@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from copy import deepcopy
 
 import pandas as pd
+import datetime as dt
 import pytest
 
 from ORBIT import ProjectManager
@@ -148,11 +149,11 @@ def test_find_key_match():
 
 
 ### Overlapping Install Phases
-def test_install_phase_start_parsing():
+def test_install_phase_start_parsing__dates():
 
     config_mixed_starts = deepcopy(config)
     config_mixed_starts["install_phases"] = {
-        "MonopileInstallation": 0,
+        "MonopileInstallation": "10/22/2010",
         "TurbineInstallation": "10/22/2009",
         "ArrayCableInstallation": ("MonopileInstallation", 0.5),
     }
@@ -164,8 +165,93 @@ def test_install_phase_start_parsing():
     assert len(defined) == 2
     assert len(depends) == 1
 
-    assert defined["MonopileInstallation"] == 0
+    assert defined["MonopileInstallation"] == 8761
     assert defined["TurbineInstallation"] == 1
+
+
+def test_install_phase_start_parsing__ints():
+
+    config_mixed_starts = deepcopy(config)
+    config_mixed_starts["install_phases"] = {
+        "MonopileInstallation": 0,
+        "TurbineInstallation": 100,
+        "ArrayCableInstallation": ("MonopileInstallation", 0.5),
+    }
+
+    project = ProjectManager(config_mixed_starts, weather=weather_df)
+    defined, depends = project._parse_install_phase_values(
+        config_mixed_starts["install_phases"]
+    )
+    assert len(defined) == 2
+    assert len(depends) == 1
+
+    assert defined["MonopileInstallation"] == 0
+    assert defined["TurbineInstallation"] == 100
+
+@pytest.mark.parametrize("weather", (None, weather_df))
+@pytest.mark.parametrize("defined", (0, "10/22/2009"))
+@pytest.mark.parametrize(
+    "amount_str, diff",
+    [
+        ("hours=10", 10),
+        ("days=1", 24),
+        ("days=1;hours=10", 34),
+        ("weeks=1", 168),
+        ("weeks=1;days=1;hours=10", 202),
+    ]
+)
+def test_dependent_install_phases_fixed_amounts(weather, defined, amount_str, diff):
+
+    new = deepcopy(config)
+    new["install_phases"] = {
+        "MonopileInstallation": defined,
+        "TurbineInstallation": ("MonopileInstallation", amount_str),
+    }
+
+    project = ProjectManager(new, weather=weather)
+    project.run()
+
+    diff_calc = project.phase_starts["TurbineInstallation"] - project.phase_starts["MonopileInstallation"]
+
+    assert diff_calc == diff
+
+
+@pytest.mark.parametrize("input_val", (-1, 1.2, "years=10", "days:10"))
+def test_dependent_install_phases_bad_inputs(input_val):
+
+    new = deepcopy(config)
+    new["install_phases"] = {
+        "MonopileInstallation": 0,
+        "TurbineInstallation": ("MonopileInstallation", input_val),
+    }
+
+    project = ProjectManager(new)
+
+    with pytest.raises(ValueError):
+        project.run()
+
+
+@pytest.mark.parametrize("weather", (None, weather_df))
+@pytest.mark.parametrize("defined", (0, "10/22/2009"))
+@pytest.mark.parametrize("input_val", (0.5, "hours=10", "days=1;hours=10"))
+def test_dependent_install_phases_phase_dates(weather, defined, input_val):
+
+    new = deepcopy(config)
+    new["install_phases"] = {
+        "MonopileInstallation": defined,
+        "TurbineInstallation": ("MonopileInstallation", input_val),
+    }
+
+    project = ProjectManager(new, weather=weather)
+    project.run()
+
+    phase_dates = project.phase_dates
+    for p in ["MonopileInstallation", "TurbineInstallation"]:
+        assert p in phase_dates
+
+        for key in ["start", "end"]:
+            _ = dt.datetime.strptime(phase_dates[p][key], project.date_format_long)
+            assert True
 
 
 def test_chained_dependencies():
@@ -227,7 +313,6 @@ def test_index_starts(m_start, t_start):
     [
         (0, 0, 0),
         (0, 1000, 1000),
-        (0, "05/01/2010", 4585),
         ("03/01/2010", "03/01/2010", 0),
         ("03/01/2010", "05/01/2010", 1464),
     ],
@@ -250,6 +335,26 @@ def test_start_dates_with_weather(m_start, t_start, expected):
     _diff = (_t["time"] - _t["duration"]) - (_m["time"] - _m["duration"])
     assert _diff == expected
 
+
+@pytest.mark.parametrize(
+    "m_start, t_start",
+    [
+        (0, "03/01/2010"),
+        ("03/01/2010", 0),
+    ],
+)
+def test_mixed_start_date_types(m_start, t_start):
+
+    config_with_defined_starts = deepcopy(config)
+    config_with_defined_starts["install_phases"] = {
+        "MonopileInstallation": m_start,
+        "TurbineInstallation": t_start,
+        "ArrayCableInstallation": ("MonopileInstallation", 0.5),
+    }
+
+    with pytest.raises(ValueError):
+        project = ProjectManager(config_with_defined_starts, weather_df)
+        project.run()
 
 def test_duplicate_phase_definitions():
     config_with_duplicates = deepcopy(config)
