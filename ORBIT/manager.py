@@ -686,7 +686,7 @@ class ProjectManager:
                         pass
 
                 self._output_logs.extend(logs)
-                start = ceil(start + time)
+                start = start + time
 
     def run_multiple_phases_overlapping(self, phases, **kwargs):
         """
@@ -868,10 +868,7 @@ class ProjectManager:
 
         for k, v in phases.items():
 
-            if isinstance(v, (int, float)):
-                defined[k] = ceil(v)
-
-            elif isinstance(v, str):
+            if isinstance(v, (int, float, str)):
                 defined[k] = v
 
             elif isinstance(v, tuple) and len(v) == 2:
@@ -1198,9 +1195,9 @@ class ProjectManager:
                 start = dt.datetime.strptime(_start, self.date_format_short)
 
             except TypeError:
-                start = self.start_date + dt.timedelta(hours=ceil(self.phase_starts[phase]))
+                start = self.start_date + dt.timedelta(hours=self.phase_starts[phase])
 
-            end = start + dt.timedelta(hours=ceil(self.phase_times[phase]))
+            end = start + dt.timedelta(hours=self.phase_times[phase])
 
             dates[phase] = {
                 "start": start.strftime(self.date_format_long),
