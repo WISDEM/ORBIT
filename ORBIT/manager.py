@@ -132,6 +132,17 @@ class ProjectManager:
         self.phase_times = {}
         self._output_logs = []
 
+    @property
+    def start_date(self):
+        """Return start date for the analysis. If weather is configured, the
+        first date in the weather profile is used. If weather is not configured,
+        an arbitary start date is assumed and used to index phase times."""
+
+        if self.weather is not None:
+            return self.weather.index[0].to_pydatetime()
+
+        return dt.datetime(2010, 1, 1, 0, 0)
+
     def run(self, **kwargs):
         """
         Main project run method.
@@ -681,7 +692,7 @@ class ProjectManager:
                         pass
 
                 self._output_logs.extend(logs)
-                start = ceil(start + time)
+                start = start + time
 
     def run_multiple_phases_overlapping(self, phases, **kwargs):
         """
@@ -784,7 +795,37 @@ class ProjectManager:
         start = self.phase_starts[target]
         elapsed = self.phase_times[target]
 
-        return start + elapsed * perc
+        if isinstance(perc, (int, float)):
+
+            if (perc < 0.) or (perc > 1.):
+                raise ValueError(f"Dependent phase perc must be between 0. and 1.")
+            
+            return start + elapsed * perc
+            
+        if isinstance(perc, str):
+
+            try:
+                delta = dt.timedelta(
+                    **{
+                        v.split("=")[0].strip(): float(v.split("=")[1])
+                        for v in perc.split(";")
+                    }
+                )
+
+                return start + delta.days * 24 + delta.seconds / 3600
+
+            except (TypeError, IndexError):
+                raise ValueError(
+                    f"Dependent phase amount must be defined with this format: "
+                    "'weeks=1;hours=12'. Accepted entries: 'weeks', 'days', 'hours'."  
+                )
+
+        else:
+            raise ValueError(
+                f"Unrecognized dependent phase amount: '{perc}'. "
+                f"Must be float between 0. and 1.0 or str with format "
+                "'weeks=1;days=0;hours=12'"
+            )
 
     @staticmethod
     def transform_weather_input(weather):
@@ -833,24 +874,8 @@ class ProjectManager:
 
         for k, v in phases.items():
 
-            if isinstance(v, (int, float)):
-                defined[k] = ceil(v)
-
-            elif isinstance(v, str):
-                _dt = dt.datetime.strptime(v, self.date_format_short)
-
-                try:
-                    i = self.weather.index.get_loc(_dt)
-                    defined[k] = i
-
-                except AttributeError:
-                    raise ValueError(
-                        f"No weather profile configured "
-                        f"for '{k}': '{v}' input type."
-                    )
-
-                except KeyError:
-                    raise WeatherProfileError(_dt, self.weather)
+            if isinstance(v, (int, float, str)):
+                defined[k] = v
 
             elif isinstance(v, tuple) and len(v) == 2:
                 depends[k] = v
@@ -860,7 +885,32 @@ class ProjectManager:
 
         if not defined:
             raise ValueError("No phases have a defined start index/date.")
+        
+        if len(set(type(i) for i in defined.values())) > 1:
+            raise ValueError(
+                "Defined start date types can't be mixed. "
+                "All must be an int (index location) or str (format: '%m/%d/%Y'). "
+                "This does not apply to the dependent phases defined as tuples."
+            )
+        
+        for k, v in defined.items():
 
+            if isinstance(v, int):
+                continue
+
+            _dt = dt.datetime.strptime(v, self.date_format_short)
+
+            if self.weather is not None:
+                try:
+                    defined[k] = self.weather.index.get_loc(_dt)
+
+                except KeyError:
+                    raise WeatherProfileError(_dt, self.weather)
+                
+            else:
+                delta = (_dt - self.start_date)
+                defined[k] = delta.days * 24 + delta.seconds / 3600
+        
         return defined, depends
 
     def get_weather_profile(self, start):
@@ -1147,8 +1197,13 @@ class ProjectManager:
 
         for phase, _start in self.config["install_phases"].items():
 
-            start = dt.datetime.strptime(_start, self.date_format_short)
-            end = start + dt.timedelta(hours=ceil(self.phase_times[phase]))
+            try:
+                start = dt.datetime.strptime(_start, self.date_format_short)
+
+            except TypeError:
+                start = self.start_date + dt.timedelta(hours=self.phase_starts[phase])
+
+            end = start + dt.timedelta(hours=self.phase_times[phase])
 
             dates[phase] = {
                 "start": start.strftime(self.date_format_long),
