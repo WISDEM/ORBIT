@@ -257,7 +257,7 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
                 start = vessel.env.now
                 yield queue.activate
                 delay_time = vessel.env.now - start
-                vessel.submit_action_log("Delay", delay_time, location="Site")
+                vessel.submit_action_log("Delay: Not enough vessels for oss", delay_time, location="Site")
 
     # Transit to port
     vessel.at_site = False

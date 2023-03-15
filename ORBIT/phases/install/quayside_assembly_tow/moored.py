@@ -412,6 +412,6 @@ def install_moored_substructures(
             delay_time = vessel.env.now - start
 
             if n != 0:
-                vessel.submit_action_log("Delay", delay_time, location="Site")
+                vessel.submit_action_log("Delay: Not enough vessels for Moored substructures", delay_time, location="Site")
 
     yield vessel.transit(distance)
