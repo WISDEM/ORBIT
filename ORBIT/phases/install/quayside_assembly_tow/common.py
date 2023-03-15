@@ -257,7 +257,7 @@ class TurbineAssemblyLine(Agent):
 
         yield self.task(
             "Lift and Attach Tower Section",
-            12,
+            4,
             constraints={"windspeed": le(15)},
         )
 
