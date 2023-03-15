@@ -213,6 +213,8 @@ class TurbineAssemblyLine(Agent):
 
         yield self.mechanical_completion()
 
+        yield self.electrical_completion()
+
         start = self.env.now
         yield self.target.put(1)
         delay = self.env.now - start
@@ -267,7 +269,7 @@ class TurbineAssemblyLine(Agent):
         """
 
         yield self.task(
-            "Lift and Attach Nacelle", 7, constraints={"windspeed": le(15)}
+            "Lift and Attach Nacelle", 12, constraints={"windspeed": le(15)}
         )
 
     @process
@@ -290,6 +292,17 @@ class TurbineAssemblyLine(Agent):
 
         yield self.task(
             "Mechanical Completion", 24, constraints={"windspeed": le(18)}
+        )
+
+    @process
+    def electrical_completion(self):
+        """
+        Task representing time associated with performing electrical completion
+        work at quayside, including precommissioning. Assumes the tower is delivered to port in multiple sections, requiring cable pull-in after tower assembly.
+        """
+
+        yield self.task(
+            "Electrical Completion", 72, constraints={"windspeed": le(18)}
         )
 
 
