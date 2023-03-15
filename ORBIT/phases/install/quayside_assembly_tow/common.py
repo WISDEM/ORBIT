@@ -237,7 +237,7 @@ class TurbineAssemblyLine(Agent):
         TODO: Move to dynamic process involving tow groups.
         """
 
-        yield self.task("Move Substructure", 8)
+        yield self.task("Move Substructure", 8, {'port_in_use': false()})
 
     @process
     def prepare_for_assembly(self):
