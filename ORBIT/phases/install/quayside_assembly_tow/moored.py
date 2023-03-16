@@ -26,11 +26,11 @@ class MooredSubInstallation(InstallPhase):
 
     #:
     expected_config = {
-        "support_vessel": "str",
+        "ahts_vessel": "str",
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
-            "station_keeping_vessels": "int",
+            "ahts_vessels": "int (optional, default: 1)",
             "num_groups": "int (optional)",
         },
         "substructure": {
@@ -86,7 +86,6 @@ class MooredSubInstallation(InstallPhase):
         self.initialize_turbine_assembly()
         self.initialize_queue()
         self.initialize_towing_groups()
-        self.initialize_support_vessel()
 
     @property
     def system_capex(self):
@@ -177,24 +176,30 @@ class MooredSubInstallation(InstallPhase):
 
         self.installation_groups = []
 
-        vessel = self.config["towing_vessel"]
+        towing_vessel = self.config["towing_vessel"]
         num_groups = self.config["towing_vessel_groups"].get("num_groups", 1)
-        towing = self.config["towing_vessel_groups"]["towing_vessels"]
+        num_towing = self.config["towing_vessel_groups"]["towing_vessels"]
         towing_speed = self.config["substructure"].get("towing_speed", 6)
 
+        ahts_vessel = self.config["ahts_vessel"]
+        num_ahts = self.config["towing_vessel_groups"]["ahts_vessels"]
+
+        remaining_substructures = [1] * self.num_turbines
+
         for i in range(num_groups):
-            g = TowingGroup(vessel, num=i + 1)
+            g = TowingGroup(towing_vessel, ahts_vessel, i + 1)
             self.env.register(g)
             g.initialize()
             self.installation_groups.append(g)
 
-            transfer_moored_substructures_from_storage(
+            transfer_install_moored_substructures_from_storage(
                 g,
                 self.assembly_storage,
                 self.distance,
-                self.active_group,
-                towing,
+                num_towing,
+                num_ahts,
                 towing_speed,
+                remaining_substructures,
                 **kwargs,
             )
 
@@ -207,32 +212,6 @@ class MooredSubInstallation(InstallPhase):
         self.active_group = simpy.Resource(self.env, capacity=1)
         self.active_group.vessel = None
         self.active_group.activate = self.env.event()
-
-    def initialize_support_vessel(self, **kwargs):
-        """
-        Initializes Multi-Purpose Support Vessel to perform installation
-        processes at site.
-        """
-
-        specs = self.config["support_vessel"]
-        vessel = self.initialize_vessel("Multi-Purpose Support Vessel", specs)
-
-        self.env.register(vessel)
-        vessel.initialize(mobilize=False)
-        self.support_vessel = vessel
-
-        station_keeping_vessels = self.config["towing_vessel_groups"][
-            "station_keeping_vessels"
-        ]
-
-        install_moored_substructures(
-            self.support_vessel,
-            self.active_group,
-            self.distance,
-            self.num_turbines,
-            station_keeping_vessels,
-            **kwargs,
-        )
 
     @property
     def detailed_output(self):
@@ -252,9 +231,6 @@ class MooredSubInstallation(InstallPhase):
                     k: self.operational_delay(str(k))
                     for k in self.installation_groups
                 },
-                self.support_vessel: self.operational_delay(
-                    str(self.support_vessel)
-                ),
             }
         }
 
@@ -268,11 +244,50 @@ class MooredSubInstallation(InstallPhase):
 
 
 @process
-def transfer_moored_substructures_from_storage(
-    group, feed, distance, queue, towing_vessels, towing_speed, **kwargs
+def transfer_install_moored_substructures_from_storage(
+    group,
+    feed,
+    distance,
+    towing_vessels,
+    ahts_vessels,
+    towing_speed,
+    remaining_substructures,
+    **kwargs,
 ):
     """
-    Process logic for the towing vessel group.
+    Trigger the substructure installtions. Shuts down after
+    self.remaining_substructures is empty.
+    """
+
+    while True:
+        try:
+            _ = remaining_substructures.pop(0)
+            yield towing_group_actions(
+                group,
+                feed,
+                distance,
+                towing_vessels,
+                ahts_vessels,
+                towing_speed,
+                **kwargs,
+            )
+
+        except IndexError:
+            break
+
+
+@process
+def towing_group_actions(
+    group,
+    feed,
+    distance,
+    towing_vessels,
+    ahts_vessels,
+    towing_speed,
+    **kwargs,
+):
+    """
+    Process logic for the towing vessel group. Assumes there is an anchor tug boat with each group
 
     Parameters
     ----------
@@ -286,132 +301,79 @@ def transfer_moored_substructures_from_storage(
         Number of vessels to use for towing to site.
     towing_speed : int | float
         Configured towing speed (km/h)
+    num_substructures : int
+        Number of substructures to be installed corresponding to number of turbines
     """
 
     towing_time = distance / towing_speed
     transit_time = distance / group.transit_speed
 
-    while True:
+    start = group.env.now
+    assembly = yield feed.get()
+    delay = group.env.now - start
 
-        start = group.env.now
-        assembly = yield feed.get()
-        delay = group.env.now - start
-
-        if delay > 0:
-            group.submit_action_log(
-                "Delay: No Completed Assemblies Available", delay
-            )
-
-        yield group.group_task(
-            "Ballast to Towing Draft",
-            6,
+    if delay > 0:
+        group.submit_action_log(
+            "Delay: No Completed Assemblies Available",
+            delay,
             num_vessels=towing_vessels,
-            constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            num_ahts_vessels=ahts_vessels,
         )
 
-        yield group.group_task(
-            "Tow Substructure",
-            towing_time,
-            num_vessels=towing_vessels,
-            constraints={"windspeed": le(15), "waveheight": le(2.5)},
-        )
+    yield group.group_task(
+        "Ballast to Towing Draft",
+        6,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+    )
 
-        # At Site
-        with queue.request() as req:
-            queue_start = group.env.now
-            yield req
+    yield group.group_task(
+        "Tow Substructure",
+        towing_time,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+    )
 
-            queue_time = group.env.now - queue_start
-            if queue_time > 0:
-                group.submit_action_log("Queue", queue_time, location="Site")
+    # At Site
+    yield group.group_task(
+        "Position Substructure",
+        2,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+    )
 
-            queue.vessel = group
-            active_start = group.env.now
-            queue.activate.succeed()
+    yield group.group_task(
+        "Ballast to Operational Draft",
+        6,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+    )
 
-            # Released by WTIV when objects are depleted
-            group.release = group.env.event()
-            yield group.release
-            active_time = group.env.now - active_start
+    yield group.group_task(
+        "Connect Mooring Lines, Pre-tension and pre-stretch",
+        20,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+        suspendable=True,
+        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+    )
 
-            queue.vessel = None
-            queue.activate = group.env.event()
+    yield group.group_task(
+        "Check Mooring Lines",
+        6,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+        suspendable=True,
+        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+    )
 
-        yield group.group_task(
-            "Transit", transit_time, num_vessels=towing_vessels
-        )
-
-
-@process
-def install_moored_substructures(
-    vessel, queue, distance, substructures, station_keeping_vessels, **kwargs
-):
-    """
-    Logic that a Multi-Purpose Support Vessel uses at site to complete the
-    installation of moored substructures.
-
-    Parameters
-    ----------
-    vessel : Vessel
-    queue :
-    distance : int | float
-        Distance between port and site (km).
-    substructures : int
-        Number of substructures to install before transiting back to port.
-    station_keeping_vessels : int
-        Number of vessels to use for substructure station keeping during final
-        installation at site.
-    """
-
-    n = 0
-    while n < substructures:
-        if queue.vessel:
-
-            start = vessel.env.now
-            if n == 0:
-                vessel.mobilize()
-                yield vessel.transit(distance)
-
-            yield vessel.task_wrapper(
-                "Position Substructure",
-                2,
-                constraints={"windspeed": le(15), "waveheight": le(2.5)},
-            )
-            yield vessel.task_wrapper(
-                "Ballast to Operational Draft",
-                6,
-                constraints={"windspeed": le(15), "waveheight": le(2.5)},
-            )
-            yield vessel.task_wrapper(
-                "Connect Mooring Lines, Pre-tension and pre-stretch",
-                20,
-                suspendable=True,
-                constraints={"windspeed": le(15), "waveheight": le(2.5)},
-            )
-            yield vessel.task_wrapper(
-                "Check Mooring Lines",
-                6,
-                suspendable=True,
-                constraints={"windspeed": le(15), "waveheight": le(2.5)},
-            )
-
-            group_time = vessel.env.now - start
-            queue.vessel.submit_action_log(
-                "Positioning Support",
-                group_time,
-                location="site",
-                num_vessels=station_keeping_vessels,
-            )
-            yield queue.vessel.release.succeed()
-            vessel.submit_debug_log(progress="Substructure")
-            n += 1
-
-        else:
-            start = vessel.env.now
-            yield queue.activate
-            delay_time = vessel.env.now - start
-
-            if n != 0:
-                vessel.submit_action_log("Delay: Not enough vessels for Moored substructures", delay_time, location="Site")
-
-    yield vessel.transit(distance)
+    yield group.group_task(
+        "Transit",
+        transit_time,
+        num_vessels=towing_vessels,
+        num_ahts_vessels=ahts_vessels,
+    )

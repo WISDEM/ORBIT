@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 from marmot import le, process
-
 from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
@@ -184,7 +183,7 @@ class GravityBasedInstallation(InstallPhase):
         towing_speed = self.config["substructure"].get("towing_speed", 6)
 
         for i in range(num_groups):
-            g = TowingGroup(vessel, num=i + 1)
+            g = TowingGroup(vessel, None, num=i + 1)
             self.env.register(g)
             g.initialize()
             self.installation_groups.append(g)
@@ -293,18 +292,21 @@ def transfer_gbf_substructures_from_storage(
     transit_time = distance / group.transit_speed
 
     while True:
-
         start = group.env.now
         assembly = yield feed.get()
         delay = group.env.now - start
 
         if delay > 0:
             group.submit_action_log(
-                "Delay: No Completed Assemblies Available", delay
+                "Delay: No Completed Assemblies Available",
+                delay,
+                num_vessels=towing_vessels,
             )
 
         yield group.group_task(
-            "Tow Substructure", towing_time, num_vessels=towing_vessels
+            "Tow Substructure",
+            towing_time,
+            num_vessels=towing_vessels,
         )
 
         # At Site
@@ -314,7 +316,12 @@ def transfer_gbf_substructures_from_storage(
 
             queue_time = group.env.now - queue_start
             if queue_time > 0:
-                group.submit_action_log("Queue", queue_time, location="Site")
+                group.submit_action_log(
+                    "Queue",
+                    queue_time,
+                    location="Site",
+                    num_vessels=towing_vessels,
+                )
 
             queue.vessel = group
             active_start = group.env.now
@@ -357,7 +364,6 @@ def install_gravity_base_foundations(
     n = 0
     while n < substructures:
         if queue.vessel:
-
             start = vessel.env.now
             if n == 0:
                 vessel.mobilize()
@@ -407,6 +413,10 @@ def install_gravity_base_foundations(
             delay_time = vessel.env.now - start
 
             if n != 0:
-                vessel.submit_action_log("Delay: Not enough vessels for gravity foundations", delay_time, location="Site")
+                vessel.submit_action_log(
+                    "Delay: Not enough vessels for gravity foundations",
+                    delay_time,
+                    location="Site",
+                )
 
     yield vessel.transit(distance)

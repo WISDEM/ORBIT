@@ -237,7 +237,7 @@ class TurbineAssemblyLine(Agent):
         TODO: Move to dynamic process involving tow groups.
         """
 
-        yield self.task("Move Substructure", 8, {'port_in_use': False})
+        yield self.task("Move Substructure", 8, {"port_in_use": False})
 
     @process
     def prepare_for_assembly(self):
@@ -309,7 +309,7 @@ class TurbineAssemblyLine(Agent):
 class TowingGroup(Agent):
     """Class to represent an arbitrary group of towing vessels."""
 
-    def __init__(self, vessel_specs, num=1):
+    def __init__(self, vessel_specs, ahts_vessel_specs=None, num=1):
         """
         Creates an instance of TowingGroup.
 
@@ -318,12 +318,26 @@ class TowingGroup(Agent):
         vessel_specs : dict
             Specs for the individual vessels used in the towing group.
             Currently restricted to one vessel specification per group.
+        num : int
+            Towing group number
+        ahts_vessel_specs : dict
+            Specs for the anchor hndling tug vessel.
         """
 
         super().__init__(f"Towing Group {num}")
         self._specs = vessel_specs
-        self.day_rate = self._specs["vessel_specs"]["day_rate"]
+        self.day_rate_towing = self._specs["vessel_specs"]["day_rate"]
+        self.day_rate_anchor = 0.0
         self.transit_speed = self._specs["transport_specs"]["transit_speed"]
+
+        if ahts_vessel_specs is not None:
+            self.day_rate_anchor = ahts_vessel_specs["vessel_specs"][
+                "day_rate"
+            ]
+            self.transit_speed = min(
+                vessel_specs["transport_specs"]["transit_speed"],
+                ahts_vessel_specs["transport_specs"]["transit_speed"],
+            )
 
     def initialize(self):
         """Initializes the towing group."""
@@ -332,7 +346,13 @@ class TowingGroup(Agent):
 
     @process
     def group_task(
-        self, name, duration, num_vessels, constraints={}, **kwargs
+        self,
+        name,
+        duration,
+        num_vessels,
+        num_ahts_vessels=0,
+        constraints={},
+        **kwargs,
     ):
         """
         Submits a group task with any number of towing vessels.
@@ -346,9 +366,12 @@ class TowingGroup(Agent):
             Rounded up to the nearest int.
         num_vessels : int
             Number of individual towing vessels needed for the operation.
+        num_ahts_vessels : int
+            Number of anchor handling tug vessels used for the operation.
         """
 
         kwargs = {**kwargs, "num_vessels": num_vessels}
+        kwargs = {**kwargs, "num_ahts_vessels": num_ahts_vessels}
         yield self.task(name, duration, constraints=constraints, **kwargs)
 
     def operation_cost(self, hours, **kwargs):
@@ -365,8 +388,16 @@ class TowingGroup(Agent):
         """
 
         mult = kwargs.get("cost_multiplier", 1.0)
-        vessels = kwargs.get("num_vessels", 1)
-        return (self.day_rate / 24) * vessels * hours * mult
+        num_towing_vessels = kwargs.get("num_vessels", 1)
+        num_ahts_vessels = kwargs.get("num_ahts_vessels", 0)
+        return (
+            (
+                (self.day_rate_towing / 24) * num_towing_vessels
+                + (self.day_rate_anchor / 24) * num_ahts_vessels
+            )
+            * hours
+            * mult
+        )
 
     def submit_action_log(self, action, duration, **kwargs):
         """
