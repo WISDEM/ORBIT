@@ -7,7 +7,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import Agent, le, process
+from marmot import Agent, le, process, false
 from marmot._exceptions import AgentNotRegistered
 
 
@@ -237,7 +237,7 @@ class TurbineAssemblyLine(Agent):
         TODO: Move to dynamic process involving tow groups.
         """
 
-        yield self.task("Move Substructure", 8, {"port_in_use": False})
+        yield self.task("Move Substructure", 8, {"port_in_use": false()})
 
     @process
     def prepare_for_assembly(self):
