@@ -75,6 +75,14 @@ crossing is $500,000. This cost includes materials, installation, etc. Crossing
 cost is calculated as product of number of crossings and unit cost.
 
 
+Onshore Cost
+---------
+The onshore cost is considered to be the minimum cost of interconnection. This includes
+the major required hardware for a cable connection onshore. For HVDC cables, it includes
+the converter cost, DC breaker cost, and transformer cost. For HVAC, it includes the
+transformer cost and switchgear cost.
+
+
 Design Result
 ---------
 The result of this design module (:py:attr:`design_result`) includes the

@@ -8,7 +8,6 @@ __email__ = "robert.hammond@nrel.gov"
 from copy import deepcopy
 
 import pytest
-
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ExportSystemDesign
 
@@ -29,9 +28,10 @@ def test_export_system_creation():
 
 def test_number_cables():
     export = ExportSystemDesign(config)
+    print(export.config)
     export.run()
 
-    assert export.num_cables == 11
+    assert export.num_cables == 9
 
 
 def test_cable_length():
@@ -48,7 +48,7 @@ def test_cable_mass():
 
     length = (0.02 + 3 + 30) * 1.01
     mass = length * export.cable.linear_density
-    assert export.mass == mass
+    assert export.mass == pytest.approx(mass, abs=1e-10)
 
 
 def test_total_cable():
@@ -58,8 +58,8 @@ def test_total_cable():
     length = 0.02 + 3 + 30
     length += length * 0.01
     mass = length * export.cable.linear_density
-    assert export.total_mass == pytest.approx(mass * 11, abs=1e-10)
-    assert export.total_length == pytest.approx(length * 11, abs=1e-10)
+    assert export.total_mass == pytest.approx(mass * 9, abs=1e-10)
+    assert export.total_length == pytest.approx(length * 9, abs=1e-10)
 
 
 def test_cables_property():
@@ -99,7 +99,7 @@ def test_design_result():
     cables = export.design_result["export_system"]["cable"]
 
     assert cables["sections"] == [export.length]
-    assert cables["number"] == 11
+    assert cables["number"] == 9
     assert cables["linear_density"] == export.cable.linear_density
 
 

@@ -87,16 +87,17 @@ class Cable:
 
         # Calc additional cable specs
         if self.cable_type == "HVAC":
-            self.calc_char_impedance(**kwargs)
-            self.calc_power_factor()
             self.calc_compensation_factor()
+
+        self.calc_char_impedance(**kwargs)
+        self.calc_power_factor()
         self.calc_cable_power()
 
     def calc_char_impedance(self):
         """
         Calculate characteristic impedance of cable.
         """
-        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+        if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
             self.char_impedance = 0
         else:
             conductance = 1 / self.ac_resistance
@@ -116,7 +117,7 @@ class Cable:
         Calculate power factor.
         """
 
-        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+        if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
             self.power_factor = 0
         else:
             phase_angle = math.atan(
@@ -129,7 +130,7 @@ class Cable:
         Calculate maximum power transfer through 3-phase cable in :math:`MW`.
         """
 
-        if self.cable_type == "HVDC-monopole" or "HVDC-bipole":
+        if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
             self.cable_power = (
                 self.current_capacity * self.rated_voltage * 2 / 1000
             )
@@ -434,6 +435,7 @@ class CableSystem(DesignPhase):
             ]
             for name in self.cables
         }
+        lengths = {name: x[~np.isnan(x)] for name, x in lengths.items()}
         return lengths
 
     @property

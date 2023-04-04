@@ -311,7 +311,6 @@ class ElectricalDesign(CableSystem):
             + self.switchgear_cost
             + self.converter_cost
             + self.dc_breaker_cost
-            + self.topside_cost
             + self.ancillary_system_cost
             + self.land_assembly_cost
         )
@@ -367,7 +366,7 @@ class ElectricalDesign(CableSystem):
         else:
             num_dc_breaker = self.num_cables
         self.dc_breaker_cost = num_dc_breaker * self._design.get(
-            "dc_breaker_cost", 40000000
+            "dc_breaker_cost", 4000000
         )  # 4e6
 
     def calc_ancillary_system_cost(self):
