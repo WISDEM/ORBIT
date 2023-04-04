@@ -14,6 +14,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from ORBIT.core.library import export_library_specs, extract_library_specs
+from ORBIT.core.exceptions import LibraryItemNotFoundError
 from ORBIT.phases.design._cables import Plant, CableSystem
 
 
@@ -363,7 +364,7 @@ class ArraySystemDesign(CableSystem):
         self._create_wind_farm_layout()
         self._create_cable_section_lengths()
 
-    def save_layout(self, save_name, return_df=False):
+    def save_layout(self, save_name, return_df=False, folder="cables"):
         """Outputs a csv of the substation and turbine positional and cable
         related components.
 
@@ -375,12 +376,23 @@ class ArraySystemDesign(CableSystem):
         return_df : bool, optional
             If true, returns layout_df, a pandas.DataFrame of the cabling
             layout, by default False.
+        folder : str, optional
+            If "cables", then the layout will saved to the "cables" folder, and
+            if "plant", then the layout will be saved to the "project/plant" folder.
 
         Returns
         -------
         pd.DataFrame
             The DataFrame with the layout data.
+
+        Raises
+        ------
+        ValueError
+            Raised if ``folder`` is not one of "cables" or "plant".
         """
+        if folder not in ("cables", "plant"):
+            raise ValueError("`folder` must be one of: 'cables' or plant'.")
+
         num_turbines = self.system.num_turbines
         columns = [
             "id",
@@ -448,7 +460,7 @@ class ArraySystemDesign(CableSystem):
         print(
             f"Saving custom array CSV to: <library_path>/cables/{save_name}.csv"
         )
-        export_library_specs("cables", save_name, data, file_ext="csv")
+        export_library_specs(folder, save_name, data, file_ext="csv")
         if return_df:
             return layout_df
 
@@ -725,14 +737,21 @@ class CustomArraySystemDesign(ArraySystemDesign):
         super().__init__(config, **kwargs)
         self.distance = config["array_system_design"].get("distance", distance)
 
-    def create_project_csv(self, save_name):
+    def create_project_csv(self, save_name, folder="cables"):
         """Creates a base CSV in <`library_path`>/cables/
 
         Parameters
         ----------
         save_name : [type]
             [description]
+
+        Raises
+        ------
+        ValueError
+            Raised if ``folder`` is not one of "cables" or "plant".
         """
+        if folder not in ("cables", "plant"):
+            raise ValueError("`folder` must be one of: 'cables' or plant'.")
 
         self._initialize_cables()
         self.create_strings()
@@ -792,7 +811,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
         print(
             f"Saving custom array CSV to: <library_path>/cables/{save_name}.csv"
         )
-        export_library_specs("cables", save_name, rows, file_ext="csv")
+        export_library_specs(folder, save_name, rows, file_ext="csv")
 
     def _format_windfarm_data(self):
 
@@ -843,16 +862,20 @@ class CustomArraySystemDesign(ArraySystemDesign):
     def _initialize_custom_data(self):
         windfarm = self.config["array_system_design"]["location_data"]
 
-        self.location_data = extract_library_specs(
-            "cables", windfarm, file_type="csv"
-        )
-
+        try:
+            self.location_data = extract_library_specs(
+                "cables", windfarm, file_type="csv"
+            )
+        except LibraryItemNotFoundError:
+            self.location_data = extract_library_specs(
+                "plant", windfarm, file_type="csv"
+            )
         # Make sure no data is missing
         missing = set(self.COLUMNS).difference(self.location_data.columns)
         if missing:
             raise ValueError(
-                "The following columns must be included in the location ",
-                f"data: {missing}",
+                "The following columns must be included in the location "
+                f"data: {missing}"
             )
 
         self._format_windfarm_data()
@@ -885,9 +908,9 @@ class CustomArraySystemDesign(ArraySystemDesign):
         # Ensure the number of turbines matches what's expected
         if self.location_data.shape[0] != self.system.num_turbines:
             raise ValueError(
-                "The provided number of turbines ",
-                f"({self.location_data.shape[0]}) does not match the plant ",
-                f"data ({self.system.num_turbines}).",
+                "The provided number of turbines "
+                f"({self.location_data.shape[0]}) does not match the plant "
+                f"data ({self.system.num_turbines})."
             )
 
         n_coords = self.location_data.groupby(
@@ -1017,7 +1040,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 self.sections_bury_speeds[
                     string, order
                 ] = data.bury_speed.values[order]
-            i += string + 1
+            i = string + 1
 
         # Ensure any point in array without a turbine is set to None
         no_turbines = self.location_data_x == 0
