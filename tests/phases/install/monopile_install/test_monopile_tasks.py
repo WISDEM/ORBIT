@@ -9,6 +9,7 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 
 import pytest
+
 from ORBIT.core.exceptions import MissingComponent
 from ORBIT.phases.install.monopile_install.common import (
     drive_monopile,
@@ -34,6 +35,7 @@ from ORBIT.phases.install.monopile_install.common import (
     ],
 )
 def test_task(env, wtiv, task, log, args):
+
     env.register(wtiv)
     wtiv.initialize(mobilize=False)
 
@@ -53,6 +55,7 @@ def test_task(env, wtiv, task, log, args):
     ],
 )
 def test_task_fails(env, feeder, task, log, args):
+
     env.register(feeder)
     feeder.initialize(mobilize=False)
 

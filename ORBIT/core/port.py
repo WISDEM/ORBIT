@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import simpy
+
 from ORBIT.core.exceptions import ItemNotFound
 
 

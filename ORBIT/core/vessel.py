@@ -15,6 +15,7 @@ from marmot._exceptions import (
     WindowNotFound,
     AgentNotRegistered,
 )
+
 from ORBIT.core.components import (
     Crane,
     JackingSys,
@@ -85,6 +86,7 @@ class Vessel(Agent):
     def task_wrapper(
         self, name, duration, constraints={}, suspendable=False, **kwargs
     ):
+
         duration /= self.avail
         yield self.task(name, duration, constraints, suspendable, **kwargs)
 

@@ -8,6 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 from marmot import le, process
+
 from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
@@ -291,6 +292,7 @@ def transfer_moored_substructures_from_storage(
     transit_time = distance / group.transit_speed
 
     while True:
+
         start = group.env.now
         assembly = yield feed.get()
         delay = group.env.now - start
@@ -364,6 +366,7 @@ def install_moored_substructures(
     n = 0
     while n < substructures:
         if queue.vessel:
+
             start = vessel.env.now
             if n == 0:
                 vessel.mobilize()

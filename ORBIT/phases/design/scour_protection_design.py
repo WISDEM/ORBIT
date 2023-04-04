@@ -8,6 +8,7 @@ __email__ = "robert.hammond@nrel.gov"
 from math import ceil
 
 import numpy as np
+
 from ORBIT.phases.design import DesignPhase
 
 
@@ -114,7 +115,7 @@ class ScourProtectionDesign(DesignPhase):
         r = self.diameter / 2 + self.scour_depth / np.tan(np.radians(self.phi))
 
         volume = (
-            np.pi * self.protection_depth * (r**2 - (self.diameter / 2) ** 2)
+            np.pi * self.protection_depth * (r ** 2 - (self.diameter / 2) ** 2)
         )
 
         self.scour_protection_tonnes = ceil(
