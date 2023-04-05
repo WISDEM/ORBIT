@@ -14,7 +14,7 @@ from marmot import process
 from ORBIT.core import Vessel
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
-from ORBIT.core.exceptions import CargoMassExceeded, InsufficientAmount
+from ORBIT.core.exceptions import CargoMassExceeded, InsufficientAmount, VesselCapacityError
 
 
 class ScourProtectionInstallation(InstallPhase):
@@ -173,6 +173,11 @@ def install_scour_protection(
     tonnes_per_substructure : int
         Number of tonnes required to be installed at each substation
     """
+    if tonnes_per_substructure > vessel.rock_storage.available_capacity:
+        raise VesselCapacityError(
+            vessel,
+            f"tonnes per substructure ({tonnes_per_substructure})",
+        )
 
     while turbines > 0:
         if vessel.at_port:

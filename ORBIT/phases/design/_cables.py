@@ -435,6 +435,7 @@ class CableSystem(DesignPhase):
             ]
             for name in self.cables
         }
+        lengths = {name: x[~np.isnan(x)] for name, x in lengths.items()}
         return lengths
 
     @property

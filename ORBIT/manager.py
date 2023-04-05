@@ -37,6 +37,7 @@ from ORBIT.phases.design import (
     OffshoreSubstationDesign,
 )
 from ORBIT.phases.install import (
+    JacketInstallation,
     TurbineInstallation,
     MonopileInstallation,
     MooredSubInstallation,
@@ -61,7 +62,7 @@ class ProjectManager:
     date_format_short = "%m/%d/%Y"
     date_format_long = "%m/%d/%Y %H:%M"
 
-    _design_phases = [
+    _design_phases = (
         MonopileDesign,
         ArraySystemDesign,
         CustomArraySystemDesign,
@@ -72,9 +73,9 @@ class ProjectManager:
         SemiSubmersibleDesign,
         SparDesign,
         ElectricalDesign,
-    ]
+    )
 
-    _install_phases = [
+    _install_phases = (
         MonopileInstallation,
         TurbineInstallation,
         OffshoreSubstationInstallation,
@@ -85,7 +86,8 @@ class ProjectManager:
         MooringSystemInstallation,
         GravityBasedInstallation,
         FloatingSubstationInstallation,
-    ]
+        JacketInstallation,
+    )
 
     def __init__(self, config, library_path=None, weather=None):
         """
@@ -125,6 +127,17 @@ class ProjectManager:
         self.phase_starts = {}
         self.phase_times = {}
         self._output_logs = []
+
+    @property
+    def start_date(self):
+        """Return start date for the analysis. If weather is configured, the
+        first date in the weather profile is used. If weather is not configured,
+        an arbitary start date is assumed and used to index phase times."""
+
+        if self.weather is not None:
+            return self.weather.index[0].to_pydatetime()
+
+        return dt.datetime(2010, 1, 1, 0, 0)
 
     def run(self, **kwargs):
         """
@@ -187,6 +200,54 @@ class ProjectManager:
         """Returns dict of phases that have been ran."""
 
         return self._phases
+
+    @classmethod
+    def register_design_phase(cls, phase):
+        """
+        Add a custom design phase to the `ProjectManager` class.
+
+        Parameters
+        ----------
+        phase : ORBIT.phases.DesignPhase
+        """
+
+        if not issubclass(phase, DesignPhase):
+            raise ValueError(
+                "Registered design phase must be a subclass of "
+                "'ORBIT.phases.DesignPhase'."
+            )
+
+        if phase.__name__ in [c.__name__ for c in cls._design_phases]:
+            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+
+        if len(re.split("[_ ]", phase.__name__)) > 1:
+            raise ValueError(f"Registered phase name must not include a '_'.")
+
+        cls._design_phases = (*cls._design_phases, phase)
+
+    @classmethod
+    def register_install_phase(cls, phase):
+        """
+        Add a custom install phase to the `ProjectManager` class.
+
+        Parameters
+        ----------
+        phase : ORBIT.phases.InstallPhase
+        """
+
+        if not issubclass(phase, InstallPhase):
+            raise ValueError(
+                "Registered install phase must be a subclass of "
+                "'ORBIT.phases.InstallPhase'."
+            )
+
+        if phase.__name__ in [c.__name__ for c in cls._install_phases]:
+            raise ValueError(f"A phase with name '{phase.__name__}' already exists.")
+
+        if len(re.split("[_ ]", phase.__name__)) > 1:
+            raise ValueError(f"Registered phase name must not include a '_'.")
+
+        cls._install_phases = (*cls._install_phases, phase)
 
     @property
     def _capex_categories(self):
@@ -370,6 +431,12 @@ class ProjectManager:
                 new[k] = cls.merge_dicts(
                     new[k], right[k], overwrite=overwrite, add_keys=add_keys
                 )
+            elif (
+                k in new
+                and isinstance(new[k], list)
+                and isinstance(right[k], list)
+            ):
+                new[k].extend(right[k])
             else:
                 if overwrite or k not in new:
                     new[k] = right[k]
@@ -621,7 +688,7 @@ class ProjectManager:
                         pass
 
                 self._output_logs.extend(logs)
-                start = ceil(start + time)
+                start = start + time
 
     def run_multiple_phases_overlapping(self, phases, **kwargs):
         """
@@ -724,7 +791,37 @@ class ProjectManager:
         start = self.phase_starts[target]
         elapsed = self.phase_times[target]
 
-        return start + elapsed * perc
+        if isinstance(perc, (int, float)):
+
+            if (perc < 0.) or (perc > 1.):
+                raise ValueError(f"Dependent phase perc must be between 0. and 1.")
+            
+            return start + elapsed * perc
+            
+        if isinstance(perc, str):
+
+            try:
+                delta = dt.timedelta(
+                    **{
+                        v.split("=")[0].strip(): float(v.split("=")[1])
+                        for v in perc.split(";")
+                    }
+                )
+
+                return start + delta.days * 24 + delta.seconds / 3600
+
+            except (TypeError, IndexError):
+                raise ValueError(
+                    f"Dependent phase amount must be defined with this format: "
+                    "'weeks=1;hours=12'. Accepted entries: 'weeks', 'days', 'hours'."  
+                )
+
+        else:
+            raise ValueError(
+                f"Unrecognized dependent phase amount: '{perc}'. "
+                f"Must be float between 0. and 1.0 or str with format "
+                "'weeks=1;days=0;hours=12'"
+            )
 
     @staticmethod
     def transform_weather_input(weather):
@@ -773,24 +870,8 @@ class ProjectManager:
 
         for k, v in phases.items():
 
-            if isinstance(v, (int, float)):
-                defined[k] = ceil(v)
-
-            elif isinstance(v, str):
-                _dt = dt.datetime.strptime(v, self.date_format_short)
-
-                try:
-                    i = self.weather.index.get_loc(_dt)
-                    defined[k] = i
-
-                except AttributeError:
-                    raise ValueError(
-                        f"No weather profile configured "
-                        f"for '{k}': '{v}' input type."
-                    )
-
-                except KeyError:
-                    raise WeatherProfileError(_dt, self.weather)
+            if isinstance(v, (int, float, str)):
+                defined[k] = v
 
             elif isinstance(v, tuple) and len(v) == 2:
                 depends[k] = v
@@ -800,7 +881,32 @@ class ProjectManager:
 
         if not defined:
             raise ValueError("No phases have a defined start index/date.")
+        
+        if len(set(type(i) for i in defined.values())) > 1:
+            raise ValueError(
+                "Defined start date types can't be mixed. "
+                "All must be an int (index location) or str (format: '%m/%d/%Y'). "
+                "This does not apply to the dependent phases defined as tuples."
+            )
+        
+        for k, v in defined.items():
 
+            if isinstance(v, int):
+                continue
+
+            _dt = dt.datetime.strptime(v, self.date_format_short)
+
+            if self.weather is not None:
+                try:
+                    defined[k] = self.weather.index.get_loc(_dt)
+
+                except KeyError:
+                    raise WeatherProfileError(_dt, self.weather)
+                
+            else:
+                delta = (_dt - self.start_date)
+                defined[k] = delta.days * 24 + delta.seconds / 3600
+        
         return defined, depends
 
     def get_weather_profile(self, start):
@@ -1087,8 +1193,13 @@ class ProjectManager:
 
         for phase, _start in self.config["install_phases"].items():
 
-            start = dt.datetime.strptime(_start, self.date_format_short)
-            end = start + dt.timedelta(hours=ceil(self.phase_times[phase]))
+            try:
+                start = dt.datetime.strptime(_start, self.date_format_short)
+
+            except TypeError:
+                start = self.start_date + dt.timedelta(hours=self.phase_starts[phase])
+
+            end = start + dt.timedelta(hours=self.phase_times[phase])
 
             dates[phase] = {
                 "start": start.strftime(self.date_format_long),

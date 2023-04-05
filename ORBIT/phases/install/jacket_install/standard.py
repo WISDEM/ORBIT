@@ -1,7 +1,5 @@
-"""`MonopileInstallation` class and related processes."""
-
 __author__ = "Jake Nunemaker"
-__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
+__copyright__ = "Copyright 2021, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
@@ -18,26 +16,24 @@ from ORBIT.core.logic import (
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
-
-from .common import (
-    Monopile,
+from ORBIT.phases.install.monopile_install.common import (
     TransitionPiece,
-    upend_monopile,
-    install_monopile,
     install_transition_piece,
 )
 
+from .common import Jacket, install_jacket
 
-class MonopileInstallation(InstallPhase):
+
+class JacketInstallation(InstallPhase):
     """
-    Standard monopile installation module using a Wind Turbine Installation
+    Standard jacket installation module using a Wind Turbine Installation
     Vessel (WTIV). If input `feeder` and `num_feeders` are not supplied, the
     WTIV will perform all transport and installation tasks. If the above inputs
-    are defined, feeder barges will transport monopile components from port to
-    site.
+    are defined, feeder barges will transport completed jackets from port to
+    site vertically.
     """
 
-    phase = "Monopile Installation"
+    phase = "Jacket Installation"
     capex_category = "Substructure"
 
     #:
@@ -53,19 +49,20 @@ class MonopileInstallation(InstallPhase):
             "monthly_rate": "USD/mo (optional)",
             "name": "str (optional)",
         },
-        "monopile": {
-            "length": "m",
-            "diameter": "m",
+        "jacket": {
+            "height": "m",
             "deck_space": "m2",
             "mass": "t",
             "unit_cost": "USD",
+            "num_legs": "N (optional, default: 4)",
+            "foundation_type": "str (optional, 'piles' | 'suction', default: 'piles')",
         },
         "transition_piece": {
-            "deck_space": "m2",
-            "mass": "t",
-            "unit_cost": "USD",
+            "deck_space": "m2 (optional)",
+            "mass": "t (optional)",
+            "unit_cost": "USD (optional)",
         },
-        "monopile_supply_chain": {
+        "jacket_supply_chain": {
             "enabled": "(optional, default: False)",
             "substructure_delivery_time": "h (optional, default: 168)",
             "num_substructures_delivered": "int (optional: default: 1)",
@@ -75,7 +72,7 @@ class MonopileInstallation(InstallPhase):
 
     def __init__(self, config, weather=None, **kwargs):
         """
-        Creates an instance of MonopileInstallation.
+        Creates an instance of JacketInstallation.
 
         Parameters
         ----------
@@ -94,42 +91,59 @@ class MonopileInstallation(InstallPhase):
         self.initialize_port()
         self.initialize_substructure_delivery()
         self.initialize_wtiv()
+        # self.initialize_jackets()
         self.setup_simulation(**kwargs)
 
     @property
     def system_capex(self):
         """Returns procurement cost of the substructures."""
 
-        return (
-            self.config["monopile"]["unit_cost"]
-            + self.config["transition_piece"]["unit_cost"]
-        ) * self.config["plant"]["num_turbines"]
+        jacket_unit_cost = self.config["jacket"]["unit_cost"]
+
+        if self.tp:
+            tp_unit_cost = self.config["transition_piece"]["unit_cost"]
+
+        else:
+            tp_unit_cost = 0.0
+
+        return (jacket_unit_cost + tp_unit_cost) * self.config["plant"][
+            "num_turbines"
+        ]
 
     def initialize_substructure_delivery(self):
         """
 
         """
 
-        monopile = Monopile(**self.config["monopile"])
-        tp = TransitionPiece(**self.config["transition_piece"])
-        self.set_mass = monopile.mass + tp.mass
-        self.set_deck_space = monopile.deck_space + tp.deck_space
+        jacket = Jacket(**self.config["jacket"])
 
-        self.num_monopiles = self.config["plant"]["num_turbines"]
-        self.supply_chain = self.config.get("monopile_supply_chain", {})
+        tp_data = self.config.get("transition_piece")
+        if tp_data:
+            self.tp = TransitionPiece(**tp_data)
+            self.set_mass = jacket.mass + self.tp.mass
+            self.set_deck_space = jacket.deck_space + jacket.deck_space
+
+        else:
+            self.tp = None
+            self.set_mass = jacket.mass
+            self.set_deck_space = jacket.deck_space
+
+        self.num_jackets = self.config["plant"]["num_turbines"]
+        self.supply_chain = self.config.get("jacket_supply_chain", {})
 
         if self.supply_chain.get("enabled", False):
 
+            items = [jacket, self.tp] if self.tp else [jacket]
             delivery_time = self.supply_chain.get(
                 "substructure_delivery_time", 168
             )
             # storage = self.supply_chain.get("substructure_storage", "inf")
             supply_chain = SubstructureDelivery(
-                "Monopile",
-                self.num_monopiles,
+                "Jacket",
+                self.num_jackets,
                 delivery_time,
                 self.port,
-                [monopile, tp],
+                items,
                 num_parallel=self.supply_chain.get(
                     "num_substructures_delivered", 1
                 ),
@@ -139,9 +153,11 @@ class MonopileInstallation(InstallPhase):
             supply_chain.start()
 
         else:
-            for _ in range(self.num_monopiles):
-                self.port.put(monopile)
-                self.port.put(tp)
+            for _ in range(self.num_jackets):
+                self.port.put(jacket)
+
+                if self.tp:
+                    self.port.put(self.tp)
 
     def setup_simulation(self, **kwargs):
         """
@@ -167,6 +183,10 @@ class MonopileInstallation(InstallPhase):
         site_depth = self.config["site"]["depth"]
         hub_height = self.config["turbine"]["hub_height"]
 
+        component_list = ["Jacket"]
+        if self.tp:
+            component_list.append("TransitionPiece")
+
         self.sets_per_trip = int(
             min(
                 np.floor(self.wtiv.storage.max_cargo_mass / self.set_mass),
@@ -176,13 +196,14 @@ class MonopileInstallation(InstallPhase):
             )
         )
 
-        solo_install_monopiles(
+        solo_install_jackets(
             self.wtiv,
             port=self.port,
             distance=site_distance,
-            monopiles=self.num_monopiles,
+            jackets=self.num_jackets,
             site_depth=site_depth,
             hub_height=hub_height,
+            component_list=component_list,
             per_trip=self.sets_per_trip,
             **kwargs,
         )
@@ -194,7 +215,10 @@ class MonopileInstallation(InstallPhase):
 
         site_distance = self.config["site"]["distance"]
         site_depth = self.config["site"]["depth"]
-        component_list = ["Monopile", "TransitionPiece"]
+
+        component_list = ["Jacket"]
+        if self.tp:
+            component_list.append("TransitionPiece")
 
         self.sets_per_trip = int(
             min(
@@ -208,18 +232,19 @@ class MonopileInstallation(InstallPhase):
             )
         )
 
-        install_monopiles_from_queue(
+        install_jackets_from_queue(
             self.wtiv,
             queue=self.active_feeder,
-            monopiles=self.num_monopiles,
+            jackets=self.num_jackets,
             distance=site_distance,
             site_depth=site_depth,
+            component_list=component_list,
             **kwargs,
         )
 
         assignments = [
-            self.num_monopiles // len(self.feeders)
-            + (1 if x < self.num_monopiles % len(self.feeders) else 0)
+            self.num_jackets // len(self.feeders)
+            + (1 if x < self.num_jackets % len(self.feeders) else 0)
             for x in range(len(self.feeders))
         ]
 
@@ -283,7 +308,7 @@ class MonopileInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """Returns detailed outputs of the monopile installation."""
+        """Returns detailed outputs of the jacket installation."""
 
         if self.feeders:
             transport_vessels = [*self.feeders]
@@ -303,10 +328,12 @@ class MonopileInstallation(InstallPhase):
 
 
 @process
-def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
+def solo_install_jackets(
+    vessel, port, distance, jackets, component_list, **kwargs
+):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
-    monopile installation process.
+    jacket installation process.
 
     Parameters
     ----------
@@ -315,14 +342,14 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
     port : Port
     distance : int | float
         Distance between port and site (km).
-    monopiles : int
-        Total monopiles to install.
+    jackets : int
+        Total number of jackets to install.
+    component_list : list
+        List of components to pick up at port.
     """
 
-    component_list = ["Monopile", "TransitionPiece"]
-
     n = 0
-    while n < monopiles:
+    while n < jackets:
         if vessel.at_port:
             try:
                 # Get substructure + transition piece from port
@@ -348,25 +375,24 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
         if vessel.at_site:
 
             if vessel.storage.items:
-                # Prep for monopile install
+                # Prep for jacket install
                 yield prep_for_site_operations(
                     vessel, survey_required=True, **kwargs
                 )
 
-                # Get monopile from internal storage
-                monopile = yield vessel.get_item_from_storage(
-                    "Monopile", **kwargs
-                )
+                # Get jacket from internal storage
+                jacket = yield vessel.get_item_from_storage("Jacket", **kwargs)
+                yield install_jacket(vessel, jacket, **kwargs)
 
-                yield upend_monopile(vessel, monopile.length, **kwargs)
-                yield install_monopile(vessel, monopile, **kwargs)
+                # Get transition piece from internal storage if needed
+                if "TransitionPiece" in component_list:
+                    tp = yield vessel.get_item_from_storage(
+                        "TransitionPiece", **kwargs
+                    )
 
-                # Get transition piece from internal storage
-                tp = yield vessel.get_item_from_storage(
-                    "TransitionPiece", **kwargs
-                )
+                    yield install_transition_piece(vessel, tp, **kwargs)
 
-                yield install_transition_piece(vessel, tp, **kwargs)
+                # Submit progress log
                 vessel.submit_debug_log(progress="Substructure")
                 n += 1
 
@@ -376,14 +402,16 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
                 yield vessel.transit(distance)
                 vessel.at_port = True
 
-    vessel.submit_debug_log(message="Monopile installation complete!")
+    vessel.submit_debug_log(message="Jacket installation complete!")
 
 
 @process
-def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
+def install_jackets_from_queue(
+    wtiv, queue, jackets, distance, component_list, **kwargs
+):
     """
     Logic that a Wind Turbine Installation Vessel (WTIV) uses to install
-    monopiles and transition pieces from queue of feeder barges.
+    jackets and transition pieces from queue of feeder barges.
 
     Parameters
     ----------
@@ -394,13 +422,15 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
     queue : simpy.Resource
         Queue object to interact with active feeder barge.
     number : int
-        Total monopiles to install.
+        Total number of jackets to install.
     distance : int | float
         Distance from site to port (km).
+    component_list : list
+        List of components to pick up at port.
     """
 
     n = 0
-    while n < monopiles:
+    while n < jackets:
         if wtiv.at_port:
             # Transit to site
             wtiv.at_port = False
@@ -411,29 +441,38 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
 
             if queue.vessel:
 
-                # Prep for monopile install
+                # Prep for jacket install
                 yield prep_for_site_operations(
                     wtiv, survey_required=True, **kwargs
                 )
 
-                # Get monopile
-                monopile = yield wtiv.get_item_from_storage(
-                    "Monopile", vessel=queue.vessel, **kwargs
-                )
+                # Get jacket and tp
+                if "TransitionPiece" in component_list:
+                    jacket = yield wtiv.get_item_from_storage(
+                        "Jacket", vessel=queue.vessel, **kwargs
+                    )
 
-                yield upend_monopile(wtiv, monopile.length, **kwargs)
-                yield install_monopile(wtiv, monopile, **kwargs)
+                    yield install_jacket(wtiv, jacket, **kwargs)
 
-                # Get transition piece from active feeder
-                tp = yield wtiv.get_item_from_storage(
-                    "TransitionPiece",
-                    vessel=queue.vessel,
-                    release=True,
-                    **kwargs,
-                )
+                    # Get transition piece from active feeder
+                    tp = yield wtiv.get_item_from_storage(
+                        "TransitionPiece",
+                        vessel=queue.vessel,
+                        release=True,
+                        **kwargs,
+                    )
 
-                # Install transition piece
-                yield install_transition_piece(wtiv, tp, **kwargs)
+                    # Install transition piece
+                    yield install_transition_piece(wtiv, tp, **kwargs)
+
+                else:
+                    jacket = yield wtiv.get_item_from_storage(
+                        "Jacket", vessel=queue.vessel, release=True, **kwargs
+                    )
+
+                    yield install_jacket(wtiv, jacket, **kwargs)
+
+                # Submit progress log
                 wtiv.submit_debug_log(progress="Substructure")
                 n += 1
 
@@ -448,4 +487,4 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
     yield wtiv.transit(distance)
     wtiv.at_port = True
 
-    wtiv.submit_debug_log(message="Monopile installation complete!")
+    wtiv.submit_debug_log(message="Jacket installation complete!")
