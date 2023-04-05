@@ -80,7 +80,7 @@ class OffshoreSubstationInstallation(InstallPhase):
     def system_capex(self):
         """Returns procurement CapEx of the offshore substations."""
 
-        return self.config["num_substations"] * (
+        return (
             self.config["offshore_substation_topside"]["unit_cost"]
             + self.config["offshore_substation_substructure"]["unit_cost"]
         )
