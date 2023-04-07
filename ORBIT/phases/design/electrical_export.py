@@ -495,3 +495,5 @@ class ElectricalDesign(CableSystem):
             + self.mpt_cost
             + self.switchgear_cost
         )
+
+        self._outputs["export_system"]["onshore_construction_cost"] = self.onshore_cost
