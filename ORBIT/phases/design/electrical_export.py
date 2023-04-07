@@ -280,9 +280,9 @@ class ElectricalDesign(CableSystem):
 
     @property
     def total_substation_cost(self):
-        return (
-            self.topside_cost + self.substructure_cost + self.substation_cost
-        )
+        return (self.topside_cost 
+                + self.substructure_cost
+                + self.substation_cost)
 
     def calc_num_substations(self):
         """Computes number of substations"""
@@ -313,7 +313,7 @@ class ElectricalDesign(CableSystem):
             + self.dc_breaker_cost
             + self.ancillary_system_cost
             + self.land_assembly_cost
-        )
+        ) / self.num_substations
 
     def calc_mpt_cost(self):
         """Computes transformer cost"""
@@ -366,7 +366,7 @@ class ElectricalDesign(CableSystem):
         else:
             num_dc_breaker = self.num_cables
         self.dc_breaker_cost = num_dc_breaker * self._design.get(
-            "dc_breaker_cost", 4000000
+            "dc_breaker_cost", 40000000
         )  # 4e6
 
     def calc_ancillary_system_cost(self):
@@ -445,7 +445,7 @@ class ElectricalDesign(CableSystem):
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
-        ) * self.num_substations
+        )
 
         self.substructure_mass = substructure_mass + substructure_pile_mass
 
@@ -494,7 +494,7 @@ class ElectricalDesign(CableSystem):
         )
         self.topside_cost = (
             self.topside_mass * topside_fab_cost_rate + topside_design_cost
-        ) * self.num_substations
+        )
 
     def calc_onshore_cost(self):
         """Minimum Cost of Onshore Substation Connection"""
@@ -505,3 +505,5 @@ class ElectricalDesign(CableSystem):
             + self.mpt_cost
             + self.switchgear_cost
         )
+
+        self._outputs["export_system"]["onshore_construction_cost"] = self.onshore_cost
