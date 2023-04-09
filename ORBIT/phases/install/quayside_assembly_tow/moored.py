@@ -8,7 +8,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 import simpy
 from marmot import le, process
-
 from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
@@ -299,10 +298,10 @@ def towing_group_actions(
         Distance from port to site.
     towing_vessels : int
         Number of vessels to use for towing to site.
+    ahts_vessels : int
+        Number of anchor handling tug vessels.
     towing_speed : int | float
-        Configured towing speed (km/h)
-    num_substructures : int
-        Number of substructures to be installed corresponding to number of turbines
+        Configured towing speed (km/h).
     """
 
     towing_time = distance / towing_speed
@@ -314,7 +313,7 @@ def towing_group_actions(
 
     if delay > 0:
         group.submit_action_log(
-            "Delay: No Completed Assemblies Available",
+            "Delay: No Completed Turbine Assemblies",
             delay,
             num_vessels=towing_vessels,
             num_ahts_vessels=ahts_vessels,
@@ -325,7 +324,10 @@ def towing_group_actions(
         6,
         num_vessels=towing_vessels,
         num_ahts_vessels=ahts_vessels,
-        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+        constraints={
+            "windspeed": le(group.max_windspeed),
+            "waveheight": le(group.max_waveheight),
+        },
     )
 
     yield group.group_task(
@@ -333,7 +335,10 @@ def towing_group_actions(
         towing_time,
         num_vessels=towing_vessels,
         num_ahts_vessels=ahts_vessels,
-        constraints={"windspeed": le(15), "waveheight": le(2.5)},
+        constraints={
+            "windspeed": le(group.max_windspeed),
+            "waveheight": le(group.max_waveheight),
+        },
     )
 
     # At Site
@@ -376,4 +381,9 @@ def towing_group_actions(
         transit_time,
         num_vessels=towing_vessels,
         num_ahts_vessels=ahts_vessels,
+        suspendable=True,
+        constraints={
+            "windspeed": le(group.max_windspeed),
+            "waveheight": le(group.max_waveheight),
+        },
     )

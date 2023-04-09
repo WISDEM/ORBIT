@@ -7,7 +7,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-from marmot import Agent, le, process, false
+from marmot import Agent, le, false, process
 from marmot._exceptions import AgentNotRegistered
 
 
@@ -328,12 +328,22 @@ class TowingGroup(Agent):
         self._specs = vessel_specs
         self.day_rate_towing = self._specs["vessel_specs"]["day_rate"]
         self.day_rate_anchor = 0.0
+        self.max_waveheight = self._specs["transport_specs"]["max_waveheight"]
+        self.max_windspeed = self._specs["transport_specs"]["max_windspeed"]
         self.transit_speed = self._specs["transport_specs"]["transit_speed"]
 
         if ahts_vessel_specs is not None:
             self.day_rate_anchor = ahts_vessel_specs["vessel_specs"][
                 "day_rate"
             ]
+            self.max_waveheight = min(
+                vessel_specs["transport_specs"]["max_waveheight"],
+                ahts_vessel_specs["transport_specs"]["max_waveheight"],
+            )
+            self.max_windspeed = min(
+                vessel_specs["transport_specs"]["max_windspeed"],
+                ahts_vessel_specs["transport_specs"]["max_windspeed"],
+            )
             self.transit_speed = min(
                 vessel_specs["transport_specs"]["transit_speed"],
                 ahts_vessel_specs["transport_specs"]["transit_speed"],
