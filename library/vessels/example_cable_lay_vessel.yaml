@@ -4,7 +4,7 @@ transport_specs:
   transit_speed: 11.5   # km/hr
 vessel_specs:
   day_rate: 225000      # USD/day, cost of operating vessel with crew
-  min_draft: 4.8        # m
-  overall_length: 99.0  # m
+  min_draft: 8.5       # m
+  overall_length: 171.0  # m
 cable_storage:
-  max_mass: 4000      # t
+  max_mass: 13000      # t
