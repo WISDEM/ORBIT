@@ -308,7 +308,9 @@ class SubstationAssemblyLine(Agent):
         delay = self.env.now - start
 
         if delay > 0:
-            self.submit_action_log("Delay: No Wet Storage Available", delay)
+            self.submit_action_log(
+                "Delay: No Substructure Storage Available", delay
+            )
 
     @process
     def start(self):
