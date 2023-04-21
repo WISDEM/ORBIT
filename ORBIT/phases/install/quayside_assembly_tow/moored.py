@@ -376,6 +376,9 @@ def towing_group_actions(
         constraints={"windspeed": le(15), "waveheight": le(2.5)},
     )
 
+    group.submit_debug_log(progress="Substructure")
+    group.submit_debug_log(progress="Turbine")
+
     yield group.group_task(
         "Transit",
         transit_time,

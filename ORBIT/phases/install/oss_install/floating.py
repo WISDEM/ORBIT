@@ -229,6 +229,12 @@ def install_floating_substations(
 
         yield vessel.transit(distance)
 
+    # TODO: Revise this to work with multiple substations
+    vessel.submit_debug_log(
+        message="Substation installation complete!",
+        progress="Offshore Substation",
+    )
+
 
 class SubstationAssemblyLine(Agent):
     """Substation Assembly Line Class."""
