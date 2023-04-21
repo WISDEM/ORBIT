@@ -27,6 +27,7 @@ from ORBIT.core.library import (
 from ORBIT.phases.design import (
     SparDesign,
     MonopileDesign,
+    ElectricalDesign,
     ArraySystemDesign,
     ExportSystemDesign,
     MooringSystemDesign,
@@ -71,6 +72,7 @@ class ProjectManager:
         MooringSystemDesign,
         SemiSubmersibleDesign,
         SparDesign,
+        ElectricalDesign,
     )
 
     _install_phases = (

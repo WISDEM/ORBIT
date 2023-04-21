@@ -121,7 +121,8 @@ def test_separate_speed_kwargs():
 def test_kwargs_for_export_install():
 
     new_export_system = {
-        "cable": {"linear_density": 50.0, "sections": [1000], "number": 1}
+        "cable": {"linear_density": 50.0, "sections": [1000], "number": 1},
+        "system_cost": 200e6,
     }
     new_site = {"distance": 50, "depth": 20}
 
@@ -134,7 +135,6 @@ def test_kwargs_for_export_install():
     baseline = sim.total_phase_time
 
     keywords = [
-        "onshore_construction_time",
         "cable_load_time",
         "site_position_time",
         "cable_prep_time",
@@ -198,7 +198,6 @@ def test_kwargs_for_export_install_in_ProjectManager():
     baseline = project.phase_times["ExportCableInstallation"]
 
     keywords = [
-        "onshore_construction_time",
         "cable_load_time",
         "site_position_time",
         "cable_prep_time",
