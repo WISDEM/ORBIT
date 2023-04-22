@@ -12,7 +12,6 @@ from copy import deepcopy
 
 import pandas as pd
 import pytest
-
 from ORBIT import ProjectManager
 from tests.data import test_weather
 from ORBIT.core.library import extract_library_specs
@@ -28,7 +27,6 @@ _ = simul_config.pop("export_cable_bury_vessel")
     "config", (base_config, simul_config), ids=["separate", "simultaneous"]
 )
 def test_simulation_setup(config):
-
     sim = ExportCableInstallation(config)
     assert sim.env
     assert sim.cable
@@ -42,7 +40,6 @@ def test_simulation_setup(config):
     "config", (base_config, simul_config), ids=["separate", "simultaneous"]
 )
 def test_vessel_initialization(config):
-
     sim = ExportCableInstallation(config)
     assert sim.install_vessel
     assert sim.install_vessel.cable_storage
@@ -58,7 +55,6 @@ def test_vessel_initialization(config):
     "weather", (None, test_weather), ids=["no_weather", "test_weather"]
 )
 def test_for_complete_logging(config, weather):
-
     sim = ExportCableInstallation(config, weather=weather)
     sim.run()
 
@@ -77,24 +73,21 @@ def test_for_complete_logging(config, weather):
 
 
 def test_simultaneous_speed_kwargs():
-
     sim = ExportCableInstallation(simul_config)
     sim.run()
     baseline = sim.total_phase_time
 
-    key = "cable_lay_bury_speed"
-    val = pt[key] * 0.1
+    sim.install_vessel._vessel_specs["cable_lay_bury_speed"] = (
+        sim.install_vessel._vessel_specs["cable_lay_bury_speed"] * 0.1
+    )
 
-    kwargs = {key: val}
-
-    sim = ExportCableInstallation(simul_config, **kwargs)
+    sim = ExportCableInstallation(simul_config)
     sim.run()
 
     assert sim.total_phase_time > baseline
 
 
 def test_separate_speed_kwargs():
-
     sim = ExportCableInstallation(base_config)
     sim.run()
     df = pd.DataFrame(sim.env.actions)
@@ -119,7 +112,6 @@ def test_separate_speed_kwargs():
 
 
 def test_kwargs_for_export_install():
-
     new_export_system = {
         "cable": {"linear_density": 50.0, "sections": [1000], "number": 1},
         "system_cost": 200e6,
@@ -150,7 +142,6 @@ def test_kwargs_for_export_install():
     failed = []
 
     for kw in keywords:
-
         default = pt[kw]
 
         if "speed" in kw:
@@ -182,7 +173,6 @@ def test_kwargs_for_export_install():
 
 
 def test_kwargs_for_export_install_in_ProjectManager():
-
     new_export_system = {
         "cable": {"linear_density": 50.0, "sections": [1000], "number": 1},
         "system_cost": 200e6,
@@ -213,7 +203,6 @@ def test_kwargs_for_export_install_in_ProjectManager():
     failed = []
 
     for kw in keywords:
-
         default = pt[kw]
 
         if "speed" in kw:

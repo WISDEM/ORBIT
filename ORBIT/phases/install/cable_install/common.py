@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from marmot import process
-
 from ORBIT.core.logic import position_onsite
 from ORBIT.core.defaults import process_times as pt
 
@@ -176,8 +175,7 @@ def lay_bury_cable(vessel, distance, **kwargs):
 
     kwargs = {**kwargs, **getattr(vessel, "_transport_specs", {})}
 
-    key = "cable_lay_bury_speed"
-    lay_bury_speed = kwargs.get(key, pt[key])
+    lay_bury_speed = vessel._vessel_specs.get("cable_lay_bury_speed", 0.0625)
     lay_bury_time = distance / lay_bury_speed
 
     yield vessel.task_wrapper(

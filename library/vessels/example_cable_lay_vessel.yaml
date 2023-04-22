@@ -6,5 +6,6 @@ vessel_specs:
   day_rate: 225000      # USD/day, cost of operating vessel with crew
   min_draft: 8.5       # m
   overall_length: 171.0  # m
+  cable_lay_bury_speed: 0.0625 # km/hr
 cable_storage:
   max_mass: 13000      # t
