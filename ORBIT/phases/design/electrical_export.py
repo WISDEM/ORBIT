@@ -323,7 +323,7 @@ class ElectricalDesign(CableSystem):
             self.mpt_cost = self.num_cables * self._design.get("mpt_cost", 0)
         else:
             self.mpt_cost = self.num_cables * self._design.get(
-                "mpt_cost", 2.1e6
+                "mpt_cost", 2.87e6
             )
         self.mpt_rating = (
             round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0) * 10.0
@@ -344,7 +344,7 @@ class ElectricalDesign(CableSystem):
                 compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
             compensation
-            * self._design.get("shunt_cost_rate", 7.2e3)
+            * self._design.get("shunt_cost_rate", 1e4)
             * self.num_cables
         )
 
@@ -359,19 +359,19 @@ class ElectricalDesign(CableSystem):
         else:
             num_switchgear = self.num_cables
         self.switchgear_cost = num_switchgear * self._design.get(
-            "switchgear_cost", 3e6
+            "switchgear_cost", 4e6
         )
 
     def calc_dc_breaker_cost(self):
         """Computes HVDC circuit breaker cost"""
         if self.cable.cable_type == "HVDC-monopole":
             self.dc_breaker_cost = self.num_cables * self._design.get(
-                "breaker_cost", 7.5e6
+                "breaker_cost", 10.5e6
             )
 
         elif self.cable.cable_type == "HVDC-bipole":
             self.dc_breaker_cost = self.num_cables * self._design.get(
-                "breaker_cost", 12.5e6
+                "breaker_cost", 17.5e6
             )
         else:
             self.dc_breaker_cost = 0
@@ -400,12 +400,12 @@ class ElectricalDesign(CableSystem):
 
         if self.cable.cable_type == "HVDC-monopole":
             self.converter_cost = self.num_substations * self._design.get(
-                "converter_cost", 92e6
+                "converter_cost", 127e6
             )
 
         elif self.cable.cable_type == "HVDC-bipole":
             self.converter_cost = self.num_substations * self._design.get(
-                "converter_cost", 216e6
+                "converter_cost", 296e6
             )
         else:
             self.converter_cost = 0
@@ -440,26 +440,26 @@ class ElectricalDesign(CableSystem):
         substructure_mass = 0.4 * self.topside_mass
         if self.cable.cable_type == "HVDC-monopole":
             self.substructure_cost = _design.get(
-                "oss_substructure_cost_rate", 213e6
+                "oss_substructure_cost_rate", 294e6
             )
-            self.substructure_mass = substructure_mass
         elif self.cable.cable_type == "HVDC-bipole":
             self.substructure_cost = _design.get(
-                "oss_substructure_cost_rate", 345e6
+                "oss_substructure_cost_rate", 476e6
             )
-            self.substructure_mass = substructure_mass
         else:
-            oss_substructure_cost_rate = _design.get(
-                "oss_substructure_cost_rate", 77.8
+            self.substructure_cost = _design.get(
+                "oss_substructure_cost_rate", 107.3e6
             )
-            oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
-            substructure_pile_mass = 8 * substructure_mass**0.5574
-            self.substructure_cost = (
-                substructure_mass * oss_substructure_cost_rate
-                + substructure_pile_mass * oss_pile_cost_rate
-            )
+            # oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
+            # substructure_pile_mass = 8 * substructure_mass**0.5574
+            # self.substructure_cost = (77.8
+            #     substructure_mass * oss_substructure_cost_rate
+            #     + substructure_pile_mass * oss_pile_cost_rate
+            # )
 
-            self.substructure_mass = substructure_mass + substructure_pile_mass
+            # self.substructure_mass = substructure_mass + substructure_pile_mass
+        self.substructure_mass = substructure_mass
+
 
     def calc_substructure_length(self):
         """

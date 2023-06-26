@@ -2,7 +2,7 @@
 ac_resistance: 0           # ohm/km
 capacitance: 227000        # nF/km
 conductor_size: 2500       # mm^2
-cost_per_km: 1100000       # $ 825k
+cost_per_km: 1380000       # $ 825k
 current_capacity: 1905     # A
 inductance: 0.149          # mH/km
 linear_density: 74         # t/km
