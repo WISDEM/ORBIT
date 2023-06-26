@@ -277,9 +277,9 @@ class ElectricalDesign(CableSystem):
 
     @property
     def total_substation_cost(self):
-        return (self.topside_cost 
-                + self.substructure_cost
-                + self.substation_cost)
+        return (
+            self.topside_cost + self.substructure_cost + self.substation_cost
+        )
 
     def calc_num_substations(self):
         """Computes number of substations"""
@@ -317,18 +317,14 @@ class ElectricalDesign(CableSystem):
 
         self.num_mpt = self.num_cables
         if self.cable.cable_type == "HVDC-monopole":
-            self.mpt_cost = self.num_cables * self._design.get(
-                "mpt_cost", 0
-            )
+            self.mpt_cost = self.num_cables * self._design.get("mpt_cost", 0)
 
         elif self.cable.cable_type == "HVDC-bipole":
-            self.mpt_cost = self.num_cables * self._design.get(
-                "mpt_cost", 0
-            )
+            self.mpt_cost = self.num_cables * self._design.get("mpt_cost", 0)
         else:
             self.mpt_cost = self.num_cables * self._design.get(
                 "mpt_cost", 2.1e6
-                )
+            )
         self.mpt_rating = (
             round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0) * 10.0
         )
@@ -404,16 +400,15 @@ class ElectricalDesign(CableSystem):
 
         if self.cable.cable_type == "HVDC-monopole":
             self.converter_cost = self.num_substations * self._design.get(
-            "converter_cost", 92e6
-        )
+                "converter_cost", 92e6
+            )
 
         elif self.cable.cable_type == "HVDC-bipole":
             self.converter_cost = self.num_substations * self._design.get(
-            "converter_cost", 216e6
-        )
+                "converter_cost", 216e6
+            )
         else:
             self.converter_cost = 0
-
 
     def calc_assembly_cost(self):
         """
@@ -463,10 +458,8 @@ class ElectricalDesign(CableSystem):
                 substructure_mass * oss_substructure_cost_rate
                 + substructure_pile_mass * oss_pile_cost_rate
             )
-    
-            self.substructure_mass = substructure_mass + substructure_pile_mass
 
-        
+            self.substructure_mass = substructure_mass + substructure_pile_mass
 
     def calc_substructure_length(self):
         """
@@ -517,17 +510,19 @@ class ElectricalDesign(CableSystem):
 
     def calc_onshore_cost(self):
         """Minimum Cost of Onshore Substation Connection"""
-        
+
         if self.cable.cable_type == "HVDC-monopole":
-            self.onshore_converter_cost = self.num_substations * self._design.get(
-                "onshore_converter_cost", 157e6
+            self.onshore_converter_cost = (
+                self.num_substations
+                * self._design.get("onshore_converter_cost", 157e6)
             )
             self.ais_cost = 0
             self.onshore_construction = 87.3e6
             self.onshore_compensation = 0
         elif self.cable.cable_type == "HVDC-bipole":
-            self.onshore_converter_cost = self.num_substations * self._design.get(
-                "onshore_converter_cost", 350e6
+            self.onshore_converter_cost = (
+                self.num_substations
+                * self._design.get("onshore_converter_cost", 350e6)
             )
             self.ais_cost = 0
             self.onshore_construction = 100e6
@@ -538,11 +533,10 @@ class ElectricalDesign(CableSystem):
             self.onshore_compensation = self.num_cables * (31.3e6 + 8.66e6)
             self.onshore_construction = 0
 
-        
         self.onshore_cost = (
             self.onshore_converter_cost
             + self.onshore_construction
-            +self.onshore_compensation
+            + self.onshore_compensation
             + self.mpt_cost
             + self.ais_cost
         )
