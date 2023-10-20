@@ -14,7 +14,7 @@ from ORBIT.core import SubstructureDelivery
 from ORBIT.core.logic import (
     prep_for_site_operations,
     shuttle_items_to_queue_wait,
-    get_list_of_items_from_port_wait,
+    get_list_of_items_from_port,
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
@@ -326,7 +326,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
         if vessel.at_port:
             try:
                 # Get substructure + transition piece from port
-                yield get_list_of_items_from_port_wait(
+                yield get_list_of_items_from_port(
                     vessel, port, component_list, **kwargs
                 )
 
