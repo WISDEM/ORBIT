@@ -10,7 +10,6 @@ from .config import load_config, save_config
 from ._version import get_versions
 from .parametric import ParametricManager
 from .supply_chain import SupplyChainManager
-from .floating_energy_storage import FloatingEnergyStorage
 
 __version__ = get_versions()["version"]
 del get_versions

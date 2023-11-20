@@ -44,7 +44,7 @@ design_phases:
 - MooringSystemDesign
 - OffshoreSubstationDesign
 - SemiSubmersibleDesign
-# - OffshoreEnergyStorage
+- FloatingEnergyStorage
 install_phases:
   ArrayCableInstallation: 0
   ExportCableInstallation: 0
