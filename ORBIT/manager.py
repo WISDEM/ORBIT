@@ -35,6 +35,7 @@ from ORBIT.phases.design import (
     SemiSubmersibleDesign,
     CustomArraySystemDesign,
     OffshoreSubstationDesign,
+    FloatingEnergyStorage,
 )
 from ORBIT.phases.install import (
     JacketInstallation,
@@ -73,6 +74,7 @@ class ProjectManager:
         SemiSubmersibleDesign,
         SparDesign,
         ElectricalDesign,
+        FloatingEnergyStorage,
     )
 
     _install_phases = (
