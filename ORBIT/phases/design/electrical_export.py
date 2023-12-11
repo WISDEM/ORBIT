@@ -285,7 +285,7 @@ class ElectricalDesign(CableSystem):
 
         self._design = self.config.get("substation_design", {})
 
-        substation_capacity = 1200  # MW
+        hvac_substation_capacity = 1200  # MW
 
         if (
             self.cable.cable_type == "HVDC-monopole"
@@ -297,7 +297,7 @@ class ElectricalDesign(CableSystem):
         else:
             self.num_substations = self._design.get(
                 "num_substations",
-                int(np.ceil(self._plant_capacity / substation_capacity)),
+                int(np.ceil(self._plant_capacity / hvac_substation_capacity)),
             )
 
     @property
@@ -318,18 +318,23 @@ class ElectricalDesign(CableSystem):
         """Computes transformer cost"""
 
         self.num_mpt = self.num_cables
-        if self.cable.cable_type == "HVDC-monopole":
-            self.mpt_cost = self.num_cables * self._design.get("mpt_cost", 0)
 
-        elif self.cable.cable_type == "HVDC-bipole":
-            self.mpt_cost = self.num_cables * self._design.get("mpt_cost", 0)
+        if (
+            self.cable.cable_type == "HVDC-monopole"
+            or self.cable.cable_type == "HVDC-bipole"
+        ):
+            self.mpt_cost = 0
+            self.mpt_rating = 0
+
         else:
             self.mpt_cost = self.num_cables * self._design.get(
                 "mpt_cost", 2.87e6
             )
-        self.mpt_rating = (
-            round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0) * 10.0
-        )
+
+            self.mpt_rating = (
+                round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0)
+                * 10.0
+            )
 
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost"""
