@@ -365,23 +365,25 @@ class ElectricalDesign(CableSystem):
             num_switchgear = 0
         else:
             num_switchgear = self.num_cables
+
         self.switchgear_cost = num_switchgear * self._design.get(
             "switchgear_cost", 4e6
         )
 
     def calc_dc_breaker_cost(self):
         """Computes HVDC circuit breaker cost"""
-        if self.cable.cable_type == "HVDC-monopole":
-            self.dc_breaker_cost = self.num_cables * self._design.get(
-                "breaker_cost", 10.5e6
-            )
 
-        elif self.cable.cable_type == "HVDC-bipole":
-            self.dc_breaker_cost = self.num_cables * self._design.get(
-                "breaker_cost", 17.5e6
-            )
+        if (
+            self.cable.cable_type == "HVDC-monopole"
+            or self.cable.cable_type == "HVDC-bipole"
+        ):
+            num_dc_breakers = self.num_cables
         else:
-            self.dc_breaker_cost = 0
+            num_dc_breakers = 0
+
+        self.dc_breaker_cost = num_dc_breakers * self._design.get(
+            "breaker_cost", 10.5e6
+        )
 
     def calc_ancillary_system_cost(self):
         """
