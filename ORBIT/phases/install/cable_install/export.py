@@ -52,6 +52,8 @@ class ExportCableInstallation(InstallPhase):
             },
             "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
+            "onshore_construction_cost": "$, (optional)",
+            "onshore_construction_time": "h, (optional)"
         },
     }
 
@@ -146,14 +148,16 @@ class ExportCableInstallation(InstallPhase):
         ----------
         construction_time : int | float
             Amount of time onshore construction takes.
-            Default: 48h
+            Default: 0h
         construction_rate : int | float
             Day rate of onshore construction.
             Default: 50000 USD/day
         """
 
-        construction_time = kwargs.get("onshore_construction_time", 0.0)
-        construction_cost = self.calculate_onshore_transmission_cost(**kwargs)
+        construction_time = self.config["export_system"].get("onshore_construction_time", 0.0)
+        construction_cost = self.config["export_system"].get("onshore_construction_cost", None)
+        if construction_cost is None:
+            construction_cost = self.calculate_onshore_transmission_cost(**kwargs)
 
         if construction_time:
             _ = self.env.timeout(construction_time)

@@ -135,7 +135,6 @@ def test_kwargs_for_export_install():
     baseline = sim.total_phase_time
 
     keywords = [
-        "onshore_construction_time",
         "cable_load_time",
         "site_position_time",
         "cable_prep_time",
@@ -199,7 +198,6 @@ def test_kwargs_for_export_install_in_ProjectManager():
     baseline = project.phase_times["ExportCableInstallation"]
 
     keywords = [
-        "onshore_construction_time",
         "cable_load_time",
         "site_position_time",
         "cable_prep_time",
