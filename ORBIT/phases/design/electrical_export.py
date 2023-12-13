@@ -31,7 +31,7 @@ class ElectricalDesign(CableSystem):
             },
         },
         "substation_design": {
-            "mpt_cost_rate": "USD/MW (optional)",
+            "mpt_cost": "USD (optional)",
             "topside_fab_cost_rate": "USD/t (optional)",
             "topside_design_cost": "USD (optional)",
             "shunt_cost_rate": "USD/MW (optional)",
@@ -315,7 +315,14 @@ class ElectricalDesign(CableSystem):
         ) / self.num_substations
 
     def calc_mpt_cost(self):
-        """Computes transformer cost"""
+        """Computes transformer cost
+
+        Parameters
+        ----------
+        mpt_cost : int | float
+        """
+
+        mpt_cost = self._design.get("mpt_cost", 2.87e6)
 
         self.num_mpt = self.num_cables
 
@@ -327,9 +334,7 @@ class ElectricalDesign(CableSystem):
             self.mpt_rating = 0
 
         else:
-            self.mpt_cost = self.num_cables * self._design.get(
-                "mpt_cost", 2.87e6
-            )
+            self.mpt_cost = self.num_mpt * mpt_cost
 
             self.mpt_rating = (
                 round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0)
@@ -337,9 +342,15 @@ class ElectricalDesign(CableSystem):
             )
 
     def calc_shunt_reactor_cost(self):
-        """Computes shunt reactor cost"""
+        """Computes shunt reactor cost
+
+        Parameters
+        ----------
+        shunt_cost_rate : int | float
+        """
 
         touchdown = self.config["site"]["distance_to_landfall"]
+        shunt_cost_rate = self._design.get("shunt_cost_rate", 1e4)
 
         if (
             self.cable.cable_type == "HVDC-monopole"
@@ -350,9 +361,7 @@ class ElectricalDesign(CableSystem):
             for _, cable in self.cables.items():
                 compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
-            compensation
-            * self._design.get("shunt_cost_rate", 1e4)
-            * self.num_cables
+            compensation * shunt_cost_rate * self.num_cables
         )
 
     def calc_switchgear_costs(self):
@@ -371,7 +380,14 @@ class ElectricalDesign(CableSystem):
         )
 
     def calc_dc_breaker_cost(self):
-        """Computes HVDC circuit breaker cost"""
+        """Computes HVDC circuit breaker cost
+
+        Parameters
+        ----------
+        dc_breaker_cost : int | float
+        """
+
+        dc_breaker_cost = self._design.get("dc_breaker_cost", 10.5e6)
 
         if (
             self.cable.cable_type == "HVDC-monopole"
@@ -381,9 +397,7 @@ class ElectricalDesign(CableSystem):
         else:
             num_dc_breakers = 0
 
-        self.dc_breaker_cost = num_dc_breakers * self._design.get(
-            "breaker_cost", 10.5e6
-        )
+        self.dc_breaker_cost = num_dc_breakers * dc_breaker_cost
 
     def calc_ancillary_system_cost(self):
         """
