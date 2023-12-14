@@ -60,7 +60,7 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
 
 def test_ac_oss_kwargs():
     test_kwargs = {
-        # "mpt_cost_rate": 13500,        # breaks
+        "mpt_cost": 13500,
         # "topside_fab_cost_rate": 17000,    # breaks
         "topside_design_cost": 7e6,
         "shunt_cost_rate": 40000,
@@ -91,10 +91,7 @@ def test_ac_oss_kwargs():
 
 
 def test_dc_oss_kwargs():
-    test_kwargs = {
-        "converter_cost": 300e6,
-        # "dc_breaker_cost": 300e6 # breaks here
-    }
+    test_kwargs = {"converter_cost": 300e6, "dc_breaker_cost": 300e6}
 
     dc_base = deepcopy(base)
     dc_base["export_system_design"]["cables"] = "XLPE_1200m_300kV_DC"
