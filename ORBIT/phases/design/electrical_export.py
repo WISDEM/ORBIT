@@ -14,8 +14,30 @@ class ElectricalDesign(CableSystem):
     """
     Design phase for export cabling and offshore substation systems.
 
+    Attributes
+    ----------
+    num_cables : int
+        Total number of cables required for transmitting power.
+    length : float
+        Length of a single cable connecting the OSS to the interconnection
+        in km.
+    mass : float
+        Mass of `length` in tonnes.
+    cable : `Cable`
+        Instance of `ORBIT.phases.design.Cable`. An export system will
+        only require a single type of cable.
+    total_length : float
+        Total length of cable required to trasmit power.
+    total_mass : float
+        Total mass of cable required to transmit power.
+    sections_cables : np.ndarray, shape: (`num_cables, )
+        An array of `cable`.
+    sections_lengths : np.ndarray, shape: (`num_cables, )
+        An array of `length`.
+
     """
 
+    #:
     expected_config = {
         "site": {"distance_to_landfall": "km", "depth": "m"},
         "landfall": {"interconnection_distance": "km (optional)"},
@@ -189,7 +211,14 @@ class ElectricalDesign(CableSystem):
         """
         Calculate the total number of required and redundant cables to
         transmit power to the onshore interconnection.
+
+        Parameters
+        ----------
+        num_redundant : int
         """
+
+        _num_redundant = self._design.get("num_redundant", 0)
+
         if (
             self.cable.cable_type == "HVDC-monopole"
             or self.cable.cable_type == "HVDC-bipole"
@@ -197,12 +226,12 @@ class ElectricalDesign(CableSystem):
             num_required = 2 * np.ceil(
                 self._plant_capacity / self.cable.cable_power
             )
-            num_redundant = 2 * self._design.get("num_redundant", 0)
+            num_redundant = 2 * _num_redundant
         else:
             num_required = np.ceil(
                 self._plant_capacity / self.cable.cable_power
             )
-            num_redundant = self._design.get("num_redundant", 0)
+            num_redundant = _num_redundant
 
         self.num_cables = int(num_required + num_redundant)
 
@@ -331,7 +360,7 @@ class ElectricalDesign(CableSystem):
             or self.cable.cable_type == "HVDC-bipole"
         ):
             self.mpt_cost = 0
-            self.mpt_rating = 0
+            self.mpt_rating = 0  # added by NSR
 
         else:
             self.mpt_cost = self.num_mpt * mpt_cost
@@ -365,7 +394,14 @@ class ElectricalDesign(CableSystem):
         )
 
     def calc_switchgear_costs(self):
-        """Computes switchgear cost"""
+        """Computes switchgear cost
+
+        Parameters
+        ----------
+        switchgear_cost : int | float
+        """
+
+        switchgear_cost = self._design.get("switchgear_cost", 4e6)
 
         if (
             self.cable.cable_type == "HVDC-monopole"
@@ -375,9 +411,7 @@ class ElectricalDesign(CableSystem):
         else:
             num_switchgear = self.num_cables
 
-        self.switchgear_cost = num_switchgear * self._design.get(
-            "switchgear_cost", 4e6
-        )
+        self.switchgear_cost = num_switchgear * switchgear_cost
 
     def calc_dc_breaker_cost(self):
         """Computes HVDC circuit breaker cost
