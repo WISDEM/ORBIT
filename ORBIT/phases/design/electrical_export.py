@@ -518,7 +518,7 @@ class ElectricalDesign(CableSystem):
                 * self._design.get("onshore_converter_cost", 157e6)
             )
             self.ais_cost = 0
-            self.onshore_construction = 87.3e6
+            self.onshore_construction = 87.3e6 * self.num_substations
             self.onshore_compensation = 0
         elif self.cable.cable_type == "HVDC-bipole":
             self.onshore_converter_cost = (
@@ -526,7 +526,7 @@ class ElectricalDesign(CableSystem):
                 * self._design.get("onshore_converter_cost", 350e6)
             )
             self.ais_cost = 0
-            self.onshore_construction = 100e6
+            self.onshore_construction = 100e6 * self.num_substations
             self.onshore_compensation = 0
         else:
             self.onshore_converter_cost = 0
