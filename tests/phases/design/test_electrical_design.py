@@ -133,17 +133,18 @@ def test_hvdc_substation():
 
     assert o.num_converters == o.num_cables
 
+
 def test_onshore_substation():
     config = deepcopy(base)
     o = ElectricalDesign(config)
     o.run()
     assert o.onshore_cost == 448.61e6
-    
+
     config_mono = {"cables": "HVDC_2000mm_320kV"}
     o_mono = ElectricalDesign(config_mono)
     o_mono.run()
     assert o_mono.onshore_cost == 244.3e6
-    
+
     config_bi = {"cables": "HVDC_2500mm_525kV"}
     o_bi = ElectricalDesign(config_bi)
     o_bi.run()
