@@ -114,7 +114,7 @@ def test_dc_oss_kwargs():
 
 def test_hvdc_substation():
     config = deepcopy(base)
-    config["export_system_design"] = {"cables": "XLPE_1200m_300kV_DC"}
+    config["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
     o = ElectricalDesign(config)
     o.run()
     assert o.converter_cost != 0
@@ -131,6 +131,23 @@ def test_hvdc_substation():
     o.run()
 
     # assert o.num_converters == o.num_cables    # breaks
+
+
+def test_onshore_substation():
+    config = deepcopy(base)
+    o = ElectricalDesign(config)
+    o.run()
+    assert o.onshore_cost == 448.61e6
+
+    config_mono = {"cables": "HVDC_2000mm_320kV"}
+    o_mono = ElectricalDesign(config_mono)
+    o_mono.run()
+    assert o_mono.onshore_cost == 244.3e6
+
+    config_bi = {"cables": "HVDC_2500mm_525kV"}
+    o_bi = ElectricalDesign(config_bi)
+    o_bi.run()
+    assert o_bi.onshore_cost == 450e6
 
 
 # EXPORT CABLE TESTING
