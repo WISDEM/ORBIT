@@ -360,7 +360,6 @@ class ElectricalDesign(CableSystem):
             or self.cable.cable_type == "HVDC-bipole"
         ):
             self.mpt_cost = 0
-            self.mpt_rating = 0  # added by NSR
 
         else:
             self.mpt_cost = self.num_mpt * mpt_cost
