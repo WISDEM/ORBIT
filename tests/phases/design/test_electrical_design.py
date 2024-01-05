@@ -137,14 +137,16 @@ def test_onshore_substation():
     config = deepcopy(base)
     o = ElectricalDesign(config)
     o.run()
-    assert o.onshore_cost == 448.61e6
+    assert o.onshore_cost == 109.32e6
 
-    config_mono = {"cables": "HVDC_2000mm_320kV"}
+    config_mono = deepcopy(config)
+    config_mono["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
     o_mono = ElectricalDesign(config_mono)
     o_mono.run()
     assert o_mono.onshore_cost == 244.3e6
 
-    config_bi = {"cables": "HVDC_2500mm_525kV"}
+    config_bi = deepcopy(config)
+    config_bi["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
     o_bi = ElectricalDesign(config_bi)
     o_bi.run()
     assert o_bi.onshore_cost == 450e6

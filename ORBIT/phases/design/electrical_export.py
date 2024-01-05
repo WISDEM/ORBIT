@@ -364,10 +364,9 @@ class ElectricalDesign(CableSystem):
         else:
             self.mpt_cost = self.num_mpt * mpt_cost
 
-            self.mpt_rating = (
-                round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0)
-                * 10.0
-            )
+        self.mpt_rating = (
+            round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0) * 10.0
+        )
 
     def calc_shunt_reactor_cost(self):
         """Computes shunt reactor cost
