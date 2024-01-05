@@ -29,7 +29,7 @@ base = {
         range(10, 201, 50),
         range(10, 51, 10),
         range(100, 2001, 500),
-        ["XLPE_630mm_220kV", "XLPE_800mm_220kV", "XLPE_1000m_220kV"],
+        ["XLPE_630mm_220kV", "XLPE_800mm_220kV", "XLPE_1000mm_220kV"],
     ),
 )
 def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
@@ -94,14 +94,14 @@ def test_dc_oss_kwargs():
     test_kwargs = {"converter_cost": 300e6, "dc_breaker_cost": 300e6}
 
     dc_base = deepcopy(base)
-    dc_base["export_system_design"]["cables"] = "XLPE_1200m_300kV_DC"
+    dc_base["export_system_design"]["cables"] = "HVDC_2000mm_320kV"
     o = ElectricalDesign(dc_base)
     o.run()
     base_cost = o.detailed_output["total_substation_cost"]
 
     for k, v in test_kwargs.items():
         config = deepcopy(base)
-        config["export_system_design"]["cables"] = "XLPE_1200m_300kV_DC"
+        config["export_system_design"]["cables"] = "HVDC_2000mm_320kV"
         config["substation_design"] = {}
         config["substation_design"][k] = v
 
