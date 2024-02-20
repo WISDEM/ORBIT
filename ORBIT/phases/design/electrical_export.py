@@ -383,12 +383,12 @@ class ElectricalDesign(CableSystem):
             self.cable.cable_type == "HVDC-monopole"
             or self.cable.cable_type == "HVDC-bipole"
         ):
-            compensation = 0
+            self.compensation = 0
         else:
             for _, cable in self.cables.items():
-                compensation = touchdown * cable.compensation_factor  # MW
+                self.compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
-            compensation * shunt_cost_rate * self.num_cables
+            self.compensation * shunt_cost_rate * self.num_cables
         )
 
     def calc_switchgear_costs(self):
@@ -560,6 +560,12 @@ class ElectricalDesign(CableSystem):
     def calc_onshore_cost(self):
         """Minimum Cost of Onshore Substation Connection"""
 
+        self.onshore_shunt_reactor_cost = (
+            self.compensation
+            * self._design.get("shunt_cost_rate", 1.3e4)
+            * self.num_cables
+        )
+
         if self.cable.cable_type == "HVDC-monopole":
             self.onshore_converter_cost = (
                 self.num_substations
@@ -579,7 +585,7 @@ class ElectricalDesign(CableSystem):
         else:
             self.onshore_converter_cost = 0
             self.ais_cost = self.num_cables * 9.33e6
-            self.onshore_compensation = self.num_cables * (31.3e6 + 8.66e6)
+            self.onshore_compensation = self.num_cables * 31.3e6 + self.onshore_shunt_reactor_cost
             self.onshore_construction = 5e6 * self.num_substations
 
         self.onshore_cost = (
