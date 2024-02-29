@@ -219,10 +219,7 @@ class ElectricalDesign(CableSystem):
 
         _num_redundant = self._design.get("num_redundant", 0)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             num_required = 2 * np.ceil(
                 self._plant_capacity / self.cable.cable_power
             )
@@ -316,10 +313,7 @@ class ElectricalDesign(CableSystem):
 
         hvac_substation_capacity = 1200  # MW
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             self.num_substations = self._design.get(
                 "num_substations", int(self.num_cables / 2)
             )
@@ -355,10 +349,7 @@ class ElectricalDesign(CableSystem):
 
         self.num_mpt = self.num_cables
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             self.mpt_cost = 0
 
         else:
@@ -379,10 +370,7 @@ class ElectricalDesign(CableSystem):
         touchdown = self.config["site"]["distance_to_landfall"]
         shunt_cost_rate = self._design.get("shunt_cost_rate", 1e4)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             self.compensation = 0
         else:
             for _, cable in self.cables.items():
@@ -401,10 +389,7 @@ class ElectricalDesign(CableSystem):
 
         switchgear_cost = self._design.get("switchgear_cost", 4e6)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             num_switchgear = 0
         else:
             num_switchgear = self.num_cables
@@ -421,10 +406,7 @@ class ElectricalDesign(CableSystem):
 
         dc_breaker_cost = self._design.get("dc_breaker_cost", 10.5e6)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             num_dc_breakers = self.num_cables
         else:
             num_dc_breakers = 0
@@ -585,7 +567,9 @@ class ElectricalDesign(CableSystem):
         else:
             self.onshore_converter_cost = 0
             self.ais_cost = self.num_cables * 9.33e6
-            self.onshore_compensation = self.num_cables * 31.3e6 + self.onshore_shunt_reactor_cost
+            self.onshore_compensation = (
+                self.num_cables * 31.3e6 + self.onshore_shunt_reactor_cost
+            )
             self.onshore_construction = 5e6 * self.num_substations
 
         self.onshore_cost = (
