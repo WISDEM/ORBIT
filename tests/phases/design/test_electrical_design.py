@@ -10,7 +10,7 @@ from itertools import product
 import pytest
 
 from ORBIT.core.library import extract_library_specs
-from ORBIT.phases.design import ElectricalDesign
+from ORBIT.phases.design import ElectricalDesign, OffshoreSubstationDesign
 
 # OSS TESTING
 
@@ -110,6 +110,35 @@ def test_dc_oss_kwargs():
         cost = o.detailed_output["total_substation_cost"]
         print("passed")
         assert cost != base_cost
+
+
+def test_new_old_hvac_substation():
+    """Temporary test until ElectricalDesign is merged with new release"""
+    config = deepcopy(base)
+    config["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
+    config["plant"]["capacity"] = 1000  # MW
+    config["plant"]["num_turbines"] = 200
+    config["turbine"] = {"turbine_rating": 5}
+
+    new = ElectricalDesign(config)
+    new.run()
+
+    old = OffshoreSubstationDesign(config)
+    old.run()
+
+    # same values
+    assert new.num_substations == old.num_substations
+    assert new.topside_mass == old.topside_mass
+    assert new.ancillary_system_costs == old.ancillary_system_costs
+    assert new.substructure_mass == old.substructure_mass
+
+    # different values
+    assert new.substation_cost != old.substation_cost
+    assert new.mpt_rating != old.mpt_rating
+    assert new.num_mpt != old.num_mpt
+    assert new.mpt_cost != old.mpt_cost
+    assert new.topside_cost != old.topside_cost
+    assert new.shunt_reactor_cost != old.shunt_reactor_cost
 
 
 def test_hvdc_substation():
