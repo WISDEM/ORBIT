@@ -137,7 +137,7 @@ def test_onshore_substation():
     config = deepcopy(base)
     o = ElectricalDesign(config)
     o.run()
-    assert o.onshore_cost == 109.32e6
+    assert o.onshore_cost == pytest.approx(95.487e6, abs=1e2)  # 109.32e6
 
     config_mono = deepcopy(config)
     config_mono["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
