@@ -114,6 +114,7 @@ def test_dc_oss_kwargs():
 
 def test_new_old_hvac_substation():
     """Temporary test until ElectricalDesign is merged with new release"""
+
     config = deepcopy(base)
     config["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
     config["plant"]["capacity"] = 1000  # MW
