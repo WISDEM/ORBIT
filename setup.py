@@ -35,7 +35,7 @@ setup(
         "pandas",
         "pyyaml",
         "openmdao>=3.2",
-        "python-benedict",
+        "python-benedict<0.33.2",
         "statsmodels",
     ],
     extras_require={
