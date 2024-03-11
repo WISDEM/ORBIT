@@ -19,7 +19,8 @@ class ExportSystemDesign(CableSystem):
     num_cables : int
         Total number of cables required for transmitting power.
     length : float
-        Length of a single cable connecting the OSS to the interconnection in km.
+        Length of a single cable connecting the OSS to the
+        interconnection in km.
     mass : float
         Mass of `length` in tonnes.
     cable : `Cable`
@@ -37,13 +38,13 @@ class ExportSystemDesign(CableSystem):
 
     expected_config = {
         "site": {"distance_to_landfall": "km", "depth": "m"},
-        "landfall": {"interconnection_distance": "km (optional)"},
         "plant": {"capacity": "MW"},
         "export_system_design": {
             "cables": "str",
             "num_redundant": "int (optional)",
             "touchdown_distance": "m (optional, default: 0)",
             "percent_added_length": "float (optional)",
+            "interconnection_distance": "km (optional)",
         },
     }
 
@@ -81,7 +82,7 @@ class ExportSystemDesign(CableSystem):
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
         self._get_touchdown_distance()
         try:
-            self._distance_to_interconnection = config["landfall"][
+            self._distance_to_interconnection = config["export_system_design"][
                 "interconnection_distance"
             ]
         except KeyError:
@@ -212,7 +213,7 @@ class ExportSystemDesign(CableSystem):
             }
         }
 
-        for name, cable in self.cables.items():
+        for _, cable in self.cables.items():
 
             output["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
