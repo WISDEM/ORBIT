@@ -8,6 +8,7 @@ from copy import deepcopy
 from itertools import product
 
 import pytest
+
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ElectricalDesign
 
@@ -143,6 +144,7 @@ def test_export_kwargs():
         "num_redundant": 2,
         "touchdown_distance": 50,
         "percent_added_length": 0.15,
+        "interconnection_distance": 6,
     }
 
     o = ElectricalDesign(base)
