@@ -53,10 +53,12 @@ class ElectricalDesign(CableSystem):
             },
         },
         "substation_design": {
-            "mpt_cost": "USD (optional)",
+            "substation_capacity": "MW (optional)",
+            "num_substations": "int (optional)",
+            "mpt_cost": "USD/cable (optional)",
             "topside_fab_cost_rate": "USD/t (optional)",
             "topside_design_cost": "USD (optional)",
-            "shunt_cost_rate": "USD/MW (optional)",
+            "shunt_cost_rate": "USD/cable (optional)",
             "switchgear_cost": "USD (optional)",
             "dc_breaker_cost": "USD (optional)",
             "backup_gen_cost": "USD (optional)",
@@ -67,7 +69,10 @@ class ElectricalDesign(CableSystem):
             "topside_assembly_factor": "float (optional)",
             "oss_substructure_cost_rate": "USD/t (optional)",
             "oss_pile_cost_rate": "USD/t (optional)",
-            "num_substations": "int (optional)",
+        },
+        "onshore_substation_design": {
+            "shunt_cost_rate": "USD/cable (optional)",
+            "onshore_converter_cost": "USD (optional)",
         },
     }
 
@@ -118,7 +123,10 @@ class ElectricalDesign(CableSystem):
 
         self.export_system_design = self.config["export_system_design"]
         self.offshore_substation_design = self.config.get(
-            "offshore_substation_design", {}
+            "substation_design", {}
+        )
+        self.onshore_substation_design = self.config.get(
+            "onshore_substation_design", {}
         )
 
         # CABLES
@@ -131,6 +139,7 @@ class ElectricalDesign(CableSystem):
         self.calc_crossing_cost()
 
         self._outputs["export_system"] = {"system_cost": self.total_cable_cost}
+
         for _, cable in self.cables.items():
             self._outputs["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
@@ -172,6 +181,7 @@ class ElectricalDesign(CableSystem):
         }
 
         self._outputs["num_substations"] = self.num_substations
+        self._outputs["total_substation_cost"] = self.total_substation_cost
 
     @property
     def detailed_output(self):
@@ -190,6 +200,12 @@ class ElectricalDesign(CableSystem):
             "substation_substructure_mass": self.substructure_mass,
             "substation_substructure_cost": self.substructure_cost,
             "total_substation_cost": self.total_substation_cost,
+            "onshore_shunt_cost": self.onshore_shunt_reactor_cost,
+            "onshore_converter_cost": self.onshore_converter_cost,
+            "onshore_switchgear_cost": self.onshore_switchgear_cost,
+            "onshore_construction_cost": self.onshore_construction,
+            "onshore_compensation_cost": self.onshore_compensation_cost,
+            "onshore_mpt_cost": self.mpt_cost,
         }
 
         return _output
@@ -219,10 +235,7 @@ class ElectricalDesign(CableSystem):
 
         _num_redundant = self._design.get("num_redundant", 0)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             num_required = 2 * np.ceil(
                 self._plant_capacity / self.cable.cable_power
             )
@@ -310,23 +323,28 @@ class ElectricalDesign(CableSystem):
         )
 
     def calc_num_substations(self):
-        """Computes number of substations"""
+        """Computes number of substations based on HVDC or HVAC
+        export cables.
 
+        Parameters
+        ----------
+        substation_capacity : int | float
+        """
         self._design = self.config.get("substation_design", {})
 
-        hvac_substation_capacity = 1200  # MW
+        # HVAC substation capacity
+        _substation_capacity = self._design.get(
+            "substation_capacity", 1200
+        )  # MW
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             self.num_substations = self._design.get(
                 "num_substations", int(self.num_cables / 2)
             )
         else:
             self.num_substations = self._design.get(
                 "num_substations",
-                int(np.ceil(self._plant_capacity / hvac_substation_capacity)),
+                int(np.ceil(self._plant_capacity / _substation_capacity)),
             )
 
     @property
@@ -339,37 +357,34 @@ class ElectricalDesign(CableSystem):
             + self.switchgear_cost
             + self.converter_cost
             + self.dc_breaker_cost
-            + self.ancillary_system_cost
+            + self.ancillary_system_costs
             + self.land_assembly_cost
         ) / self.num_substations
 
     def calc_mpt_cost(self):
-        """Computes transformer cost
+        """Computes HVAC main power transformer (MPT). MPT cost is 0 for HVDC.
 
         Parameters
         ----------
         mpt_cost : int | float
         """
 
-        mpt_cost = self._design.get("mpt_cost", 2.87e6)
+        _mpt_cost = self._design.get("mpt_cost", 2.87e6)
 
         self.num_mpt = self.num_cables
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             self.mpt_cost = 0
 
         else:
-            self.mpt_cost = self.num_mpt * mpt_cost
+            self.mpt_cost = self.num_mpt * _mpt_cost
 
         self.mpt_rating = (
             round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0) * 10.0
         )
 
     def calc_shunt_reactor_cost(self):
-        """Computes shunt reactor cost
+        """Computes HVAC shunt reactor cost. Shunt reactor cost is 0 for HVDC.
 
         Parameters
         ----------
@@ -379,20 +394,19 @@ class ElectricalDesign(CableSystem):
         touchdown = self.config["site"]["distance_to_landfall"]
         shunt_cost_rate = self._design.get("shunt_cost_rate", 1e4)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        _num_shunts = self.num_cables
+
+        if "HVDC" in self.cable.cable_type:
             self.compensation = 0
         else:
             for _, cable in self.cables.items():
                 self.compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
-            self.compensation * shunt_cost_rate * self.num_cables
+            self.compensation * shunt_cost_rate * _num_shunts
         )
 
     def calc_switchgear_costs(self):
-        """Computes switchgear cost
+        """Computes HVAC switchgear cost. Switchgear cost is 0 for HVDC.
 
         Parameters
         ----------
@@ -401,10 +415,7 @@ class ElectricalDesign(CableSystem):
 
         switchgear_cost = self._design.get("switchgear_cost", 4e6)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             num_switchgear = 0
         else:
             num_switchgear = self.num_cables
@@ -412,7 +423,7 @@ class ElectricalDesign(CableSystem):
         self.switchgear_cost = num_switchgear * switchgear_cost
 
     def calc_dc_breaker_cost(self):
-        """Computes HVDC circuit breaker cost
+        """Computes HVDC circuit breaker cost. Breaker cost is 0 for HVAC.
 
         Parameters
         ----------
@@ -421,10 +432,7 @@ class ElectricalDesign(CableSystem):
 
         dc_breaker_cost = self._design.get("dc_breaker_cost", 10.5e6)
 
-        if (
-            self.cable.cable_type == "HVDC-monopole"
-            or self.cable.cable_type == "HVDC-bipole"
-        ):
+        if "HVDC" in self.cable.cable_type:
             num_dc_breakers = self.num_cables
         else:
             num_dc_breakers = 0
@@ -446,7 +454,7 @@ class ElectricalDesign(CableSystem):
         workspace_cost = self._design.get("workspace_cost", 2e6)
         other_ancillary_cost = self._design.get("other_ancillary_cost", 3e6)
 
-        self.ancillary_system_cost = (
+        self.ancillary_system_costs = (
             backup_gen_cost + workspace_cost + other_ancillary_cost
         ) * self.num_substations
 
@@ -479,7 +487,7 @@ class ElectricalDesign(CableSystem):
         self.land_assembly_cost = (
             self.switchgear_cost
             + self.shunt_reactor_cost
-            + self.ancillary_system_cost
+            + self.ancillary_system_costs
         ) * topside_assembly_factor
 
     def calc_substructure_mass_and_cost(self):
@@ -538,7 +546,6 @@ class ElectricalDesign(CableSystem):
 
         Parameters
         ----------
-        topside_fab_cost_rate : int | float
         topside_design_cost: int | float
         """
 
@@ -558,12 +565,25 @@ class ElectricalDesign(CableSystem):
             self.topside_cost = _design.get("topside_design_cost", 107.3e6)
 
     def calc_onshore_cost(self):
-        """Minimum Cost of Onshore Substation Connection"""
+        """Minimum Cost of Onshore Substation Connection
+
+        Parameters
+        ----------
+        shunt_cost_rate : int | float
+        onshore_converter_cost: int | float
+        switchgear_cost: int | float
+        """
+
+        _design = self.config.get("onshore_substation_design", {})
+
+        _shunt_cost_rate = _design.get("shunt_cost_rate", 1.3e4)  # per cable
+        _switchgear_cost = _design.get("switchgear_cost", 9.33e6)  # per cable
+        _compensation_rate = _design.get(
+            "compensation_rate", 31.3e6
+        )  # per cable
 
         self.onshore_shunt_reactor_cost = (
-            self.compensation
-            * self._design.get("shunt_cost_rate", 1.3e4)
-            * self.num_cables
+            self.compensation * self.num_cables * _shunt_cost_rate
         )
 
         if self.cable.cable_type == "HVDC-monopole":
@@ -571,31 +591,42 @@ class ElectricalDesign(CableSystem):
                 self.num_substations
                 * self._design.get("onshore_converter_cost", 157e6)
             )
-            self.ais_cost = 0
-            self.onshore_construction = 87.3e6 * self.num_substations
-            self.onshore_compensation = 0
+            self.onshore_switchgear_cost = 0
+            self.onshore_construction = self.num_substations * _design.get(
+                "onshore_construction_rate", 87.3e6
+            )
+            self.onshore_compensation_cost = 0
+
         elif self.cable.cable_type == "HVDC-bipole":
             self.onshore_converter_cost = (
                 self.num_substations
                 * self._design.get("onshore_converter_cost", 350e6)
             )
-            self.ais_cost = 0
-            self.onshore_construction = 100e6 * self.num_substations
-            self.onshore_compensation = 0
+            self.onshore_switchgear_cost = 0
+            self.onshore_construction = self.num_substations * _design.get(
+                "onshore_construction_rate", 100e6
+            )
+            self.onshore_compensation_cost = 0
+
         else:
             self.onshore_converter_cost = 0
-            self.ais_cost = self.num_cables * 9.33e6
-            self.onshore_compensation = self.num_cables * 31.3e6 + self.onshore_shunt_reactor_cost
-            self.onshore_construction = 5e6 * self.num_substations
+            self.onshore_switchgear_cost = self.num_cables * _switchgear_cost
+            self.onshore_construction = self.num_substations * _design.get(
+                "onshore_construction_rate", 5e6
+            )
+            self.onshore_compensation_cost = (
+                self.num_cables * _compensation_rate
+                + self.onshore_shunt_reactor_cost
+            )
 
         self.onshore_cost = (
             self.onshore_converter_cost
+            + self.onshore_switchgear_cost
             + self.onshore_construction
-            + self.onshore_compensation
+            + self.onshore_compensation_cost
             + self.mpt_cost
-            + self.ais_cost
         )
 
         self._outputs["export_system"][
-            "onshore_construction_cost"
+            "onshore_substation_costs"
         ] = self.onshore_cost
