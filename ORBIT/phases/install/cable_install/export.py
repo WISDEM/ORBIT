@@ -8,8 +8,10 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from copy import deepcopy
 from math import ceil
+from warnings import warn
 
 from marmot import process
+
 from ORBIT.core.logic import position_onsite
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import InsufficientCable
@@ -49,11 +51,15 @@ class ExportCableInstallation(InstallPhase):
                 "sections": [("length, km", "speed, km/h (optional)")],
                 "number": "int (optional)",
                 "cable_type": "str(optional, defualt: 'HVAC')",
+                "landfall": {
+                    "trench_length": "km (optional)",
+                    "interconnection_distance": "km (optional); default: 3km",
+                },
             },
             "interconnection_distance": "km (optional); default: 3km",
             "interconnection_voltage": "kV (optional); default: 345kV",
             "onshore_construction_cost": "$, (optional)",
-            "onshore_construction_time": "h, (optional)"
+            "onshore_construction_time": "h, (optional)",
         },
     }
 
@@ -133,6 +139,20 @@ class ExportCableInstallation(InstallPhase):
         site = self.config["site"]["distance"]
         try:
             trench = self.config["landfall"]["trench_length"]
+            warn(
+                "landfall dictionary will be deprecated and moved \
+                    into [export_system][landfall].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        except KeyError:
+            trench = 1
+
+        try:
+            trench = self.config["export_system_design"]["landfall"][
+                "trench_length"
+            ]
 
         except KeyError:
             trench = 1
@@ -154,10 +174,16 @@ class ExportCableInstallation(InstallPhase):
             Default: 50000 USD/day
         """
 
-        construction_time = self.config["export_system"].get("onshore_construction_time", 0.0)
-        construction_cost = self.config["export_system"].get("onshore_construction_cost", None)
+        construction_time = self.config["export_system"].get(
+            "onshore_construction_time", 0.0
+        )
+        construction_cost = self.config["export_system"].get(
+            "onshore_construction_cost", None
+        )
         if construction_cost is None:
-            construction_cost = self.calculate_onshore_transmission_cost(**kwargs)
+            construction_cost = self.calculate_onshore_transmission_cost(
+                **kwargs
+            )
 
         if construction_time:
             _ = self.env.timeout(construction_time)
@@ -182,12 +208,22 @@ class ExportCableInstallation(InstallPhase):
 
         capacity = self.config["plant"]["capacity"]
 
-        voltage = self.config["export_system"].get(
-            "interconnection_voltage", 345
-        )
-        distance = self.config["export_system"].get(
-            "interconnection_distance", 3
-        )
+        system = self.config["export_system"]
+
+        voltage = system.get("interconnection_voltage", 345)
+
+        try:
+            distance = system["interconnection_distance"]
+            warn(
+                "[export_system][interconnection] will be deprecated and \
+                    moved into [export_system][landfall][interconnection].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        except KeyError:
+            distance = 3
+        # distance = system.get("interconnection_distance", 3)
 
         switchyard_cost = 18115 * voltage + 165944
         onshore_substation_cost = (
