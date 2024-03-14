@@ -91,7 +91,7 @@ class ExportSystemDesign(CableSystem):
             ]
             warn(
                 "landfall dictionary will be deprecated and moved \
-                    into [export_system][landfall].",
+                    into [export_system_design][landfall].",
                 DeprecationWarning,
                 stacklevel=2,
             )
