@@ -149,5 +149,5 @@ def test_deprecated_landfall():
         assert (
             str(w[0].message)
             == "landfall dictionary will be deprecated and moved \
-                    into [export_system][landfall]."
+                    into [export_system_design][landfall]."
         )
