@@ -277,11 +277,13 @@ def test_deprecated_values():
         assert issubclass(w[0].category, DeprecationWarning)
         assert (
             str(w[0].message)
-            == "landfall dictionary will be deprecated and moved into [export_system][landfall]."
+            == "landfall dictionary will be deprecated and moved \
+                    into [export_system][landfall]."
         )
 
         assert issubclass(w[1].category, DeprecationWarning)
         assert (
             str(w[1].message)
-            == "[export_system][interconnection] will be deprecated and moved into [export_system][landfall][interconnection]."
+            == "[export_system][interconnection] will be deprecated and \
+                    moved into [export_system][landfall][interconnection]."
         )
