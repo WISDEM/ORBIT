@@ -6,8 +6,10 @@ __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
 from copy import deepcopy
+from warnings import catch_warnings
 
 import pytest
+
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import ExportSystemDesign
 
@@ -97,10 +99,12 @@ def test_design_result():
 
     _ = export.cable.name
     cables = export.design_result["export_system"]["cable"]
+    # landfall = export.design_results["export_system"]["landfall"]
 
     assert cables["sections"] == [export.length]
     assert cables["number"] == 9
     assert cables["linear_density"] == export.cable.linear_density
+    # assert landfall["interconnection_distance"] == 3
 
 
 def test_floating_length_calculations():
@@ -121,3 +125,29 @@ def test_floating_length_calculations():
     new.run()
 
     assert new.total_length < base_length
+
+
+def test_deprecated_landfall():
+
+    base = deepcopy(config)
+    deprecated = deepcopy(config)
+
+    deprecated["landfall"] = {"interconnection_distance": 4}
+
+    with catch_warnings(record=True) as w:
+
+        sim = ExportSystemDesign(base)
+        sim.run()
+
+        assert len(w) == 0
+
+        sim = ExportSystemDesign(deprecated)
+        sim.run()
+
+        assert len(w) == 1
+        assert issubclass(w[0].category, DeprecationWarning)
+        assert (
+            str(w[0].message)
+            == "landfall dictionary will be deprecated and moved \
+                    into [export_system][landfall]."
+        )
