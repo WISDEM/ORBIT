@@ -9,6 +9,7 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 
 from copy import deepcopy
+from warnings import catch_warnings
 
 import pandas as pd
 import pytest
@@ -245,3 +246,42 @@ def test_kwargs_for_export_install_in_ProjectManager():
 
     else:
         assert True
+
+
+def test_deprecated_values():
+    """Temporary test for deprecated values"""
+
+    base = deepcopy(base_config)
+    deprecated = deepcopy(base_config)
+
+    deprecated["landfall"] = {"trench_length": 4}
+    new_export_system = {
+        "cable": {"linear_density": 50.0, "sections": [1000], "number": 1},
+        "system_cost": 200e6,
+        "interconnection_distance": 5,
+    }
+
+    deprecated["export_system"] = new_export_system
+
+    with catch_warnings(record=True) as w:
+
+        sim = ExportCableInstallation(base)
+        sim.run()
+
+        assert len(w) == 0
+
+        sim = ExportCableInstallation(deprecated)
+        sim.run()
+
+        assert len(w) == 2
+        assert issubclass(w[0].category, DeprecationWarning)
+        assert (
+            str(w[0].message)
+            == "landfall dictionary will be deprecated and moved into [export_system][landfall]."
+        )
+
+        assert issubclass(w[1].category, DeprecationWarning)
+        assert (
+            str(w[1].message)
+            == "[export_system][interconnection] will be deprecated and moved into [export_system][landfall][interconnection]."
+        )
