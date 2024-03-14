@@ -5,6 +5,8 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
+from warnings import warn
+
 import numpy as np
 
 from ORBIT.phases.design._cables import CableSystem
@@ -38,13 +40,14 @@ class ExportSystemDesign(CableSystem):
 
     expected_config = {
         "site": {"distance_to_landfall": "km", "depth": "m"},
+        "landfall": {"interconnection_distance": "km (optional)"},
         "plant": {"capacity": "MW"},
         "export_system_design": {
             "cables": "str",
             "num_redundant": "int (optional)",
             "touchdown_distance": "m (optional, default: 0)",
             "percent_added_length": "float (optional)",
-            "interconnection_distance": "km (optional)",
+            "landfall": {"interconnection_distance": "km (optional)"},
         },
     }
 
@@ -55,7 +58,8 @@ class ExportSystemDesign(CableSystem):
                 "number": "int",
                 "sections": "list",
                 "cable_power": "MW",
-            }
+            },
+            "landfall": {"interconnection_distance": "km"},
         }
     }
 
@@ -82,9 +86,24 @@ class ExportSystemDesign(CableSystem):
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
         self._get_touchdown_distance()
         try:
-            self._distance_to_interconnection = config["export_system_design"][
+            self._distance_to_interconnection = config["landfall"][
                 "interconnection_distance"
             ]
+            warn(
+                "landfall dictionary will be deprecated and moved \
+                    into [export_system][landfall].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        except KeyError:
+            self._distance_to_interconnection = 3
+
+        try:
+            self._distance_to_interconnection = config["export_system_design"][
+                "landfall"
+            ]["interconnection_distance"]
+
         except KeyError:
             self._distance_to_interconnection = 3
 
@@ -208,7 +227,11 @@ class ExportSystemDesign(CableSystem):
 
         output = {
             "export_system": {
-                "interconnection_distance": self._distance_to_interconnection,
+                "landfall": {
+                    "interconnection_distance": (
+                        self._distance_to_interconnection
+                    )
+                },
                 "system_cost": self.total_cost,
             }
         }
