@@ -83,27 +83,21 @@ class ElectricalDesign(CableSystem):
         self._plant_capacity = self.config["plant"]["capacity"]
         self._get_touchdown_distance()
 
-        try:
-            self._distance_to_interconnection = config["landfall"][
-                "interconnection_distance"
-            ]
+        _landfall = self.config.get("landfall", {})
+        if _landfall:
             warn(
-                "landfall dictionary will be deprecated and moved \
-                    into [export_system_design][landfall].",
+                "landfall dictionary will be deprecated and moved"
+                " into [export_system_design][landfall].",
                 DeprecationWarning,
                 stacklevel=2,
             )
 
-        except KeyError:
-            self._distance_to_interconnection = 3
+        else:
+            _landfall = self.config["export_system_design"].get("landfall", {})
 
-        try:
-            self._distance_to_interconnection = config["export_system_design"][
-                "landfall"
-            ]["interconnection_distance"]
-
-        except KeyError:
-            self._distance_to_interconnection = 3
+        self._distance_to_interconnection = _landfall.get(
+            "interconnection_distance", 3
+        )
 
         # SUBSTATION
         self._outputs = {}
