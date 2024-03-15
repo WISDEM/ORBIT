@@ -5,8 +5,8 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
+import warnings
 from copy import deepcopy
-from warnings import catch_warnings
 
 import pytest
 
@@ -130,24 +130,15 @@ def test_floating_length_calculations():
 def test_deprecated_landfall():
 
     base = deepcopy(config)
-    deprecated = deepcopy(config)
 
-    deprecated["landfall"] = {"interconnection_distance": 4}
-
-    with catch_warnings(record=True) as w:
-
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         sim = ExportSystemDesign(base)
         sim.run()
 
-        assert len(w) == 0
+    deprecated = deepcopy(base)
+    deprecated["landfall"] = {"interconnection_distance": 4}
 
+    with pytest.deprecated_call():
         sim = ExportSystemDesign(deprecated)
         sim.run()
-
-        assert len(w) == 1
-        assert issubclass(w[0].category, DeprecationWarning)
-        assert (
-            str(w[0].message)
-            == "landfall dictionary will be deprecated and moved \
-                    into [export_system_design][landfall]."
-        )
