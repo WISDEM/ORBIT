@@ -330,10 +330,19 @@ class OrbitWisdem(om.ExplicitComponent):
         }
 
         if config["landfall"]["interconnection_distance"]:
-            warn("landfall dictionary will be deprecated and moved into [export_system][landfall].", DeprecationWarning, stacklevel=2)
+            warn("landfall dictionary will be deprecated and moved"
+                 " into [export_system_design][landfall].",
+                   DeprecationWarning,
+                     stacklevel=2
+            )
 
         if config["export_system_design"]["interconnection_distance"]:
-            warn("[export_system_design][interconnection_distance] will be deprecated and moved to [export_system_design][landfall][interconnection_distance].", DeprecationWarning, stacklevel=2)
+            warn(
+                "[export_system][interconnection_distance] will be deprecated and"
+                " moved to [export_system_design][landfall][interconnection_distance].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         # Unique design phases
         if floating_flag:
