@@ -56,7 +56,7 @@ class ExportCableInstallation(InstallPhase):
                     "interconnection_distance": "km (optional); default: 3km",
                 },
             },
-            "interconnection_distance": "km (optional); default: 3km",
+            "interconnection_distance": "km (optional)",
             "interconnection_voltage": "kV (optional); default: 345kV",
             "onshore_construction_cost": "$, (optional)",
             "onshore_construction_time": "h, (optional)",
@@ -137,25 +137,19 @@ class ExportCableInstallation(InstallPhase):
         """Extracts distances from input configuration or default values."""
 
         site = self.config["site"]["distance"]
-        try:
-            trench = self.config["landfall"]["trench_length"]
+
+        _landfall = self.config.get("landfall", {})
+        if _landfall:
             warn(
-                "landfall dictionary will be deprecated and moved \
-                    into [export_system][landfall].",
+                "landfall dictionary will be deprecated and moved"
+                " into [export_system][landfall].",
                 DeprecationWarning,
                 stacklevel=2,
             )
+        else:
+            _landfall = self.config["export_system"].get("landfall", {})
 
-        except KeyError:
-            trench = 1
-
-        try:
-            trench = self.config["export_system_design"]["landfall"][
-                "trench_length"
-            ]
-
-        except KeyError:
-            trench = 1
+        trench = _landfall.get("trench_length", 1)
 
         self.distances = {"site": site, "trench": trench}
 
@@ -212,18 +206,20 @@ class ExportCableInstallation(InstallPhase):
 
         voltage = system.get("interconnection_voltage", 345)
 
-        try:
-            distance = system["interconnection_distance"]
+        distance = system.get("interconnection_distance", None)
+
+        if distance:
             warn(
-                "[export_system][interconnection] will be deprecated and \
-                    moved into [export_system][landfall][interconnection].",
+                "[export_system][interconnection_distance] will be deprecated"
+                " and moved to"
+                " [export_system][landfall][interconnection_distance].",
                 DeprecationWarning,
                 stacklevel=2,
             )
 
-        except KeyError:
-            distance = 3
-        # distance = system.get("interconnection_distance", 3)
+        landfall = system.get("landfall", {})
+
+        distance = landfall.get("interconnection_distance", 3)
 
         switchyard_cost = 18115 * voltage + 165944
         onshore_substation_cost = (

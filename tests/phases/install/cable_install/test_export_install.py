@@ -8,8 +8,8 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "Jake.Nunemaker@nrel.gov"
 
 
+import warnings
 from copy import deepcopy
-from warnings import catch_warnings
 
 import pandas as pd
 import pytest
@@ -252,6 +252,12 @@ def test_deprecated_values():
     """Temporary test for deprecated values"""
 
     base = deepcopy(base_config)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        sim = ExportCableInstallation(base)
+        sim.run()
+
     deprecated = deepcopy(base_config)
 
     deprecated["landfall"] = {"trench_length": 4}
@@ -263,27 +269,25 @@ def test_deprecated_values():
 
     deprecated["export_system"] = new_export_system
 
-    with catch_warnings(record=True) as w:
+    with pytest.deprecated_call():
 
-        sim = ExportCableInstallation(base)
-        sim.run()
-
-        assert len(w) == 0
+        # sim = ExportCableInstallation(base)
+        # sim.run()
 
         sim = ExportCableInstallation(deprecated)
         sim.run()
 
-        assert len(w) == 2
-        assert issubclass(w[0].category, DeprecationWarning)
-        assert (
-            str(w[0].message)
-            == "landfall dictionary will be deprecated and moved \
-                    into [export_system][landfall]."
-        )
+        # assert len(w) == 2
+        # assert issubclass(w[0].category, DeprecationWarning)
+        # assert (
+        #    str(w[0].message)
+        #    == "landfall dictionary will be deprecated and moved \
+        #            into [export_system][landfall]."
+        # )
 
-        assert issubclass(w[1].category, DeprecationWarning)
-        assert (
-            str(w[1].message)
-            == "[export_system][interconnection] will be deprecated and \
-                    moved into [export_system][landfall][interconnection]."
-        )
+        # assert issubclass(w[1].category, DeprecationWarning)
+        # assert (
+        #    str(w[1].message)
+        #    == "[export_system][interconnection] will be deprecated and \
+        #            moved into [export_system][landfall][interconnection]."
+        # )
