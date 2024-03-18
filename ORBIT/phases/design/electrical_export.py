@@ -1,9 +1,11 @@
-"""Provides the `ElectricalDesign class."""
+"""Provides the `ElectricalDesign` class."""
 
 __author__ = ["Sophie Bredenkamp"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = ""
 __email__ = []
+
+from warnings import warn
 
 import numpy as np
 
@@ -47,6 +49,7 @@ class ElectricalDesign(CableSystem):
             "num_redundant": "int (optional)",
             "touchdown_distance": "m (optional, default: 0)",
             "percent_added_length": "float (optional)",
+            "interconnection_distance": "km (optional)",
             "cable_crossings": {
                 "crossing_number": "int (optional)",
                 "crossing_unit_cost": "float (optional)",
@@ -108,12 +111,21 @@ class ElectricalDesign(CableSystem):
         self._plant_capacity = self.config["plant"]["capacity"]
         self._get_touchdown_distance()
 
-        try:
-            self._distance_to_interconnection = config["landfall"][
-                "interconnection_distance"
-            ]
-        except KeyError:
-            self._distance_to_interconnection = 3
+        _landfall = self.config.get("landfall", {})
+        if _landfall:
+            warn(
+                "landfall dictionary will be deprecated and moved"
+                " into [export_system_design][landfall].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        else:
+            _landfall = self.config["export_system_design"].get("landfall", {})
+
+        self._distance_to_interconnection = _landfall.get(
+            "interconnection_distance", 3
+        )
 
         # SUBSTATION
         self._outputs = {}
@@ -138,7 +150,12 @@ class ElectricalDesign(CableSystem):
         self.compute_total_cable()
         self.calc_crossing_cost()
 
-        self._outputs["export_system"] = {"system_cost": self.total_cable_cost}
+        self._outputs["export_system"] = {
+            "landfall": {
+                "interconnection_distance": (self._distance_to_interconnection)
+            },
+            "system_cost": self.total_cable_cost,
+        }
 
         for _, cable in self.cables.items():
             self._outputs["export_system"]["cable"] = {
@@ -216,6 +233,8 @@ class ElectricalDesign(CableSystem):
         Returns the results of self.run().
         """
         return self._outputs
+
+        # CABLES
 
     @property
     def total_cable_cost(self):
@@ -313,6 +332,8 @@ class ElectricalDesign(CableSystem):
         self.crossing_cost = self._crossing_design.get(
             "crossing_unit_cost", 500000
         ) * self._crossing_design.get("crossing_number", 0)
+
+        """SUBSTATION"""
 
     @property
     def total_substation_cost(self):

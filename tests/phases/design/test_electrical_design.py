@@ -4,6 +4,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "Jake.Nunemaker@nrel.gov"
 
 
+import warnings
 from copy import deepcopy
 from itertools import product
 
@@ -16,9 +17,9 @@ from ORBIT.phases.design import ElectricalDesign, OffshoreSubstationDesign
 
 base = {
     "site": {"distance_to_landfall": 50, "depth": 30},
-    "landfall": {},
     "plant": {"capacity": 500},
     "export_system_design": {"cables": "XLPE_630mm_220kV"},
+    "landfall": {},
     "substation_design": {},
 }
 
@@ -190,6 +191,7 @@ def test_export_kwargs():
         "num_redundant": 2,
         "touchdown_distance": 50,
         "percent_added_length": 0.15,
+        # "interconnection_distance": 6,
     }
 
     o = ElectricalDesign(base)
@@ -366,3 +368,20 @@ def test_cost_crossing():
     cross_sim.run()
 
     assert cross_sim.crossing_cost != base_sim.crossing_cost
+
+
+def test_deprecated_landfall():
+
+    base = deepcopy(config)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        sim = ElectricalDesign(base)
+        sim.run()
+
+    deprecated = deepcopy(base)
+    deprecated["landfall"] = {"interconnection_distance": 4}
+
+    with pytest.deprecated_call():
+        sim = ElectricalDesign(deprecated)
+        sim.run()

@@ -3,14 +3,14 @@ ci:
 
 repos:
 -   repo: https://github.com/timothycrosley/isort
-    rev: 5.13.1
+    rev: 5.13.2
     hooks:
         - id: isort
           name: isort
           stages: [commit]
 
 -   repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 24.2.0
     hooks:
         - id: black
           name: black
@@ -34,6 +34,7 @@ repos:
         args: [--autofix]
 
 -   repo: https://github.com/pre-commit/mirrors-pylint
+    rev: v3.0.0a5
     rev: v3.0.0a5
     hooks:
     -   id: pylint

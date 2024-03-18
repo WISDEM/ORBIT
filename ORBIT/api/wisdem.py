@@ -6,6 +6,8 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from warnings import warn
+
 import openmdao.api as om
 
 from ORBIT import ProjectManager
@@ -329,6 +331,21 @@ class OrbitWisdem(om.ExplicitComponent):
                 "OffshoreSubstationDesign",
             ],
         }
+
+        if config["landfall"]["interconnection_distance"]:
+            warn("landfall dictionary will be deprecated and moved"
+                 " into [export_system_design][landfall].",
+                   DeprecationWarning,
+                     stacklevel=2
+            )
+
+        if config["export_system_design"]["interconnection_distance"]:
+            warn(
+                "[export_system][interconnection_distance] will be deprecated and"
+                " moved to [export_system_design][landfall][interconnection_distance].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         # Unique design phases
         if floating_flag:
