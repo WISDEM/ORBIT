@@ -3,6 +3,15 @@
 ORBIT Changelog
 ===============
 
+Unreleased (TBD)
+----------------
+
+- Added ``ElectricalDesign`` module. It includes HVDC options and substitutes ``ExportSystemDesign`` and ``OffshoreSubstationDesign``.
+- Updated documentation for `ElectricalDesign`, `ParametricManager`, and `ProjectManager`.
+- Added an example notebook: `Example - Using HVDC or HVAC`
+- Variables ``mpt_cost`` and ``shut_cost_rate`` now have units of USD/cable (previous USD/MW)
+- Expanded tests to demonstrate new features in ``ElectricalDesign``.
+
 1.0.8
 -----
 

@@ -10,6 +10,15 @@ The balance-of-system (BOS) costs of an offshore wind plant include:
 - Onshore construction costs required to connect the turbine to the grid
 - Port fees and commissioning costs
 
+.. note::
+
+    ORBIT does not specify a dollar-year when calculating BOS cost and it does
+    not account for inflation. To provide a flexible and adaptable simulation
+    model, components of the wind plant may incorporate `default` cost values.
+    Please advise that these values are approximated using avaiable information
+    or best-guess. To improve the fidelity of this tool, users should consider
+    replacing the `default` values with better informed costs.
+
 Evaluating BOS costs is complicated by the large number of design choices for
 each component, the impact of weather delays on the installation processes, the
 challenge of transporting and hoisting large components at sea, the variation
