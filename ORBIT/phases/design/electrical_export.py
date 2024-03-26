@@ -254,16 +254,12 @@ class ElectricalDesign(CableSystem):
 
         _num_redundant = self._design.get("num_redundant", 0)
 
+        num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
+        num_redundant = self._design.get("num_redundant", 0)
+
         if "HVDC" in self.cable.cable_type:
-            num_required = 2 * np.ceil(
-                self._plant_capacity / self.cable.cable_power
-            )
-            num_redundant = 2 * _num_redundant
-        else:
-            num_required = np.ceil(
-                self._plant_capacity / self.cable.cable_power
-            )
-            num_redundant = _num_redundant
+            num_required *= 2
+            num_redundant *= 2
 
         self.num_cables = int(num_required + num_redundant)
 
@@ -415,15 +411,13 @@ class ElectricalDesign(CableSystem):
         touchdown = self.config["site"]["distance_to_landfall"]
         shunt_cost_rate = self._design.get("shunt_cost_rate", 1e4)
 
-        _num_shunts = self.num_cables
-
         if "HVDC" in self.cable.cable_type:
             self.compensation = 0
         else:
             for _, cable in self.cables.items():
                 self.compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
-            self.compensation * shunt_cost_rate * _num_shunts
+            self.compensation * shunt_cost_rate * self.num_cables
         )
 
     def calc_switchgear_costs(self):
@@ -436,10 +430,9 @@ class ElectricalDesign(CableSystem):
 
         switchgear_cost = self._design.get("switchgear_cost", 4e6)
 
-        if "HVDC" in self.cable.cable_type:
-            num_switchgear = 0
-        else:
-            num_switchgear = self.num_cables
+        num_switchgear = (
+            0 if "HVDC" in self.cable.cable_type else self.num_cables
+        )
 
         self.switchgear_cost = num_switchgear * switchgear_cost
 
@@ -453,10 +446,9 @@ class ElectricalDesign(CableSystem):
 
         dc_breaker_cost = self._design.get("dc_breaker_cost", 10.5e6)
 
-        if "HVDC" in self.cable.cable_type:
-            num_dc_breakers = self.num_cables
-        else:
-            num_dc_breakers = 0
+        num_dc_breakers = (
+            self.num_cables if "HVDC" in self.cable.cable_type else 0
+        )
 
         self.dc_breaker_cost = num_dc_breakers * dc_breaker_cost
 
@@ -571,8 +563,6 @@ class ElectricalDesign(CableSystem):
         """
 
         _design = self.config.get("substation_design", {})
-        # topside_fab_cost_rate = _design.get("topside_fab_cost_rate", 14500)
-        # topside_design_cost = _design.get("topside_design_cost", 4.5e6)
 
         self.topside_mass = (
             3.85 * (self.mpt_rating * self.num_mpt) / self.num_substations
