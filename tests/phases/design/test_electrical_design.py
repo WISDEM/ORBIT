@@ -61,10 +61,10 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
 
 def test_ac_oss_kwargs():
     test_kwargs = {
-        "mpt_cost": 13500,
+        "mpt_unit_cost": 13500,
         # "topside_fab_cost_rate": 17000,    # breaks
         "topside_design_cost": 7e6,
-        "shunt_cost_rate": 40000,
+        "shunt_unit_cost": 40000,
         "switchgear_cost": 15e5,
         "backup_gen_cost": 2e6,
         "workspace_cost": 3e6,

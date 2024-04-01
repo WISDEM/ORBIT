@@ -58,10 +58,9 @@ class ElectricalDesign(CableSystem):
         "substation_design": {
             "substation_capacity": "MW (optional)",
             "num_substations": "int (optional)",
-            "mpt_cost": "USD/cable (optional)",
-            "topside_fab_cost_rate": "USD/t (optional)",
+            "mpt_unit_cost": "USD/cable (optional)",
             "topside_design_cost": "USD (optional)",
-            "shunt_cost_rate": "USD/cable (optional)",
+            "shunt_unit_cost": "USD/cable (optional)",
             "switchgear_cost": "USD (optional)",
             "dc_breaker_cost": "USD (optional)",
             "backup_gen_cost": "USD (optional)",
@@ -74,7 +73,7 @@ class ElectricalDesign(CableSystem):
             "oss_pile_cost_rate": "USD/t (optional)",
         },
         "onshore_substation_design": {
-            "shunt_cost_rate": "USD/cable (optional)",
+            "shunt_unit_cost": "USD/cable (optional)",
             "onshore_converter_cost": "USD (optional)",
         },
     }
@@ -383,10 +382,10 @@ class ElectricalDesign(CableSystem):
 
         Parameters
         ----------
-        mpt_cost : int | float
+        mpt_unit_cost : int | float
         """
 
-        _mpt_cost = self._design.get("mpt_cost", 2.87e6)
+        _mpt_cost = self._design.get("mpt_unit_cost", 2.87e6)
 
         self.num_mpt = self.num_cables
 
@@ -405,11 +404,11 @@ class ElectricalDesign(CableSystem):
 
         Parameters
         ----------
-        shunt_cost_rate : int | float
+        shunt_unit_cost : int | float
         """
 
         touchdown = self.config["site"]["distance_to_landfall"]
-        shunt_cost_rate = self._design.get("shunt_cost_rate", 1e4)
+        shunt_unit_cost = self._design.get("shunt_unit_cost", 1e4)
 
         if "HVDC" in self.cable.cable_type:
             self.compensation = 0
@@ -417,7 +416,7 @@ class ElectricalDesign(CableSystem):
             for _, cable in self.cables.items():
                 self.compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
-            self.compensation * shunt_cost_rate * self.num_cables
+            self.compensation * shunt_unit_cost * self.num_cables
         )
 
     def calc_switchgear_costs(self):
@@ -580,21 +579,21 @@ class ElectricalDesign(CableSystem):
 
         Parameters
         ----------
-        shunt_cost_rate : int | float
+        shunt_unit_cost : int | float
         onshore_converter_cost: int | float
         switchgear_cost: int | float
         """
 
         _design = self.config.get("onshore_substation_design", {})
 
-        _shunt_cost_rate = _design.get("shunt_cost_rate", 1.3e4)  # per cable
+        _shunt_unit_cost = _design.get("shunt_unit_cost", 1.3e4)  # per cable
         _switchgear_cost = _design.get("switchgear_cost", 9.33e6)  # per cable
         _compensation_rate = _design.get(
             "compensation_rate", 31.3e6
         )  # per cable
 
         self.onshore_shunt_reactor_cost = (
-            self.compensation * self.num_cables * _shunt_cost_rate
+            self.compensation * self.num_cables * _shunt_unit_cost
         )
 
         if self.cable.cable_type == "HVDC-monopole":
