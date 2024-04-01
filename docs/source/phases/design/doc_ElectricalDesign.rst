@@ -55,7 +55,7 @@ windfarm's capacity by the number of MPTs. MPTs are only required if the
 export cables are HVAC. The default cost of the MPT is $2.87m per HVAC cable. Therefore, the total MPT cost is
 proportional to the number of cables. Note: Previous versions may have used curve-fits to
 calculate total MPT cost based on the windfarm's capacity. The MPT unit cost ($/cable) can
-be ovewritten by the user by setting (``mpt_cost``) to the desired cost. If the export cables
+be ovewritten by the user by setting (``mpt_unit_cost``) to the desired cost. If the export cables
 are HVDC, then the cost of power transformers will be $0.
 
 Number of Shunt Reactors, Reactive Power Compensation, and Cost
@@ -65,7 +65,7 @@ required based on the distance of the substation to shore. This model assumes
 one shunt reactor for each HVAC export cable. An HVDC export systems do not require
 reactive power compensation. The default cost rate of the shunt reactors is $10k per HVAC cable. The total cost is proportional
 to the number of cables multipled by a cable-specific compensation factor. The default cost rate
-can be overwritten by the user by setting (``shunt_reactor_rate``) to the desired cost. The shunt
+can be overwritten by the user by setting (``shunt_unit_cost``) to the desired cost. The shunt
 reactor cost is $0 for HVDC systems.
 
 Number of Required Switchgears and Cost
