@@ -136,7 +136,8 @@ class OffshoreSubstationDesign(DesignPhase):
 
     def calc_num_mpt_and_rating(self):
         """
-        Calculates the number of main power transformers (MPTs) and their rating.
+        Calculates the number of main power transformers (MPTs)
+        and their rating.
 
         Parameters
         ----------
@@ -151,7 +152,7 @@ class OffshoreSubstationDesign(DesignPhase):
         capacity = num_turbines * turbine_rating
 
         self.num_substations = _design.get(
-            "num_substations", int(np.ceil(capacity / 800))
+            "num_substations", int(np.ceil(capacity / 1200))
         )
         self.num_mpt = np.ceil(
             num_turbines * turbine_rating / (250 * self.num_substations)
@@ -226,7 +227,7 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _design = self.config.get("substation_design", {})
-        switchgear_cost = _design.get("switchgear_cost", 14.5e5)
+        switchgear_cost = _design.get("switchgear_cost", 4e6)
 
         self.switchgear_costs = self.num_mpt * switchgear_cost
 
@@ -284,7 +285,7 @@ class OffshoreSubstationDesign(DesignPhase):
         oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
 
         substructure_mass = 0.4 * self.topside_mass
-        substructure_pile_mass = 8 * substructure_mass ** 0.5574
+        substructure_pile_mass = 8 * substructure_mass**0.5574
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
