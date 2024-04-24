@@ -26,6 +26,8 @@ config_wtiv_multi_feeder = deepcopy(config_wtiv_feeder)
 config_wtiv_multi_feeder["num_feeders"] = 2
 floating = extract_library_specs("config", "floating_turbine_install_feeder")
 
+config_22mw = extract_library_specs("config", "turbine_install_22mw_generic")
+
 
 @pytest.mark.parametrize(
     "config",
@@ -250,3 +252,36 @@ def test_multiple_tower_sections():
         vl = vl.assign(shift=(vl["time"] - vl["time"].shift(1)))
 
         assert (vl["shift"] - vl["duration"]).abs().max() < 1e-9
+
+
+def test_large_turbine_installation():
+    """Test a library extracted 22MW turbine differs from the
+    project test config"""
+
+    sim = TurbineInstallation(config_wtiv)
+    sim.run()
+
+    sim_22 = TurbineInstallation(config_22mw)
+    sim_22.run()
+
+    def count_component(list, component):
+
+        return sum(1 for i in list if i == component)
+
+    assert sim.config != sim_22.config
+    assert sim.capex_category == sim_22.capex_category
+
+    assert sim.installation_capex < sim_22.installation_capex
+    assert sim.total_phase_time != sim_22.total_phase_time
+
+    # sim has 1 Nacelle, 3 Blades, and 1 TowerSection
+    # sim_22 has 1 Nacelle, 3 Blades, and 3 TowerSections
+    assert count_component(sim.component_list, "Blade") == count_component(
+        sim_22.component_list, "Blade"
+    )
+    assert count_component(sim.component_list, "Nacelle") == count_component(
+        sim_22.component_list, "Nacelle"
+    )
+    assert count_component(
+        sim.component_list, "TowerSection"
+    ) < count_component(sim_22.component_list, "TowerSection")
