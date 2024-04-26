@@ -230,7 +230,7 @@ class MonopileDesign(DesignPhase):
             "diameter": D_tp,
             "mass": m_tp,
             "length": L_tp,
-            "deck_space": D_tp ** 2,
+            "deck_space": D_tp**2,
             "unit_cost": m_tp * self.tp_steel_cost,
         }
 
@@ -355,7 +355,7 @@ class MonopileDesign(DesignPhase):
         """
 
         density = kwargs.get("monopile_density", 7860)  # kg/m3
-        volume = (pi / 4) * (Dp ** 2 - (Dp - tp) ** 2) * Lt
+        volume = (pi / 4) * (Dp**2 - (Dp - 2 * tp) ** 2) * Lt
         mass = density * volume / 907.185
 
         return mass
@@ -482,7 +482,8 @@ class MonopileDesign(DesignPhase):
             Rated windspeed of turbine (m/s).
         load_factor : float
             Added safety factor on the extreme wind moment.
-            Default: 3.375 (2.5x DNV standard as this model does not design for buckling or fatigue)
+            Default: 3.375 (2.5x DNV standard as this model
+             does not design for buckling or fatigue)
 
         Returns
         -------
@@ -559,16 +560,15 @@ class MonopileDesign(DesignPhase):
             Coefficient of thrust.
         """
 
-        ct = min(
-            [3.5 * (2 * rated_windspeed + 3.5) / (rated_windspeed ** 2), 1]
-        )
+        ct = min([3.5 * (2 * rated_windspeed + 3.5) / (rated_windspeed**2), 1])
 
         return ct
 
     @staticmethod
     def calculate_50year_extreme_ws(mean_windspeed, **kwargs):
         """
-        Calculates the 50 year extreme wind speed using methodology from DNV-GL.
+        Calculates the 50 year extreme wind speed using methodology
+        from DNV-GL.
         Source: Arany & Bhattacharya (2016)
         - Equation 27
 
