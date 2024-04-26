@@ -44,7 +44,7 @@ Instructions
 
     .. code-block:: console
 
-        conda create -n <environment_name> python=3.8 --no-default-packages
+        conda create -n <environment_name> python=3.10 --no-default-packages
 
    To activate/deactivate the environment, use the following commands.
 
