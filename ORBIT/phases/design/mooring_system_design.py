@@ -1,12 +1,14 @@
 """`MooringSystemDesign` and related functionality."""
 
-__author__ = "Jake Nunemaker"
+__author__ = "Jake Nunemaker, modified by Becca Fuchs"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
-__email__ = "jake.nunemaker@nrel.gov"
-
+__email__ = "jake.nunemaker@nrel.gov, rebecca.fuchs@nrel.gov"
 
 from math import sqrt
+
+import numpy as np
+from scipy.interpolate import interp1d
 
 from ORBIT.phases.design import DesignPhase
 
@@ -21,8 +23,11 @@ class MooringSystemDesign(DesignPhase):
         "mooring_system_design": {
             "num_lines": "int | float (optional, default: 4)",
             "anchor_type": "str (optional, default: 'Suction Pile')",
+            "mooring_type": "str (optional, default: 'Catenary')",
             "mooring_line_cost_rate": "int | float (optional)",
             "drag_embedment_fixed_length": "int | float (optional, default: .5km)",
+            "chain_density": "int | float (optional, default: 19900 kg/m**3)",
+            "rope_density": "int | float (optional, default: 797.8 kg/m**3)",
         },
     }
 
@@ -56,6 +61,34 @@ class MooringSystemDesign(DesignPhase):
         self._design = self.config.get("mooring_system_design", {})
         self.num_lines = self._design.get("num_lines", 4)
         self.anchor_type = self._design.get("anchor_type", "Suction Pile")
+        self.mooring_type = self._design.get("mooring_type", "Catenary")
+
+        # Input hybrid mooring system design from Cooperman et al. (2022),
+        # https://www.nrel.gov/docs/fy22osti/82341.pdf
+        _semitaut = {
+            "depths": np.array([500, 750, 1000, 1250, 1500], dtype=float),
+            "rope_lengths": np.array(
+                [478.41, 830.34, 1229.98, 1183.93, 1079.62], dtype=float
+            ),
+            "rope_diameters": np.array([0.2, 0.2, 0.2, 0.2, 0.2], dtype=float),
+            "chain_lengths": np.array(
+                [917.11, 800.36, 609.07, 896.42, 1280.57], dtype=float
+            ),
+            "chain_diamters": np.array([0.13, 0.17, 0.22, 0.22, 0.22]),
+        }
+
+        self.finterp_rope_l = interp1d(
+            _semitaut["depths"], _semitaut["rope_lengths"]
+        )
+        self.finterp_rope_d = interp1d(
+            _semitaut["depths"], _semitaut["rope_diameters"]
+        )
+        self.finterp_chain_l = interp1d(
+            _semitaut["depths"], _semitaut["chain_lengths"]
+        )
+        self.finterp_chain_d = interp1d(
+            _semitaut["depths"], _semitaut["chain_diameters"]
+        )
 
         self._outputs = {}
 
@@ -77,7 +110,7 @@ class MooringSystemDesign(DesignPhase):
         """
 
         tr = self.config["turbine"]["turbine_rating"]
-        fit = -0.0004 * (tr ** 2) + 0.0132 * tr + 0.0536
+        fit = -0.0004 * (tr**2) + 0.0132 * tr + 0.0536
 
         if fit <= 0.09:
             self.line_diam = 0.09
@@ -100,26 +133,57 @@ class MooringSystemDesign(DesignPhase):
         """
 
         self.breaking_load = (
-            419449 * (self.line_diam ** 2) + 93415 * self.line_diam - 3577.9
+            419449 * (self.line_diam**2) + 93415 * self.line_diam - 3577.9
         )
 
     def calculate_line_length_mass(self):
         """
         Returns the mooring line length and mass.
         """
+        depth = self.config["site"]["depth"]
 
-        if self.anchor_type == "Drag Embedment":
-            fixed = self._design.get("drag_embedment_fixed_length", 500)
+        if self.mooring_type == "Catenary":
+            if self.anchor_type == "Drag Embedment":
+                fixed = self._design.get("drag_embedment_fixed_length", 500)
+
+            else:
+                fixed = 0
+
+            self.line_length = (
+                0.0002 * (depth**2) + 1.264 * depth + 47.776 + fixed
+            )
+
+            self.line_mass = self.line_length * self.line_mass_per_m
 
         else:
-            fixed = 0
+            if self.anchor_type == "Drag Embedment":
+                fixed = self.get("drag_embedment_fixed_length", 0)
 
-        depth = self.config["site"]["depth"]
-        self.line_length = (
-            0.0002 * (depth ** 2) + 1.264 * depth + 47.776 + fixed
-        )
+            else:
+                fixed = 0
 
-        self.line_mass = self.line_length * self.line_mass_per_m
+            # Rope and chain length at project depth
+            self.chain_length = self.finterp_chain_l(depth)
+            self.rope_length = self.finterp_rope_l(depth)
+            # Rope and chain diameter at project depth
+            self.rope_diameter = self.finterp_rope_d(depth)
+            self.chain_diameter = self.finterp_chain_d(depth)
+
+            self.line_length = self.rope_length + self.chain_length
+
+            chain_kg_per_m = (
+                self._design.get("mooring_chain_density", 19900)
+                * self.chain_diameter**2
+            )
+            rope_kg_per_m = (
+                self._design.get("mooring_rope_density", 797.8)
+                * self.rope_diameter**2
+            )
+
+            self.line_mass = (
+                self.chain_length * chain_kg_per_m
+                + self.rope_length * rope_kg_per_m
+            ) / 1e3
 
     def calculate_anchor_mass_cost(self):
         """
