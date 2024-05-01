@@ -6,12 +6,16 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from warnings import warn
+
 import openmdao.api as om
 
 from ORBIT import ProjectManager
 
 
 class Orbit(om.Group):
+    """Orbit class for WISDEM API"""
+
     def initialize(self):
         self.options.declare("floating", default=False)
         self.options.declare("jacket", default=False)
@@ -25,7 +29,8 @@ class Orbit(om.Group):
         self.set_input_defaults("num_feeders", 1)
         self.set_input_defaults("num_towing", 1)
         self.set_input_defaults("num_station_keeping", 3)
-        self.set_input_defaults("oss_install_vessel", "example_heavy_lift_vessel")
+        self.set_input_defaults("oss_install_vessel",
+                                "example_heavy_lift_vessel")
         self.set_input_defaults("site_distance", 40.0, units="km")
         self.set_input_defaults("site_distance_to_landfall", 40.0, units="km")
         self.set_input_defaults("interconnection_distance", 40.0, units="km")
@@ -41,7 +46,8 @@ class Orbit(om.Group):
         self.set_input_defaults("site_auction_price", 100e6, units="USD")
         self.set_input_defaults("site_assessment_plan_cost", 1e6, units="USD")
         self.set_input_defaults("site_assessment_cost", 25e6, units="USD")
-        self.set_input_defaults("construction_operations_plan_cost", 2.5e6, units="USD")
+        self.set_input_defaults("construction_operations_plan_cost",
+                                2.5e6, units="USD")
         self.set_input_defaults("design_install_plan_cost", 2.5e6, units="USD")
         self.set_input_defaults("boem_review_cost", 0.0, units="USD")
 
@@ -290,7 +296,7 @@ class OrbitWisdem(om.ExplicitComponent):
                 "cables": ["XLPE_630mm_66kV", "XLPE_185mm_66kV"],
             },
             "export_system_design": {
-                "cables": "XLPE_1000m_220kV",
+                "cables": "XLPE_1000mm_220kV",
                 "interconnection_distance": float(inputs["interconnection_distance"]),
                 "percent_added_length": 0.1,
             },
@@ -325,6 +331,21 @@ class OrbitWisdem(om.ExplicitComponent):
                 "OffshoreSubstationDesign",
             ],
         }
+
+        if config["landfall"]["interconnection_distance"]:
+            warn("landfall dictionary will be deprecated and moved"
+                 " into [export_system_design][landfall].",
+                   DeprecationWarning,
+                     stacklevel=2
+            )
+
+        if config["export_system_design"]["interconnection_distance"]:
+            warn(
+                "[export_system][interconnection_distance] will be deprecated and"
+                " moved to [export_system_design][landfall][interconnection_distance].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         # Unique design phases
         if floating_flag:

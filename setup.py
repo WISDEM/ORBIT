@@ -20,7 +20,9 @@ setup(
     long_description=long_description,
     classifiers=[
         "Development Status :: 4 - Beta",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests"]
@@ -35,7 +37,7 @@ setup(
         "pandas",
         "pyyaml",
         "openmdao>=3.2",
-        "python-benedict",
+        "python-benedict<0.33.2",
         "statsmodels",
     ],
     extras_require={

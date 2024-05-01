@@ -3,6 +3,31 @@
 ORBIT Changelog
 ===============
 
+Unreleased (TBD)
+----------------
+
+- Updated ``ElectricalDesign`` module.
+This class combines the elements of ``ExportSystemDesign`` and the ``OffshoreSubstationDesign`` modules. Its purpose is to represent the export system more accurately
+by linking the type of cable (AC versus DC) and substation’s components (i.e. transformers versus converters).Figure 1 shows how to add ElectricalDesign() to a yaml
+configuration file. Most export and substation component costs were updated to include a per-unit cost rather than a per-MW cost rate and they can be added to the
+yaml file as arguments too. Otherwise, those per-unit costs use default and were determined with the help of a subcontractor.
+    - This module’s components’ cost scales with number of cables and substations rather than plant capacity.
+    - The offshore substation cost is calculated based on the cable type and number of cables, rather than scaling function based on plant capacity.
+    - The mass of an HVDC and HVAC substation are assumed to be the same. Without any new information the substructure mass and cost functions did not change.
+    - An experimental onshore cost function was also added to account for the duplicated interconnection components. Costs will vary depending on the cable type.
+
+.. image:: ./images/ElectricalDesignConfig.png
+
+Figure 1: Adding the new ElectricalDesign class to design phase in the yaml configuration file (left) versus using the original ExportDesignSystem and
+OffshoreSubstationDesign classes (right). Note: ORBIT will not override output values from a design phase, so it will use the first instance and ignore
+any subsequent designs that produce the same outputs.
+
+- Added an example notebook: `Example - Using HVDC or HVAC`
+This new example showcases the capabilities of the ``ElectricalDesign`` class. It demonstrates how to create projects using HVAC or HVDC cables and
+how to use ParametricManager to compare the two design decisions.
+
+- Expanded tests to demonstrate new features in ``ElectricalDesign``.
+
 1.0.8
 -----
 

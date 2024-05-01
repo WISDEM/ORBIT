@@ -5,6 +5,8 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
+from warnings import warn
+
 import numpy as np
 
 from ORBIT.phases.design._cables import CableSystem
@@ -19,7 +21,8 @@ class ExportSystemDesign(CableSystem):
     num_cables : int
         Total number of cables required for transmitting power.
     length : float
-        Length of a single cable connecting the OSS to the interconnection in km.
+        Length of a single cable connecting the OSS to the
+        interconnection in km.
     mass : float
         Mass of `length` in tonnes.
     cable : `Cable`
@@ -44,6 +47,7 @@ class ExportSystemDesign(CableSystem):
             "num_redundant": "int (optional)",
             "touchdown_distance": "m (optional, default: 0)",
             "percent_added_length": "float (optional)",
+            "landfall": {"interconnection_distance": "km (optional)"},
         },
     }
 
@@ -54,7 +58,8 @@ class ExportSystemDesign(CableSystem):
                 "number": "int",
                 "sections": "list",
                 "cable_power": "MW",
-            }
+            },
+            "landfall": {"interconnection_distance": "km"},
         }
     }
 
@@ -80,12 +85,22 @@ class ExportSystemDesign(CableSystem):
         self._plant_capacity = self.config["plant"]["capacity"]
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
         self._get_touchdown_distance()
-        try:
-            self._distance_to_interconnection = config["landfall"][
-                "interconnection_distance"
-            ]
-        except KeyError:
-            self._distance_to_interconnection = 3
+
+        _landfall = self.config.get("landfall", {})
+        if _landfall:
+            warn(
+                "landfall dictionary will be deprecated and moved"
+                " into [export_system_design][landfall].",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        else:
+            _landfall = self.config["export_system_design"].get("landfall", {})
+
+        self._distance_to_interconnection = _landfall.get(
+            "interconnection_distance", 3
+        )
 
     def run(self):
         """
@@ -207,12 +222,16 @@ class ExportSystemDesign(CableSystem):
 
         output = {
             "export_system": {
-                "interconnection_distance": self._distance_to_interconnection,
+                "landfall": {
+                    "interconnection_distance": (
+                        self._distance_to_interconnection
+                    )
+                },
                 "system_cost": self.total_cost,
             }
         }
 
-        for name, cable in self.cables.items():
+        for _, cable in self.cables.items():
 
             output["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
