@@ -7,7 +7,6 @@ __email__ = "jake.nunemaker@nrel.gov, rebecca.fuchs@nrel.gov"
 
 from math import sqrt
 
-import numpy as np
 from scipy.interpolate import interp1d
 
 from ORBIT.phases.design import DesignPhase
@@ -64,44 +63,23 @@ class MooringSystemDesign(DesignPhase):
         self.anchor_type = self._design.get("anchor_type", "Suction Pile")
         self.mooring_type = self._design.get("mooring_type", "Catenary")
 
-        # Input hybrid mooring system design from Cooperman et al. (2022),
-        # https://www.nrel.gov/docs/fy22osti/82341.pdf
-        _semitaut = {
-            "depths": np.array([500.0, 750.0, 1000.0, 1250.0, 1500.0]),
-            "rope_lengths": np.array(
-                [478.41, 830.34, 1229.98, 1183.93, 1079.62]
-            ),
-            "rope_diameters": np.array([0.2, 0.2, 0.2, 0.2, 0.2]),
-            "chain_lengths": np.array(
-                [917.11, 800.36, 609.07, 896.42, 1280.57]
-            ),
-            "chain_diamters": np.array([0.13, 0.17, 0.22, 0.22, 0.22]),
-            "anchor_costs": np.array(
-                [112766.0, 125511.0, 148703.0, 204988.0, 246655.0]
-            ),
-            "total_line_costs": np.array(
-                [826598.0, 1221471.0, 1682208.0, 2380035.0, 3229700.0]
-            ),
+        # Semi-Taut mooring system design parameters based on depth
+        # Cooperman et al. (2022), https://www.nrel.gov/docs/fy22osti/82341.pdf
+        self._semitaut = {
+            "depths": [500.0, 750.0, 1000.0, 1250.0, 1500.0],
+            "rope_lengths": [478.41, 830.34, 1229.98, 1183.93, 1079.62],
+            "rope_diameter": 0.2,
+            "chain_lengths": [917.11, 800.36, 609.07, 896.42, 1280.57],
+            "chain_diameters": [0.13, 0.17, 0.22, 0.22, 0.22],
+            "anchor_costs": [112766.0, 125511.0, 148703.0, 204988.0, 246655.0],
+            "total_line_costs": [
+                826598.0,
+                1221471.0,
+                1682208.0,
+                2380035.0,
+                3229700.0,
+            ],
         }
-
-        self.finterp_rope_l = interp1d(
-            _semitaut["depths"], _semitaut["rope_lengths"]
-        )
-        self.finterp_rope_d = interp1d(
-            _semitaut["depths"], _semitaut["rope_diameters"]
-        )
-        self.finterp_chain_l = interp1d(
-            _semitaut["depths"], _semitaut["chain_lengths"]
-        )
-        self.finterp_chain_d = interp1d(
-            _semitaut["depths"], _semitaut["chain_diameters"]
-        )
-        self.finterp_anchor_cost = interp1d(
-            _semitaut["depths", _semitaut["anchor_costs"]]
-        )
-        self.finterp_total_line_cost = interp1d(
-            _semitaut["depths"], _semitaut["total_line_costs"]
-        )
 
         self._outputs = {}
 
@@ -162,43 +140,47 @@ class MooringSystemDesign(DesignPhase):
                 fixed = 0
 
             self.line_length = (
-                0.0002 * (self.depth**2)
-                + 1.264 * self.depth
-                + 47.776
-                + fixed
+                0.0002 * (self.depth**2) + 1.264 * self.depth + 47.776 + fixed
             )
 
             self.line_mass = self.line_length * self.line_mass_per_m
 
         else:
             if self.anchor_type == "Drag Embedment":
-                fixed = self.get("drag_embedment_fixed_length", 0)
+                fixed = self._design.get("drag_embedment_fixed_length", 0)
 
             else:
                 fixed = 0
 
-            # Rope and chain length at project depth
-            self.chain_length = self.finterp_chain_l(self.depth)
-            self.rope_length = self.finterp_rope_l(self.depth)
-            # Rope and chain diameter at project depth
-            self.rope_diameter = self.finterp_rope_d(self.depth)
-            self.chain_diameter = self.finterp_chain_d(self.depth)
+            # Interpolation of rope and chain length at project depth
+            self.chain_length = interp1d(
+                self._semitaut["depths"], self._semitaut["chain_lengths"]
+            )(self.depth)
+            self.rope_length = interp1d(
+                self._semitaut["depths"], self._semitaut["rope_lengths"]
+            )(self.depth)
+
+            # Rope and interpolated chain diameter at project depth
+            rope_diameter = self._semitaut["rope_diameter"]
+            chain_diameter = interp1d(
+                self._semitaut["depths"], self._semitaut["chain_diameters"]
+            )(self.depth)
 
             self.line_length = self.rope_length + self.chain_length
 
-            chain_kg_per_m = (
+            chain_mass_per_m = (
                 self._design.get("mooring_chain_density", 19900)
-                * self.chain_diameter**2
-            )
-            rope_kg_per_m = (
+                * chain_diameter**2
+            )  # kg
+            rope_mass_per_m = (
                 self._design.get("mooring_rope_density", 797.8)
-                * self.rope_diameter**2
-            )
+                * rope_diameter**2
+            )  # kg
 
             self.line_mass = (
-                self.chain_length * chain_kg_per_m
-                + self.rope_length * rope_kg_per_m
-            ) / 1e3
+                self.chain_length * chain_mass_per_m
+                + self.rope_length * rope_mass_per_m
+            ) / 1e3  # tonnes
 
     def calculate_anchor_mass_cost(self):
         """
@@ -225,7 +207,9 @@ class MooringSystemDesign(DesignPhase):
             else:
                 self.anchor_mass = 50
 
-            self.anchor_cost = self.finterp_anchor_cost(self.depth)
+            self.anchor_cost = interp1d(
+                self._semitaut["depths"], self._semitaut["anchor_costs"]
+            )(self.depth)
 
     @property
     def line_cost(self):
@@ -235,7 +219,10 @@ class MooringSystemDesign(DesignPhase):
             line_cost = self.line_length * self.line_cost_rate
 
         else:
-            line_cost = self.finterp_total_line_cost(self.depth)
+
+            line_cost = interp1d(
+                self._semitaut["depths"], self._semitaut["total_line_costs"]
+            )(self.depth)
 
         return line_cost
 
