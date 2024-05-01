@@ -65,7 +65,7 @@ class MooringSystemDesign(DesignPhase):
 
         # Semi-Taut mooring system design parameters based on depth
         # Cooperman et al. (2022), https://www.nrel.gov/docs/fy22osti/82341.pdf
-        self._semitaut = {
+        self._semitaut_params = {
             "depths": [500.0, 750.0, 1000.0, 1250.0, 1500.0],
             "rope_lengths": [478.41, 830.34, 1229.98, 1183.93, 1079.62],
             "rope_diameter": 0.2,
@@ -154,16 +154,19 @@ class MooringSystemDesign(DesignPhase):
 
             # Interpolation of rope and chain length at project depth
             self.chain_length = interp1d(
-                self._semitaut["depths"], self._semitaut["chain_lengths"]
+                self._semitaut_params["depths"],
+                self._semitaut_params["chain_lengths"],
             )(self.depth)
             self.rope_length = interp1d(
-                self._semitaut["depths"], self._semitaut["rope_lengths"]
+                self._semitaut_params["depths"],
+                self._semitaut_params["rope_lengths"],
             )(self.depth)
 
             # Rope and interpolated chain diameter at project depth
-            rope_diameter = self._semitaut["rope_diameter"]
+            rope_diameter = self._semitaut_params["rope_diameter"]
             chain_diameter = interp1d(
-                self._semitaut["depths"], self._semitaut["chain_diameters"]
+                self._semitaut_params["depths"],
+                self._semitaut_params["chain_diameters"],
             )(self.depth)
 
             self.line_length = self.rope_length + self.chain_length
@@ -208,7 +211,8 @@ class MooringSystemDesign(DesignPhase):
                 self.anchor_mass = 50
 
             self.anchor_cost = interp1d(
-                self._semitaut["depths"], self._semitaut["anchor_costs"]
+                self._semitaut_params["depths"],
+                self._semitaut_params["anchor_costs"],
             )(self.depth)
 
     @property
@@ -221,7 +225,8 @@ class MooringSystemDesign(DesignPhase):
         else:
 
             line_cost = interp1d(
-                self._semitaut["depths"], self._semitaut["total_line_costs"]
+                self._semitaut_params["depths"],
+                self._semitaut_params["total_line_costs"],
             )(self.depth)
 
         return line_cost
