@@ -186,9 +186,12 @@ class MooredSubInstallation(InstallPhase):
         num_towing = self.config["towing_vessel_groups"]["towing_vessels"]
         towing_speed = self.config["substructure"].get("towing_speed", 6)
 
-        ahts_vessel = self.config["ahts_vessel"]
-
+        ahts_vessel = self.config.get("ahts_vessel", None)
         num_ahts = self.config["towing_vessel_groups"].get("ahts_vessels", 1)
+
+        if ahts_vessel is None:
+            warn("No ['ahts_vessel'] specified. num_ahts set to 0.")
+            num_ahts = 0
 
         remaining_substructures = [1] * self.num_turbines
 
