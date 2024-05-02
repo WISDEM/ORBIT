@@ -6,9 +6,12 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from warnings import warn
+
 import simpy
 from marmot import le, process
-from ORBIT.core import Vessel, WetStorage
+
+from ORBIT.core import WetStorage
 from ORBIT.phases.install import InstallPhase
 
 from .common import TowingGroup, TurbineAssemblyLine, SubstructureAssemblyLine
@@ -25,10 +28,12 @@ class MooredSubInstallation(InstallPhase):
 
     #:
     expected_config = {
+        "support_vessel": "str",
         "ahts_vessel": "str",
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
+            "station_keeping_vessels": "int",
             "ahts_vessels": "int (optional, default: 1)",
             "num_groups": "int (optional)",
         },
@@ -67,9 +72,9 @@ class MooredSubInstallation(InstallPhase):
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
 
-        self.setup_simulation(**kwargs)
+        self.setup_simulation()
 
-    def setup_simulation(self, **kwargs):
+    def setup_simulation(self):
         """
         Sets up simulation infrastructure.
         - Initializes substructure production
@@ -85,6 +90,7 @@ class MooredSubInstallation(InstallPhase):
         self.initialize_turbine_assembly()
         self.initialize_queue()
         self.initialize_towing_groups()
+        self.initialize_support_vessel()
 
     @property
     def system_capex(self):
@@ -181,7 +187,8 @@ class MooredSubInstallation(InstallPhase):
         towing_speed = self.config["substructure"].get("towing_speed", 6)
 
         ahts_vessel = self.config["ahts_vessel"]
-        num_ahts = self.config["towing_vessel_groups"]["ahts_vessels"]
+
+        num_ahts = self.config["towing_vessel_groups"].get("ahts_vessels", 1)
 
         remaining_substructures = [1] * self.num_turbines
 
@@ -212,9 +219,57 @@ class MooredSubInstallation(InstallPhase):
         self.active_group.vessel = None
         self.active_group.activate = self.env.event()
 
+    def initialize_support_vessel(self):
+        """
+        ** DEPRECATED ** The support vessel is deprecated and an AHTS
+        vessel will perform the installation with the towing group.
+
+        Initializes Multi-Purpose Support Vessel to perform installation
+        processes at site.
+        """
+
+        specs = self.config["support_vessel"]
+
+        if specs is not None:
+            warn(
+                "support_vessel will be deprecated and replaced with"
+                " towing_vessels and to ahts_vessel in the towing groups.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        # vessel = self.initialize_vessel("Multi-Purpose Support Vessel",
+        # specs)
+
+        # self.env.register(vessel)
+        # vessel.initialize(mobilize=False)
+        # self.support_vessel = vessel
+
+        station_keeping_vessels = self.config["towing_vessel_groups"][
+            "station_keeping_vessels"
+        ]
+
+        if station_keeping_vessels is not None:
+            print(station_keeping_vessels)
+            warn(
+                "station_keeping_vessels will be deprecated and replaced with"
+                " towing_vessels and ahts_vessels in the towing groups.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        # install_moored_substructures(
+        #    self.support_vessel,
+        #    self.active_group,
+        #    self.distance,
+        #    self.num_turbines,
+        #    station_keeping_vessels,
+        #    **kwargs,
+        # )
+
     @property
     def detailed_output(self):
-        """"""
+        """return detailed outputs."""
 
         return {
             "operational_delays": {
@@ -234,7 +289,7 @@ class MooredSubInstallation(InstallPhase):
         }
 
     def operational_delay(self, name):
-        """"""
+        """return operational delays"""
 
         actions = [a for a in self.env.actions if a["agent"] == name]
         delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
@@ -283,10 +338,10 @@ def towing_group_actions(
     towing_vessels,
     ahts_vessels,
     towing_speed,
-    **kwargs,
 ):
     """
-    Process logic for the towing vessel group. Assumes there is an anchor tug boat with each group
+    Process logic for the towing vessel group. Assumes there is an
+    anchor tug boat with each group
 
     Parameters
     ----------
@@ -308,7 +363,7 @@ def towing_group_actions(
     transit_time = distance / group.transit_speed
 
     start = group.env.now
-    assembly = yield feed.get()
+    _ = yield feed.get()
     delay = group.env.now - start
 
     if delay > 0:
@@ -390,3 +445,80 @@ def towing_group_actions(
             "waveheight": le(group.max_waveheight),
         },
     )
+
+
+@process
+def install_moored_substructures(
+    vessel, queue, distance, substructures, station_keeping_vessels
+):
+    """
+    ** DEPRECATED ** This method is deprecated and is now performed
+    in towing_group_action() by the towing group with AHTS vessel.
+    Logic that a Multi-Purpose Support Vessel uses at site to complete the
+    installation of moored substructures.
+
+    Parameters
+    ----------
+    vessel : Vessel
+    queue :
+    distance : int | float
+        Distance between port and site (km).
+    substructures : int
+        Number of substructures to install before transiting back to port.
+    station_keeping_vessels : int
+        Number of vessels to use for substructure station keeping during final
+        installation at site.
+    """
+
+    n = 0
+    while n < substructures:
+        if queue.vessel:
+
+            start = vessel.env.now
+            if n == 0:
+                vessel.mobilize()
+                yield vessel.transit(distance)
+
+            yield vessel.task_wrapper(
+                "Position Substructure",
+                2,
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            )
+            yield vessel.task_wrapper(
+                "Ballast to Operational Draft",
+                6,
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            )
+            yield vessel.task_wrapper(
+                "Connect Mooring Lines",
+                22,
+                suspendable=True,
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            )
+            yield vessel.task_wrapper(
+                "Check Mooring Lines",
+                12,
+                suspendable=True,
+                constraints={"windspeed": le(15), "waveheight": le(2.5)},
+            )
+
+            group_time = vessel.env.now - start
+            queue.vessel.submit_action_log(
+                "Positioning Support",
+                group_time,
+                location="site",
+                num_vessels=station_keeping_vessels,
+            )
+            yield queue.vessel.release.succeed()
+            vessel.submit_debug_log(progress="Substructure")
+            n += 1
+
+        else:
+            start = vessel.env.now
+            yield queue.activate
+            delay_time = vessel.env.now - start
+
+            if n != 0:
+                vessel.submit_action_log("Delay", delay_time, location="Site")
+
+    yield vessel.transit(distance)
