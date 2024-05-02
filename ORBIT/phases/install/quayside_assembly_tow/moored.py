@@ -29,7 +29,7 @@ class MooredSubInstallation(InstallPhase):
     #:
     expected_config = {
         "support_vessel": "str",
-        "ahts_vessel": "str",
+        "ahts_vessel": "str, (optional)",
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
@@ -190,7 +190,10 @@ class MooredSubInstallation(InstallPhase):
         num_ahts = self.config["towing_vessel_groups"].get("ahts_vessels", 1)
 
         if ahts_vessel is None:
-            warn("No ['ahts_vessel'] specified. num_ahts set to 0.")
+            warn(
+                "No ['ahts_vessel'] specified. num_ahts set to 0."
+                " ahts_vessel will be required in future releases.\n"
+            )
             num_ahts = 0
 
         remaining_substructures = [1] * self.num_turbines
@@ -236,7 +239,7 @@ class MooredSubInstallation(InstallPhase):
         if specs is not None:
             warn(
                 "support_vessel will be deprecated and replaced with"
-                " towing_vessels and to ahts_vessel in the towing groups.",
+                " towing_vessels and ahts_vessel in the towing groups.\n",
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -256,7 +259,7 @@ class MooredSubInstallation(InstallPhase):
             print(station_keeping_vessels)
             warn(
                 "station_keeping_vessels will be deprecated and replaced with"
-                " towing_vessels and ahts_vessels in the towing groups.",
+                " towing_vessels and ahts_vessels in the towing groups.\n",
                 DeprecationWarning,
                 stacklevel=2,
             )
