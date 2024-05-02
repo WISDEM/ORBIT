@@ -6,10 +6,13 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+from warnings import warn
+
 from marmot import Agent, le, process
+from marmot._exceptions import AgentNotRegistered
+
 from ORBIT.core import WetStorage
 from ORBIT.core.logic import position_onsite
-from marmot._exceptions import AgentNotRegistered
 from ORBIT.phases.install import InstallPhase
 from ORBIT.phases.install.mooring_install.mooring import (
     install_mooring_line,
@@ -37,14 +40,16 @@ class FloatingSubstationInstallation(InstallPhase):
             "attach_time": "int | float (optional, default: 24)",
         },
         "offshore_substation_substructure": {
-            "type": "Floating",
+            "type": "str",
             "takt_time": "int | float (optional, default: 0)",
             "unit_cost": "USD",
             # "mooring_cost": "USD",
             "towing_speed": "int | float (optional, default: 6 km/h)",
         },
         "mooring_system": {
-            # "system_cost": "USD", "}, # system cost is for all moorings in the whole farm, so you dont want this to be added to each substation
+            # "system_cost": "USD", "},
+            # system cost is for all moorings in the whole farm,
+            # so you dont want this to be added to each substation
             "num_lines",
             "int",
             "line_cost",
@@ -74,7 +79,7 @@ class FloatingSubstationInstallation(InstallPhase):
         self.initialize_port()
         self.setup_simulation(**kwargs)
 
-    def setup_simulation(self, **kwargs):
+    def setup_simulation(self):
         """
         Initializes required objects for simulation.
         - Creates port
@@ -116,6 +121,16 @@ class FloatingSubstationInstallation(InstallPhase):
         Initializes the production of the floating substation substructures at
         quayside.
         """
+
+        substructure_type = self.config["offshore_substation_substructure"][
+            "type"
+        ]
+
+        if substructure_type != "Floating":
+            warn(
+                f"Offshore substation substructure is {substructure_type}"
+                " and should be 'Floating'.\n"
+            )
 
         self.wet_storage = WetStorage(self.env, float("inf"))
         takt_time = self.config["offshore_substation_substructure"].get(

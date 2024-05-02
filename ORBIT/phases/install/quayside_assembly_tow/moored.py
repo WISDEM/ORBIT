@@ -291,6 +291,9 @@ class MooredSubInstallation(InstallPhase):
                     k: self.operational_delay(str(k))
                     for k in self.installation_groups
                 },
+                # self.support_vessel: self.operational_delay(
+                #    str(self.support_vessel)
+                # ),
             }
         }
 
@@ -475,6 +478,11 @@ def install_moored_substructures(
         Number of vessels to use for substructure station keeping during final
         installation at site.
     """
+
+    warn(
+        "** DEPRECATED ** This method is deprecated and is now performed"
+        " in towing_group_action() by the towing group with AHTS vessel.\n"
+    )
 
     n = 0
     while n < substructures:
