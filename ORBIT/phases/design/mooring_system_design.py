@@ -100,6 +100,8 @@ class MooringSystemDesign(DesignPhase):
     def determine_mooring_line(self):
         """
         Returns the diameter of the mooring lines based on the turbine rating.
+
+        TODO: Add TLP option and consider merging SemiTaut interp here
         """
 
         tr = self.config["turbine"]["turbine_rating"]
@@ -132,6 +134,8 @@ class MooringSystemDesign(DesignPhase):
     def calculate_line_length_mass(self):
         """
         Returns the mooring line length and mass.
+
+        TODO: Improve TLP line length and mass
 
         Parameters
         ----------
@@ -203,9 +207,29 @@ class MooringSystemDesign(DesignPhase):
 
         TODO: Anchor masses are rough estimates based on initial literature
         review. Should be revised when this module is overhauled in the future.
+        TODO: Mooring types for Catenary, TLP, SemiTaut will likely have
+        different anchors.
         """
 
-        if self.mooring_type == "Catenary":
+        if self.mooring_type == "SemiTaut":
+
+            if self.anchor_type == "Drag Embedment":
+                self.anchor_mass = 20
+
+                # Interpolation of anchor cost at project depth
+                self.anchor_cost = interp1d(
+                    self._semitaut_params["depths"],
+                    self._semitaut_params["anchor_costs"],
+                )(self.depth).item()
+
+            else:
+                self.anchor_mass = 50
+                self.anchor_cost = (
+                    sqrt(self.breaking_load / 9.81 / 1250) * 150000
+                )
+
+        else:
+
             if self.anchor_type == "Drag Embedment":
                 self.anchor_mass = 20
                 self.anchor_cost = self.breaking_load / 9.81 / 20.0 * 2000.0
@@ -215,31 +239,21 @@ class MooringSystemDesign(DesignPhase):
                 self.anchor_cost = (
                     sqrt(self.breaking_load / 9.81 / 1250) * 150000
                 )
-        else:
-            if self.anchor_type == "Drag Embedment":
-                self.anchor_mass = 20
-
-            else:
-                self.anchor_mass = 50
-
-            self.anchor_cost = interp1d(
-                self._semitaut_params["depths"],
-                self._semitaut_params["anchor_costs"],
-            )(self.depth).item()
 
     @property
     def line_cost(self):
         """Returns cost of one line mooring line."""
 
-        if self.mooring_type == "Catenary":
-            line_cost = self.line_length * self.line_cost_rate
-
-        else:
-
+        if self.mooring_type == "SemiTaut":
+            # Interpolation of line cost at project depth
             line_cost = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["total_line_costs"],
             )(self.depth).item()
+
+        else:
+
+            line_cost = self.line_length * self.line_cost_rate
 
         return line_cost
 
