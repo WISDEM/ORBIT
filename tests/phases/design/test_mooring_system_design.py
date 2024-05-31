@@ -10,12 +10,16 @@ from copy import deepcopy
 
 import pytest
 
-from ORBIT.phases.design import MooringSystemDesign
+from ORBIT.phases.design import (
+    MooringSystemDesign,
+    SemiTaut_mooring_system_design,
+)
 
 base = {
     "site": {"depth": 200},
     "turbine": {"turbine_rating": 6},
     "plant": {"num_turbines": 50},
+    "mooring_system_design": {},
 }
 
 
@@ -33,7 +37,7 @@ def test_depth_sweep(depth):
 
 
 @pytest.mark.parametrize("rating", range(3, 15, 1))
-def test_rating_sweeip(rating):
+def test_rating_sweep(rating):
 
     config = deepcopy(base)
     config["turbine"]["turbine_rating"] = rating
@@ -43,6 +47,86 @@ def test_rating_sweeip(rating):
 
     assert m.design_result
     assert m.total_cost
+
+
+def test_catenary_mooring_system_kwargs():
+
+    test_kwargs = {
+        "num_lines": 6,
+        "anchor_type": "Drag Embedment",
+        "mooring_line_cost_rate": 2500,
+    }
+
+    m = MooringSystemDesign(base)
+    m.run()
+
+    base_cost = m.detailed_output["system_cost"]
+
+    for k, v in test_kwargs.items():
+        config = deepcopy(base)
+        config["mooring_system_design"] = {}
+        config["mooring_system_design"][k] = v
+
+        m = MooringSystemDesign(config)
+        m.run()
+
+        assert m.detailed_output["system_cost"] != base_cost
+
+
+def test_semitaut_mooring_system_kwargs():
+
+    semi_base = deepcopy(base)
+    semi_base["mooring_system_design"]["mooring_type"] = "SemiTaut"
+
+    test_kwargs = {
+        "num_lines": 6,
+        "anchor_type": "Drag Embedment",
+        "chain_density": 10000,
+        "rope_density": 1000,
+    }
+
+    m = MooringSystemDesign(semi_base)
+    m.run()
+
+    base_cost = m.detailed_output["system_cost"]
+
+    for k, v in test_kwargs.items():
+        config = deepcopy(semi_base)
+        config["mooring_system_design"] = {}
+        config["mooring_system_design"][k] = v
+
+        m = MooringSystemDesign(config)
+        m.run()
+
+        assert m.detailed_output["system_cost"] != base_cost
+
+
+def test_tlp_mooring_system_kwargs():
+
+    tlp_base = deepcopy(base)
+    tlp_base["mooring_system_design"]["mooring_type"] = "TLP"
+
+    test_kwargs = {
+        "num_lines": 6,
+        "anchor_type": "Drag Embedment",
+        "mooring_line_cost_rate": 2500,
+        "draft_depth": 10,
+    }
+
+    m = MooringSystemDesign(tlp_base)
+    m.run()
+
+    base_cost = m.detailed_output["system_cost"]
+
+    for k, v in test_kwargs.items():
+        config = deepcopy(tlp_base)
+        config["mooring_system_design"] = {}
+        config["mooring_system_design"][k] = v
+
+        m = MooringSystemDesign(config)
+        m.run()
+
+        assert m.detailed_output["system_cost"] != base_cost
 
 
 def test_drag_embedment_fixed_length():

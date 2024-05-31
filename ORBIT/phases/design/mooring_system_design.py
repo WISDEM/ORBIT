@@ -104,23 +104,25 @@ class MooringSystemDesign(DesignPhase):
         TODO: Add TLP option and consider merging SemiTaut interp here
         """
 
+        _design = self.config.get("mooring_system_design", {})
+
         tr = self.config["turbine"]["turbine_rating"]
         fit = -0.0004 * (tr**2) + 0.0132 * tr + 0.0536
 
         if fit <= 0.09:
             self.line_diam = 0.09
             self.line_mass_per_m = 0.161
-            self.line_cost_rate = 399.0
+            self.line_cost_rate = _design.get("mooring_line_cost_rate", 399.0)
 
         elif fit <= 0.12:
             self.line_diam = 0.12
             self.line_mass_per_m = 0.288
-            self.line_cost_rate = 721.0
+            self.line_cost_rate = _design.get("mooring_line_cost_rate", 721.0)
 
         else:
             self.line_diam = 0.15
             self.line_mass_per_m = 0.450
-            self.line_cost_rate = 1088.0
+            self.line_cost_rate = _design.get("mooring_line_cost_rate", 1088.0)
 
     def calculate_breaking_load(self):
         """
@@ -158,10 +160,12 @@ class MooringSystemDesign(DesignPhase):
             self.chain_length = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["chain_lengths"],
+                fill_value="extrapolate",
             )(self.depth).item()
             self.rope_length = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["rope_lengths"],
+                fill_value="extrapolate",
             )(self.depth).item()
 
             # Rope and interpolated chain diameter at project depth
@@ -169,6 +173,7 @@ class MooringSystemDesign(DesignPhase):
             chain_diameter = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["chain_diameters"],
+                fill_value="extrapolate",
             )(self.depth).item()
 
             self.line_length = self.rope_length + self.chain_length + fixed
@@ -220,6 +225,7 @@ class MooringSystemDesign(DesignPhase):
                 self.anchor_cost = interp1d(
                     self._semitaut_params["depths"],
                     self._semitaut_params["anchor_costs"],
+                    fill_value="extrapolate",
                 )(self.depth).item()
 
             else:
@@ -249,6 +255,7 @@ class MooringSystemDesign(DesignPhase):
             line_cost = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["total_line_costs"],
+                fill_value="extrapolate",
             )(self.depth).item()
 
         else:
