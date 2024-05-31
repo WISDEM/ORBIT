@@ -24,7 +24,8 @@ class MooringSystemDesign(DesignPhase):
             "anchor_type": "str (optional, default: 'Suction Pile')",
             "mooring_type": "str (optional, default: 'Catenary')",
             "mooring_line_cost_rate": "int | float (optional)",
-            "drag_embedment_fixed_length": "int | float (optional, default: .5km)",
+            "drag_embedment_fixed_length": "int (optional, default: 500m)",
+            "draft_depth": "int (optional, default: 20m)",
             "chain_density": "int | float (optional, default: 19900 kg/m**3)",
             "rope_density": "int | float (optional, default: 797.8 kg/m**3)",
         },
@@ -37,6 +38,7 @@ class MooringSystemDesign(DesignPhase):
             "line_mass": "t",
             "line_cost": "USD",
             "line_length": "m",
+            "mooring_type": "str",
             "anchor_mass": "t",
             "anchor_type": "str",
             "anchor_cost": "USD",
@@ -130,46 +132,42 @@ class MooringSystemDesign(DesignPhase):
     def calculate_line_length_mass(self):
         """
         Returns the mooring line length and mass.
+
+        Parameters
+        ----------
+        drag_embedment_fixed_length
+        draft_depth
         """
 
-        if self.mooring_type == "Catenary":
-            if self.anchor_type == "Drag Embedment":
-                fixed = self._design.get("drag_embedment_fixed_length", 500)
-
-            else:
-                fixed = 0
-
-            self.line_length = (
-                0.0002 * (self.depth**2) + 1.264 * self.depth + 47.776 + fixed
-            )
-
-            self.line_mass = self.line_length * self.line_mass_per_m
+        # Add extra fixed line length for drag embedments
+        if self.anchor_type == "Drag Embedment":
+            fixed = self._design.get("drag_embedment_fixed_length", 500)
 
         else:
-            if self.anchor_type == "Drag Embedment":
-                fixed = self._design.get("drag_embedment_fixed_length", 0)
+            fixed = 0
 
-            else:
-                fixed = 0
+        draft = self._design.get("draft_depth", 20)
+
+        if self.mooring_type == "SemiTaut":
 
             # Interpolation of rope and chain length at project depth
             self.chain_length = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["chain_lengths"],
-            )(self.depth)
+            )(self.depth).item()
             self.rope_length = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["rope_lengths"],
-            )(self.depth)
+            )(self.depth).item()
 
             # Rope and interpolated chain diameter at project depth
             rope_diameter = self._semitaut_params["rope_diameter"]
             chain_diameter = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["chain_diameters"],
-            )(self.depth)
+            )(self.depth).item()
 
-            self.line_length = self.rope_length + self.chain_length
+            self.line_length = self.rope_length + self.chain_length + fixed
 
             chain_mass_per_m = (
                 self._design.get("mooring_chain_density", 19900)
@@ -184,6 +182,20 @@ class MooringSystemDesign(DesignPhase):
                 self.chain_length * chain_mass_per_m
                 + self.rope_length * rope_mass_per_m
             ) / 1e3  # tonnes
+
+        elif self.mooring_type == "TLP":
+
+            self.line_length = self.depth - draft
+
+            self.line_mass = self.line_length * self.line_mass_per_m
+
+        else:
+
+            self.line_length = (
+                0.0002 * (self.depth**2) + 1.264 * self.depth + 47.776 + fixed
+            )
+
+            self.line_mass = self.line_length * self.line_mass_per_m
 
     def calculate_anchor_mass_cost(self):
         """
@@ -213,7 +225,7 @@ class MooringSystemDesign(DesignPhase):
             self.anchor_cost = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["anchor_costs"],
-            )(self.depth)
+            )(self.depth).item()
 
     @property
     def line_cost(self):
@@ -227,7 +239,7 @@ class MooringSystemDesign(DesignPhase):
             line_cost = interp1d(
                 self._semitaut_params["depths"],
                 self._semitaut_params["total_line_costs"],
-            )(self.depth)
+            )(self.depth).item()
 
         return line_cost
 
@@ -251,6 +263,7 @@ class MooringSystemDesign(DesignPhase):
             "line_mass": self.line_mass,
             "line_length": self.line_length,
             "line_cost": self.line_cost,
+            "mooring_type": self.mooring_type,
             "anchor_type": self.anchor_type,
             "anchor_mass": self.anchor_mass,
             "anchor_cost": self.anchor_cost,
