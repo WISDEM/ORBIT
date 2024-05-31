@@ -20,7 +20,9 @@ base = {
     "plant": {"capacity": 500},
     "export_system_design": {"cables": "XLPE_630mm_220kV"},
     "landfall": {},
-    "substation_design": {},
+    "substation_design": {
+        "oss_pile_cost_rate": 1200,  # need to set this for kwarg tests
+    },
 }
 
 
@@ -59,6 +61,78 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
     assert 1e6 <= o.total_substation_cost <= 1e9
 
 
+def test_calc_substructure_mass_and_cost():
+
+    o = ElectricalDesign(base)
+    o.run()
+
+    floating = deepcopy(base)
+    floating["substation_design"]["oss_substructure_type"] = "Floating"
+    o_floating = ElectricalDesign(floating)
+    o_floating.run()
+
+    assert (
+        o.detailed_output["substation_substructure_cost"]
+        != o_floating.detailed_output["substation_substructure_cost"]
+    )
+    assert (
+        o.detailed_output["substation_substructure_mass"]
+        != o_floating.detailed_output["substation_substructure_mass"]
+    )
+
+
+def test_calc_topside_mass_and_cost():
+    """Test topside mass and cost for HVDC compared to HVDC-Monopole and HVDC-Bipole"""
+
+    o = ElectricalDesign(base)
+    o.run()
+
+    base_dc = deepcopy(base)
+    cables = ["HVDC_2000mm_320kV", "HVDC_2500mm_525kV"]
+
+    for cable in cables:
+        base_dc["export_system_design"]["cables"] = cable
+
+        o_dc = ElectricalDesign(base_dc)
+        o_dc.run()
+
+        assert (
+            o.detailed_output["substation_topside_mass"]
+            == o_dc.detailed_output["substation_topside_mass"]
+        )
+        assert (
+            o.detailed_output["substation_topside_cost"]
+            != o_dc.detailed_output["substation_topside_cost"]
+        )
+
+
+def test_oss_substructure_kwargs():
+    test_kwargs = {
+        "oss_substructure_type": "Floating",
+        "oss_substructure_cost_rate": 7250,
+        "oss_pile_cost_rate": 2500,
+        "num_substations": 4,
+    }
+
+    o = ElectricalDesign(base)
+    o.run()
+    base_cost_total = o.detailed_output["total_substation_cost"]
+    base_cost_subst = o.detailed_output["substation_substructure_cost"]
+
+    for k, v in test_kwargs.items():
+        config = deepcopy(base)
+        config["substation_design"] = {}
+        config["substation_design"][k] = v
+
+        o = ElectricalDesign(config)
+        o.run()
+        cost_total = o.detailed_output["total_substation_cost"]
+        cost_subst = o.detailed_output["substation_substructure_cost"]
+
+        assert cost_total != base_cost_total
+        assert cost_subst != base_cost_subst
+
+
 def test_ac_oss_kwargs():
     test_kwargs = {
         "mpt_unit_cost": 13500,
@@ -70,8 +144,6 @@ def test_ac_oss_kwargs():
         "workspace_cost": 3e6,
         "other_ancillary_cost": 4e6,
         "topside_assembly_factor": 0.09,
-        "oss_substructure_cost_rate": 7250,
-        "oss_pile_cost_rate": 2500,
         "num_substations": 4,
     }
 
@@ -109,7 +181,7 @@ def test_dc_oss_kwargs():
         o = ElectricalDesign(config)
         o.run()
         cost = o.detailed_output["total_substation_cost"]
-        print("passed")
+
         assert cost != base_cost
 
 
