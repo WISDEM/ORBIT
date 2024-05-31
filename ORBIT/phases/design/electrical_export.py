@@ -188,8 +188,7 @@ class ElectricalDesign(CableSystem):
         self.calc_onshore_cost()
 
         self._outputs["offshore_substation_substructure"] = {
-            "type": self.substructure_type,  # Substation install
-            # only supports monopiles
+            "type": self.substructure_type,
             "deck_space": self.substructure_deck_space,
             "mass": self.substructure_mass,
             "length": self.substructure_length,
@@ -531,10 +530,11 @@ class ElectricalDesign(CableSystem):
         #       for different substructure types
         substructure_mass = 0.4 * self.topside_mass
 
-        if self.substructure_type == "Monopile":
-            substructure_pile_mass = 8 * substructure_mass**0.5574
+        if self.substructure_type == "Floating":
+            substructure_pile_mass = 0  # No piles used for floating platform
+
         else:
-            substructure_pile_mass = 0  # Assume floating and no piles are used
+            substructure_pile_mass = 8 * substructure_mass**0.5574
 
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
@@ -548,7 +548,11 @@ class ElectricalDesign(CableSystem):
         Calculates substructure length as the site depth + 10m
         """
 
-        self.substructure_length = self.config["site"]["depth"] + 10
+        if self.substructure_type == "Floating":
+            self.substructure_length = 0
+
+        else:
+            self.substructure_length = self.config["site"]["depth"] + 10
 
     def calc_substructure_deck_space(self):
         """
