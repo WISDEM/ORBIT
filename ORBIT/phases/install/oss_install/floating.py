@@ -77,7 +77,7 @@ class FloatingSubstationInstallation(InstallPhase):
         self.config = self.validate_config(config)
 
         self.initialize_port()
-        self.setup_simulation(**kwargs)
+        self.setup_simulation()
 
     def setup_simulation(self):
         """

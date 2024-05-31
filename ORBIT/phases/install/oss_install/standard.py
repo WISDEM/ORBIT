@@ -9,7 +9,6 @@ __email__ = "jake.nunemaker@nrel.gov"
 import simpy
 from marmot import process
 
-from ORBIT.core import Vessel
 from ORBIT.core.logic import shuttle_items_to_queue, prep_for_site_operations
 from ORBIT.phases.install import InstallPhase
 from ORBIT.phases.install.monopile_install.common import (
@@ -48,7 +47,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             "unit_cost": "USD",
         },
         "offshore_substation_substructure": {
-            "type": "Monopile",
+            "type": "str",
             "deck_space": "m2",
             "mass": "t",
             "length": "m",
@@ -257,7 +256,11 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
                 start = vessel.env.now
                 yield queue.activate
                 delay_time = vessel.env.now - start
-                vessel.submit_action_log("Delay: Not enough vessels for oss", delay_time, location="Site")
+                vessel.submit_action_log(
+                    "Delay: Not enough vessels for oss",
+                    delay_time,
+                    location="Site",
+                )
 
     # Transit to port
     vessel.at_site = False
