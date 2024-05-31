@@ -62,6 +62,7 @@ def test_oss_kwargs():
         "workspace_cost": 3e6,
         "other_ancillary_cost": 4e6,
         "topside_assembly_factor": 0.08,
+        "oss_substructure_type": "Floating",
         "oss_substructure_cost_rate": 7250,
         "oss_pile_cost_rate": 2500,
         "num_substations": 2,
@@ -75,6 +76,7 @@ def test_oss_kwargs():
 
         config = deepcopy(base)
         config["substation_design"] = {}
+        config["substation_design"]["oss_pile_cost_rate"] = 1500
         config["substation_design"][k] = v
 
         o = OffshoreSubstationDesign(config)
