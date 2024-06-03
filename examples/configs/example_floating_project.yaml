@@ -58,4 +58,4 @@ install_phases:
   FloatingSubstationInstallation: 0
 #  TurbineInstallation: 0
 # Project Inputs
-turbine: 15MW_generic
+turbine: 12MW_generic

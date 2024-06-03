@@ -29,6 +29,8 @@ wtiv: floating_heavy_lift_vessel
 # Module Specific
 substructure:
   takt_time: 168
+substation_design:
+  oss_substructure_type: Floating
 array_system:
   free_cable_length: 0.5
 array_system_design:
