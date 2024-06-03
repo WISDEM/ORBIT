@@ -12,7 +12,7 @@ import pytest
 
 from ORBIT.phases.design import (
     MooringSystemDesign,
-    SemiTaut_mooring_system_design,
+    SemiTautMooringSystemDesign,
 )
 
 base = {
@@ -167,3 +167,30 @@ def test_custom_num_lines():
     m.run()
 
     assert m.design_result["mooring_system"]["num_lines"] == 5
+
+
+def test_new_old_semitaut_mooring_system():
+    """Temporary test until we delete the SemiTaut_mooring_system"""
+
+    config = deepcopy(base)
+    config["site"]["depth"] = 900.0
+    config["mooring_system_design"]["mooring_type"] = "SemiTaut"
+    config["mooring_system_design"]["anchor_type"] = "Drag Embedment"
+
+    old = SemiTautMooringSystemDesign(config)
+    old.run()
+    old_anchor_cost = old.anchor_cost.item()
+    old_line_cost = old.line_cost.item()
+
+    new = MooringSystemDesign(config)
+    new.run()
+
+    # same values
+    assert old.total_cost == new.total_cost
+    assert old_anchor_cost == new.anchor_cost
+    assert old.anchor_mass == new.anchor_mass
+    assert old_line_cost == new.line_cost
+    assert old.line_length == new.line_length
+
+    # different values
+    assert len(old.detailed_output) != len(new.detailed_output)
