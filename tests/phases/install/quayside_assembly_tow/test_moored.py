@@ -5,6 +5,8 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
+import warnings
+from copy import deepcopy
 
 import pandas as pd
 import pytest
@@ -14,6 +16,8 @@ from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.install import MooredSubInstallation
 
 config = extract_library_specs("config", "moored_install")
+no_supply = extract_library_specs("config", "moored_install_no_supply")
+
 multi_assembly = extract_library_specs(
     "config", "moored_install_multi_assembly"
 )
@@ -21,7 +25,6 @@ multi_tow = extract_library_specs("config", "moored_install_multi_tow")
 multi_assembly_multi_tow = extract_library_specs(
     "config", "moored_install_multi_assembly_multi_tow"
 )
-no_supply = extract_library_specs("config", "moored_install_no_supply")
 
 
 def test_simulation_setup():
@@ -75,3 +78,20 @@ def test_for_complete_logging(weather, config):
         [a for a in sim.env.actions if a["action"] == "Position Substructure"]
     )
     assert installed_mooring_lines == sim.num_turbines
+
+
+def test_deprecated_landfall():
+
+    deprecated = deepcopy(config)
+    deprecated["support_vessel"] = "test_support_vessel"
+
+    with pytest.deprecated_call():
+        sim = MooredSubInstallation(deprecated)
+        sim.run()
+
+    deprecated2 = deepcopy(config)
+    deprecated2["towing_vessel_groups"]["station_keeping_vessels"] = 2
+
+    with pytest.deprecated_call():
+        sim = MooredSubInstallation(deprecated2)
+        sim.run()
