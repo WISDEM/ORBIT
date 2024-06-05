@@ -12,7 +12,7 @@ from ORBIT.phases.design import DesignPhase
 
 
 class SemiTautMooringSystemDesign(DesignPhase):
-    """Mooring System and Anchor Design."""
+    """SemiTaut Mooring System and Anchor Design."""
 
     expected_config = {
         "site": {"depth": "float"},
@@ -33,7 +33,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
             "line_mass": "t", # you need this for mooring.py (mooring installation module)
             "line_cost": "USD", # you can calculate this based on each rope&chain length & diameter.
             "line_length": "m", # this can be calculated from rope length and chain length (which you get from an empirical eqn as function of depth)
-            "anchor_mass": "t", # you need this for mooring.py (mooring installation module) 
+            "anchor_mass": "t", # you need this for mooring.py (mooring installation module)
             "anchor_type": "str", # keep, changed default to drag embedment.
             "anchor_cost": "USD", # this can be calculated also as a function of (depth?) from the empirical data you have.
         }
@@ -41,7 +41,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
 
     def __init__(self, config, **kwargs):
         """
-        Creates an instance of MooringSystemDesign.
+        Creates an instance of SemiTautMooringSystemDesign.
 
         Parameters
         ----------
@@ -82,29 +82,29 @@ class SemiTautMooringSystemDesign(DesignPhase):
         rope_diameters = np.array([0.2, 0.2, 0.2, 0.2, 0.2]) # you need the diameter for the cost data
         chain_lengths = np.array([917.11, 800.36, 609.07, 896.42, 1280.57])
         chain_diameters = np.array([0.13, 0.17, 0.22, 0.22, 0.22])
-        
+
         # Interpolate
         finterp_rope = interp1d(depths, rope_lengths)
         finterp_chain = interp1d(depths, chain_lengths)
         finterp_rope_diam = interp1d(depths, rope_diameters)
         finterp_chain_diam = interp1d(depths, chain_diameters)
-        
+
         # Rope and chain length at project depth
         self.chain_length = finterp_chain(depth)
         self.rope_length = finterp_rope(depth)
         # Rope and chain diameter at project depth
         self.rope_diameter = finterp_rope_diam(depth)
         self.chain_diameter = finterp_chain_diam(depth)
-        
+
         self.line_length = self.rope_length + self.chain_length
-        
+
         chain_kg_per_m = 19900 * (self.chain_diameter**2) # 19,900 kg/m^2 (diameter)/m (length)
-        rope_kg_per_m = 797.8 * (self.rope_diameter**2) # 797.8 kg/ m^2 (diameter) / m (length) 
+        rope_kg_per_m = 797.8 * (self.rope_diameter**2) # 797.8 kg/ m^2 (diameter) / m (length)
         self.line_mass = (self.chain_length * chain_kg_per_m) + (self.rope_length * rope_kg_per_m) # kg
         #print('total hybrid line mass is ' + str(self.line_mass) + 'kg')
         # convert kg to metric tonnes
         self.line_mass = self.line_mass/1e3
-        
+
     def calculate_anchor_mass_cost(self):
         """
         Returns the mass and cost of anchors.
@@ -118,7 +118,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
             # Input hybrid mooring system design from Cooperman et al. (2022), https://www.nrel.gov/docs/fy22osti/82341.pdf 'Assessment of Offshore Wind Energy Leasing Areas for Humboldt and Moorow Bay Wind Energy Areas, California
             depths = np.array([500, 750, 1000, 1250, 1500])
             anchor_costs = np.array([112766, 125511, 148703, 204988, 246655]) # [USD]
-            
+
             # interpolate anchor cost to project depth
             depth = self.config["site"]["depth"]
             finterp_anchor_cost = interp1d(depths, anchor_costs)
