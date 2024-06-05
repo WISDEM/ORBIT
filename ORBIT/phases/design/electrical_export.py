@@ -526,6 +526,10 @@ class ElectricalDesign(CableSystem):
             "oss_substructure_cost_rate", 3000
         )
 
+        # Substructure mass components calculated by curve fits in
+        # equations 81-84 from Maness et al. 2017
+        # https://www.nrel.gov/docs/fy17osti/66874.pdf
+        #
         # TODO: Determine a better method to calculate substructure mass
         #       for different substructure types
         substructure_mass = 0.4 * self.topside_mass
