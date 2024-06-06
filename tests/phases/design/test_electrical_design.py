@@ -61,6 +61,20 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
     assert 1e6 <= o.total_substation_cost <= 1e9
 
 
+def test_detailed_design_length():
+    """Ensure that the same # of output variables are used for a floating and fixed offshore substation."""
+
+    o = ElectricalDesign(base)
+    o.run()
+
+    floating = deepcopy(base)
+    floating["substation_design"]["oss_substructure_type"] = "Floating"
+    o_floating = ElectricalDesign(floating)
+    o_floating.run()
+
+    assert len(o.detailed_output) == len(o_floating.detailed_output)
+
+
 def test_calc_substructure_mass_and_cost():
 
     o = ElectricalDesign(base)
@@ -333,6 +347,13 @@ def test_total_cable():
     mass = length * export.cable.linear_density
     assert export.total_mass == pytest.approx(mass * 9, abs=1e-10)
     assert export.total_length == pytest.approx(length * 9, abs=1e-10)
+
+
+def test_total_cable_cost():
+    export = ElectricalDesign(config)
+    export.run()
+
+    assert export.total_cable_cost == 135068310.0
 
 
 def test_cables_property():

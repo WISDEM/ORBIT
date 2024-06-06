@@ -518,7 +518,6 @@ class ElectricalDesign(CableSystem):
         oss_pile_cost_rate : int | float
         """
 
-        substructure_mass = 0.4 * self.topside_mass
         oss_pile_cost_rate = self.offshore_substation_design.get(
             "oss_pile_cost_rate", 0
         )
