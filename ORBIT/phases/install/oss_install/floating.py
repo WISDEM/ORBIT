@@ -43,13 +43,9 @@ class FloatingSubstationInstallation(InstallPhase):
             "type": "str",
             "takt_time": "int | float (optional, default: 0)",
             "unit_cost": "USD",
-            # "mooring_cost": "USD",
             "towing_speed": "int | float (optional, default: 6 km/h)",
         },
         "mooring_system": {
-            # "system_cost": "USD", "},
-            # system cost is for all moorings in the whole farm,
-            # so you dont want this to be added to each substation
             "num_lines",
             "int",
             "line_cost",

@@ -44,10 +44,8 @@ export_system_design:
 # Configured Phases
 design_phases:
 - ArraySystemDesign
-#- ExportSystemDesign
 - ElectricalDesign
 - MooringSystemDesign
-#- SemiTautMooringSystemDesign
 - OffshoreFloatingSubstationDesign
 - SemiSubmersibleDesign
 install_phases:
@@ -56,6 +54,6 @@ install_phases:
   MooredSubInstallation: 0
   MooringSystemInstallation: 0
   FloatingSubstationInstallation: 0
-#  TurbineInstallation: 0
+  TurbineInstallation: 0
 # Project Inputs
 turbine: 12MW_generic
