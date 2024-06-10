@@ -1,9 +1,12 @@
 """`MooringSystemDesign` and related functionality."""
 
-__author__ = "Jake Nunemaker, modified by Becca Fuchs"
+__author__ = "Jake Nunemaker, Becca Fuchs"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
-__maintainer__ = "Jake Nunemaker"
-__email__ = "jake.nunemaker@nrel.gov, rebecca.fuchs@nrel.gov"
+__maintainer__ = "Nicholas Riccobono"
+__email__ = (
+    "jake.nunemaker@nrel.gov, rebecca.fuchs@nrel.gov,"
+    "nicholas.riccobono@nrel.gov"
+)
 
 from math import sqrt
 
@@ -141,12 +144,10 @@ class MooringSystemDesign(DesignPhase):
         """
         Returns the mooring line length and mass.
 
+        SemiTaut model based on:
+        https://github.com/NREL/MoorPy/blob/dev/moorpy/MoorProps_default.yaml
         TODO: Improve TLP line length and mass
 
-        Parameters
-        ----------
-        drag_embedment_fixed_length
-        draft_depth
         """
 
         # Add extra fixed line length for drag embedments
@@ -183,14 +184,15 @@ class MooringSystemDesign(DesignPhase):
             fixed = self._design.get("drag_embedment_fixed_length", 0)
             self.line_length = self.rope_length + self.chain_length + fixed
 
+            # line characteristics based on MoorPy defaults,
             chain_mass_per_m = (
                 self._design.get("mooring_chain_density", 19900)
                 * chain_diameter**2
-            )  # kg
+            )  # kg/m
             rope_mass_per_m = (
                 self._design.get("mooring_rope_density", 797.8)
                 * rope_diameter**2
-            )  # kg
+            )  # kg/m
 
             self.line_mass = (
                 self.chain_length * chain_mass_per_m
