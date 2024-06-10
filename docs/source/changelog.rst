@@ -5,7 +5,16 @@ ORBIT Changelog
 
 Unreleased (TBD)
 ----------------
-
+- merged SemiTaut_Mooring_Update
+- The ``MooringSystemDesign`` module now can use a Catenary or SemiTaut mooring system. User can specify "mooring_type".
+- The ``FloatingOffshoreSubstation`` and ``ElectricalDesign`` modules now actually have a floating option to remove any substructure mass (and cost) from older versions. User can specify "oss_substructure_type"
+- The ``MoredSubInstallation`` now utilizes an AHTS vessel which must be added to any config file as (ahts_vessel)
+- "drag_embedment_install_time" increased from 5 to 12 hours
+- quayside turbine tower section lift time from 12 to 4 hours per section. User specifies number of sections (default =1)
+- quayside nacelle lift time changed from 7 to 12 hours
+Unreleased (TBD)
+----------------
+- merged electrical-refactor
 - Updated ``ElectricalDesign`` module.
 This class combines the elements of ``ExportSystemDesign`` and the ``OffshoreSubstationDesign`` modules. Its purpose is to represent the export system more accurately
 by linking the type of cable (AC versus DC) and substation’s components (i.e. transformers versus converters).Figure 1 shows how to add ElectricalDesign() to a yaml
