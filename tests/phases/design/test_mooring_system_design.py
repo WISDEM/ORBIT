@@ -29,11 +29,11 @@ def test_depth_sweep(depth):
     config = deepcopy(base)
     config["site"]["depth"] = depth
 
-    m = MooringSystemDesign(config)
-    m.run()
+    moor = MooringSystemDesign(config)
+    moor.run()
 
-    assert m.design_result
-    assert m.total_cost
+    assert moor.design_result
+    assert moor.total_cost
 
 
 @pytest.mark.parametrize("rating", range(3, 15, 1))
@@ -42,11 +42,29 @@ def test_rating_sweep(rating):
     config = deepcopy(base)
     config["turbine"]["turbine_rating"] = rating
 
-    m = MooringSystemDesign(config)
-    m.run()
+    moor = MooringSystemDesign(config)
+    moor.run()
 
-    assert m.design_result
-    assert m.total_cost
+    assert moor.design_result
+    assert moor.total_cost
+
+
+def test_mooring_system_defaults():
+
+    moor_base = MooringSystemDesign(base)
+    moor_base.run()
+
+    base_cost = moor_base.detailed_output["system_cost"]
+
+    config_defs = deepcopy(base)
+    config_defs["mooring_system_design"] = {}
+    config_defs["mooring_system_design"]["mooring_type"] = "Catenary"
+    config_defs["mooring_system_design"]["anchor_type"] = "Suction Pile"
+
+    moor_defs = MooringSystemDesign(config_defs)
+    moor_defs.run()
+
+    assert moor_defs.detailed_output["system_cost"] == base_cost
 
 
 def test_catenary_mooring_system_kwargs():
@@ -57,20 +75,20 @@ def test_catenary_mooring_system_kwargs():
         "mooring_line_cost_rate": 2500,
     }
 
-    m = MooringSystemDesign(base)
-    m.run()
+    moor = MooringSystemDesign(base)
+    moor.run()
 
-    base_cost = m.detailed_output["system_cost"]
+    base_cost = moor.detailed_output["system_cost"]
 
     for k, v in test_kwargs.items():
         config = deepcopy(base)
         config["mooring_system_design"] = {}
         config["mooring_system_design"][k] = v
 
-        m = MooringSystemDesign(config)
-        m.run()
+        moor = MooringSystemDesign(config)
+        moor.run()
 
-        assert m.detailed_output["system_cost"] != base_cost
+        assert moor.detailed_output["system_cost"] != base_cost
 
 
 def test_semitaut_mooring_system_kwargs():
@@ -85,20 +103,20 @@ def test_semitaut_mooring_system_kwargs():
         "rope_density": 1000,
     }
 
-    m = MooringSystemDesign(semi_base)
-    m.run()
+    moor = MooringSystemDesign(semi_base)
+    moor.run()
 
-    base_cost = m.detailed_output["system_cost"]
+    base_cost = moor.detailed_output["system_cost"]
 
     for k, v in test_kwargs.items():
         config = deepcopy(semi_base)
         config["mooring_system_design"] = {}
         config["mooring_system_design"][k] = v
 
-        m = MooringSystemDesign(config)
-        m.run()
+        moor = MooringSystemDesign(config)
+        moor.run()
 
-        assert m.detailed_output["system_cost"] != base_cost
+        assert moor.detailed_output["system_cost"] != base_cost
 
 
 def test_tlp_mooring_system_kwargs():
@@ -113,36 +131,36 @@ def test_tlp_mooring_system_kwargs():
         "draft_depth": 10,
     }
 
-    m = MooringSystemDesign(tlp_base)
-    m.run()
+    moor = MooringSystemDesign(tlp_base)
+    moor.run()
 
-    base_cost = m.detailed_output["system_cost"]
+    base_cost = moor.detailed_output["system_cost"]
 
     for k, v in test_kwargs.items():
         config = deepcopy(tlp_base)
         config["mooring_system_design"] = {}
         config["mooring_system_design"][k] = v
 
-        m = MooringSystemDesign(config)
-        m.run()
+        moor = MooringSystemDesign(config)
+        moor.run()
 
-        assert m.detailed_output["system_cost"] != base_cost
+        assert moor.detailed_output["system_cost"] != base_cost
 
 
 def test_drag_embedment_fixed_length():
 
-    m = MooringSystemDesign(base)
-    m.run()
+    moor = MooringSystemDesign(base)
+    moor.run()
 
-    baseline = m.line_length
+    baseline = moor.line_length
 
     default = deepcopy(base)
     default["mooring_system_design"] = {"anchor_type": "Drag Embedment"}
 
-    m = MooringSystemDesign(default)
-    m.run()
+    moor = MooringSystemDesign(default)
+    moor.run()
 
-    with_default = m.line_length
+    with_default = moor.line_length
     assert with_default > baseline
 
     custom = deepcopy(base)
@@ -151,11 +169,11 @@ def test_drag_embedment_fixed_length():
         "drag_embedment_fixed_length": 1000,
     }
 
-    m = MooringSystemDesign(custom)
-    m.run()
+    moor = MooringSystemDesign(custom)
+    moor.run()
 
-    assert m.line_length > with_default
-    assert m.line_length > baseline
+    assert moor.line_length > with_default
+    assert moor.line_length > baseline
 
 
 def test_custom_num_lines():
@@ -163,10 +181,10 @@ def test_custom_num_lines():
     config = deepcopy(base)
     config["mooring_system_design"] = {"num_lines": 5}
 
-    m = MooringSystemDesign(config)
-    m.run()
+    moor = MooringSystemDesign(config)
+    moor.run()
 
-    assert m.design_result["mooring_system"]["num_lines"] == 5
+    assert moor.design_result["mooring_system"]["num_lines"] == 5
 
 
 def test_new_old_semitaut_mooring_system():
