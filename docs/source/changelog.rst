@@ -12,6 +12,11 @@ Unreleased (TBD)
 - "drag_embedment_install_time" increased from 5 to 12 hours
 - quayside turbine tower section lift time from 12 to 4 hours per section. User specifies number of sections (default =1)
 - quayside nacelle lift time changed from 7 to 12 hours
+- XLPE_500mm_132kV cost_per_km changed from 200k to 500k
+- example_cable_lay_vessel min_draft changed from 4.8m to 8.5m, overall_length 99m to 171m, max_mass 4000t to 13000t
+- example_towing_vessel max_waveheight changed from 2.5m to 3.0m, max_windspeed 20m to 15m, transit_speed 6km/h to 14 km/h, day_rate 30k to 35k
+
+
 Unreleased (TBD)
 ----------------
 - merged electrical-refactor
