@@ -80,7 +80,7 @@ def test_for_complete_logging(weather, config):
     assert installed_mooring_lines == sim.num_turbines
 
 
-def test_deprecated_landfall():
+def test_deprecated_vessel():
 
     deprecated = deepcopy(config)
     deprecated["support_vessel"] = "test_support_vessel"

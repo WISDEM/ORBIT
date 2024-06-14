@@ -5,9 +5,11 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
+from warnings import warn
 
 import simpy
 from marmot import le, process
+
 from ORBIT.core import Vessel, WetStorage
 from ORBIT.phases.install import InstallPhase
 
@@ -25,11 +27,13 @@ class GravityBasedInstallation(InstallPhase):
 
     #:
     expected_config = {
-        "support_vessel": "str",
+        "support_vessel": "str, (optional)",
+        "ahts_vessel": "str",
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
-            "station_keeping_vessels": "int",
+            "station_keeping_vessels": "int (optional)",
+            "ahts_vessels": "int (optional, default: 1)",
             "num_groups": "int (optional)",
         },
         "substructure": {
@@ -210,20 +214,49 @@ class GravityBasedInstallation(InstallPhase):
 
     def initialize_support_vessel(self, **kwargs):
         """
+        ** The support vessel is deprecated and an AHTS
+        vessel will perform the installation with the towing group.
+        # TODO: determine if the installation process for GBF is still
+        sound.
+
         Initializes Multi-Purpose Support Vessel to perform installation
         processes at site.
         """
 
-        specs = self.config["support_vessel"]
-        vessel = self.initialize_vessel("Multi-Purpose Support Vessel", specs)
+        specs = self.config.get("support_vessel", None)
+
+        if specs is not None:
+            warn(
+                "support_vessel will be deprecated and replaced with"
+                " towing_vessels and ahts_vessel in the towing groups.\n",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        specs = self.config["ahts_vessel"]
+        vessel = self.initialize_vessel("Multi-Purpose AHTS Vessel", specs)
 
         self.env.register(vessel)
         vessel.initialize(mobilize=False)
         self.support_vessel = vessel
 
-        station_keeping_vessels = self.config["towing_vessel_groups"][
-            "station_keeping_vessels"
-        ]
+        station_keeping_vessels = self.config["towing_vessel_groups"].get(
+            "station_keeping_vessels", None
+        )
+
+        if station_keeping_vessels is not None:
+            print(station_keeping_vessels)
+            warn(
+                "['towing_vessl_groups]['station_keeping_vessels']"
+                " will be deprecated and replaced with"
+                " ['towing_vessl_groups]['ahts_vessels'].\n",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        station_keeping_vessels = self.config["towing_vessel_groups"].get(
+            "ahts_vessels", 1
+        )
 
         install_gravity_base_foundations(
             self.support_vessel,
