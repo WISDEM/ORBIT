@@ -28,13 +28,12 @@ repos:
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: flake8
-        exclude: ^tests/
+        args: [--toml-config]
     -   id: mixed-line-ending
     -   id: pretty-format-json
         args: [--autofix]
 
 -   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a5
     rev: v3.0.0a5
     hooks:
     -   id: pylint
