@@ -245,7 +245,6 @@ class GravityBasedInstallation(InstallPhase):
         )
 
         if station_keeping_vessels is not None:
-            print(station_keeping_vessels)
             warn(
                 "['towing_vessl_groups]['station_keeping_vessels']"
                 " will be deprecated and replaced with"
