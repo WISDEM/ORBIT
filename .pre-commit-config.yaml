@@ -29,7 +29,6 @@ repos:
     -   id: flake8
         name: flake8
         additional_dependencies: [Flake8-pyproject]
-        args: [--toml-config]
     -   id: mixed-line-ending
     -   id: pretty-format-json
         args: [--autofix]
