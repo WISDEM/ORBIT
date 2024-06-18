@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm", "versioneer[toml]"]
+requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "orbit-nrel"
-dynamic = ["version"]  # TODO
+dynamic = ["version"]
 authors = [
   {name = "Nick Riccobono", email = "nicholas.riccobono@nrel.gov"},
   {name = "Rob Hammond", email = "rob.hammond@nrel.gov"},
@@ -71,15 +71,15 @@ dev = [
   "sphinx-rtd-theme",
 ]
 
-[tool.setuptools.dynamic]
-version = {attr = "package.__version__"}
+[tool.setuptools]
+include-package-data = true
 
-[tool.versioneer]
-VCS = "git"
-style = "pep440"
-versionfile_source = "ORBIT/_version.py"
-versionfile_build = "ORBIT/_version.py"
-parentdir_prefix = "ORBIT-"
+[tool.setuptools.packages.find]
+include = ["ORBIT", "library", "*.yaml", "*.csv"]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ORBIT.__version__"}
 
 [tool.black]
 line-length = 79
