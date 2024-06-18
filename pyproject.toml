@@ -71,6 +71,9 @@ dev = [
   "sphinx-rtd-theme",
 ]
 
+[tool.setuptools.dynamic]
+version = {attr = "package.__version__"}
+
 [tool.versioneer]
 VCS = "git"
 style = "pep440"
