@@ -27,6 +27,7 @@ repos:
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: flake8
+        name: flake8
         additional_dependencies: [Flake8-pyproject]
         args: [--toml-config]
     -   id: mixed-line-ending
@@ -37,4 +38,5 @@ repos:
     rev: v3.0.0a5
     hooks:
     -   id: pylint
+        name: pylint
         exclude: ^tests/
