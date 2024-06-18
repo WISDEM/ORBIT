@@ -112,7 +112,7 @@ sections = [
 known_first_party = [
   "ORBIT",
   "tests",
-  "library"
+  "library",
 ]
 length_sort = 1
 
@@ -134,7 +134,7 @@ exclude = [
   "^tests/",
 ]
 max-complexity = 10
-max-line-length=79
+max-line-length = 79
 
 [tool.pylint.main]
 # Analyse import fallback blocks. This can be used to support both Python 2 and 3
