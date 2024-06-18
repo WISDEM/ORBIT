@@ -114,7 +114,7 @@ known_first_party = [
   "tests",
   "library",
 ]
-length_sort = 1
+length_sort = "1"
 
 [tool.flake8]
 ignore = [
