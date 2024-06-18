@@ -27,7 +27,17 @@ multi_assembly_multi_tow = extract_library_specs(
 )
 
 
-def test_simulation_setup():
+@pytest.mark.parametrize(
+    "config",
+    (config, multi_assembly, multi_tow, multi_assembly_multi_tow),
+    ids=[
+        "1 assembly, 1 tow",
+        "3 assembly, 1 tow",
+        "1 assembly, 3 tow",
+        "3 assembly, 3 tow",
+    ],
+)
+def test_simulation_setup(config):
     sim = MooredSubInstallation(config)
     assert sim.config == config
     assert sim.env
