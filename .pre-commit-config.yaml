@@ -2,20 +2,19 @@ ci:
     skip: [isort, black, pylint]
 
 repos:
--   repo: https://github.com/timothycrosley/isort
-    rev: 5.13.2
+-   repo: https://github.com/pycqa/isort
+    rev:  5.13.2
     hooks:
-        - id: isort
-          name: isort
-          stages: [commit]
+    -   id: isort
+        name: isort (python)
 
 -   repo: https://github.com/psf/black
     rev: 24.2.0
     hooks:
-        - id: black
-          name: black
-          stages: [commit]
-          exclude: ^ORBIT/api/wisdem
+    -   id: black
+        name: black
+        stages: [commit]
+        exclude: ^ORBIT/api/wisdem
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
@@ -28,14 +27,15 @@ repos:
     -   id: check-merge-conflict
     -   id: check-symlinks
     -   id: flake8
-        exclude: ^tests/
+        name: flake8
+        additional_dependencies: [Flake8-pyproject]
     -   id: mixed-line-ending
     -   id: pretty-format-json
         args: [--autofix]
 
 -   repo: https://github.com/pre-commit/mirrors-pylint
     rev: v3.0.0a5
-    rev: v3.0.0a5
     hooks:
     -   id: pylint
+        name: pylint
         exclude: ^tests/
