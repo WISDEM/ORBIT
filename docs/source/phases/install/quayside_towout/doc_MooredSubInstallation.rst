@@ -28,6 +28,7 @@ the key parameters available.
        ...
 
        "support_vessel": "example_support_vessel",  # Will perform onsite installation procedures.
+       "ahts_vessel": "example_ahts_vessel",    # Anchor handling tug supply vessel associated with each tow group.
        "towing_vessel": "example_towing_vessel",    # Towing groups will contain multiple of this vessel.
        "towing_groups": {
            "towing_vessel": 1,  # Vessels used to tow the substructure to site.

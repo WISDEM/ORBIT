@@ -319,26 +319,3 @@ class MooringSystem(Cargo):
         """Dummy method to work with `get_list_of_items_from_port`."""
 
         return "", 0
-
-    def anchor_install_time(self, depth):
-        """
-        Returns time to install anchor. Varies by depth.
-
-        Parameters
-        ----------
-        depth : int | float
-            Depth at site (m).
-        """
-
-        if self.anchor_type == "Suction Pile":
-            fixed = 11
-
-        elif self.anchor_type == "Drag Embedment":
-            fixed = 5
-
-        else:
-            raise ValueError(
-                f"Mooring System Anchor Type: {self.anchor_type} not recognized."
-            )
-
-        return fixed + 0.005 * depth

@@ -19,10 +19,11 @@ export_cable_install_vessel: example_cable_lay_vessel
 mooring_install_vessel: example_support_vessel
 oss_install_vessel: floating_heavy_lift_vessel
 support_vessel: example_support_vessel
-ahts_vessel: example_ahts_vessel
+#ahts_vessel: example_ahts_vessel
 towing_vessel: example_towing_vessel
 towing_vessel_groups:
   station_keeping_vessels: 2
+  ahts_vessels: 1
   towing_vessels: 3
 wtiv: floating_heavy_lift_vessel
 # Module Specific
@@ -30,9 +31,6 @@ substructure:
   takt_time: 168
 substation_design:
   oss_substructure_type: Floating
-mooring_system_design:
-  anchor_type: Drag Embedment
-  mooring_type: SemiTaut
 array_system:
   free_cable_length: 0.5
 array_system_design:
@@ -41,12 +39,14 @@ array_system_design:
 export_system_design:
   cables: XLPE_500mm_132kV
   percent_added_length: 0.0
+offshore_substation_substructure:
+  type: Floating
 # Configured Phases
 design_phases:
 - ArraySystemDesign
 - ElectricalDesign
-- MooringSystemDesign
-- OffshoreFloatingSubstationDesign
+- SemiTautMooringSystemDesign
+#- OffshoreFloatingSubstationDesign
 - SemiSubmersibleDesign
 install_phases:
   ArrayCableInstallation: 0
@@ -54,6 +54,5 @@ install_phases:
   MooredSubInstallation: 0
   MooringSystemInstallation: 0
   FloatingSubstationInstallation: 0
-  TurbineInstallation: 0
 # Project Inputs
 turbine: 12MW_generic
