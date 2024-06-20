@@ -12,7 +12,7 @@ authors = [
 ]
 readme = {file = "README.rst", content-type = "text/x-rst"}
 description = "Offshore Renewables Balance of system and Installation Tool"
-requires-python = ">=3.9, <3.11"
+requires-python = ">=3.9, <3.12"
 license = {file = "LICENSE"}
 dependencies = [
   "numpy",
