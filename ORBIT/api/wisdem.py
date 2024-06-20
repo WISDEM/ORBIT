@@ -96,6 +96,11 @@ class OrbitWisdem(om.ExplicitComponent):
             desc="Number of station keeping vessels that attach to floating platforms under tow-out.",
         )
         self.add_discrete_input(
+            "ahts_vessels",
+            1,
+            desc="Number of ahts vessels that attach to floating platforms under tow-out.",
+        )
+        self.add_discrete_input(
             "oss_install_vessel",
             "example_heavy_lift_vessel",
             desc="Vessel configuration to use for installation of offshore substations.",
@@ -378,11 +383,13 @@ class OrbitWisdem(om.ExplicitComponent):
         if floating_flag:
             vessels = {
                 "support_vessel": "example_support_vessel",
+                "ahts_vessel" : "example_ahts_vessel",
                 "towing_vessel": "example_towing_vessel",
                 "mooring_install_vessel": "example_support_vessel",
                 "towing_vessel_groups": {
                     "towing_vessels": int(discrete_inputs["num_towing"]),
                     "station_keeping_vessels": int(discrete_inputs["num_station_keeping"]),
+                    "ahts_vessels" : int(discrete_inputs["ahts_vessels"])
                 },
             }
         else:

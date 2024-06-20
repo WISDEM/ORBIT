@@ -14,7 +14,7 @@ from ORBIT.core import SubstructureDelivery
 from ORBIT.core.logic import (
     prep_for_site_operations,
     shuttle_items_to_queue_wait,
-    get_list_of_items_from_port_wait,
+    get_list_of_items_from_port,
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
@@ -326,7 +326,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
         if vessel.at_port:
             try:
                 # Get substructure + transition piece from port
-                yield get_list_of_items_from_port_wait(
+                yield get_list_of_items_from_port(
                     vessel, port, component_list, **kwargs
                 )
 
@@ -441,7 +441,7 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log("Delay", delay_time, location="Site")
+                wtiv.submit_action_log("Delay: Not enough vessels for monopiles", delay_time, location="Site")
 
     # Transit to port
     wtiv.at_site = False

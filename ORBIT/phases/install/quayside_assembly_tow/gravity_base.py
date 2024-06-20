@@ -5,6 +5,7 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
+from warnings import warn
 
 import simpy
 from marmot import le, process
@@ -26,11 +27,13 @@ class GravityBasedInstallation(InstallPhase):
 
     #:
     expected_config = {
-        "support_vessel": "str",
+        "support_vessel": "str, (optional)",
+        "ahts_vessel": "str",
         "towing_vessel": "str",
         "towing_vessel_groups": {
             "towing_vessels": "int",
-            "station_keeping_vessels": "int",
+            "station_keeping_vessels": "int (optional)",
+            "ahts_vessels": "int (optional, default: 1)",
             "num_groups": "int (optional)",
         },
         "substructure": {
@@ -184,7 +187,7 @@ class GravityBasedInstallation(InstallPhase):
         towing_speed = self.config["substructure"].get("towing_speed", 6)
 
         for i in range(num_groups):
-            g = TowingGroup(vessel, num=i + 1)
+            g = TowingGroup(vessel, None, num=i + 1)
             self.env.register(g)
             g.initialize()
             self.installation_groups.append(g)
@@ -211,20 +214,48 @@ class GravityBasedInstallation(InstallPhase):
 
     def initialize_support_vessel(self, **kwargs):
         """
+        ** The support vessel is deprecated and an AHTS
+        vessel will perform the installation with the towing group.
+        # TODO: determine if the installation process for GBF is still
+        sound.
+
         Initializes Multi-Purpose Support Vessel to perform installation
         processes at site.
         """
 
-        specs = self.config["support_vessel"]
-        vessel = self.initialize_vessel("Multi-Purpose Support Vessel", specs)
+        specs = self.config.get("support_vessel", None)
+
+        if specs is not None:
+            warn(
+                "support_vessel will be deprecated and replaced with"
+                " towing_vessels and ahts_vessel in the towing groups.\n",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        specs = self.config["ahts_vessel"]
+        vessel = self.initialize_vessel("Multi-Purpose AHTS Vessel", specs)
 
         self.env.register(vessel)
         vessel.initialize(mobilize=False)
         self.support_vessel = vessel
 
-        station_keeping_vessels = self.config["towing_vessel_groups"][
-            "station_keeping_vessels"
-        ]
+        station_keeping_vessels = self.config["towing_vessel_groups"].get(
+            "station_keeping_vessels", None
+        )
+
+        if station_keeping_vessels is not None:
+            warn(
+                "['towing_vessl_groups]['station_keeping_vessels']"
+                " will be deprecated and replaced with"
+                " ['towing_vessl_groups]['ahts_vessels'].\n",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        station_keeping_vessels = self.config["towing_vessel_groups"].get(
+            "ahts_vessels", 1
+        )
 
         install_gravity_base_foundations(
             self.support_vessel,
@@ -293,18 +324,21 @@ def transfer_gbf_substructures_from_storage(
     transit_time = distance / group.transit_speed
 
     while True:
-
         start = group.env.now
         assembly = yield feed.get()
         delay = group.env.now - start
 
         if delay > 0:
             group.submit_action_log(
-                "Delay: No Completed Assemblies Available", delay
+                "Delay: No Completed Assemblies Available",
+                delay,
+                num_vessels=towing_vessels,
             )
 
         yield group.group_task(
-            "Tow Substructure", towing_time, num_vessels=towing_vessels
+            "Tow Substructure",
+            towing_time,
+            num_vessels=towing_vessels,
         )
 
         # At Site
@@ -314,7 +348,12 @@ def transfer_gbf_substructures_from_storage(
 
             queue_time = group.env.now - queue_start
             if queue_time > 0:
-                group.submit_action_log("Queue", queue_time, location="Site")
+                group.submit_action_log(
+                    "Queue",
+                    queue_time,
+                    location="Site",
+                    num_vessels=towing_vessels,
+                )
 
             queue.vessel = group
             active_start = group.env.now
@@ -357,7 +396,6 @@ def install_gravity_base_foundations(
     n = 0
     while n < substructures:
         if queue.vessel:
-
             start = vessel.env.now
             if n == 0:
                 vessel.mobilize()
@@ -407,6 +445,10 @@ def install_gravity_base_foundations(
             delay_time = vessel.env.now - start
 
             if n != 0:
-                vessel.submit_action_log("Delay", delay_time, location="Site")
+                vessel.submit_action_log(
+                    "Delay: Not enough vessels for gravity foundations",
+                    delay_time,
+                    location="Site",
+                )
 
     yield vessel.transit(distance)

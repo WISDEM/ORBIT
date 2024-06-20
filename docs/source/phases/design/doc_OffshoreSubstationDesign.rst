@@ -16,4 +16,4 @@ References
 ----------
 
 .. [#maness2017] Michael Maness, Benjamin Maples, Aaron Smith,
-    NREL Offshore Balance-of-System Model, 2017
+    NREL Offshore Balance-of-System Model, 2017. https://www.nrel.gov/docs/fy17osti/66874.pdf

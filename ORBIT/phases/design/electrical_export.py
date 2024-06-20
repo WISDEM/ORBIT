@@ -69,6 +69,7 @@ class ElectricalDesign(CableSystem):
             "converter_cost": "USD (optional)",
             "onshore_converter_cost": "USD (optional)",
             "topside_assembly_factor": "float (optional)",
+            "oss_substructure_type": "str (optional, default: Monopile)",
             "oss_substructure_cost_rate": "USD/t (optional)",
             "oss_pile_cost_rate": "USD/t (optional)",
         },
@@ -126,19 +127,23 @@ class ElectricalDesign(CableSystem):
             "interconnection_distance", 3
         )
 
-        # SUBSTATION
-        self._outputs = {}
-
-    def run(self):
-        """Main run function."""
-
         self.export_system_design = self.config["export_system_design"]
         self.offshore_substation_design = self.config.get(
             "substation_design", {}
         )
+
+        self.substructure_type = self.offshore_substation_design.get(
+            "oss_substructure_type", "Monopile"
+        )
+
         self.onshore_substation_design = self.config.get(
             "onshore_substation_design", {}
         )
+
+        self._outputs = {}
+
+    def run(self):
+        """Main run function."""
 
         # CABLES
         self._initialize_cables()
@@ -183,7 +188,7 @@ class ElectricalDesign(CableSystem):
         self.calc_onshore_cost()
 
         self._outputs["offshore_substation_substructure"] = {
-            "type": "Monopile",  # Substation install only supports monopiles
+            "type": self.substructure_type,
             "deck_space": self.substructure_deck_space,
             "mass": self.substructure_mass,
             "length": self.substructure_length,
@@ -346,19 +351,18 @@ class ElectricalDesign(CableSystem):
         ----------
         substation_capacity : int | float
         """
-        self._design = self.config.get("substation_design", {})
 
         # HVAC substation capacity
-        _substation_capacity = self._design.get(
+        _substation_capacity = self.offshore_substation_design.get(
             "substation_capacity", 1200
         )  # MW
 
         if "HVDC" in self.cable.cable_type:
-            self.num_substations = self._design.get(
+            self.num_substations = self.offshore_substation_design.get(
                 "num_substations", int(self.num_cables / 2)
             )
         else:
-            self.num_substations = self._design.get(
+            self.num_substations = self.offshore_substation_design.get(
                 "num_substations",
                 int(np.ceil(self._plant_capacity / _substation_capacity)),
             )
@@ -494,8 +498,10 @@ class ElectricalDesign(CableSystem):
         topside_assembly_factor : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        topside_assembly_factor = _design.get("topside_assembly_factor", 0.075)
+        topside_assembly_factor = self.offshore_substation_design.get(
+            "topside_assembly_factor", 0.075
+        )
+
         self.land_assembly_cost = (
             self.switchgear_cost
             + self.shunt_reactor_cost
@@ -512,14 +518,27 @@ class ElectricalDesign(CableSystem):
         oss_pile_cost_rate : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        substructure_mass = 0.4 * self.topside_mass
-        oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
-        oss_substructure_cost_rate = _design.get(
+        oss_pile_cost_rate = self.offshore_substation_design.get(
+            "oss_pile_cost_rate", 0
+        )
+        oss_substructure_cost_rate = self.offshore_substation_design.get(
             "oss_substructure_cost_rate", 3000
         )
 
-        substructure_pile_mass = 8 * substructure_mass**0.5574
+        # Substructure mass components calculated by curve fits in
+        # equations 81-84 from Maness et al. 2017
+        # https://www.nrel.gov/docs/fy17osti/66874.pdf
+        #
+        # TODO: Determine a better method to calculate substructure mass
+        #       for different substructure types
+        substructure_mass = 0.4 * self.topside_mass
+
+        if self.substructure_type == "Floating":
+            substructure_pile_mass = 0  # No piles used for floating platform
+
+        else:
+            substructure_pile_mass = 8 * substructure_mass**0.5574
+
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
@@ -532,7 +551,11 @@ class ElectricalDesign(CableSystem):
         Calculates substructure length as the site depth + 10m
         """
 
-        self.substructure_length = self.config["site"]["depth"] + 10
+        if self.substructure_type == "Floating":
+            self.substructure_length = 0
+
+        else:
+            self.substructure_length = self.config["site"]["depth"] + 10
 
     def calc_substructure_deck_space(self):
         """

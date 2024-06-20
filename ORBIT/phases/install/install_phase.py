@@ -12,7 +12,6 @@ from itertools import groupby
 import numpy as np
 import simpy
 import pandas as pd
-
 from ORBIT.core import Port, Vessel, Environment
 from ORBIT.phases import BasePhase
 from ORBIT.core.defaults import common_costs
@@ -121,9 +120,14 @@ class InstallPhase(BasePhase):
             return 0
 
         else:
-            key = "port_cost_per_month"
             port_config = self.config.get("port", {})
+            assert port_config.get("sub_assembly_lines", 1) == port_config.get(
+                "turbine_assembly_cranes", 1
+            ), "Number of substructure assembly lines is not equal to number of turbine assembly cranes"
+
+            key = "port_cost_per_month"
             rate = port_config.get("monthly_rate", common_costs[key])
+            rate += rate * (port_config.get("sub_assembly_lines", 1) - 1) * 0.5
 
             months = self.total_phase_time / (8760 / 12)
             return months * rate

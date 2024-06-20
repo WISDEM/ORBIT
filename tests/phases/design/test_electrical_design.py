@@ -20,7 +20,9 @@ base = {
     "plant": {"capacity": 500},
     "export_system_design": {"cables": "XLPE_630mm_220kV"},
     "landfall": {},
-    "substation_design": {},
+    "substation_design": {
+        "oss_pile_cost_rate": 1200,  # need to set this for kwarg tests
+    },
 }
 
 
@@ -41,22 +43,114 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
         "substation_design": {},
     }
 
-    o = ElectricalDesign(config)
-    o.run()
+    elect = ElectricalDesign(config)
+    elect.run()
 
     # Check valid substructure length
-    assert 10 <= o._outputs["offshore_substation_substructure"]["length"] <= 80
+    assert (
+        10
+        <= elect._outputs["offshore_substation_substructure"]["length"]
+        <= 80
+    )
 
     # Check valid substructure mass
     assert (
-        200 <= o._outputs["offshore_substation_substructure"]["mass"] <= 2700
+        200
+        <= elect._outputs["offshore_substation_substructure"]["mass"]
+        <= 2700
     )
 
     # Check valid topside mass
-    assert 200 <= o._outputs["offshore_substation_topside"]["mass"] <= 5500
+    assert 200 <= elect._outputs["offshore_substation_topside"]["mass"] <= 5500
 
     # Check valid substation cost
-    assert 1e6 <= o.total_substation_cost <= 1e9
+    assert 1e6 <= elect.total_substation_cost <= 1e9
+
+
+def test_detailed_design_length():
+    """Ensure that the same # of output variables are used for a floating and fixed offshore substation."""
+
+    elect = ElectricalDesign(base)
+    elect.run()
+
+    floating = deepcopy(base)
+    floating["substation_design"]["oss_substructure_type"] = "Floating"
+    elect_floating = ElectricalDesign(floating)
+    elect_floating.run()
+
+    assert len(elect.detailed_output) == len(elect_floating.detailed_output)
+
+
+def test_calc_substructure_mass_and_cost():
+
+    elect = ElectricalDesign(base)
+    elect.run()
+
+    floating = deepcopy(base)
+    floating["substation_design"]["oss_substructure_type"] = "Floating"
+    elect_floating = ElectricalDesign(floating)
+    elect_floating.run()
+
+    assert (
+        elect.detailed_output["substation_substructure_cost"]
+        != elect_floating.detailed_output["substation_substructure_cost"]
+    )
+    assert (
+        elect.detailed_output["substation_substructure_mass"]
+        != elect_floating.detailed_output["substation_substructure_mass"]
+    )
+
+
+def test_calc_topside_mass_and_cost():
+    """Test topside mass and cost for HVDC compared to HVDC-Monopole and HVDC-Bipole"""
+
+    elect = ElectricalDesign(base)
+    elect.run()
+
+    base_dc = deepcopy(base)
+    cables = ["HVDC_2000mm_320kV", "HVDC_2500mm_525kV"]
+
+    for cable in cables:
+        base_dc["export_system_design"]["cables"] = cable
+
+        elect_dc = ElectricalDesign(base_dc)
+        elect_dc.run()
+
+        assert (
+            elect.detailed_output["substation_topside_mass"]
+            == elect_dc.detailed_output["substation_topside_mass"]
+        )
+        assert (
+            elect.detailed_output["substation_topside_cost"]
+            != elect_dc.detailed_output["substation_topside_cost"]
+        )
+
+
+def test_oss_substructure_kwargs():
+    test_kwargs = {
+        "oss_substructure_type": "Floating",
+        "oss_substructure_cost_rate": 7250,
+        "oss_pile_cost_rate": 2500,
+        "num_substations": 4,
+    }
+
+    elect = ElectricalDesign(base)
+    elect.run()
+    base_cost_total = elect.detailed_output["total_substation_cost"]
+    base_cost_subst = elect.detailed_output["substation_substructure_cost"]
+
+    for k, v in test_kwargs.items():
+        config = deepcopy(base)
+        config["substation_design"] = {}
+        config["substation_design"][k] = v
+
+        elect = ElectricalDesign(config)
+        elect.run()
+        cost_total = elect.detailed_output["total_substation_cost"]
+        cost_subst = elect.detailed_output["substation_substructure_cost"]
+
+        assert cost_total != base_cost_total
+        assert cost_subst != base_cost_subst
 
 
 def test_ac_oss_kwargs():
@@ -70,23 +164,21 @@ def test_ac_oss_kwargs():
         "workspace_cost": 3e6,
         "other_ancillary_cost": 4e6,
         "topside_assembly_factor": 0.09,
-        "oss_substructure_cost_rate": 7250,
-        "oss_pile_cost_rate": 2500,
         "num_substations": 4,
     }
 
-    o = ElectricalDesign(base)
-    o.run()
-    base_cost = o.detailed_output["total_substation_cost"]
+    elect = ElectricalDesign(base)
+    elect.run()
+    base_cost = elect.detailed_output["total_substation_cost"]
 
     for k, v in test_kwargs.items():
         config = deepcopy(base)
         config["substation_design"] = {}
         config["substation_design"][k] = v
 
-        o = ElectricalDesign(config)
-        o.run()
-        cost = o.detailed_output["total_substation_cost"]
+        elect = ElectricalDesign(config)
+        elect.run()
+        cost = elect.detailed_output["total_substation_cost"]
         print("passed")
         assert cost != base_cost
 
@@ -96,9 +188,9 @@ def test_dc_oss_kwargs():
 
     dc_base = deepcopy(base)
     dc_base["export_system_design"]["cables"] = "HVDC_2000mm_320kV"
-    o = ElectricalDesign(dc_base)
-    o.run()
-    base_cost = o.detailed_output["total_substation_cost"]
+    elect = ElectricalDesign(dc_base)
+    elect.run()
+    base_cost = elect.detailed_output["total_substation_cost"]
 
     for k, v in test_kwargs.items():
         config = deepcopy(base)
@@ -106,10 +198,10 @@ def test_dc_oss_kwargs():
         config["substation_design"] = {}
         config["substation_design"][k] = v
 
-        o = ElectricalDesign(config)
-        o.run()
-        cost = o.detailed_output["total_substation_cost"]
-        print("passed")
+        elect = ElectricalDesign(config)
+        elect.run()
+        cost = elect.detailed_output["total_substation_cost"]
+
         assert cost != base_cost
 
 
@@ -146,35 +238,35 @@ def test_new_old_hvac_substation():
 def test_hvdc_substation():
     config = deepcopy(base)
     config["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
-    o = ElectricalDesign(config)
-    o.run()
-    assert o.converter_cost != 0
-    assert o.shunt_reactor_cost == 0
-    assert o.dc_breaker_cost != 0
-    assert o.switchgear_cost == 0
-    assert o.mpt_cost == 0
-    # assert o.num_cables / o.num_converters == 2  # breaks
+    elect = ElectricalDesign(config)
+    elect.run()
+    assert elect.converter_cost != 0
+    assert elect.shunt_reactor_cost == 0
+    assert elect.dc_breaker_cost != 0
+    assert elect.switchgear_cost == 0
+    assert elect.mpt_cost == 0
+    # assert elect.num_cables / elect.num_converters == 2  # breaks
 
     config = deepcopy(base)
     config["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
 
-    o = ElectricalDesign(config)
-    o.run()
+    elect = ElectricalDesign(config)
+    elect.run()
 
-    # assert o.num_converters == o.num_cables    # breaks
+    # assert elect.num_converters == elect.num_cables    # breaks
 
 
 def test_onshore_substation():
     config = deepcopy(base)
-    o = ElectricalDesign(config)
-    o.run()
-    assert o.onshore_cost == pytest.approx(95.487e6, abs=1e2)  # 109.32e6
+    elect = ElectricalDesign(config)
+    elect.run()
+    assert elect.onshore_cost == pytest.approx(95.487e6, abs=1e2)  # 109.32e6
 
     config_mono = deepcopy(config)
     config_mono["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
-    o_mono = ElectricalDesign(config_mono)
-    o_mono.run()
-    assert o_mono.onshore_cost == 244.3e6
+    o_monelect = ElectricalDesign(config_mono)
+    o_monelect.run()
+    assert o_monelect.onshore_cost == 244.3e6
 
     config_bi = deepcopy(config)
     config_bi["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
@@ -194,18 +286,18 @@ def test_export_kwargs():
         # "interconnection_distance": 6,
     }
 
-    o = ElectricalDesign(base)
-    o.run()
-    base_cost = o.total_cost
+    elect = ElectricalDesign(base)
+    elect.run()
+    base_cost = elect.total_cost
 
     for k, v in test_kwargs.items():
         config = deepcopy(base)
         config["export_system_design"] = {"cables": "XLPE_630mm_220kV"}
         config["export_system_design"][k] = v
 
-        o = ElectricalDesign(config)
-        o.run()
-        cost = o.total_cost
+        elect = ElectricalDesign(config)
+        elect.run()
+        cost = elect.total_cost
 
         assert cost != base_cost
 
@@ -261,6 +353,13 @@ def test_total_cable():
     mass = length * export.cable.linear_density
     assert export.total_mass == pytest.approx(mass * 9, abs=1e-10)
     assert export.total_length == pytest.approx(length * 9, abs=1e-10)
+
+
+def test_total_cable_cost():
+    export = ElectricalDesign(config)
+    export.run()
+
+    assert export.total_cable_cost == 135068310.0
 
 
 def test_cables_property():
