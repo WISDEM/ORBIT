@@ -66,8 +66,7 @@ Instructions
 
        # OR if you are you going to be contributing to the code or building documentation
        pip install -e '.[dev]'
-6. (Development only) Install the pre-commit hooks to autoformat code and
-   check that tests pass.
+6. (Development only) Install the pre-commit hooks to autoformat and lint code.
 
     .. code-block:: console
 
@@ -79,6 +78,7 @@ Dependencies
 - Python 3.7+
 - marmot-agents
 - NumPy
+- Pandas
 - SciPy
 - Matplotlib
 - OpenMDAO (>=3.2)
@@ -88,6 +88,7 @@ Development Specific
 
 - black
 - isort
+- ruff
 - pre-commit
 - pytest
 - sphinx
@@ -98,4 +99,3 @@ Recommended packages for easy iteration and running of code:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - jupyterlab
-- pandas
