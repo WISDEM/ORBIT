@@ -9,13 +9,13 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = ["jake.nunemaker@nrel.gov"]
 
 
-import os
 import re
 import datetime as dt
 import collections.abc as collections
 from copy import deepcopy
 from math import ceil
 from numbers import Number
+from pathlib import Path
 from itertools import product
 
 import numpy as np
@@ -1563,9 +1563,9 @@ class ProjectManager:
             Default: 'ACTION'
         """
 
-        dirs = os.path.split(filepath)[0]
-        if dirs and not os.path.isdir(dirs):
-            os.makedirs(dirs)
+        dirs = Path(filepath).parent
+        if dirs and not dirs.is_dir():
+            dirs.mkdir(parents=True)
 
         if level == "ACTION":
             out = pd.DataFrame(self.actions)

@@ -1,6 +1,6 @@
 """Provides generic plotting routines for the supply chain model."""
 
-import os
+from pathlib import Path
 
 import numpy as np
 import matplotlib as mpl
@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 def mysave(fig, froot, mode="png"):
     """Custom save method."""
     assert mode in ["png", "eps", "pdf", "all"]
-    fileName, fileExtension = os.path.splitext(froot)
+    fileName = Path(froot).name
     padding = 0.1
     dpiVal = 200
     legs = []
@@ -29,7 +29,7 @@ def mysave(fig, froot, mode="png"):
 
     for sfx in ext:
         fig.savefig(
-            fileName + "." + sfx,
+            fileName.with_suffix(sfx),
             format=sfx,
             pad_inches=padding,
             bbox_inches="tight",

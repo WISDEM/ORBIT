@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import os
+from pathlib import Path
 
 
 class MissingComponent(Exception):
@@ -248,7 +249,7 @@ class LibraryItemNotFoundError(Exception):
             Filename of item to be extracted.
         """
 
-        self.dir = os.path.join(os.environ["DATA_LIBRARY"], sub_dir)
+        self.dir = Path(os.environ["DATA_LIBRARY"]) / sub_dir
         self.name = name
         self.message = f"{self.name} not found in {self.dir}."
 

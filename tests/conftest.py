@@ -1,6 +1,6 @@
 """Shared pytest settings and fixtures."""
 
-import os
+from pathlib import Path
 
 import pytest
 from marmot import Environment
@@ -16,8 +16,8 @@ def pytest_configure():
     when required.
     """
 
-    test_dir = os.path.split(os.path.abspath(__file__))[0]
-    pytest.library = os.path.join(test_dir, "data", "library")
+    test_dir = Path(__file__).resolve().parent
+    pytest.library = str(test_dir / "data" / "library")
     initialize_library(pytest.library)
 
 
@@ -78,4 +78,4 @@ def simple_cable():
 def tmp_yaml_del():
 
     yield
-    os.remove("tmp.yaml")
+    Path("tmp.yaml").unlink()

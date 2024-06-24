@@ -34,6 +34,7 @@ import os
 import re
 import csv
 import warnings
+from pathlib import Path
 
 import yaml
 import pandas as pd
@@ -41,8 +42,8 @@ from yaml import Dumper
 
 from ORBIT.core.exceptions import LibraryItemNotFoundError
 
-ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../.."))
-default_library = os.path.join(ROOT, "library")
+ROOT = Path(__file__).parents[2]
+default_library = ROOT / "library"
 
 
 # Need a custom loader to read in scientific notation correctly
@@ -101,10 +102,11 @@ def initialize_library(library_path):
     if library_path is None:
         library_path = default_library
 
-    if not os.path.isdir(library_path):
+    library_path = Path(library_path).resolve()
+    if not library_path.is_dir():
         raise ValueError("Invalid library path.")
 
-    os.environ["DATA_LIBRARY"] = library_path
+    os.environ["DATA_LIBRARY"] = str(library_path)
     print(f"ORBIT library intialized at '{library_path}'")
 
 
@@ -175,14 +177,14 @@ def extract_library_specs(key, filename, file_type="yaml"):
 
     filename = f"{filename}.{file_type}"
     path = PATH_LIBRARY[key]
-    filepath = os.path.join(os.environ["DATA_LIBRARY"], path, filename)
+    filepath = Path(os.environ["DATA_LIBRARY"]) / path / filename
 
-    if os.path.isfile(filepath):
+    if filepath.is_file():
         return _extract_file(filepath)
 
-    if os.environ["DATA_LIBRARY"] != default_library:
-        filepath = os.path.join(default_library, path, filename)
-        if os.path.isfile(filepath):
+    if Path(os.environ["DATA_LIBRARY"]) != default_library:
+        filepath = default_library / path / filename
+        if filepath.is_file():
             return _extract_file(filepath)
 
     raise LibraryItemNotFoundError(path, filename)
@@ -194,17 +196,17 @@ def _extract_file(filepath):
 
     Parameters
     ----------
-    filepath : str
+    filepath : pathlib.Path
         Valid filepath of library item.
     """
 
-    if filepath.endswith("yaml"):
-        f = open(filepath)
-        fyaml = yaml.load(f, Loader=loader)
-        f.close()
+    ftype = filepath.suffix
+    if ftype in (".yaml", ".yml"):
+        with filepath.open() as f:
+            fyaml = yaml.load(f, Loader=loader)
         return fyaml
 
-    elif filepath.endswith("csv"):
+    elif ftype == ".csv":
         df = pd.read_csv(filepath, index_col=False)
 
         # Drop empty rows and columns
@@ -214,9 +216,7 @@ def _extract_file(filepath):
         df.columns = [el.replace(" ", "_").lower() for el in df.columns]
         return df
 
-    else:
-        _type = filepath.split(".")[-1]
-        raise TypeError(f"File type {_type} not supported for extraction.")
+    raise TypeError(f"File type {ftype} not supported for extraction.")
 
 
 def _get_yes_no_response(filename):
@@ -251,16 +251,15 @@ def export_library_specs(key, filename, data, file_ext="yaml"):
 
     filename = f"{filename}.{file_ext}"
     path = PATH_LIBRARY[key]
-    data_path = os.path.join(os.environ["DATA_LIBRARY"], path, filename)
-    if os.path.isfile(data_path) and not _get_yes_no_response(data_path):
+    data_path = Path(os.environ["DATA_LIBRARY"]) / path / filename
+    if data_path.is_file() and not _get_yes_no_response(data_path):
         print("Cancelling save!")
         return
     if file_ext == "yaml":
-        f = open(data_path, "w")
-        yaml.dump(data, f, Dumper=Dumper, default_flow_style=False)
-        f.close()
+        with data_path.open("w") as f:
+            yaml.dump(data, f, Dumper=Dumper, default_flow_style=False)
     elif file_ext == "csv":
-        with open(data_path, "w") as f:
+        with data_path.open("w") as f:
             writer = csv.writer(f)
             writer.writerows(data)
     print("Save complete!")
@@ -292,11 +291,11 @@ PATH_LIBRARY = {
     "export_system": "cables",
     "export_system_design": "cables",
     # project details
-    "config": os.path.join("project", "config"),
-    "plant": os.path.join("project", "plant"),
-    "port": os.path.join("project", "ports"),
-    "project_development": os.path.join("project", "development"),
-    "site": os.path.join("project", "site"),
+    "config": str(Path("project") / "config"),
+    "plant": str(Path("project") / "plant"),
+    "port": str(Path("project") / "ports"),
+    "project_development": str(Path("project") / "development"),
+    "site": str(Path("project") / "site"),
     # substructures
     "monopile": "substructures",
     "monopile_design": "substructures",

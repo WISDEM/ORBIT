@@ -1,4 +1,4 @@
-""""Provides the configuration loading and saving methods."""
+"""Provides the configuration loading and saving methods."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -6,7 +6,7 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-import os
+from pathlib import Path
 
 import yaml
 from yaml import Dumper
@@ -24,7 +24,7 @@ def load_config(filepath):
         Path to yaml config file.
     """
 
-    with open(filepath) as f:
+    with Path(filepath).open() as f:
         data = yaml.load(f, Loader=loader)
 
     return data
@@ -44,13 +44,14 @@ def save_config(config, filepath, overwrite=False):
         Overwrite file if it already exists. Default: False.
     """
 
-    dirs = os.path.split(filepath)[0]
-    if dirs and not os.path.isdir(dirs):
-        os.makedirs(dirs)
+    filepath = Path(filepath).resolve()
+    dirs = filepath.parent
+    if not dirs.exists():
+        dirs.mkdir(parents=True)
 
     if overwrite is False:
-        if os.path.exists(filepath):
+        if filepath.exists():
             raise FileExistsError(f"File already exists at '{filepath}'.")
 
-    with open(filepath, "w") as f:
+    with filepath.open("w") as f:
         yaml.dump(config, f, Dumper=Dumper, default_flow_style=False)
