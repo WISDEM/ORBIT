@@ -60,9 +60,6 @@ changelog = "https://github.com/WISDEM/ORBIT/blob/main/docs/source/changelog.rst
 [project.optional-dependencies]
 dev = [
   "pre-commit",
-  "pylint",
-  "flake8",
-  "Flake8-pyproject",
   "black",
   "isort",
   "pytest",
