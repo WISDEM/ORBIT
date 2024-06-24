@@ -51,7 +51,6 @@ class FloatingSubstationInstallation(InstallPhase):
             "line_cost",
             "USD",
             "anchor_cost",
-            "USD",
         },
     }
 
@@ -76,12 +75,7 @@ class FloatingSubstationInstallation(InstallPhase):
         self.setup_simulation()
 
     def setup_simulation(self):
-        """
-        Initializes required objects for simulation.
-        - Creates port
-
-        - Creates support vessel + towing vessels
-        """
+        """Initializes required objects for simulation."""
 
         self.distance = self.config["site"]["distance"]
         self.num_substations = self.config["num_substations"]
@@ -92,7 +86,8 @@ class FloatingSubstationInstallation(InstallPhase):
     @property
     def system_capex(self):
         """Returns total procurement cost of the substation substructures,
-        topsides and mooring."""
+        topsides and mooring.
+        """
 
         topside = self.config["offshore_substation_topside"]["unit_cost"]
         substructure = self.config["offshore_substation_substructure"][
@@ -123,20 +118,27 @@ class FloatingSubstationInstallation(InstallPhase):
         if substructure_type != "Floating":
             warn(
                 f"Offshore substation substructure is {substructure_type}"
-                " and should be 'Floating'.\n"
+                " and should be 'Floating'.\n",
+                stacklevel=1,
             )
 
         self.wet_storage = WetStorage(self.env, float("inf"))
         takt_time = self.config["offshore_substation_substructure"].get(
-            "takt_time", 0
+            "takt_time",
+            0,
         )
         attach_time = self.config["offshore_substation_topside"].get(
-            "attach_time", 24
+            "attach_time",
+            24,
         )
         to_assemble = [1] * self.num_substations
 
         self.assembly_line = SubstationAssemblyLine(
-            to_assemble, takt_time, attach_time, self.wet_storage, 1
+            to_assemble,
+            takt_time,
+            attach_time,
+            self.wet_storage,
+            1,
         )
 
         self.env.register(self.assembly_line)
@@ -147,7 +149,8 @@ class FloatingSubstationInstallation(InstallPhase):
 
         support = self.config["oss_install_vessel"]
         vessel = self.initialize_vessel(
-            "Floating Substation Installation Vessel", support
+            "Floating Substation Installation Vessel",
+            support,
         )
         self.env.register(vessel)
         vessel.initialize(mobilize=False)
@@ -155,7 +158,8 @@ class FloatingSubstationInstallation(InstallPhase):
 
         depth = self.config["site"]["depth"]
         towing_speed = self.config["offshore_substation_substructure"].get(
-            "towing_speed", 6
+            "towing_speed",
+            6,
         )
 
         install_floating_substations(
@@ -169,12 +173,18 @@ class FloatingSubstationInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
+        """Returns an empty dictionary."""
         return {}
 
 
 @process
 def install_floating_substations(
-    vessel, feed, distance, towing_speed, depth, number
+    vessel,
+    feed,
+    distance,
+    towing_speed,
+    depth,
+    number,
 ):
     """
     Process steps that installation vessel at site performs to install floating
@@ -204,7 +214,8 @@ def install_floating_substations(
         delay = vessel.env.now - start
         if delay > 0:
             vessel.submit_action_log(
-                "Delay: Waiting on Substation Assembly", delay
+                "Delay: Waiting on Substation Assembly",
+                delay,
             )
 
         yield vessel.task(
@@ -310,9 +321,7 @@ class SubstationAssemblyLine(Agent):
 
     @process
     def assemble_substructure(self):
-        """
-        Simulation process for assembling a substructure.
-        """
+        """Simulation process for assembling a substructure."""
 
         yield self.task("Substation Substructure Assembly", self.takt_time)
         yield self.task("Attach Topside", self.attach_time)
@@ -324,7 +333,8 @@ class SubstationAssemblyLine(Agent):
 
         if delay > 0:
             self.submit_action_log(
-                "Delay: No Substructure Storage Available", delay
+                "Delay: No Substructure Storage Available",
+                delay,
             )
 
     @process

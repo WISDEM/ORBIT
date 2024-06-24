@@ -31,7 +31,7 @@ from .common import (
 
 
 class ExportCableInstallation(InstallPhase):
-    """Export Cable Installation Phase"""
+    """Export Cable Installation Phase."""
 
     phase = "Export Cable Installation"
     capex_category = "Export System"
@@ -169,14 +169,16 @@ class ExportCableInstallation(InstallPhase):
         """
 
         construction_time = self.config["export_system"].get(
-            "onshore_construction_time", 0.0
+            "onshore_construction_time",
+            0.0,
         )
         construction_cost = self.config["export_system"].get(
-            "onshore_construction_cost", None
+            "onshore_construction_cost",
+            None,
         )
         if construction_cost is None:
             construction_cost = self.calculate_onshore_transmission_cost(
-                **kwargs
+                **kwargs,
             )
 
         if construction_time:
@@ -200,12 +202,9 @@ class ExportCableInstallation(InstallPhase):
         OffshoreBOS model.
         """
 
-        capacity = self.config["plant"]["capacity"]
-
+        # capacity = self.config["plant"]["capacity"]
         system = self.config["export_system"]
-
         voltage = system.get("interconnection_voltage", 345)
-
         distance = system.get("interconnection_distance", None)
 
         if distance:
@@ -218,14 +217,13 @@ class ExportCableInstallation(InstallPhase):
             )
 
         landfall = system.get("landfall", {})
-
         distance = landfall.get("interconnection_distance", 3)
 
-        switchyard_cost = 18115 * voltage + 165944
-        onshore_substation_cost = (
-            0.165 * 1e6
-        ) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
-        onshore_misc_cost = 11795 * capacity**0.3549 + 350000
+        # switchyard_cost = 18115 * voltage + 165944
+        # onshore_substation_cost = (
+        #     0.165 * 1e6
+        # ) * capacity  # From BNEF Tomorrow's Cost of Offshore Wind
+        # onshore_misc_cost = 11795 * capacity**0.3549 + 350000
         transmission_line_cost = (1176 * voltage + 218257) * (
             distance ** (1 - 0.1063)
         )
@@ -355,17 +353,21 @@ def install_export_cables(
 
     else:
         for _ in range(number):
-            # Trenching vessel can dig a trench during inbound or outbound journey
+            # Trench vessel can dig a trench during inbound or outbound journey
             if trench_vessel.at_port:
                 trench_vessel.at_port = False
                 yield dig_export_cables_trench(
-                    trench_vessel, ground_distance, **kwargs
+                    trench_vessel,
+                    ground_distance,
+                    **kwargs,
                 )
                 trench_vessel.at_site = True
             elif trench_vessel.at_site:
                 trench_vessel.at_site = False
                 yield dig_export_cables_trench(
-                    trench_vessel, ground_distance, **kwargs
+                    trench_vessel,
+                    ground_distance,
+                    **kwargs,
                 )
                 trench_vessel.at_port = True
 
@@ -483,5 +485,5 @@ def dig_export_cables_trench(vessel, distance, **kwargs):
     yield dig_trench(vessel, distance, **kwargs)
 
     vessel.submit_debug_log(
-        message="Export cable trench digging process completed!"
+        message="Export cable trench digging process completed!",
     )

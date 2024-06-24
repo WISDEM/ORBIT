@@ -72,4 +72,4 @@ def test_phase_specific_file_extraction():
     bad_config["MonopileInstallation"]["wtiv"] = "missing_vessel"
 
     with pytest.raises(LibraryItemNotFoundError):
-        bad_project = ProjectManager(bad_config)
+        _ = ProjectManager(bad_config)

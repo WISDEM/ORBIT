@@ -46,7 +46,7 @@ class MooringSystemDesign(DesignPhase):
             "anchor_type": "str",
             "anchor_cost": "USD",
             "system_cost": "USD",
-        }
+        },
     }
 
     def __init__(self, config, **kwargs):
@@ -89,9 +89,7 @@ class MooringSystemDesign(DesignPhase):
         self._outputs = {}
 
     def run(self):
-        """
-        Main run function.
-        """
+        """Runs the design model."""
 
         self.determine_mooring_line()
         self.calculate_breaking_load()
@@ -114,27 +112,28 @@ class MooringSystemDesign(DesignPhase):
             self.line_diam = 0.09
             self.line_mass_per_m = 0.161
             self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate", 399.0
+                "mooring_line_cost_rate",
+                399.0,
             )
 
         elif fit <= 0.12:
             self.line_diam = 0.12
             self.line_mass_per_m = 0.288
             self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate", 721.0
+                "mooring_line_cost_rate",
+                721.0,
             )
 
         else:
             self.line_diam = 0.15
             self.line_mass_per_m = 0.450
             self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate", 1088.0
+                "mooring_line_cost_rate",
+                1088.0,
             )
 
     def calculate_breaking_load(self):
-        """
-        Returns the mooring line breaking load.
-        """
+        """Returns the mooring line breaking load."""
 
         self.breaking_load = (
             419449 * (self.line_diam**2) + 93415 * self.line_diam - 3577.9
@@ -146,6 +145,7 @@ class MooringSystemDesign(DesignPhase):
 
         SemiTaut model based on:
         https://github.com/NREL/MoorPy/blob/dev/moorpy/MoorProps_default.yaml
+
         TODO: Improve TLP line length and mass
 
         """

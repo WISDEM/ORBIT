@@ -68,7 +68,10 @@ def test_parameter_sweep(distance_to_landfall, depth, plant_cap, cable):
 
 
 def test_detailed_design_length():
-    """Ensure that the same # of output variables are used for a floating and fixed offshore substation."""
+    """
+    Ensure that the same # of output variables are used for a floating and
+    fixed offshore substation.
+    """
 
     elect = ElectricalDesign(base)
     elect.run()
@@ -102,7 +105,10 @@ def test_calc_substructure_mass_and_cost():
 
 
 def test_calc_topside_mass_and_cost():
-    """Test topside mass and cost for HVDC compared to HVDC-Monopole and HVDC-Bipole"""
+    """
+    Test topside mass and cost for HVDC compared to HVDC-Monopole and
+    HVDC-Bipole.
+    """
 
     elect = ElectricalDesign(base)
     elect.run()
@@ -206,7 +212,7 @@ def test_dc_oss_kwargs():
 
 
 def test_new_old_hvac_substation():
-    """Temporary test until ElectricalDesign is merged with new release"""
+    """Temporary test until ElectricalDesign is merged with new release."""
 
     config = deepcopy(base)
     config["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
@@ -387,7 +393,8 @@ def test_total_cable_len_property():
 
     cable_name = export.cable.name
     assert export.total_cable_length_by_type[cable_name] == pytest.approx(
-        export.total_length, abs=1e-10
+        export.total_length,
+        abs=1e-10,
     )
 
 

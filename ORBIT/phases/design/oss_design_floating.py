@@ -37,7 +37,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
     output_config = {
         "num_substations": "int",
         "offshore_substation_topside": "dict",
-	#"offshore_substation_substructure", "dict",
+        # "offshore_substation_substructure", "dict",
     }
 
     def __init__(self, config, **kwargs):
@@ -110,9 +110,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
         ) * self.num_substations
 
     def calc_substructure_length(self):
-        """
-        Calculates substructure length as the site depth + 10m
-        """
+        """Calculates substructure length as the site depth + 10m."""
 
         self.substructure_length = self.config["site"]["depth"] + 10
 
@@ -136,7 +134,8 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
 
     def calc_num_mpt_and_rating(self):
         """
-        Calculates the number of main power transformers (MPTs) and their rating.
+        Calculates the number of main power transformers (MPTs) and their
+        rating.
 
         Parameters
         ----------
@@ -151,10 +150,11 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
         capacity = num_turbines * turbine_rating
 
         self.num_substations = _design.get(
-            "num_substations", int(np.ceil(capacity / 500))
+            "num_substations",
+            int(np.ceil(capacity / 500)),
         )
         self.num_mpt = np.ceil(
-            num_turbines * turbine_rating / (250 * self.num_substations)
+            num_turbines * turbine_rating / (250 * self.num_substations),
         )
         self.mpt_rating = (
             round(
@@ -162,7 +162,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
                     (num_turbines * turbine_rating * 1.15)
                     / (self.num_mpt * self.num_substations)
                 )
-                / 10.0
+                / 10.0,
             )
             * 10.0
         )
@@ -279,25 +279,24 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
 
         _design = self.config.get("substation_design", {})
         oss_substructure_cost_rate = _design.get(
-            "oss_substructure_cost_rate", 3000
+            "oss_substructure_cost_rate",
+            3000,
         )
         oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
 
         substructure_mass = 0.4 * self.topside_mass
-        #substructure_pile_mass = 8 * substructure_mass ** 0.5574
-        substructure_pile_mass = 0 # the monopiles are no longer needed because there is s mooring system
+        # substructure_pile_mass = 8 * substructure_mass ** 0.5574
+        substructure_pile_mass = 0  # moorings don't use piles
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
         )
-        #print('substructure cost:' + str(self.substructure_cost))
+        # print('substructure cost:' + str(self.substructure_cost))
         self.substructure_mass = substructure_mass + substructure_pile_mass
 
     @property
     def design_result(self):
-        """
-        Returns the results of self.run().
-        """
+        """Returns the results of self.run()."""
 
         if not self._outputs:
             raise Exception("Has OffshoreSubstationDesign been ran yet?")

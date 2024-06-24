@@ -1,6 +1,4 @@
-"""
-Testing framework for the `ArrayCableInstallation` class.
-"""
+"""Testing framework for the `ArrayCableInstallation` class."""
 
 __author__ = ["Rob Hammond", "Jake Nunemaker"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -12,6 +10,7 @@ from copy import deepcopy
 
 import pandas as pd
 import pytest
+
 from ORBIT import ProjectManager
 from tests.data import test_weather
 from ORBIT.core.library import extract_library_specs
@@ -24,7 +23,9 @@ _ = simul_config.pop("array_cable_bury_vessel")
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 def test_simulation_setup(config):
     sim = ArrayCableInstallation(config)
@@ -32,7 +33,9 @@ def test_simulation_setup(config):
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 def test_vessel_initialization(config):
     sim = ArrayCableInstallation(config)
@@ -44,10 +47,14 @@ def test_vessel_initialization(config):
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging(config, weather):
     sim = ArrayCableInstallation(config, weather=weather)
@@ -62,7 +69,7 @@ def test_for_complete_logging(config, weather):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 

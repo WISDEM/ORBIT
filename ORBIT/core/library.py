@@ -38,6 +38,7 @@ import warnings
 import yaml
 import pandas as pd
 from yaml import Dumper
+
 from ORBIT.core.exceptions import LibraryItemNotFoundError
 
 ROOT = os.path.abspath(os.path.join(os.path.abspath(__file__), "../../.."))
@@ -46,12 +47,16 @@ default_library = os.path.join(ROOT, "library")
 
 # Need a custom loader to read in scientific notation correctly
 class CustomSafeLoader(yaml.SafeLoader):
+    """Custom loader that enables tuple sequences in YAML files."""
+
     def construct_python_tuple(self, node):
+        """Constructs the tuple."""
         return tuple(self.construct_sequence(node))
 
 
 CustomSafeLoader.add_constructor(
-    "tag:yaml.org,2002:python/tuple", CustomSafeLoader.construct_python_tuple
+    "tag:yaml.org,2002:python/tuple",
+    CustomSafeLoader.construct_python_tuple,
 )
 
 loader = CustomSafeLoader
@@ -97,13 +102,13 @@ def initialize_library(library_path):
         library_path = default_library
 
     if not os.path.isdir(library_path):
-        raise ValueError(f"Invalid library path.")
+        raise ValueError("Invalid library path.")
 
     os.environ["DATA_LIBRARY"] = library_path
     print(f"ORBIT library intialized at '{library_path}'")
 
 
-def extract_library_data(config, additional_keys=[]):
+def extract_library_data(config, additional_keys=None):
     """
     Extracts the configuration data from the specified library.
 
@@ -111,7 +116,7 @@ def extract_library_data(config, additional_keys=[]):
     ----------
     config : dict
         Configuration dictionary.
-    additional_keys : list
+    additional_keys : None
         Additional keys that contain data that needs to be extracted from
         within `config`, by default [].
 
@@ -120,6 +125,9 @@ def extract_library_data(config, additional_keys=[]):
     config : dict
         Configuration dictionary.
     """
+
+    if additional_keys is None:
+        additional_keys = []
 
     if os.environ.get("DATA_LIBRARY", None) is None:
         return config
@@ -191,7 +199,7 @@ def _extract_file(filepath):
     """
 
     if filepath.endswith("yaml"):
-        f = open(filepath, "r")
+        f = open(filepath)
         fyaml = yaml.load(f, Loader=loader)
         f.close()
         return fyaml
@@ -200,8 +208,7 @@ def _extract_file(filepath):
         df = pd.read_csv(filepath, index_col=False)
 
         # Drop empty rows and columns
-        df.dropna(how="all", inplace=True)
-        df.dropna(how="all", inplace=True, axis=1)
+        df = df.dropna(how="all").dropna(how="all", axis=1)
 
         # Enforce strictly lowercase and "_" separated column names
         df.columns = [el.replace(" ", "_").lower() for el in df.columns]

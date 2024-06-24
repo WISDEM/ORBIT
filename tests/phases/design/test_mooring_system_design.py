@@ -188,7 +188,7 @@ def test_custom_num_lines():
 
 
 def test_new_old_semitaut_mooring_system():
-    """Temporary test until we delete the SemiTaut_mooring_system"""
+    """Temporary test until we delete the SemiTaut_mooring_system."""
 
     config = deepcopy(base)
     config["site"]["depth"] = 900.0

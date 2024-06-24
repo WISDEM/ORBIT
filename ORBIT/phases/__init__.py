@@ -1,5 +1,6 @@
 """
-The phases package contains `DesignPhase`, `InstallPhase` and any subclasses.
+Provides `DesignPhase`, `InstallPhase` and their component-specific
+implementations.
 """
 
 __author__ = ["Jake Nunemaker", "Rob Hammond"]

@@ -110,9 +110,7 @@ class OffshoreSubstationDesign(DesignPhase):
         ) * self.num_substations
 
     def calc_substructure_length(self):
-        """
-        Calculates substructure length as the site depth + 10m
-        """
+        """Calculates substructure length as the site depth + 10m."""
 
         self.substructure_length = self.config["site"]["depth"] + 10
 
@@ -152,10 +150,11 @@ class OffshoreSubstationDesign(DesignPhase):
         capacity = num_turbines * turbine_rating
 
         self.num_substations = _design.get(
-            "num_substations", int(np.ceil(capacity / 1200))
+            "num_substations",
+            int(np.ceil(capacity / 1200)),
         )
         self.num_mpt = np.ceil(
-            num_turbines * turbine_rating / (250 * self.num_substations)
+            num_turbines * turbine_rating / (250 * self.num_substations),
         )
         self.mpt_rating = (
             round(
@@ -163,7 +162,7 @@ class OffshoreSubstationDesign(DesignPhase):
                     (num_turbines * turbine_rating * 1.15)
                     / (self.num_mpt * self.num_substations)
                 )
-                / 10.0
+                / 10.0,
             )
             * 10.0
         )
@@ -280,7 +279,8 @@ class OffshoreSubstationDesign(DesignPhase):
 
         _design = self.config.get("substation_design", {})
         oss_substructure_cost_rate = _design.get(
-            "oss_substructure_cost_rate", 3000
+            "oss_substructure_cost_rate",
+            3000,
         )
         oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
 
@@ -295,9 +295,7 @@ class OffshoreSubstationDesign(DesignPhase):
 
     @property
     def design_result(self):
-        """
-        Returns the results of self.run().
-        """
+        """Returns the results of self.run()."""
 
         if not self._outputs:
             raise Exception("Has OffshoreSubstationDesign been ran yet?")

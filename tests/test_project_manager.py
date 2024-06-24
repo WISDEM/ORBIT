@@ -4,15 +4,15 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
+import datetime as dt
 from copy import deepcopy
 
 import pandas as pd
-import datetime as dt
 import pytest
 
 from ORBIT import ProjectManager
-from ORBIT.phases import InstallPhase, DesignPhase
 from tests.data import test_weather
+from ORBIT.phases import DesignPhase, InstallPhase
 from ORBIT.manager import ProjectProgress
 from ORBIT.core.library import extract_library_specs
 from ORBIT.core.exceptions import (
@@ -27,7 +27,8 @@ weather_df = pd.DataFrame(test_weather).set_index("datetime")
 config = extract_library_specs("config", "project_manager")
 complete_project = extract_library_specs("config", "complete_project")
 
-### Top Level
+
+# Top Level
 @pytest.mark.parametrize("weather", (None, weather_df))
 def test_complete_run(weather):
 
@@ -40,7 +41,7 @@ def test_complete_run(weather):
     assert all(p in list(actions["phase"]) for p in phases)
 
 
-### Module Integrations
+# Module Integrations
 def test_for_required_phase_structure():
     """
     Automated integration test to verify that all classes listed in
@@ -60,11 +61,9 @@ def test_for_required_phase_structure():
 # TODO: Expand these tests
 
 
-### Config Management
+# Config Management
 def test_phase_specific_definitions():
-    """
-    Tests that phase specific information makes it to phase_config.
-    """
+    """Tests that phase specific information makes it to phase_config."""
 
     project = ProjectManager(config)
 
@@ -82,9 +81,7 @@ def test_phase_specific_definitions():
 
 
 def test_expected_config_merging():
-    """
-    Tests for merging of expected configs
-    """
+    """Tests for merging of expected configs."""
 
     config1 = {
         "site": {"distance": "float", "depth": "float"},
@@ -148,7 +145,7 @@ def test_find_key_match():
         assert TestProjectManager.find_key_match(f) is None
 
 
-### Overlapping Install Phases
+# Overlapping Install Phases
 def test_install_phase_start_parsing__dates():
 
     config_mixed_starts = deepcopy(config)
@@ -160,7 +157,7 @@ def test_install_phase_start_parsing__dates():
 
     project = ProjectManager(config_mixed_starts, weather=weather_df)
     defined, depends = project._parse_install_phase_values(
-        config_mixed_starts["install_phases"]
+        config_mixed_starts["install_phases"],
     )
     assert len(defined) == 2
     assert len(depends) == 1
@@ -180,13 +177,14 @@ def test_install_phase_start_parsing__ints():
 
     project = ProjectManager(config_mixed_starts, weather=weather_df)
     defined, depends = project._parse_install_phase_values(
-        config_mixed_starts["install_phases"]
+        config_mixed_starts["install_phases"],
     )
     assert len(defined) == 2
     assert len(depends) == 1
 
     assert defined["MonopileInstallation"] == 0
     assert defined["TurbineInstallation"] == 100
+
 
 @pytest.mark.parametrize("weather", (None, weather_df))
 @pytest.mark.parametrize("defined", (0, "10/22/2009"))
@@ -198,9 +196,14 @@ def test_install_phase_start_parsing__ints():
         ("days=1;hours=10", 34),
         ("weeks=1", 168),
         ("weeks=1;days=1;hours=10", 202),
-    ]
+    ],
 )
-def test_dependent_install_phases_fixed_amounts(weather, defined, amount_str, diff):
+def test_dependent_install_phases_fixed_amounts(
+    weather,
+    defined,
+    amount_str,
+    diff,
+):
 
     new = deepcopy(config)
     new["install_phases"] = {
@@ -211,7 +214,10 @@ def test_dependent_install_phases_fixed_amounts(weather, defined, amount_str, di
     project = ProjectManager(new, weather=weather)
     project.run()
 
-    diff_calc = project.phase_starts["TurbineInstallation"] - project.phase_starts["MonopileInstallation"]
+    diff_calc = (
+        project.phase_starts["TurbineInstallation"]
+        - project.phase_starts["MonopileInstallation"]
+    )
 
     assert diff_calc == diff
 
@@ -250,7 +256,10 @@ def test_dependent_install_phases_phase_dates(weather, defined, input_val):
         assert p in phase_dates
 
         for key in ["start", "end"]:
-            _ = dt.datetime.strptime(phase_dates[p][key], project.date_format_long)
+            _ = dt.datetime.strptime(
+                phase_dates[p][key],
+                project.date_format_long,
+            )
             assert True
 
 
@@ -282,11 +291,13 @@ def test_chained_dependencies():
 
 
 @pytest.mark.parametrize(
-    "m_start, t_start", [(0, 0), (0, 100), (100, 100), (100, 200)]
+    "m_start, t_start",
+    [(0, 0), (0, 100), (100, 100), (100, 200)],
 )
 def test_index_starts(m_start, t_start):
     """
-    Tests functionality related to passing index starts into 'install_phases' sub-dict.
+    Tests functionality related to passing index starts into 'install_phases'
+    sub-dict.
     """
     _target_diff = t_start - m_start
 
@@ -356,10 +367,11 @@ def test_mixed_start_date_types(m_start, t_start):
         project = ProjectManager(config_with_defined_starts, weather_df)
         project.run()
 
+
 def test_duplicate_phase_definitions():
     config_with_duplicates = deepcopy(config)
     config_with_duplicates["MonopileInstallation_1"] = {
-        "plant": {"num_turbines": 5}
+        "plant": {"num_turbines": 5},
     }
 
     config_with_duplicates["MonopileInstallation_2"] = {
@@ -410,7 +422,6 @@ def test_custom_install_phases():
     with pytest.raises(ValueError):
         ProjectManager.register_install_phase(MonopileInstallation)
 
-
     # Bad name format
     class MonopileInstallation_Custom(InstallPhase):
         pass
@@ -423,7 +434,10 @@ def test_custom_install_phases():
         pass
 
     ProjectManager.register_install_phase(CustomInstallPhase)
-    assert ProjectManager.find_key_match("CustomInstallPhase") == CustomInstallPhase
+    assert (
+        ProjectManager.find_key_match("CustomInstallPhase")
+        == CustomInstallPhase
+    )
 
 
 def test_custom_design_phases():
@@ -449,7 +463,6 @@ def test_custom_design_phases():
     with pytest.raises(ValueError):
         ProjectManager.register_install_phase(MonopileDesign)
 
-
     # Bad name format
     class MonopileDesign_Custom(DesignPhase):
         pass
@@ -462,9 +475,12 @@ def test_custom_design_phases():
         pass
 
     ProjectManager.register_design_phase(CustomDesignPhase)
-    assert ProjectManager.find_key_match("CustomDesignPhase") == CustomDesignPhase
+    assert (
+        ProjectManager.find_key_match("CustomDesignPhase") == CustomDesignPhase
+    )
 
-### Design Phase Interactions
+
+# Design Phase Interactions
 def test_design_phases():
 
     config_with_design = deepcopy(config)
@@ -489,7 +505,7 @@ def test_design_phases():
     project.run()
 
 
-### Outputs
+# Outputs
 def test_resolve_project_capacity():
 
     # Missing turbine rating
@@ -570,7 +586,7 @@ def test_resolve_project_capacity():
         _ = project6.config["plant"]["num_turbines"]
 
 
-### Exceptions
+# Exceptions
 def test_incomplete_config():
 
     incomplete_config = deepcopy(config)
@@ -705,10 +721,10 @@ def test_ProjectProgress_with_incomplete_project():
     _ = project.progress.parse_logs("Turbine")
 
     with pytest.raises(ValueError):
-        project.progress.complete_export_system
+        _ = project.progress.complete_export_system
 
     with pytest.raises(ValueError):
-        project.progress.complete_array_strings
+        _ = project.progress.complete_array_strings
 
 
 def test_ProjectProgress_with_complete_project():

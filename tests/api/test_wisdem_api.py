@@ -1,4 +1,4 @@
-"""Tests for the Monopile Wisdem API"""
+"""Tests for the Monopile Wisdem API."""
 
 __author__ = ["Jake Nunemaker"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -7,6 +7,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 import openmdao.api as om
+
 from ORBIT.api.wisdem import Orbit
 
 

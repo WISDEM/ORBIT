@@ -61,7 +61,7 @@ class OrbitEnvironment(Environment):
         constraints = self.resolve_windspeed_constraints(c)
 
         keys = set(self.state.dtype.names).intersection(
-            set(constraints.keys())
+            set(constraints.keys()),
         )
         valid = {k: v for k, v in constraints.items() if k in keys}
 
@@ -133,7 +133,7 @@ class OrbitEnvironment(Environment):
         if "windspeed" in self.state.dtype.names:
             if len(ws) > 1:
                 raise ValueError(
-                    "Multiple constraints applied to the 'windspeed' column."
+                    "Multiple constraints applied to the 'windspeed' column.",
                 )
 
             return {**constraints, "windspeed": list(ws.values())[0]}
@@ -227,10 +227,10 @@ class OrbitEnvironment(Environment):
         self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
 
     @staticmethod
-    def simplify_num(str):
+    def simplify_num(string):
         """Returns the simplest str representation of a number."""
 
-        num = float(str)
+        num = float(string)
         if int(num) == num:
             return int(num)
 

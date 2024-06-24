@@ -4,10 +4,6 @@ __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
 
-import os
-
-import pytest
-
 from ORBIT import ProjectManager, load_config, save_config
 from ORBIT.core.library import extract_library_specs
 
@@ -25,6 +21,6 @@ def test_save_and_load_equality(tmp_yaml_del):
 def test_orbit_version_ProjectManager():
 
     config = ProjectManager.compile_input_dict(
-        ["MonopileDesign", "MonopileInstallation"]
+        ["MonopileDesign", "MonopileInstallation"],
     )
     assert "orbit_version" in config.keys()

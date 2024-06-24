@@ -11,15 +11,16 @@ from collections import Counter, OrderedDict
 
 import numpy as np
 from scipy.optimize import fsolve
+
 from ORBIT.core.library import extract_library_specs
 from ORBIT.phases.design import DesignPhase
 
 
 class Cable:
-    """
-    Base cable class
+    r"""
+    Base cable class.
 
-    Attributes
+    Parameters
     ----------
     conductor_size : float
         Cable cross section in :math:`mm^2`.
@@ -61,10 +62,10 @@ class Cable:
 
     def __init__(self, cable_specs, **kwargs):
         """
-        Create an instance of Cable (either array or export)
+        Create an instance of Cable (either array or export).
 
         Parameters
-        ---------
+        ----------
         cable_specs : dict
             Dictionary containing cable specifications.
         kwargs : dict
@@ -94,9 +95,7 @@ class Cable:
         self.calc_cable_power()
 
     def calc_char_impedance(self):
-        """
-        Calculate characteristic impedance of cable.
-        """
+        """Calculate characteristic impedance of cable."""
         if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
             self.char_impedance = 0
         else:
@@ -113,21 +112,20 @@ class Cable:
             self.char_impedance = np.sqrt(num / den)
 
     def calc_power_factor(self):
-        """
-        Calculate power factor.
-        """
+        """Calculate power factor."""
 
         if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
             self.power_factor = 0
         else:
             phase_angle = math.atan(
-                np.imag(self.char_impedance) / np.real(self.char_impedance)
+                np.imag(self.char_impedance) / np.real(self.char_impedance),
             )
             self.power_factor = math.cos(phase_angle)
 
     def calc_cable_power(self):
         """
-        Calculate maximum power transfer through 3-phase cable in :math:`MW`.
+        Calculates the maximum power transfer through a 3-phase cable,
+        in :math:`MW`.
         """
 
         if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
@@ -144,9 +142,7 @@ class Cable:
             )
 
     def calc_compensation_factor(self):
-        """
-        Calculate compensation factor for shunt reactor cost
-        """
+        """Calculates the compensation factor for the shunt reactor cost."""
         capacitive_reactance = 1 / (
             2 * np.pi * self.line_frequency * (self.capacitance / 10e8)
         )
@@ -222,7 +218,7 @@ class Plant:
         if self.layout not in ("custom", "grid", "ring"):
             raise ValueError(
                 "config: site: layout should be one of "
-                "'custom', 'ring', or 'grid'."
+                "'custom', 'ring', or 'grid'.",
             )
         if self.layout != "custom":
             self._initialize_distances(config)
@@ -247,7 +243,8 @@ class Plant:
             )
 
         self.substation_distance = config["plant"].get(
-            "substation_distance", None
+            "substation_distance",
+            None,
         )
         if self.substation_distance is None:
             self.substation_distance = self.turbine_distance
@@ -309,7 +306,8 @@ class CableSystem(DesignPhase):
 
     def _initialize_cables(self):
         """
-        Creates the base cable objects for each type of array cable being used.
+        Creates the base cable objects for each type of array cable being
+        modeled.
         """
 
         if isinstance(self._design["cables"], str):
@@ -331,7 +329,7 @@ class CableSystem(DesignPhase):
             sorted(
                 self._design["cables"].items(),
                 key=lambda item: item[1]["current_capacity"],
-            )
+            ),
         )
 
         # Instantiate cables as Cable objects. Use "name" property from file
@@ -346,8 +344,8 @@ class CableSystem(DesignPhase):
         Returns the cable touchdown distance measured from the centerpoint of
         the substructure.
 
-        If depth <= 60, default is 0km (straight down assumed for fixed bottom).
-        If depth > 60, default is 0.3 * depth.
+        If depth <= 60, default is 0km (straight down assumed for fixed
+        bottom). If depth > 60, default is 0.3 * depth.
         """
 
         _design = f"{self.cable_type}_system_design"
@@ -363,7 +361,8 @@ class CableSystem(DesignPhase):
 
             else:
                 self.touchdown = depth * 0.3
-                # TODO: Update this scaling function - should be closer to cable bend radius.  Unrealistic for deep water
+                # TODO: Update this scaling function - should be closer to
+                # cable bend radius. Unrealistic for deep water
 
     @staticmethod
     def _catenary(a, *data):
@@ -391,7 +390,8 @@ class CableSystem(DesignPhase):
 
         if not np.isclose(y[-1], d):
             print(
-                "Warning: Catenary calculation failed. Reverting to simple vertical profile."
+                "Warning: Catenary calculation failed. Reverting to simple"
+                " vertical profile.",
             )
             return d
 
@@ -399,13 +399,13 @@ class CableSystem(DesignPhase):
 
     @property
     def free_cable_length(self):
-        """Returns the length of the vertical portion of a cable section in km."""
+        """Returns the vertical length of a cable section, in :mat:`km`."""
 
         _design = f"{self.cable_type}_system_design"
         depth = self.config["site"]["depth"]
         _cable_depth = self.config[_design].get("floating_cable_depth", depth)
 
-        # Select prescribed cable depth if it is less than or equal to overall water dpeth
+        # Select prescribed cable depth if it is <= overall water dpeth
         if _cable_depth > depth:
             cable_depth = depth
         else:
@@ -419,7 +419,7 @@ class CableSystem(DesignPhase):
     @property
     def cable_lengths_by_type(self):
         """
-        Creates dictionary of lists of cable sections for each type of cable
+        Creates dictionary of lists of cable sections for each type of cable.
 
         Returns
         -------

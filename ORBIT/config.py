@@ -1,3 +1,5 @@
+""""Provides the configuration loading and saving methods."""
+
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
@@ -22,7 +24,7 @@ def load_config(filepath):
         Path to yaml config file.
     """
 
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         data = yaml.load(f, Loader=loader)
 
     return data

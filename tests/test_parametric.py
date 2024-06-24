@@ -42,7 +42,10 @@ def test_weather():
     without.run()
 
     weathered = ParametricManager(
-        complete_project, params, funcs, weather=weather_df
+        complete_project,
+        params,
+        funcs,
+        weather=weather_df,
     )
     weathered.run()
 
@@ -59,7 +62,10 @@ def test_individual_phase():
     funcs = {"time": lambda phase: phase.total_phase_time}
 
     parametric = ParametricManager(
-        complete_project, params, funcs, module=TurbineInstallation
+        complete_project,
+        params,
+        funcs,
+        module=TurbineInstallation,
     )
     parametric.run()
     df = parametric.results.set_index("site.distance")
@@ -71,11 +77,14 @@ def test_bad_result_attribute():
     funcs = {"result": lambda phase: phase.nonexistent_result}
 
     parametric = ParametricManager(
-        complete_project, params, funcs, module=TurbineInstallation
+        complete_project,
+        params,
+        funcs,
+        module=TurbineInstallation,
     )
     parametric.run()
     df = parametric.results
-    assert df["result"].isnull().all()
+    assert df["result"].isna().all()
 
 
 def test_bad_result_structure():
@@ -83,7 +92,10 @@ def test_bad_result_structure():
     funcs = {"result": "bos_capex"}
 
     parametric = ParametricManager(
-        complete_project, params, funcs, module=TurbineInstallation
+        complete_project,
+        params,
+        funcs,
+        module=TurbineInstallation,
     )
 
     with pytest.raises(TypeError):
@@ -95,7 +107,10 @@ def test_product_option():
     params = {"site.distance": [20, 40, 60], "site.depth": [20, 40, 60]}
 
     parametric = ParametricManager(
-        complete_project, params, funcs, module=TurbineInstallation
+        complete_project,
+        params,
+        funcs,
+        module=TurbineInstallation,
     )
 
     assert parametric.num_runs == 3

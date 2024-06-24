@@ -69,7 +69,7 @@ def test_cable_not_found():
 
 
 @pytest.mark.parametrize(
-    "config,num_full_strings,num_partial_strings,num_turbines_full_string,num_turbines_partial_string",
+    "config,num_full_strings,num_partial_strings,num_turbines_full_string,num_turbines_partial_string",  # noqa: E501
     (
         (config_full_ring, 10, 0, 4, 0),
         (config_partial_ring, 12, 1, 4, 1),
@@ -155,7 +155,8 @@ def test_total_cable_length(config, total_length):
     array.run()
 
     val = round(
-        sum(val.sum() for val in array.cable_lengths_by_type.values()), 2
+        sum(val.sum() for val in array.cable_lengths_by_type.values()),
+        2,
     )
     assert total_length == val
 
@@ -228,7 +229,7 @@ def test_floating_calculations():
 
     no_cat_length = sim2.total_length
     assert no_cat_length == pytest.approx(
-        base_length + 2 * (200 / 1000) * number
+        base_length + 2 * (200 / 1000) * number,
     )
 
     floating_cat = deepcopy(base)

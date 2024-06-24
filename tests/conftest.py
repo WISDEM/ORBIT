@@ -1,6 +1,5 @@
 """Shared pytest settings and fixtures."""
 
-
 import os
 
 import pytest
@@ -46,7 +45,8 @@ def feeder():
 def cable_vessel():
 
     specs = extract_library_specs(
-        "array_cable_install_vessel", "test_cable_lay_vessel"
+        "array_cable_install_vessel",
+        "test_cable_lay_vessel",
     )
     return Vessel("Test Cable Vessel", specs)
 
@@ -55,7 +55,8 @@ def cable_vessel():
 def heavy_lift():
 
     specs = extract_library_specs(
-        "oss_install_vessel", "test_heavy_lift_vessel"
+        "oss_install_vessel",
+        "test_heavy_lift_vessel",
     )
     return Vessel("Test Heavy Vessel", specs)
 

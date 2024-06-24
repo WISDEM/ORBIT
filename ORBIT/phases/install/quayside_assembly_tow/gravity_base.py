@@ -10,7 +10,7 @@ from warnings import warn
 import simpy
 from marmot import le, process
 
-from ORBIT.core import Vessel, WetStorage
+from ORBIT.core import WetStorage
 from ORBIT.phases.install import InstallPhase
 
 from .common import TowingGroup, TurbineAssemblyLine, SubstructureAssemblyLine
@@ -74,12 +74,7 @@ class GravityBasedInstallation(InstallPhase):
         self.setup_simulation(**kwargs)
 
     def setup_simulation(self, **kwargs):
-        """
-        Sets up simulation infrastructure.
-        - Initializes substructure production
-        - Initializes turbine assembly processes
-        - Initializes towing groups
-        """
+        """Readies the installation processes."""
 
         self.distance = self.config["site"]["distance"]
         self.num_turbines = self.config["plant"]["num_turbines"]
@@ -99,9 +94,10 @@ class GravityBasedInstallation(InstallPhase):
 
     def initialize_substructure_production(self):
         """
-        Initializes the production of substructures at port. The number of
-        independent assembly lines and production time associated with a
-        substructure can be configured with the following parameters:
+        Initializes the production of substructures at port.
+
+        The number of independent assembly lines and production time associated
+        with a substructure can be configured with the following parameters:
 
         - self.config["substructure"]["takt_time"]
         - self.config["port"]["sub_assembly_lines"]
@@ -133,7 +129,10 @@ class GravityBasedInstallation(InstallPhase):
         self.sub_assembly_lines = []
         for i in range(lines):
             a = SubstructureAssemblyLine(
-                to_assemble, time, self.wet_storage, i + 1
+                to_assemble,
+                time,
+                self.wet_storage,
+                i + 1,
             )
 
             self.env.register(a)
@@ -142,8 +141,10 @@ class GravityBasedInstallation(InstallPhase):
 
     def initialize_turbine_assembly(self):
         """
-        Initializes turbine assembly lines. The number of independent lines
-        can be configured with the following parameters:
+        Initializes turbine assembly lines.
+
+        The number of independent lines can be configured with the following
+        parameters:
 
         - self.config["port"]["turb_assembly_lines"]
         """
@@ -166,7 +167,10 @@ class GravityBasedInstallation(InstallPhase):
         self.turbine_assembly_lines = []
         for i in range(lines):
             a = TurbineAssemblyLine(
-                self.wet_storage, self.assembly_storage, turbine, i + 1
+                self.wet_storage,
+                self.assembly_storage,
+                turbine,
+                i + 1,
             )
 
             self.env.register(a)
@@ -216,6 +220,7 @@ class GravityBasedInstallation(InstallPhase):
         """
         ** The support vessel is deprecated and an AHTS
         vessel will perform the installation with the towing group.
+
         # TODO: determine if the installation process for GBF is still
         sound.
 
@@ -241,7 +246,8 @@ class GravityBasedInstallation(InstallPhase):
         self.support_vessel = vessel
 
         station_keeping_vessels = self.config["towing_vessel_groups"].get(
-            "station_keeping_vessels", None
+            "station_keeping_vessels",
+            None,
         )
 
         if station_keeping_vessels is not None:
@@ -254,7 +260,8 @@ class GravityBasedInstallation(InstallPhase):
             )
 
         station_keeping_vessels = self.config["towing_vessel_groups"].get(
-            "ahts_vessels", 1
+            "ahts_vessels",
+            1,
         )
 
         install_gravity_base_foundations(
@@ -268,7 +275,7 @@ class GravityBasedInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """"""
+        """Compiles the detailed installation phase outputs."""
 
         return {
             "operational_delays": {
@@ -285,13 +292,13 @@ class GravityBasedInstallation(InstallPhase):
                     for k in self.installation_groups
                 },
                 self.support_vessel: self.operational_delay(
-                    str(self.support_vessel)
+                    str(self.support_vessel),
                 ),
-            }
+            },
         }
 
     def operational_delay(self, name):
-        """"""
+        """Gathers the operational delays from the logs."""
 
         actions = [a for a in self.env.actions if a["agent"] == name]
         delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
@@ -301,7 +308,13 @@ class GravityBasedInstallation(InstallPhase):
 
 @process
 def transfer_gbf_substructures_from_storage(
-    group, feed, distance, queue, towing_vessels, towing_speed, **kwargs
+    group,
+    feed,
+    distance,
+    queue,
+    towing_vessels,
+    towing_speed,
+    **kwargs,
 ):
     """
     Process logic for the towing vessel group.
@@ -325,7 +338,7 @@ def transfer_gbf_substructures_from_storage(
 
     while True:
         start = group.env.now
-        assembly = yield feed.get()
+        _ = yield feed.get()
         delay = group.env.now - start
 
         if delay > 0:
@@ -356,25 +369,32 @@ def transfer_gbf_substructures_from_storage(
                 )
 
             queue.vessel = group
-            active_start = group.env.now
+            # active_start = group.env.now
             queue.activate.succeed()
 
             # Released by WTIV when objects are depleted
             group.release = group.env.event()
             yield group.release
-            active_time = group.env.now - active_start
+            # active_time = group.env.now - active_start
 
             queue.vessel = None
             queue.activate = group.env.event()
 
         yield group.group_task(
-            "Transit", transit_time, num_vessels=towing_vessels
+            "Transit",
+            transit_time,
+            num_vessels=towing_vessels,
         )
 
 
 @process
 def install_gravity_base_foundations(
-    vessel, queue, distance, substructures, station_keeping_vessels, **kwargs
+    vessel,
+    queue,
+    distance,
+    substructures,
+    station_keeping_vessels,
+    **kwargs,
 ):
     """
     Logic that a Multi-Purpose Support Vessel uses at site to complete the
