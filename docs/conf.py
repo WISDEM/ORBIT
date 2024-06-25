@@ -7,10 +7,6 @@ National Renewable Energy Lab
 """
 
 # -- Path setup --------------------------------------------------------------
-import sys
-from pathlib import Path
-
-sys.path.insert(0, Path.resolve(".."))
 
 import ORBIT
 

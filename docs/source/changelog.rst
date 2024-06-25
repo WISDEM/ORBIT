@@ -53,6 +53,9 @@ Improvements
   onerous checks have been removed to discourage the use of
   `git commit --no-verify`. This change has also added in other rules that
   discourage Python anti-patterns and encourage modern Python usage.
+- NOTE: Users may wish to run
+  `git config blame.ignoreRevsFile .git-blame-ignore-revs` to ignore the
+  reformatting edits in their blame.
 
 1.0.8
 -----
