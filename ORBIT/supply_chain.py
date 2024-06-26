@@ -145,14 +145,14 @@ class SupplyChainManager:
         blade_mult = self.multipliers["blades"].get(blade_scenario, None)
         if blade_mult is None:
             print(
-                f"Warning: scenario '{blade_scenario}' not found for category 'blades'.",  # noqa: E501
+                f"Warning: scenario '{blade_scenario}' not found for category 'blades'."  # noqa: E501
             )
             blade_mult = 0.0
 
         nacelle_mult = self.multipliers["nacelle"].get(nacelle_scenario, None)
         if nacelle_mult is None:
             print(
-                f"Warning: scenario '{nacelle_scenario}' not found for category 'nacelle'.",  # noqa: E501
+                f"Warning: scenario '{nacelle_scenario}' not found for category 'nacelle'."  # noqa: E501
             )
             nacelle_mult = 0.0
 
@@ -174,14 +174,14 @@ class SupplyChainManager:
             tower_mult = self.multipliers["tower"].get(tower_scenario, None)
             if tower_mult is None:
                 print(
-                    f"Warning: scenario '{tower_scenario}' not found for category 'tower'.",  # noqa: E501
+                    f"Warning: scenario '{tower_scenario}' not found for category 'tower'."  # noqa: E501
                 )
                 tower_mult = 0.0
 
             tower_adder = raw_cost * self.turbine_split["tower"] * tower_mult
 
         config["project_parameters.turbine_capex"] = sum(
-            [raw_cost, blade_adder, nacelle_adder, tower_adder, tower_tariffs],
+            [raw_cost, blade_adder, nacelle_adder, tower_adder, tower_tariffs]
         )
 
         return config
@@ -212,7 +212,7 @@ class SupplyChainManager:
             mult = self.multipliers["monopile"].get(scenario, None)
             if mult is None:
                 print(
-                    f"Warning: scenario '{scenario}' not found for category 'monopile'.",  # noqa: E501
+                    f"Warning: scenario '{scenario}' not found for category 'monopile'."  # noqa: E501
                 )
                 mult = 0.0
 
@@ -249,7 +249,7 @@ class SupplyChainManager:
             mult = self.multipliers["transition_piece"].get(scenario, None)
             if mult is None:
                 print(
-                    f"Warning: scenario '{scenario}' not found for category 'transition_piece'.",  # noqa: E501
+                    f"Warning: scenario '{scenario}' not found for category 'transition_piece'."  # noqa: E501
                 )
                 mult = 0.0
 
@@ -286,7 +286,7 @@ class SupplyChainManager:
             mult = self.multipliers["oss_topside"].get(scenario, None)
             if mult is None:
                 print(
-                    f"Warning: scenario '{scenario}' not found for category 'oss_topside'.",  # noqa: E501
+                    f"Warning: scenario '{scenario}' not found for category 'oss_topside'."  # noqa: E501
                 )
                 mult = 0.0
 
@@ -312,7 +312,7 @@ class SupplyChainManager:
         mult = self.multipliers["array_cable"].get(scenario, None)
         if mult is None:
             print(
-                f"Warning: scenario '{scenario}' not found for category 'array_cable'.",  # noqa: E501  # noqa: E501
+                f"Warning: scenario '{scenario}' not found for category 'array_cable'."  # noqa: E501  # noqa: E501
             )
             mult = 0.0
 
@@ -333,7 +333,7 @@ class SupplyChainManager:
         mult = self.multipliers["export_cable"].get(scenario, None)
         if mult is None:
             print(
-                f"Warning: scenario '{scenario}' not found for category 'export_cable'.",  # noqa: E501
+                f"Warning: scenario '{scenario}' not found for category 'export_cable'."  # noqa: E501
             )
             mult = 0.0
 

@@ -94,8 +94,7 @@ class SubstructureAssemblyLine(Agent):
 
         if delay > 0:
             self.submit_action_log(
-                "Delay: No Substructure Storage Available",
-                delay,
+                "Delay: No Substructure Storage Available", delay
             )
 
     @process
@@ -188,8 +187,7 @@ class TurbineAssemblyLine(Agent):
 
             if delay > 0:
                 self.submit_action_log(
-                    "Delay: No Substructures in Wet Storage",
-                    delay,
+                    "Delay: No Substructures in Wet Storage", delay
                 )
 
             yield self.assemble_turbine()
@@ -224,12 +222,11 @@ class TurbineAssemblyLine(Agent):
 
         if delay > 0:
             self.submit_action_log(
-                "Delay: No Assembly Storage Available",
-                delay,
+                "Delay: No Assembly Storage Available", delay
             )
 
         self.submit_debug_log(
-            message="Assembly delievered to installation groups.",
+            message="Assembly delievered to installation groups."
         )
 
     @process

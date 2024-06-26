@@ -157,7 +157,7 @@ def test_install_phase_start_parsing__dates():
 
     project = ProjectManager(config_mixed_starts, weather=weather_df)
     defined, depends = project._parse_install_phase_values(
-        config_mixed_starts["install_phases"],
+        config_mixed_starts["install_phases"]
     )
     assert len(defined) == 2
     assert len(depends) == 1
@@ -177,7 +177,7 @@ def test_install_phase_start_parsing__ints():
 
     project = ProjectManager(config_mixed_starts, weather=weather_df)
     defined, depends = project._parse_install_phase_values(
-        config_mixed_starts["install_phases"],
+        config_mixed_starts["install_phases"]
     )
     assert len(defined) == 2
     assert len(depends) == 1
@@ -371,7 +371,7 @@ def test_mixed_start_date_types(m_start, t_start):
 def test_duplicate_phase_definitions():
     config_with_duplicates = deepcopy(config)
     config_with_duplicates["MonopileInstallation_1"] = {
-        "plant": {"num_turbines": 5},
+        "plant": {"num_turbines": 5}
     }
 
     config_with_duplicates["MonopileInstallation_2"] = {

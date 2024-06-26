@@ -155,8 +155,7 @@ def test_total_cable_length(config, total_length):
     array.run()
 
     val = round(
-        sum(val.sum() for val in array.cable_lengths_by_type.values()),
-        2,
+        sum(val.sum() for val in array.cable_lengths_by_type.values()), 2
     )
     assert total_length == val
 
@@ -229,7 +228,7 @@ def test_floating_calculations():
 
     no_cat_length = sim2.total_length
     assert no_cat_length == pytest.approx(
-        base_length + 2 * (200 / 1000) * number,
+        base_length + 2 * (200 / 1000) * number
     )
 
     floating_cat = deepcopy(base)

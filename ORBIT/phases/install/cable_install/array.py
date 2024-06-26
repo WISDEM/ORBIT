@@ -49,7 +49,7 @@ class ArrayCableInstallation(InstallPhase):
                 "name (variable)": {
                     "linear_density": "t/km",
                     "cable_sections": [
-                        ("length, km", "int", "speed, km/h (optional)"),
+                        ("length, km", "int", "speed, km/h (optional)")
                     ],
                 },
             },
@@ -248,7 +248,7 @@ def install_array_cables(
                     break
 
         vessel.submit_debug_log(
-            message="Array cable trench digging process completed!",
+            message="Array cable trench digging process completed!"
         )
 
     # Cable Lay Process
@@ -329,7 +329,7 @@ def install_array_cables(
     # Burial Process
     if burial_vessel is None:
         vessel.submit_debug_log(
-            message="Array cable lay/burial process completed!",
+            message="Array cable lay/burial process completed!"
         )
 
     else:

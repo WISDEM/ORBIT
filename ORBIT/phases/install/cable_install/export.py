@@ -169,16 +169,14 @@ class ExportCableInstallation(InstallPhase):
         """
 
         construction_time = self.config["export_system"].get(
-            "onshore_construction_time",
-            0.0,
+            "onshore_construction_time", 0.0
         )
         construction_cost = self.config["export_system"].get(
-            "onshore_construction_cost",
-            None,
+            "onshore_construction_cost", None
         )
         if construction_cost is None:
             construction_cost = self.calculate_onshore_transmission_cost(
-                **kwargs,
+                **kwargs
             )
 
         if construction_time:
@@ -485,5 +483,5 @@ def dig_export_cables_trench(vessel, distance, **kwargs):
     yield dig_trench(vessel, distance, **kwargs)
 
     vessel.submit_debug_log(
-        message="Export cable trench digging process completed!",
+        message="Export cable trench digging process completed!"
     )

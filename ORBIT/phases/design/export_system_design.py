@@ -60,7 +60,7 @@ class ExportSystemDesign(CableSystem):
                 "cable_power": "MW",
             },
             "landfall": {"interconnection_distance": "km"},
-        },
+        }
     }
 
     def __init__(self, config, **kwargs):
@@ -99,8 +99,7 @@ class ExportSystemDesign(CableSystem):
             _landfall = self.config["export_system_design"].get("landfall", {})
 
         self._distance_to_interconnection = _landfall.get(
-            "interconnection_distance",
-            3,
+            "interconnection_distance", 3
         )
 
     def run(self):
@@ -220,10 +219,10 @@ class ExportSystemDesign(CableSystem):
                 "landfall": {
                     "interconnection_distance": (
                         self._distance_to_interconnection
-                    ),
+                    )
                 },
                 "system_cost": self.total_cost,
-            },
+            }
         }
 
         for cable in self.cables.values():

@@ -144,7 +144,6 @@ select = [
   "BLE",
   "B",
   "A",
-  "COM",
   "NPY",
   "PD",
   "PTH",

@@ -161,7 +161,7 @@ class JackingSys:
 
         elif depth > self.max_depth:
             raise Exception(
-                f"{depth} is beyond the operating depth {self.max_depth}",
+                f"{depth} is beyond the operating depth {self.max_depth}"
             )
 
         elif depth > extension:
@@ -398,7 +398,7 @@ class CableCarousel(simpy.Container):
             proposed = length * cable.linear_density
             if proposed > self.available_mass:
                 raise ValueError(
-                    f"Length {length} of {cable} can't be loaded.",
+                    f"Length {length} of {cable} can't be loaded."
                 )
 
             self.put(length)

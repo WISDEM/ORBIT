@@ -76,7 +76,7 @@ def test_TurbineAssemblyLine(env, num, assigned):
 
     df = pd.DataFrame(env.actions)
     assert len(df.loc[df["action"] == "Mechanical Completion"]) == len(
-        assigned,
+        assigned
     )
 
 

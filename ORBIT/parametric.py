@@ -148,7 +148,7 @@ class ParametricManager:
             except TypeError as exc:
                 raise TypeError(
                     f"Result function '{f}' not structured properly. "
-                    f"Correct format: 'lambda project: project.{f}'",
+                    f"Correct format: 'lambda project: project.{f}'"
                 ) from exc
 
             except AttributeError:

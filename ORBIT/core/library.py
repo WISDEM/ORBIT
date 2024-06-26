@@ -118,7 +118,7 @@ def extract_library_data(config, additional_keys=None):
     ----------
     config : dict
         Configuration dictionary.
-    additional_keys : None
+    additional_keys : list | None
         Additional keys that contain data that needs to be extracted from
         within `config`, by default [].
 

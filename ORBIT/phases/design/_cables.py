@@ -118,7 +118,7 @@ class Cable:
             self.power_factor = 0
         else:
             phase_angle = math.atan(
-                np.imag(self.char_impedance) / np.real(self.char_impedance),
+                np.imag(self.char_impedance) / np.real(self.char_impedance)
             )
             self.power_factor = math.cos(phase_angle)
 
@@ -218,7 +218,7 @@ class Plant:
         if self.layout not in ("custom", "grid", "ring"):
             raise ValueError(
                 "config: site: layout should be one of "
-                "'custom', 'ring', or 'grid'.",
+                "'custom', 'ring', or 'grid'."
             )
         if self.layout != "custom":
             self._initialize_distances(config)
@@ -329,7 +329,7 @@ class CableSystem(DesignPhase):
             sorted(
                 self._design["cables"].items(),
                 key=lambda item: item[1]["current_capacity"],
-            ),
+            )
         )
 
         # Instantiate cables as Cable objects. Use "name" property from file
@@ -391,7 +391,7 @@ class CableSystem(DesignPhase):
         if not np.isclose(y[-1], d):
             print(
                 "Warning: Catenary calculation failed. Reverting to simple"
-                " vertical profile.",
+                " vertical profile."
             )
             return d
 

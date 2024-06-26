@@ -145,7 +145,7 @@ class SparDesign(DesignPhase):
         mass = exp(
             3.58
             + 0.196 * (rating**0.5) * log(rating)
-            + 0.00001 * depth * log(depth),
+            + 0.00001 * depth * log(depth)
         )
 
         return mass

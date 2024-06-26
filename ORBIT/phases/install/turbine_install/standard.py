@@ -315,7 +315,7 @@ def solo_install_turbines(
                 # the job is done
                 if not vessel.storage.items:
                     vessel.submit_debug_log(
-                        message="Item not found. Shutting down.",
+                        message="Item not found. Shutting down."
                     )
                     break
 
@@ -333,8 +333,7 @@ def solo_install_turbines(
                 for i in range(tower_sections):
                     # Get tower section
                     section = yield vessel.get_item_from_storage(
-                        "TowerSection",
-                        **kwargs,
+                        "TowerSection", **kwargs
                     )
 
                     # Install tower section
@@ -348,8 +347,7 @@ def solo_install_turbines(
 
                 # Get turbine nacelle
                 nacelle = yield vessel.get_item_from_storage(
-                    "Nacelle",
-                    **kwargs,
+                    "Nacelle", **kwargs
                 )
 
                 # Install nacelle

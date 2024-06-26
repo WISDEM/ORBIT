@@ -135,8 +135,7 @@ class JacketInstallation(InstallPhase):
 
             items = [jacket, self.tp] if self.tp else [jacket]
             delivery_time = self.supply_chain.get(
-                "substructure_delivery_time",
-                168,
+                "substructure_delivery_time", 168
             )
             # storage = self.supply_chain.get("substructure_storage", "inf")
             supply_chain = SubstructureDelivery(
@@ -146,8 +145,7 @@ class JacketInstallation(InstallPhase):
                 self.port,
                 items,
                 num_parallel=self.supply_chain.get(
-                    "num_substructures_delivered",
-                    1,
+                    "num_substructures_delivered", 1
                 ),
             )
 
@@ -194,9 +192,9 @@ class JacketInstallation(InstallPhase):
             min(
                 np.floor(self.wtiv.storage.max_cargo_mass / self.set_mass),
                 np.floor(
-                    self.wtiv.storage.max_deck_space / self.set_deck_space,
+                    self.wtiv.storage.max_deck_space / self.set_deck_space
                 ),
-            ),
+            )
         )
 
         solo_install_jackets(
@@ -227,13 +225,13 @@ class JacketInstallation(InstallPhase):
         self.sets_per_trip = int(
             min(
                 np.floor(
-                    self.feeders[0].storage.max_cargo_mass / self.set_mass,
+                    self.feeders[0].storage.max_cargo_mass / self.set_mass
                 ),
                 np.floor(
                     self.feeders[0].storage.max_deck_space
-                    / self.set_deck_space,
+                    / self.set_deck_space
                 ),
-            ),
+            )
         )
 
         install_jackets_from_queue(
@@ -371,7 +369,7 @@ def solo_install_jackets(
                 # the job is done
                 if not vessel.storage.items:
                     vessel.submit_debug_log(
-                        message="Item not found. Shutting down.",
+                        message="Item not found. Shutting down."
                     )
                     break
 

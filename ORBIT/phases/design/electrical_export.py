@@ -124,24 +124,20 @@ class ElectricalDesign(CableSystem):
             _landfall = self.config["export_system_design"].get("landfall", {})
 
         self._distance_to_interconnection = _landfall.get(
-            "interconnection_distance",
-            3,
+            "interconnection_distance", 3
         )
 
         self.export_system_design = self.config["export_system_design"]
         self.offshore_substation_design = self.config.get(
-            "substation_design",
-            {},
+            "substation_design", {}
         )
 
         self.substructure_type = self.offshore_substation_design.get(
-            "oss_substructure_type",
-            "Monopile",
+            "oss_substructure_type", "Monopile"
         )
 
         self.onshore_substation_design = self.config.get(
-            "onshore_substation_design",
-            {},
+            "onshore_substation_design", {}
         )
 
         self._outputs = {}
@@ -160,9 +156,7 @@ class ElectricalDesign(CableSystem):
 
         self._outputs["export_system"] = {
             "landfall": {
-                "interconnection_distance": (
-                    self._distance_to_interconnection
-                ),
+                "interconnection_distance": (self._distance_to_interconnection)
             },
             "system_cost": self.total_cable_cost,
         }
@@ -327,12 +321,10 @@ class ElectricalDesign(CableSystem):
     def calc_crossing_cost(self):
         """Compute cable crossing costs."""
         self._crossing_design = self.config["export_system_design"].get(
-            "cable_crossings",
-            {},
+            "cable_crossings", {}
         )
         self.crossing_cost = self._crossing_design.get(
-            "crossing_unit_cost",
-            500000,
+            "crossing_unit_cost", 500000
         ) * self._crossing_design.get("crossing_number", 0)
 
         """SUBSTATION"""
@@ -356,14 +348,12 @@ class ElectricalDesign(CableSystem):
 
         # HVAC substation capacity
         _substation_capacity = self.offshore_substation_design.get(
-            "substation_capacity",
-            1200,
+            "substation_capacity", 1200
         )  # MW
 
         if "HVDC" in self.cable.cable_type:
             self.num_substations = self.offshore_substation_design.get(
-                "num_substations",
-                int(self.num_cables / 2),
+                "num_substations", int(self.num_cables / 2)
             )
         else:
             self.num_substations = self.offshore_substation_design.get(
@@ -483,14 +473,12 @@ class ElectricalDesign(CableSystem):
 
         if self.cable.cable_type == "HVDC-monopole":
             self.converter_cost = self.num_substations * self._design.get(
-                "converter_cost",
-                127e6,
+                "converter_cost", 127e6
             )
 
         elif self.cable.cable_type == "HVDC-bipole":
             self.converter_cost = self.num_substations * self._design.get(
-                "converter_cost",
-                296e6,
+                "converter_cost", 296e6
             )
         else:
             self.converter_cost = 0
@@ -505,8 +493,7 @@ class ElectricalDesign(CableSystem):
         """
 
         topside_assembly_factor = self.offshore_substation_design.get(
-            "topside_assembly_factor",
-            0.075,
+            "topside_assembly_factor", 0.075
         )
 
         self.land_assembly_cost = (
@@ -526,12 +513,10 @@ class ElectricalDesign(CableSystem):
         """
 
         oss_pile_cost_rate = self.offshore_substation_design.get(
-            "oss_pile_cost_rate",
-            0,
+            "oss_pile_cost_rate", 0
         )
         oss_substructure_cost_rate = self.offshore_substation_design.get(
-            "oss_substructure_cost_rate",
-            3000,
+            "oss_substructure_cost_rate", 3000
         )
 
         # Substructure mass components calculated by curve fits in
@@ -619,8 +604,7 @@ class ElectricalDesign(CableSystem):
         _shunt_unit_cost = _design.get("shunt_unit_cost", 1.3e4)  # per cable
         _switchgear_cost = _design.get("switchgear_cost", 9.33e6)  # per cable
         _compensation_rate = _design.get(
-            "compensation_rate",
-            31.3e6,
+            "compensation_rate", 31.3e6
         )  # per cable
 
         self.onshore_shunt_reactor_cost = (
@@ -634,8 +618,7 @@ class ElectricalDesign(CableSystem):
             )
             self.onshore_switchgear_cost = 0
             self.onshore_construction = self.num_substations * _design.get(
-                "onshore_construction_rate",
-                87.3e6,
+                "onshore_construction_rate", 87.3e6
             )
             self.onshore_compensation_cost = 0
 
@@ -646,8 +629,7 @@ class ElectricalDesign(CableSystem):
             )
             self.onshore_switchgear_cost = 0
             self.onshore_construction = self.num_substations * _design.get(
-                "onshore_construction_rate",
-                100e6,
+                "onshore_construction_rate", 100e6
             )
             self.onshore_compensation_cost = 0
 
@@ -655,8 +637,7 @@ class ElectricalDesign(CableSystem):
             self.onshore_converter_cost = 0
             self.onshore_switchgear_cost = self.num_cables * _switchgear_cost
             self.onshore_construction = self.num_substations * _design.get(
-                "onshore_construction_rate",
-                5e6,
+                "onshore_construction_rate", 5e6
             )
             self.onshore_compensation_cost = (
                 self.num_cables * _compensation_rate

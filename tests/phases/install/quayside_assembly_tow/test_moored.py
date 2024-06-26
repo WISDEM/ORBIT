@@ -88,7 +88,7 @@ def test_for_complete_logging(weather, config):
     _ = sim.detailed_output
 
     installed_mooring_lines = len(
-        [a for a in sim.env.actions if a["action"] == "Position Substructure"],
+        [a for a in sim.env.actions if a["action"] == "Position Substructure"]
     )
     assert installed_mooring_lines == sim.num_turbines
 

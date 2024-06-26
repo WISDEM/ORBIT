@@ -46,7 +46,7 @@ class MooringSystemDesign(DesignPhase):
             "anchor_type": "str",
             "anchor_cost": "USD",
             "system_cost": "USD",
-        },
+        }
     }
 
     def __init__(self, config, **kwargs):
@@ -112,24 +112,21 @@ class MooringSystemDesign(DesignPhase):
             self.line_diam = 0.09
             self.line_mass_per_m = 0.161
             self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate",
-                399.0,
+                "mooring_line_cost_rate", 399.0
             )
 
         elif fit <= 0.12:
             self.line_diam = 0.12
             self.line_mass_per_m = 0.288
             self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate",
-                721.0,
+                "mooring_line_cost_rate", 721.0
             )
 
         else:
             self.line_diam = 0.15
             self.line_mass_per_m = 0.450
             self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate",
-                1088.0,
+                "mooring_line_cost_rate", 1088.0
             )
 
     def calculate_breaking_load(self):

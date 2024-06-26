@@ -84,7 +84,7 @@ class ScourProtectionInstallation(InstallPhase):
             )
 
         self.tonnes_per_substructure = ceil(
-            self.config["scour_protection"]["tonnes_per_substructure"],
+            self.config["scour_protection"]["tonnes_per_substructure"]
         )
 
         self.cost_per_tonne = self.config["scour_protection"]["cost_per_tonne"]

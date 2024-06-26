@@ -120,7 +120,7 @@ class ScourProtectionDesign(DesignPhase):
         )
 
         self.scour_protection_tonnes = ceil(
-            self.rock_density * volume / 1000.0,
+            self.rock_density * volume / 1000.0
         )
 
     def run(self):

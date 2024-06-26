@@ -161,7 +161,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
 
             if not port.items:
                 vessel.submit_debug_log(
-                    message="No items at port. Shutting down.",
+                    message="No items at port. Shutting down."
                 )
                 break
 
@@ -179,7 +179,7 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
                 # the job is done
                 if not vessel.storage.items:
                     vessel.submit_debug_log(
-                        message="Items not found. Shutting down.",
+                        message="Items not found. Shutting down."
                     )
                     break
 

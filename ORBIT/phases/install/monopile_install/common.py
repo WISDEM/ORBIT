@@ -363,7 +363,7 @@ def install_transition_piece(vessel, tp, **kwargs):
     else:
         raise Exception(
             f"Transition piece connection type '{connection}'"
-            "not recognized. Must be 'bolted' or 'grouted'.",
+            "not recognized. Must be 'bolted' or 'grouted'."
         )
 
     yield jackdown_if_required(vessel, **kwargs)

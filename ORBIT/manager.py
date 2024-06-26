@@ -226,12 +226,12 @@ class ProjectManager:
         if not issubclass(phase, DesignPhase):
             raise ValueError(
                 "Registered design phase must be a subclass of "
-                "'ORBIT.phases.DesignPhase'.",
+                "'ORBIT.phases.DesignPhase'."
             )
 
         if phase.__name__ in [c.__name__ for c in cls._design_phases]:
             raise ValueError(
-                f"A phase with name '{phase.__name__}' already exists.",
+                f"A phase with name '{phase.__name__}' already exists."
             )
 
         if len(re.split("[_ ]", phase.__name__)) > 1:
@@ -252,12 +252,12 @@ class ProjectManager:
         if not issubclass(phase, InstallPhase):
             raise ValueError(
                 "Registered install phase must be a subclass of "
-                "'ORBIT.phases.InstallPhase'.",
+                "'ORBIT.phases.InstallPhase'."
             )
 
         if phase.__name__ in [c.__name__ for c in cls._install_phases]:
             raise ValueError(
-                f"A phase with name '{phase.__name__}' already exists.",
+                f"A phase with name '{phase.__name__}' already exists."
             )
 
         if len(re.split("[_ ]", phase.__name__)) > 1:
@@ -365,7 +365,7 @@ class ProjectManager:
         if all((project_capacity, turbine_rating, num_turbines)):
             if project_capacity != (turbine_rating * num_turbines):
                 raise AttributeError(
-                    "Input and calculated project capacity don't match.",
+                    "Input and calculated project capacity don't match."
                 )
 
         else:
@@ -683,8 +683,7 @@ class ProjectManager:
             overwrite=False,
         )
         self.detailed_outputs = self.merge_dicts(
-            self.detailed_outputs,
-            phase.detailed_output,
+            self.detailed_outputs, phase.detailed_output
         )
 
     def run_multiple_phases_in_serial(self, phase_list, **kwargs):
@@ -820,7 +819,7 @@ class ProjectManager:
 
             if (perc < 0.0) or (perc > 1.0):
                 raise ValueError(
-                    "Dependent phase perc must be between 0. and 1.",
+                    "Dependent phase perc must be between 0. and 1."
                 )
 
             return start + elapsed * perc
@@ -832,7 +831,7 @@ class ProjectManager:
                     **{
                         v.split("=")[0].strip(): float(v.split("=")[1])
                         for v in perc.split(";")
-                    },
+                    }
                 )
 
                 return start + delta.days * 24 + delta.seconds / 3600
@@ -841,14 +840,14 @@ class ProjectManager:
                 raise ValueError(
                     "Dependent phase amount must be defined with this"
                     " format: 'weeks=1;hours=12'. Accepted entries: 'weeks',"
-                    " 'days', 'hours'.",
+                    " 'days', 'hours'."
                 ) from exc
 
         else:
             raise ValueError(
                 f"Unrecognized dependent phase amount: '{perc}'. "
                 f"Must be float between 0. and 1.0 or str with format "
-                "'weeks=1;days=0;hours=12'",
+                "'weeks=1;days=0;hours=12'"
             )
 
     @staticmethod
@@ -916,7 +915,7 @@ class ProjectManager:
                 "Defined start date types can't be mixed."
                 " All must be an int (index location) or str (format:"
                 " '%m/%d/%Y'). This does not apply to the dependent phases"
-                " defined as tuples.",
+                " defined as tuples."
             )
 
         for k, v in defined.items():
@@ -1185,8 +1184,7 @@ class ProjectManager:
         """Returns a summary of progress by month."""
 
         arr = np.array(
-            self.progress_logs,
-            dtype=[("progress", "U32"), ("time", "i4")],
+            self.progress_logs, dtype=[("progress", "U32"), ("time", "i4")]
         )
         dig = np.digitize(arr["time"], self.month_bins)
 
@@ -1194,8 +1192,7 @@ class ProjectManager:
         for i in range(1, len(self.month_bins)):
 
             unique, counts = np.unique(
-                arr["progress"][dig == i],
-                return_counts=True,
+                arr["progress"][dig == i], return_counts=True
             )
             summary[i] = dict(zip(unique, counts))
 
@@ -1233,7 +1230,7 @@ class ProjectManager:
 
             except TypeError:
                 start = self.start_date + dt.timedelta(
-                    hours=self.phase_starts[phase],
+                    hours=self.phase_starts[phase]
                 )
 
             end = start + dt.timedelta(hours=self.phase_times[phase])
@@ -1257,7 +1254,7 @@ class ProjectManager:
                 v
                 for k, v in self.phase_times.items()
                 if k in self.config["install_phases"] and isinstance(v, Number)
-            ],
+            ]
         )
         return res
 
@@ -1337,7 +1334,7 @@ class ProjectManager:
         """Returns CapEx breakdown by category."""
 
         unique = np.unique(
-            [*self.system_costs.keys(), *self.installation_costs.keys()],
+            [*self.system_costs.keys(), *self.installation_costs.keys()]
         )
         categories = {}
 
@@ -1351,7 +1348,7 @@ class ProjectManager:
         if missing:
             print(
                 f"Warning: CapEx category not found for {missing}. "
-                f"Added to 'Misc.'",
+                f"Added to 'Misc.'"
             )
 
             for phase in missing:
@@ -1420,7 +1417,7 @@ class ProjectManager:
             raise KeyError(
                 "Total turbine CAPEX can't be calculated. Required "
                 "parameters 'plant.num_turbines' or 'turbine.turbine_rating' "
-                "not found.",
+                "not found."
             ) from exc
 
         capex = _capex * num_turbines * rating * 1000
@@ -1484,12 +1481,10 @@ class ProjectManager:
         site_auction = self.project_params.get("site_auction_price", 100e6)
         site_assessment = self.project_params.get("site_assessment_cost", 50e6)
         construction_plan = self.project_params.get(
-            "construction_plan_cost",
-            1e6,
+            "construction_plan_cost", 1e6
         )
         installation_plan = self.project_params.get(
-            "installation_plan_cost",
-            0.25e6,
+            "installation_plan_cost", 0.25e6
         )
 
         return sum(
@@ -1498,7 +1493,7 @@ class ProjectManager:
                 site_assessment,
                 construction_plan,
                 installation_plan,
-            ],
+            ]
         )
 
     @property
@@ -1576,7 +1571,7 @@ class ProjectManager:
         else:
             raise ValueError(
                 f"Unrecognized level '{level}'."
-                " Must be 'ACTION' or 'DEBUG'.",
+                " Must be 'ACTION' or 'DEBUG'."
             )
 
         out.to_csv(filepath, index=False)

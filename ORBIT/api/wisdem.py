@@ -508,7 +508,7 @@ class OrbitWisdem(om.ExplicitComponent):
                 "depth": float(inputs["site_depth"]),
                 "distance": float(inputs["site_distance"]),
                 "distance_to_landfall": float(
-                    inputs["site_distance_to_landfall"],
+                    inputs["site_distance_to_landfall"]
                 ),
                 "mean_windspeed": float(inputs["site_mean_windspeed"]),
             },
@@ -523,7 +523,7 @@ class OrbitWisdem(om.ExplicitComponent):
                 "row_spacing": float(inputs["plant_row_spacing"]),
                 "turbine_spacing": float(inputs["plant_turbine_spacing"]),
                 "substation_distance": float(
-                    inputs["plant_substation_distance"],
+                    inputs["plant_substation_distance"]
                 ),
             },
             # Turbine + components
@@ -564,7 +564,7 @@ class OrbitWisdem(om.ExplicitComponent):
             "export_system_design": {
                 "cables": "XLPE_1000mm_220kV",
                 "interconnection_distance": float(
-                    inputs["interconnection_distance"],
+                    inputs["interconnection_distance"]
                 ),
                 "percent_added_length": 0.1,
             },
@@ -583,20 +583,20 @@ class OrbitWisdem(om.ExplicitComponent):
             # Project development costs
             "project_development": {
                 "site_auction_price": float(
-                    inputs["site_auction_price"],
+                    inputs["site_auction_price"]
                 ),  # 100e6,
                 "site_assessment_plan_cost": float(
-                    inputs["site_assessment_plan_cost"],
+                    inputs["site_assessment_plan_cost"]
                 ),  # 1e6,
                 "site_assessment_cost": float(
-                    inputs["site_assessment_cost"],
+                    inputs["site_assessment_cost"]
                 ),  # 25e6,
                 "construction_operations_plan_cost": float(
-                    inputs["construction_operations_plan_cost"],
+                    inputs["construction_operations_plan_cost"]
                 ),  # 2.5e6,
                 "boem_review_cost": float(inputs["boem_review_cost"]),  # 0,
                 "design_install_plan_cost": float(
-                    inputs["design_install_plan_cost"],
+                    inputs["design_install_plan_cost"]
                 ),  # 2.5e6
             },
             # Other
@@ -673,7 +673,7 @@ class OrbitWisdem(om.ExplicitComponent):
                 "towing_vessel_groups": {
                     "towing_vessels": int(discrete_inputs["num_towing"]),
                     "station_keeping_vessels": int(
-                        discrete_inputs["num_station_keeping"],
+                        discrete_inputs["num_station_keeping"]
                     ),
                     "ahts_vessels": int(discrete_inputs["ahts_vessels"]),
                 },
@@ -690,10 +690,10 @@ class OrbitWisdem(om.ExplicitComponent):
         if floating_flag:
             config["port"] = {
                 "sub_assembly_lines": int(
-                    discrete_inputs["num_assembly_lines"],
+                    discrete_inputs["num_assembly_lines"]
                 ),
                 "turbine_assembly_cranes": int(
-                    discrete_inputs["num_port_cranes"],
+                    discrete_inputs["num_port_cranes"]
                 ),
                 "monthly_rate": float(inputs["port_cost_per_month"]),
             }
@@ -747,7 +747,7 @@ class OrbitWisdem(om.ExplicitComponent):
                     "deck_space": 0.25
                     * float(
                         inputs["monopile_diameter"]
-                        * inputs["monopile_length"],
+                        * inputs["monopile_length"]
                     ),
                     "mass": float(inputs["monopile_mass"]),
                     "unit_cost": float(inputs["monopile_cost"]),

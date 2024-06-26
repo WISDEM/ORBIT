@@ -65,20 +65,16 @@ def install_piles(vessel, jacket, **kwargs):
     """
 
     reposition_time = kwargs.get(
-        "jacket_vessel_reposition",
-        pt["jacket_vessel_reposition"],
+        "jacket_vessel_reposition", pt["jacket_vessel_reposition"]
     )
     position_pile_time = kwargs.get(
-        "jacket_position_pile",
-        pt["jacket_position_pile"],
+        "jacket_position_pile", pt["jacket_position_pile"]
     )
     drive_time = kwargs.get(
-        "jacket_pile_drive_time",
-        pt["jacket_pile_drive_time"],
+        "jacket_pile_drive_time", pt["jacket_pile_drive_time"]
     )
     pin_template_time = kwargs.get(
-        "jacket_pin_template_time",
-        pt["jacket_pin_template_time"],
+        "jacket_pin_template_time", pt["jacket_pin_template_time"]
     )
 
     num_legs = int(jacket.num_legs)
@@ -128,12 +124,10 @@ def install_suction_buckets(vessel, jacket, **kwargs):
     """
 
     reposition_time = kwargs.get(
-        "jacket_vessel_reposition",
-        pt["jacket_vessel_reposition"],
+        "jacket_vessel_reposition", pt["jacket_vessel_reposition"]
     )
     install_time = kwargs.get(
-        "jacket_suction_bucket",
-        pt["jacket_suction_bucket"],
+        "jacket_suction_bucket", pt["jacket_suction_bucket"]
     )
 
     num_legs = int(jacket.num_legs)
@@ -175,7 +169,7 @@ def install_jacket(vessel, jacket, **kwargs):
 
     else:
         return ValueError(
-            "Input 'jacket.foundation_type' must be 'piles' or 'suction'.",
+            "Input 'jacket.foundation_type' must be 'piles' or 'suction'."
         )
 
     lift_time = kwargs.get("jacket_lift_time", pt["jacket_lift_time"])

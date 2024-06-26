@@ -158,7 +158,7 @@ def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
                 # the job is done
                 if not vessel.storage.items:
                     vessel.submit_debug_log(
-                        message="Item not found. Shutting down.",
+                        message="Item not found. Shutting down."
                     )
                     break
 
@@ -173,8 +173,7 @@ def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
             if vessel.storage.items:
 
                 system = yield vessel.get_item_from_storage(
-                    "MooringSystem",
-                    **kwargs,
+                    "MooringSystem", **kwargs
                 )
                 for _ in range(system.num_lines):
                     yield position_onsite(vessel, **kwargs)

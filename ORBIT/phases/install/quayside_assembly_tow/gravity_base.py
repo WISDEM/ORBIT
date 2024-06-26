@@ -246,8 +246,7 @@ class GravityBasedInstallation(InstallPhase):
         self.support_vessel = vessel
 
         station_keeping_vessels = self.config["towing_vessel_groups"].get(
-            "station_keeping_vessels",
-            None,
+            "station_keeping_vessels", None
         )
 
         if station_keeping_vessels is not None:
@@ -260,8 +259,7 @@ class GravityBasedInstallation(InstallPhase):
             )
 
         station_keeping_vessels = self.config["towing_vessel_groups"].get(
-            "ahts_vessels",
-            1,
+            "ahts_vessels", 1
         )
 
         install_gravity_base_foundations(
@@ -292,7 +290,7 @@ class GravityBasedInstallation(InstallPhase):
                     for k in self.installation_groups
                 },
                 self.support_vessel: self.operational_delay(
-                    str(self.support_vessel),
+                    str(self.support_vessel)
                 ),
             },
         }

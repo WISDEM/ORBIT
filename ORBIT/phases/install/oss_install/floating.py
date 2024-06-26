@@ -124,12 +124,10 @@ class FloatingSubstationInstallation(InstallPhase):
 
         self.wet_storage = WetStorage(self.env, float("inf"))
         takt_time = self.config["offshore_substation_substructure"].get(
-            "takt_time",
-            0,
+            "takt_time", 0
         )
         attach_time = self.config["offshore_substation_topside"].get(
-            "attach_time",
-            24,
+            "attach_time", 24
         )
         to_assemble = [1] * self.num_substations
 
@@ -149,8 +147,7 @@ class FloatingSubstationInstallation(InstallPhase):
 
         support = self.config["oss_install_vessel"]
         vessel = self.initialize_vessel(
-            "Floating Substation Installation Vessel",
-            support,
+            "Floating Substation Installation Vessel", support
         )
         self.env.register(vessel)
         vessel.initialize(mobilize=False)
@@ -158,8 +155,7 @@ class FloatingSubstationInstallation(InstallPhase):
 
         depth = self.config["site"]["depth"]
         towing_speed = self.config["offshore_substation_substructure"].get(
-            "towing_speed",
-            6,
+            "towing_speed", 6
         )
 
         install_floating_substations(
@@ -214,8 +210,7 @@ def install_floating_substations(
         delay = vessel.env.now - start
         if delay > 0:
             vessel.submit_action_log(
-                "Delay: Waiting on Substation Assembly",
-                delay,
+                "Delay: Waiting on Substation Assembly", delay
             )
 
         yield vessel.task(
@@ -333,8 +328,7 @@ class SubstationAssemblyLine(Agent):
 
         if delay > 0:
             self.submit_action_log(
-                "Delay: No Substructure Storage Available",
-                delay,
+                "Delay: No Substructure Storage Available", delay
             )
 
     @process

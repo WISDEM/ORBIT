@@ -130,7 +130,7 @@ def test_for_complete_installation(config):
     sim.run()
 
     installed_nacelles = len(
-        [a for a in sim.env.actions if a["action"] == "Attach Nacelle"],
+        [a for a in sim.env.actions if a["action"] == "Attach Nacelle"]
     )
     assert installed_nacelles == sim.num_turbines
 
@@ -234,7 +234,7 @@ def test_multiple_tower_sections():
     sim = TurbineInstallation(config_wtiv)
     sim.run()
     baseline = len(
-        [a for a in sim.env.actions if a["action"] == "Attach Tower Section"],
+        [a for a in sim.env.actions if a["action"] == "Attach Tower Section"]
     )
 
     two_sections = deepcopy(config_wtiv)
@@ -243,7 +243,7 @@ def test_multiple_tower_sections():
     sim2 = TurbineInstallation(two_sections)
     sim2.run()
     new = len(
-        [a for a in sim2.env.actions if a["action"] == "Attach Tower Section"],
+        [a for a in sim2.env.actions if a["action"] == "Attach Tower Section"]
     )
 
     assert new == 2 * baseline

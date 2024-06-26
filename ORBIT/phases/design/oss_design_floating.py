@@ -150,11 +150,10 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
         capacity = num_turbines * turbine_rating
 
         self.num_substations = _design.get(
-            "num_substations",
-            int(np.ceil(capacity / 500)),
+            "num_substations", int(np.ceil(capacity / 500))
         )
         self.num_mpt = np.ceil(
-            num_turbines * turbine_rating / (250 * self.num_substations),
+            num_turbines * turbine_rating / (250 * self.num_substations)
         )
         self.mpt_rating = (
             round(
@@ -162,7 +161,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
                     (num_turbines * turbine_rating * 1.15)
                     / (self.num_mpt * self.num_substations)
                 )
-                / 10.0,
+                / 10.0
             )
             * 10.0
         )
@@ -279,8 +278,7 @@ class OffshoreFloatingSubstationDesign(DesignPhase):
 
         _design = self.config.get("substation_design", {})
         oss_substructure_cost_rate = _design.get(
-            "oss_substructure_cost_rate",
-            3000,
+            "oss_substructure_cost_rate", 3000
         )
         oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
 

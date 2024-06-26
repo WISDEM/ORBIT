@@ -263,8 +263,7 @@ class MooredSubInstallation(InstallPhase):
         # self.support_vessel = vessel
 
         station_keeping_vessels = self.config["towing_vessel_groups"].get(
-            "station_keeping_vessels",
-            None,
+            "station_keeping_vessels", None
         )
 
         if station_keeping_vessels is not None:

@@ -119,8 +119,7 @@ class MonopileInstallation(InstallPhase):
         if self.supply_chain.get("enabled", False):
 
             delivery_time = self.supply_chain.get(
-                "substructure_delivery_time",
-                168,
+                "substructure_delivery_time", 168
             )
             # storage = self.supply_chain.get("substructure_storage", "inf")
             supply_chain = SubstructureDelivery(
@@ -130,8 +129,7 @@ class MonopileInstallation(InstallPhase):
                 self.port,
                 [monopile, tp],
                 num_parallel=self.supply_chain.get(
-                    "num_substructures_delivered",
-                    1,
+                    "num_substructures_delivered", 1
                 ),
             )
 
@@ -172,9 +170,9 @@ class MonopileInstallation(InstallPhase):
             min(
                 np.floor(self.wtiv.storage.max_cargo_mass / self.set_mass),
                 np.floor(
-                    self.wtiv.storage.max_deck_space / self.set_deck_space,
+                    self.wtiv.storage.max_deck_space / self.set_deck_space
                 ),
-            ),
+            )
         )
 
         solo_install_monopiles(
@@ -201,13 +199,13 @@ class MonopileInstallation(InstallPhase):
         self.sets_per_trip = int(
             min(
                 np.floor(
-                    self.feeders[0].storage.max_cargo_mass / self.set_mass,
+                    self.feeders[0].storage.max_cargo_mass / self.set_mass
                 ),
                 np.floor(
                     self.feeders[0].storage.max_deck_space
-                    / self.set_deck_space,
+                    / self.set_deck_space
                 ),
-            ),
+            )
         )
 
         install_monopiles_from_queue(
@@ -359,8 +357,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
 
                 # Get monopile from internal storage
                 monopile = yield vessel.get_item_from_storage(
-                    "Monopile",
-                    **kwargs,
+                    "Monopile", **kwargs
                 )
 
                 yield upend_monopile(vessel, monopile.length, **kwargs)
@@ -368,8 +365,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
 
                 # Get transition piece from internal storage
                 tp = yield vessel.get_item_from_storage(
-                    "TransitionPiece",
-                    **kwargs,
+                    "TransitionPiece", **kwargs
                 )
 
                 yield install_transition_piece(vessel, tp, **kwargs)

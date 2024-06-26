@@ -79,7 +79,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
         depths = np.array([500, 750, 1000, 1250, 1500])
         rope_lengths = np.array([478.41, 830.34, 1229.98, 1183.93, 1079.62])
         rope_diameters = np.array(
-            [0.2, 0.2, 0.2, 0.2, 0.2],
+            [0.2, 0.2, 0.2, 0.2, 0.2]
         )  # you need the diameter for the cost data
         chain_lengths = np.array([917.11, 800.36, 609.07, 896.42, 1280.57])
         chain_diameters = np.array([0.13, 0.17, 0.22, 0.22, 0.22])
@@ -131,14 +131,14 @@ class SemiTautMooringSystemDesign(DesignPhase):
             # Wind Energy Areas, California
             depths = np.array([500, 750, 1000, 1250, 1500])
             anchor_costs = np.array(
-                [112766, 125511, 148703, 204988, 246655],
+                [112766, 125511, 148703, 204988, 246655]
             )  # [USD]
 
             # interpolate anchor cost to project depth
             depth = self.config["site"]["depth"]
             finterp_anchor_cost = interp1d(depths, anchor_costs)
             self.anchor_cost = finterp_anchor_cost(
-                depth,
+                depth
             )  # TODO: replace with interp. function based on depth of hybrid mooring line # noqa: E501
 
     def determine_mooring_line_cost(self):
@@ -149,7 +149,7 @@ class SemiTautMooringSystemDesign(DesignPhase):
         # Areas, California
         depths = np.array([500, 750, 1000, 1250, 1500])  # [m]
         total_line_costs = np.array(
-            [826598, 1221471, 1682208, 2380035, 3229700],
+            [826598, 1221471, 1682208, 2380035, 3229700]
         )  # [USD]
         finterp_total_line_cost = interp1d(depths, total_line_costs)
         depth = self.config["site"]["depth"]

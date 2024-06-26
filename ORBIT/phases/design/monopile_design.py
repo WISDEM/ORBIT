@@ -170,12 +170,10 @@ class MonopileDesign(DesignPhase):
         ]
         monopile["thickness"] = self.pile_thickness(monopile["diameter"])
         monopile["moment"] = self.pile_moment(
-            monopile["diameter"],
-            monopile["thickness"],
+            monopile["diameter"], monopile["thickness"]
         )
         monopile["embedment_length"] = self.pile_embedment_length(
-            monopile["moment"],
-            **kwargs,
+            monopile["moment"], **kwargs
         )
 
         # Total length
@@ -331,7 +329,7 @@ class MonopileDesign(DesignPhase):
 
         except KeyError as exc:
             raise Exception(
-                "Cost of transition piece steel not found.",
+                "Cost of transition piece steel not found."
             ) from exc  # noqa: E501
 
         return cost
@@ -647,7 +645,7 @@ class MonopileDesign(DesignPhase):
                 (1.35 * (U_1y - rated_windspeed)),
                 (3.3 * 0.11 * U_1y)
                 / (1 + (0.1 * rotor_diameter) / (length_scale / 8)),
-            ],
+            ]
         )
 
         return U_eog
