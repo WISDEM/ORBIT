@@ -13,8 +13,8 @@ from marmot import process
 from ORBIT.core import SubstructureDelivery
 from ORBIT.core.logic import (
     prep_for_site_operations,
-    shuttle_items_to_queue_wait,
     get_list_of_items_from_port,
+    shuttle_items_to_queue_wait,
 )
 from ORBIT.phases.install import InstallPhase
 from ORBIT.core.exceptions import ItemNotFound
@@ -106,9 +106,7 @@ class MonopileInstallation(InstallPhase):
         ) * self.config["plant"]["num_turbines"]
 
     def initialize_substructure_delivery(self):
-        """
-
-        """
+        """Creates the simulated monopile delivery model."""
 
         monopile = Monopile(**self.config["monopile"])
         tp = TransitionPiece(**self.config["transition_piece"])
@@ -145,8 +143,8 @@ class MonopileInstallation(InstallPhase):
 
     def setup_simulation(self, **kwargs):
         """
-        Sets up simulation infrastructure, routing to specific methods dependent
-        on number of feeders.
+        Sets up simulation infrastructure, routing to specific methods
+        dependent on number of feeders.
         """
 
         if self.config.get("num_feeders", None):
@@ -160,7 +158,8 @@ class MonopileInstallation(InstallPhase):
 
     def setup_simulation_without_feeders(self, **kwargs):
         """
-        Sets up infrastructure for turbine installation without feeder barges.
+        Creates the infrastructure for turbine installations without feeder
+        barges.
         """
 
         site_distance = self.config["site"]["distance"]
@@ -189,7 +188,8 @@ class MonopileInstallation(InstallPhase):
 
     def setup_simulation_with_feeders(self, **kwargs):
         """
-        Sets up infrastructure for turbine installation using feeder barges.
+        Creates the infrastructure for turbine installation using feeder
+        barges.
         """
 
         site_distance = self.config["site"]["distance"]
@@ -236,9 +236,7 @@ class MonopileInstallation(InstallPhase):
             )
 
     def initialize_wtiv(self):
-        """
-        Initializes the WTIV simulation object and the onboard vessel storage.
-        """
+        """Creates the WTIV simulation object and its onboard storage."""
 
         wtiv_specs = self.config.get("wtiv", None)
         name = wtiv_specs.get("name", "WTIV")
@@ -252,16 +250,14 @@ class MonopileInstallation(InstallPhase):
         self.wtiv = wtiv
 
     def initialize_feeders(self):
-        """
-        Initializes feeder barge objects.
-        """
+        """Initializes feeder barge objects."""
 
         number = self.config.get("num_feeders", None)
         feeder_specs = self.config.get("feeder", None)
 
         self.feeders = []
         for n in range(number):
-            name = "Feeder {}".format(n)
+            name = f"Feeder {n}"
 
             feeder = self.initialize_vessel(name, feeder_specs)
             self.env.register(feeder)
@@ -274,7 +270,8 @@ class MonopileInstallation(InstallPhase):
     def initialize_queue(self):
         """
         Initializes the queue, modeled as a ``SimPy.Resource`` that feeders
-        join at site. This limits the simulation to one active feeder at a time.
+        join at site. This limits the simulation to one active feeder at a
+        time.
         """
 
         self.active_feeder = simpy.Resource(self.env, capacity=1)
@@ -296,7 +293,7 @@ class MonopileInstallation(InstallPhase):
                 **self.agent_efficiencies,
                 **self.get_max_cargo_mass_utilzations(transport_vessels),
                 **self.get_max_deck_space_utilzations(transport_vessels),
-            }
+            },
         }
 
         return outputs
@@ -327,7 +324,10 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
             try:
                 # Get substructure + transition piece from port
                 yield get_list_of_items_from_port(
-                    vessel, port, component_list, **kwargs
+                    vessel,
+                    port,
+                    component_list,
+                    **kwargs,
                 )
 
             except ItemNotFound:
@@ -335,7 +335,7 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
                 # the job is done
                 if not vessel.storage.items:
                     vessel.submit_debug_log(
-                        message="Item not found. Shutting down."
+                        message="Item not found. Shutting down.",
                     )
                     break
 
@@ -350,7 +350,9 @@ def solo_install_monopiles(vessel, port, distance, monopiles, **kwargs):
             if vessel.storage.items:
                 # Prep for monopile install
                 yield prep_for_site_operations(
-                    vessel, survey_required=True, **kwargs
+                    vessel,
+                    survey_required=True,
+                    **kwargs,
                 )
 
                 # Get monopile from internal storage
@@ -413,12 +415,16 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
 
                 # Prep for monopile install
                 yield prep_for_site_operations(
-                    wtiv, survey_required=True, **kwargs
+                    wtiv,
+                    survey_required=True,
+                    **kwargs,
                 )
 
                 # Get monopile
                 monopile = yield wtiv.get_item_from_storage(
-                    "Monopile", vessel=queue.vessel, **kwargs
+                    "Monopile",
+                    vessel=queue.vessel,
+                    **kwargs,
                 )
 
                 yield upend_monopile(wtiv, monopile.length, **kwargs)
@@ -441,7 +447,11 @@ def install_monopiles_from_queue(wtiv, queue, monopiles, distance, **kwargs):
                 start = wtiv.env.now
                 yield queue.activate
                 delay_time = wtiv.env.now - start
-                wtiv.submit_action_log("Delay: Not enough vessels for monopiles", delay_time, location="Site")
+                wtiv.submit_action_log(
+                    "Delay: Not enough vessels for monopiles",
+                    delay_time,
+                    location="Site",
+                )
 
     # Transit to port
     wtiv.at_site = False

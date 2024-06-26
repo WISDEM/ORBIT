@@ -12,6 +12,7 @@ from itertools import groupby
 import numpy as np
 import simpy
 import pandas as pd
+
 from ORBIT.core import Port, Vessel, Environment
 from ORBIT.phases import BasePhase
 from ORBIT.core.defaults import common_costs
@@ -51,9 +52,9 @@ class InstallPhase(BasePhase):
         self.env = Environment(name=env_name, state=weather, **kwargs)
 
     def initialize_vessel(self, name, specs):
-        """"""
+        """Initializes a vessel."""
 
-        avail = getattr(self, "availability")
+        avail = self.availability
         if avail is None:
             return Vessel(name, specs)
 
@@ -67,7 +68,7 @@ class InstallPhase(BasePhase):
     @abstractmethod
     def setup_simulation(self):
         """
-        Sets up the required simulation infrastructure
+        Sets up the required simulation infrastructure.
 
         Generally, this creates the port, initializes the items to be
         installed, and initializes the vessel(s) used for the installation.
@@ -76,9 +77,7 @@ class InstallPhase(BasePhase):
         pass
 
     def initialize_port(self):
-        """
-        Initializes a Port object with N number of cranes.
-        """
+        """Initializes a Port object with N number of cranes."""
 
         self.port = Port(self.env)
 
@@ -107,8 +106,8 @@ class InstallPhase(BasePhase):
     def append_phase_info(self):
         """Appends phase information to all logs in `self.env.logs`."""
 
-        for l in self.env.logs:
-            l["phase"] = self.phase
+        for log in self.env.logs:
+            log["phase"] = self.phase
 
     @property
     def port_costs(self):
@@ -122,8 +121,12 @@ class InstallPhase(BasePhase):
         else:
             port_config = self.config.get("port", {})
             assert port_config.get("sub_assembly_lines", 1) == port_config.get(
-                "turbine_assembly_cranes", 1
-            ), "Number of substructure assembly lines is not equal to number of turbine assembly cranes"
+                "turbine_assembly_cranes",
+                1,
+            ), (
+                "Number of substructure assembly lines is not equal to number"
+                " of turbine assembly cranes"
+            )
 
             key = "port_cost_per_month"
             rate = port_config.get("monthly_rate", common_costs[key])
@@ -155,9 +158,7 @@ class InstallPhase(BasePhase):
 
     @property
     def agent_efficiencies(self):
-        """
-        Returns a summary of agent operational efficiencies.
-        """
+        """Returns a summary of agent operational efficiencies."""
 
         efficiencies = {}
 
@@ -166,7 +167,7 @@ class InstallPhase(BasePhase):
             k: sum([i["duration"] for i in list(v)])
             for k, v in groupby(s, key=lambda x: (x["agent"], x["action"]))
         }
-        agents = list(set([k[0] for k in grouped.keys()]))
+        agents = list({k[0] for k in grouped.keys()})
         for agent in agents:
             total = sum([v for k, v in grouped.items() if k[0] == agent])
 
@@ -192,7 +193,8 @@ class InstallPhase(BasePhase):
     @staticmethod
     def get_max_cargo_mass_utilzations(vessels):
         """
-        Returns a summary of cargo mass efficiencies for list of input `vessels`.
+        Returns a summary of cargo mass efficiencies for list of input
+        `vessels`.
 
         Parameters
         ----------
@@ -209,16 +211,17 @@ class InstallPhase(BasePhase):
                 print("Vessel does not have storage capacity.")
                 continue
 
-            outputs[
-                f"{name}_cargo_mass_utilization"
-            ] = vessel.max_cargo_mass_utilization
+            outputs[f"{name}_cargo_mass_utilization"] = (
+                vessel.max_cargo_mass_utilization
+            )
 
         return outputs
 
     @staticmethod
     def get_max_deck_space_utilzations(vessels):
         """
-        Returns a summary of deck space efficiencies for list of input `vessels`.
+        Returns a summary of deck space efficiencies for list of input
+        `vessels`.
 
         Parameters
         ----------
@@ -235,8 +238,8 @@ class InstallPhase(BasePhase):
                 print("Vessel does not have storage capacity.")
                 continue
 
-            outputs[
-                f"{name}_deck_space_utilization"
-            ] = vessel.max_deck_space_utilization
+            outputs[f"{name}_deck_space_utilization"] = (
+                vessel.max_deck_space_utilization
+            )
 
         return outputs

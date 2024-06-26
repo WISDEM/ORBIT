@@ -161,7 +161,7 @@ class ElectricalDesign(CableSystem):
             "system_cost": self.total_cable_cost,
         }
 
-        for _, cable in self.cables.items():
+        for cable in self.cables.values():
             self._outputs["export_system"]["cable"] = {
                 "linear_density": cable.linear_density,
                 "sections": [self.length],
@@ -233,9 +233,7 @@ class ElectricalDesign(CableSystem):
 
     @property
     def design_result(self):
-        """
-        Returns the results of self.run().
-        """
+        """Returns the results of self.run()."""
         return self._outputs
 
         # CABLES
@@ -268,9 +266,7 @@ class ElectricalDesign(CableSystem):
         self.num_cables = int(num_required + num_redundant)
 
     def compute_cable_length(self):
-        """
-        Calculates the total distance an export cable must travel.
-        """
+        """Calculates the total distance an export cable must travel."""
 
         added_length = 1.0 + self._design.get("percent_added_length", 0.0)
         self.length = round(
@@ -284,9 +280,7 @@ class ElectricalDesign(CableSystem):
         )
 
     def compute_cable_mass(self):
-        """
-        Calculates the total mass of a single length of export cable.
-        """
+        """Calculates the total mass of a single length of export cable."""
 
         self.mass = round(self.length * self.cable.linear_density, 10)
 
@@ -302,30 +296,30 @@ class ElectricalDesign(CableSystem):
     @property
     def sections_cable_lengths(self):
         """
-        Creates an array of section lengths to work with `CableSystem`
+        Creates an array of section lengths to work with ``CableSystem``.
 
         Returns
         -------
         np.ndarray
-            Array of `length` with shape (`num_cables`, ).
+            Array of `length` with shape (``num_cables``, ).
         """
         return np.full(self.num_cables, self.length)
 
     @property
     def sections_cables(self):
         """
-        Creates an array of cable names to work with `CableSystem`.
+        Creates an array of cable names to work with ``CableSystem``.
 
         Returns
         -------
         np.ndarray
-            Array of `cable.name` with shape (`num_cables`, ).
+            Array of ``cable.name`` with shape (``num_cables``, ).
         """
 
         return np.full(self.num_cables, self.cable.name)
 
     def calc_crossing_cost(self):
-        """Compute cable crossing costs"""
+        """Compute cable crossing costs."""
         self._crossing_design = self.config["export_system_design"].get(
             "cable_crossings", {}
         )
@@ -417,7 +411,7 @@ class ElectricalDesign(CableSystem):
         if "HVDC" in self.cable.cable_type:
             self.compensation = 0
         else:
-            for _, cable in self.cables.items():
+            for cable in self.cables.values():
                 self.compensation = touchdown * cable.compensation_factor  # MW
         self.shunt_reactor_cost = (
             self.compensation * shunt_unit_cost * self.num_cables
@@ -475,7 +469,7 @@ class ElectricalDesign(CableSystem):
         ) * self.num_substations
 
     def calc_converter_cost(self):
-        """Computes converter cost"""
+        """Computes converter cost."""
 
         if self.cable.cable_type == "HVDC-monopole":
             self.converter_cost = self.num_substations * self._design.get(
@@ -547,9 +541,7 @@ class ElectricalDesign(CableSystem):
         self.substructure_mass = substructure_mass + substructure_pile_mass
 
     def calc_substructure_length(self):
-        """
-        Calculates substructure length as the site depth + 10m
-        """
+        """Calculates substructure length as the site depth + 10m."""
 
         if self.substructure_type == "Floating":
             self.substructure_length = 0
@@ -598,7 +590,7 @@ class ElectricalDesign(CableSystem):
             self.topside_cost = _design.get("topside_design_cost", 107.3e6)
 
     def calc_onshore_cost(self):
-        """Minimum Cost of Onshore Substation Connection
+        """Minimum Cost of Onshore Substation Connection.
 
         Parameters
         ----------

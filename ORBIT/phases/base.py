@@ -46,9 +46,7 @@ class BasePhase(ABC):
         return extract_library_data(config)
 
     def extract_phase_kwargs(self, **kwargs):
-        """
-        Consistent handling of kwargs for Phase and subclasses.
-        """
+        """Consistent handling of kwargs for Phase and subclasses."""
 
         phase_name = kwargs.get("phase_name", None)
         if phase_name is not None:

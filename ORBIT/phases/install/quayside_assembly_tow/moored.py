@@ -77,6 +77,7 @@ class MooredSubInstallation(InstallPhase):
     def setup_simulation(self):
         """
         Sets up simulation infrastructure.
+
         - Initializes substructure production
         - Initializes turbine assembly processes
         - Initializes towing groups
@@ -100,9 +101,10 @@ class MooredSubInstallation(InstallPhase):
 
     def initialize_substructure_production(self):
         """
-        Initializes the production of substructures at port. The number of
-        independent assembly lines and production time associated with a
-        substructure can be configured with the following parameters:
+        Initializes the production of substructures at port.
+
+        The number of independent assembly lines and production time associated
+        with a substructure can be configured with the following parameters:
 
         - self.config["substructure"]["takt_time"]
         - self.config["port"]["sub_assembly_lines"]
@@ -133,7 +135,10 @@ class MooredSubInstallation(InstallPhase):
         self.sub_assembly_lines = []
         for i in range(lines):
             a = SubstructureAssemblyLine(
-                to_assemble, time, self.wet_storage, i + 1
+                to_assemble,
+                time,
+                self.wet_storage,
+                i + 1,
             )
 
             self.env.register(a)
@@ -142,7 +147,9 @@ class MooredSubInstallation(InstallPhase):
 
     def initialize_turbine_assembly(self):
         """
-        Initializes turbine assembly lines. The number of independent lines
+        Initializes turbine assembly lines.
+
+        The number of independent lines
         can be configured with the following parameters:
 
         - self.config["port"]["turb_assembly_lines"]
@@ -166,7 +173,10 @@ class MooredSubInstallation(InstallPhase):
         self.turbine_assembly_lines = []
         for i in range(lines):
             a = TurbineAssemblyLine(
-                self.wet_storage, self.assembly_storage, turbine, i + 1
+                self.wet_storage,
+                self.assembly_storage,
+                turbine,
+                i + 1,
             )
 
             self.env.register(a)
@@ -192,7 +202,8 @@ class MooredSubInstallation(InstallPhase):
         if ahts_vessel is None:
             warn(
                 "No ['ahts_vessel'] specified. num_ahts set to 0."
-                " ahts_vessel will be required in future releases.\n"
+                " ahts_vessel will be required in future releases.\n",
+                stacklevel=1,
             )
             num_ahts = 0
 
@@ -275,7 +286,7 @@ class MooredSubInstallation(InstallPhase):
 
     @property
     def detailed_output(self):
-        """return detailed outputs."""
+        """Return detailed outputs."""
 
         return {
             "operational_delays": {
@@ -294,11 +305,11 @@ class MooredSubInstallation(InstallPhase):
                 # self.support_vessel: self.operational_delay(
                 #    str(self.support_vessel)
                 # ),
-            }
+            },
         }
 
     def operational_delay(self, name):
-        """return operational delays"""
+        """Return operational delays."""
 
         actions = [a for a in self.env.actions if a["agent"] == name]
         delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
@@ -350,7 +361,7 @@ def towing_group_actions(
 ):
     """
     Process logic for the towing vessel group. Assumes there is an
-    anchor tug boat with each group
+    anchor tug boat with each group.
 
     Parameters
     ----------
@@ -458,7 +469,11 @@ def towing_group_actions(
 
 @process
 def install_moored_substructures(
-    vessel, queue, distance, substructures, station_keeping_vessels
+    vessel,
+    queue,
+    distance,
+    substructures,
+    station_keeping_vessels,
 ):
     """
     ** DEPRECATED ** This method is deprecated and is now performed
@@ -481,7 +496,8 @@ def install_moored_substructures(
 
     warn(
         "** DEPRECATED ** This method is deprecated and is now performed"
-        " in towing_group_action() by the towing group with AHTS vessel.\n"
+        " in towing_group_action() by the towing group with AHTS vessel.\n",
+        stacklevel=1,
     )
 
     n = 0

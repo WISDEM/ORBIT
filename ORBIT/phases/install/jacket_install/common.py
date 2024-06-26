@@ -1,3 +1,8 @@
+"""
+Provides the jacket-specific  cargo implementation and jacket installation
+methods.
+"""
+
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2021, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
@@ -11,7 +16,7 @@ from ORBIT.core.defaults import process_times as pt
 
 
 class Jacket(Cargo):
-    """Jacket Cargo"""
+    """Creates the jacket-specific cargo model."""
 
     def __init__(
         self,
@@ -185,5 +190,8 @@ def install_jacket(vessel, jacket, **kwargs):
 
     grout_time = kwargs.get("jacket_grout_time", pt["jacket_grout_time"])
     yield vessel.task_wrapper(
-        "Grout Jacket", grout_time, constraints=vessel.transit_limits, **kwargs
+        "Grout Jacket",
+        grout_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
     )

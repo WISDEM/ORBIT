@@ -89,7 +89,8 @@ def test_total_cable_len_property():
 
     cable_name = export.cable.name
     assert export.total_cable_length_by_type[cable_name] == pytest.approx(
-        export.total_length, abs=1e-10
+        export.total_length,
+        abs=1e-10,
     )
 
 

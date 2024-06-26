@@ -24,18 +24,16 @@ repos:
     -   id: check-executables-have-shebangs
     -   id: check-json
     -   id: check-yaml
+        args: [--unsafe]  # allow Python constructors
     -   id: check-merge-conflict
     -   id: check-symlinks
-    -   id: flake8
-        name: flake8
-        additional_dependencies: [Flake8-pyproject]
     -   id: mixed-line-ending
     -   id: pretty-format-json
         args: [--autofix]
 
--   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a5
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.4.10
     hooks:
-    -   id: pylint
-        name: pylint
-        exclude: ^tests/
+    -   id: ruff
+        args: [--fix]

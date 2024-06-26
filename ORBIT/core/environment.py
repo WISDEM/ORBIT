@@ -227,10 +227,10 @@ class OrbitEnvironment(Environment):
         self.state = np.array(append_fields(self.state, f"windspeed_{h}m", ts))
 
     @staticmethod
-    def simplify_num(str):
+    def simplify_num(string):
         """Returns the simplest str representation of a number."""
 
-        num = float(str)
+        num = float(string)
         if int(num) == num:
             return int(num)
 

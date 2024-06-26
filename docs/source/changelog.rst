@@ -5,7 +5,10 @@ ORBIT Changelog
 
 Unreleased (TBD)
 ----------------
-- merged SemiTaut_Mooring_Update
+
+Merged SemiTaut Moorings
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 - The ``MooringSystemDesign`` module now can use a Catenary or SemiTaut mooring system. User can specify "mooring_type".
 - The ``FloatingOffshoreSubstation`` and ``ElectricalDesign`` modules now actually have a floating option to remove any substructure mass (and cost) from older versions. User can specify "oss_substructure_type"
 - The ``MoredSubInstallation`` now utilizes an AHTS vessel which must be added to any config file as (ahts_vessel)
@@ -16,10 +19,9 @@ Unreleased (TBD)
 - example_cable_lay_vessel min_draft changed from 4.8m to 8.5m, overall_length 99m to 171m, max_mass 4000t to 13000t
 - example_towing_vessel max_waveheight changed from 2.5m to 3.0m, max_windspeed 20m to 15m, transit_speed 6km/h to 14 km/h, day_rate 30k to 35k
 
+Merged Electrical Refactor
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Unreleased (TBD)
-----------------
-- merged electrical-refactor
 - Updated ``ElectricalDesign`` module.
 This class combines the elements of ``ExportSystemDesign`` and the ``OffshoreSubstationDesign`` modules. Its purpose is to represent the export system more accurately
 by linking the type of cable (AC versus DC) and substation’s components (i.e. transformers versus converters).Figure 1 shows how to add ElectricalDesign() to a yaml
@@ -42,11 +44,24 @@ how to use ParametricManager to compare the two design decisions.
 
 - Expanded tests to demonstrate new features in ``ElectricalDesign``.
 
+Improvements
+~~~~~~~~~~~~
+- Fully adopted `pyproject.toml` for managing all possible tool settings, and
+  removed the tool-specific files from the top-level of the directory.
+- Replaced flake8 and pylint with ruff to adopt a cleaner, faster, and easier
+  to manage linting and autoformatting workflow. As a result, some of the more
+  onerous checks have been removed to discourage the use of
+  `git commit --no-verify`. This change has also added in other rules that
+  discourage Python anti-patterns and encourage modern Python usage.
+- NOTE: Users may wish to run
+  `git config blame.ignoreRevsFile .git-blame-ignore-revs` to ignore the
+  reformatting edits in their blame.
+
 1.0.8
 -----
 
 - Added explicit methods for adding custom design or install phases to
-  ProjectManager.
+  ``ProjectManager``.
 - Added WOMBAT compatibility for custom array system files.
 - Fixed bug in custom array cable system design that breaks for plants with
   more than two substations.

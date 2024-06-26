@@ -110,9 +110,7 @@ class OffshoreSubstationDesign(DesignPhase):
         ) * self.num_substations
 
     def calc_substructure_length(self):
-        """
-        Calculates substructure length as the site depth + 10m
-        """
+        """Calculates substructure length as the site depth + 10m."""
 
         self.substructure_length = self.config["site"]["depth"] + 10
 
@@ -295,9 +293,7 @@ class OffshoreSubstationDesign(DesignPhase):
 
     @property
     def design_result(self):
-        """
-        Returns the results of self.run().
-        """
+        """Returns the results of self.run()."""
 
         if not self._outputs:
             raise Exception("Has OffshoreSubstationDesign been ran yet?")

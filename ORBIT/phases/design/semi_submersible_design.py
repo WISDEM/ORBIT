@@ -10,7 +10,7 @@ from ORBIT.phases.design import DesignPhase
 
 
 class SemiSubmersibleDesign(DesignPhase):
-    """Semi-Submersible Substructure Design"""
+    """Semi-Submersible Substructure Design."""
 
     expected_config = {
         "site": {"depth": "m"},
@@ -30,7 +30,7 @@ class SemiSubmersibleDesign(DesignPhase):
             "mass": "t",
             "unit_cost": "USD",
             "towing_speed": "km/h",
-        }
+        },
     }
 
     def __init__(self, config, **kwargs):
@@ -67,7 +67,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -0.9581 * rating ** 2 + 40.89 * rating + 802.09
+        mass = -0.9581 * rating**2 + 40.89 * rating + 802.09
 
         return mass
 
@@ -89,7 +89,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = 2.7894 * rating ** 2 + 15.591 * rating + 266.03
+        mass = 2.7894 * rating**2 + 15.591 * rating + 266.03
 
         return mass
 
@@ -106,12 +106,12 @@ class SemiSubmersibleDesign(DesignPhase):
     @property
     def heave_plate_mass(self):
         """
-        Calculates the heave plate mass for a single semi-submersible in tonnes.
-        From original OffshoreBOS model.
+        Calculates the heave plate mass for a single semi-submersible in
+        tonnes. Source: original OffshoreBOS model.
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -0.4397 * rating ** 2 + 21.545 * rating + 177.42
+        mass = -0.4397 * rating**2 + 21.545 * rating + 177.42
 
         return mass
 
@@ -133,7 +133,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -0.153 * rating ** 2 + 6.54 * rating + 128.34
+        mass = -0.153 * rating**2 + 6.54 * rating + 128.34
 
         return mass
 
@@ -178,7 +178,7 @@ class SemiSubmersibleDesign(DesignPhase):
 
     @property
     def design_result(self):
-        """Returns the result of `self.run()`"""
+        """Returns the result of `self.run()`."""
 
         if not self._outputs:
             raise Exception("Has `SemiSubmersibleDesign` been ran yet?")

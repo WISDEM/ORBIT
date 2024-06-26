@@ -18,5 +18,4 @@ tower:
   type: Tower
   length: 164.4        # m [IEA-22MW-RWT Value] Hub height - Vertical distance between tower top and hub center
   mass: 1574         # tonnes [IEA-22MW-RWT Value]
-turbine_rating: 22     # MW 
-
+turbine_rating: 22     # MW

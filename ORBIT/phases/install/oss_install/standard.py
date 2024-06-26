@@ -87,6 +87,7 @@ class OffshoreSubstationInstallation(InstallPhase):
     def setup_simulation(self, **kwargs):
         """
         Initializes required objects for simulation.
+
         - Creates port + crane
         - Creates monopile and topside
         - Creates heavy lift vessel and feeder
@@ -123,9 +124,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             )
 
     def initialize_topsides_and_substructures(self):
-        """
-        Creates offshore substation objects at port.
-        """
+        """Creates offshore substation objects at port."""
 
         top = Topside(**self.config["offshore_substation_topside"])
         sub = Monopile(**self.config["offshore_substation_substructure"])
@@ -136,9 +135,7 @@ class OffshoreSubstationInstallation(InstallPhase):
             self.port.put(top)
 
     def initialize_oss_install_vessel(self):
-        """
-        Creates the offshore substation installation vessel object.
-        """
+        """Creates the offshore substation installation vessel object."""
 
         oss_vessel_specs = self.config.get("oss_install_vessel", None)
         name = oss_vessel_specs.get("name", "Heavy Lift Vessel")
@@ -152,9 +149,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         self.oss_vessel = oss_vessel
 
     def initialize_feeders(self):
-        """
-        Initializes feeder barge objects.
-        """
+        """Initializes feeder barge objects."""
 
         number = self.config.get("num_feeders", 1)
         feeder_specs = self.config.get("feeder", None)
@@ -162,7 +157,7 @@ class OffshoreSubstationInstallation(InstallPhase):
         self.feeders = []
         for n in range(number):
             # TODO: Add in option for named feeders.
-            name = "Feeder {}".format(n)
+            name = f"Feeder {n}"
 
             feeder = self.initialize_vessel(name, feeder_specs)
             self.env.register(feeder)
@@ -197,7 +192,7 @@ class OffshoreSubstationInstallation(InstallPhase):
                 **self.agent_efficiencies,
                 **self.get_max_cargo_mass_utilzations(transport_vessels),
                 **self.get_max_deck_space_utilzations(transport_vessels),
-            }
+            },
         }
 
         return outputs
@@ -234,12 +229,16 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
 
                 # Prep for monopile install
                 yield prep_for_site_operations(
-                    vessel, survey_required=True, **kwargs
+                    vessel,
+                    survey_required=True,
+                    **kwargs,
                 )
 
                 # Get monopile
                 monopile = yield vessel.get_item_from_storage(
-                    "Monopile", vessel=queue.vessel, **kwargs
+                    "Monopile",
+                    vessel=queue.vessel,
+                    **kwargs,
                 )
 
                 yield upend_monopile(vessel, monopile.length, **kwargs)
@@ -247,7 +246,10 @@ def install_oss_from_queue(vessel, queue, substations, distance, **kwargs):
 
                 # Get topside
                 topside = yield vessel.get_item_from_storage(
-                    "Topside", vessel=queue.vessel, release=True, **kwargs
+                    "Topside",
+                    vessel=queue.vessel,
+                    release=True,
+                    **kwargs,
                 )
                 yield install_topside(vessel, topside, **kwargs)
                 n += 1

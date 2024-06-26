@@ -1,5 +1,6 @@
 """Common processes and cargo types for quayside assembly and tow-out
-installations"""
+installations.
+"""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -82,9 +83,7 @@ class SubstructureAssemblyLine(Agent):
 
     @process
     def assemble_substructure(self):
-        """
-        Simulation process for assembling a substructure.
-        """
+        """Simulation process for assembling a substructure."""
 
         yield self.task("Substructure Assembly", self.time)
         substructure = Substructure()
@@ -183,7 +182,7 @@ class TurbineAssemblyLine(Agent):
 
         while True:
             start = self.env.now
-            sub = yield self.feed.get()
+            _ = yield self.feed.get()
             delay = self.env.now - start
 
             if delay > 0:
@@ -271,7 +270,9 @@ class TurbineAssemblyLine(Agent):
         """
 
         yield self.task(
-            "Lift and Attach Nacelle", 12, constraints={"windspeed": le(15)}
+            "Lift and Attach Nacelle",
+            12,
+            constraints={"windspeed": le(15)},
         )
 
     @process
@@ -282,7 +283,9 @@ class TurbineAssemblyLine(Agent):
         """
 
         yield self.task(
-            "Lift and Attach Blade", 3.5, constraints={"windspeed": le(12)}
+            "Lift and Attach Blade",
+            3.5,
+            constraints={"windspeed": le(12)},
         )
 
     @process
@@ -293,18 +296,24 @@ class TurbineAssemblyLine(Agent):
         """
 
         yield self.task(
-            "Mechanical Completion", 24, constraints={"windspeed": le(18)}
+            "Mechanical Completion",
+            24,
+            constraints={"windspeed": le(18)},
         )
 
     @process
     def electrical_completion(self):
         """
         Task representing time associated with performing electrical completion
-        work at quayside, including precommissioning. Assumes the tower is delivered to port in multiple sections, requiring cable pull-in after tower assembly.
+        work at quayside, including precommissioning. Assumes the tower is
+        delivered to port in multiple sections, requiring cable pull-in after
+        tower assembly.
         """
 
         yield self.task(
-            "Electrical Completion", 72, constraints={"windspeed": le(18)}
+            "Electrical Completion",
+            72,
+            constraints={"windspeed": le(18)},
         )
 
 
@@ -363,7 +372,7 @@ class TowingGroup(Agent):
         duration,
         num_vessels,
         num_ahts_vessels=0,
-        constraints={},
+        constraints=None,
         **kwargs,
     ):
         """
@@ -381,7 +390,8 @@ class TowingGroup(Agent):
         num_ahts_vessels : int
             Number of anchor handling tug vessels used for the operation.
         """
-
+        if constraints is None:
+            constraints = {}
         kwargs = {**kwargs, "num_vessels": num_vessels}
         kwargs = {**kwargs, "num_ahts_vessels": num_ahts_vessels}
         yield self.task(name, duration, constraints=constraints, **kwargs)

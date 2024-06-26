@@ -6,9 +6,6 @@ __maintainer__ = "Rob Hammond"
 __email__ = "robert.hammond@nrel.gov"
 
 
-from copy import deepcopy
-
-import numpy as np
 import pytest
 
 from ORBIT.phases.design import ScourProtectionDesign

@@ -9,7 +9,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 from marmot import process
 
 from ORBIT.core import Cargo
-from ORBIT.core.logic import stabilize, jackdown_if_required
+from ORBIT.core.logic import jackdown_if_required
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install.monopile_install.common import (
     bolt_transition_piece,
@@ -19,12 +19,10 @@ from ORBIT.phases.install.monopile_install.common import (
 
 
 class Topside(Cargo):
-    """Topside Cargo"""
+    """Topside Cargo."""
 
     def __init__(self, mass=None, deck_space=None, **kwargs):
-        """
-        Creates an instance of `Topside`.
-        """
+        """Creates an instance of `Topside`."""
 
         self.mass = mass
         self.deck_space = deck_space
@@ -49,7 +47,7 @@ class Topside(Cargo):
 
 
 class Jacket(Cargo):
-    """Jacket Cargo"""
+    """Jacket Cargo."""
 
     pass
 
@@ -74,7 +72,9 @@ def lift_topside(vessel, **kwargs):
     lift_time = lift_height / crane_rate
 
     yield vessel.task_wrapper(
-        "Lift Topside", lift_time, constraints=vessel.operational_limits
+        "Lift Topside",
+        lift_time,
+        constraints=vessel.operational_limits,
     )
 
 
@@ -101,7 +101,9 @@ def attach_topside(vessel, **kwargs):
     attach_time = kwargs.get(key, pt[key])
 
     yield vessel.task_wrapper(
-        "Attach Topside", attach_time, constraints=vessel.operational_limits
+        "Attach Topside",
+        attach_time,
+        constraints=vessel.operational_limits,
     )
 
 
@@ -109,6 +111,7 @@ def attach_topside(vessel, **kwargs):
 def install_topside(vessel, topside, **kwargs):
     """
     Substation topside installation process.
+
     Subprocesses:
     - Crane reequip
     - Lift topside

@@ -19,7 +19,6 @@ from ORBIT.phases.install import (
     FloatingSubstationInstallation,
     OffshoreSubstationInstallation,
 )
-from ORBIT.core.exceptions import MissingComponent
 
 config_single = extract_library_specs("config", "oss_install")
 config_floating = extract_library_specs("config", "floating_oss_install")
@@ -66,8 +65,7 @@ def test_vessel_initialization(config):
     js = sim.oss_vessel._jacksys_specs
     dp = sim.oss_vessel._dp_specs
 
-    if not any([js, dp]):
-        assert False
+    assert any([js, dp])
 
     for feeder in sim.feeders:
         assert feeder.storage
@@ -79,7 +77,9 @@ def test_vessel_initialization(config):
     ids=["single_feeder", "multi_feeder"],
 )
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging(weather, config):
 
@@ -95,13 +95,15 @@ def test_for_complete_logging(weather, config):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 
 
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging_floating(weather):
 

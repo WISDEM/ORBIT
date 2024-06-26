@@ -1,6 +1,4 @@
-"""
-Testing framework for the `ExportCableInstallation` class.
-"""
+"""Testing framework for the `ExportCableInstallation` class."""
 
 __author__ = ["Rob Hammond", "Jake Nunemaker"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -26,7 +24,9 @@ _ = simul_config.pop("export_cable_bury_vessel")
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 def test_simulation_setup(config):
     sim = ExportCableInstallation(config)
@@ -39,7 +39,9 @@ def test_simulation_setup(config):
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 def test_vessel_initialization(config):
     sim = ExportCableInstallation(config)
@@ -51,10 +53,14 @@ def test_vessel_initialization(config):
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging(config, weather):
     sim = ExportCableInstallation(config, weather=weather)
@@ -69,7 +75,7 @@ def test_for_complete_logging(config, weather):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 
@@ -239,7 +245,7 @@ def test_kwargs_for_export_install_in_ProjectManager():
 
 
 def test_deprecated_values():
-    """Temporary test for deprecated values"""
+    """Temporary test for deprecated values."""
 
     base = deepcopy(base_config)
 

@@ -5,7 +5,6 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
-import warnings
 from copy import deepcopy
 
 import pandas as pd
@@ -19,11 +18,13 @@ config = extract_library_specs("config", "moored_install")
 no_supply = extract_library_specs("config", "moored_install_no_supply")
 
 multi_assembly = extract_library_specs(
-    "config", "moored_install_multi_assembly"
+    "config",
+    "moored_install_multi_assembly",
 )
 multi_tow = extract_library_specs("config", "moored_install_multi_tow")
 multi_assembly_multi_tow = extract_library_specs(
-    "config", "moored_install_multi_assembly_multi_tow"
+    "config",
+    "moored_install_multi_assembly_multi_tow",
 )
 
 
@@ -55,7 +56,9 @@ def test_simulation_setup(config):
 
 
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 @pytest.mark.parametrize(
     "config",
@@ -80,7 +83,7 @@ def test_for_complete_logging(weather, config):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 

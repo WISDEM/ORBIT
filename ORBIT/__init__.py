@@ -1,4 +1,4 @@
-""" Initializes ORBIT and provides the top-level import objects."""
+"""Initializes ORBIT and provides the top-level import objects."""
 
 __author__ = ["Jake Nunemaker", "Matt Shields", "Rob Hammond"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"

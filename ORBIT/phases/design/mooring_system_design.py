@@ -89,9 +89,7 @@ class MooringSystemDesign(DesignPhase):
         self._outputs = {}
 
     def run(self):
-        """
-        Main run function.
-        """
+        """Runs the design model."""
 
         self.determine_mooring_line()
         self.calculate_breaking_load()
@@ -132,9 +130,7 @@ class MooringSystemDesign(DesignPhase):
             )
 
     def calculate_breaking_load(self):
-        """
-        Returns the mooring line breaking load.
-        """
+        """Returns the mooring line breaking load."""
 
         self.breaking_load = (
             419449 * (self.line_diam**2) + 93415 * self.line_diam - 3577.9
@@ -146,6 +142,7 @@ class MooringSystemDesign(DesignPhase):
 
         SemiTaut model based on:
         https://github.com/NREL/MoorPy/blob/dev/moorpy/MoorProps_default.yaml
+
         TODO: Improve TLP line length and mass
 
         """
