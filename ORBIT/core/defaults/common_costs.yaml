@@ -4,3 +4,30 @@ tp_steel_cost: 3000                           # USD/t
 
 # Port properties
 port_cost_per_month: 2e6                      # USD/month
+
+# Spar component cost rates
+spar_design:
+  stiffened_column_CR: 3120                     # USD/t
+  tapered_column_CR: 4220                       # USD/t
+  ballast_material_CR: 100                      # USD/t
+  secondary_steel_CR: 7250                      # USD/t
+
+# Offshore substation component cost rates
+offshore_design:
+  mpt_cost_rate: 12500                          # USD/MW
+  topside_fab_cost_rate: 14500                  # USD/t
+  topside_design_cost: 4.5e6                    # USD
+  shunt_cost_rate: 35000                        # USD/MW
+  switchgear_cost: 4e6                          # USD/num_mpt
+  backup_gen_cost: 1e6                          # USD
+  workspace_cost: 2e6                           # USD
+  other_ancillary_cost: 3e6                     # USD
+  topside_assembly_factor: 0.075                # %
+  oss_substructure_cost_rate: 3000              # USD/t
+  oss_pile_cost_rate: 0                         # USD/t
+
+# Semisubmersible component cost rates
+#stiffened_column_CR: 3120                     # USD/t
+truss_cost: 6250                              # USD/t
+heave_plate_CR: 6250                          # USD/t
+#secondary_steel_CR: 7250                      # USD/t
