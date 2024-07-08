@@ -1,12 +1,22 @@
-"""Provides the `SemiSubmersibleDesign` class (from OffshoreBOS)."""
+"""Provides the `SemiSubmersibleDesign` class."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
-
+from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
+
+"""
+[1] Maness et al. 2017, NREL Offshore Balance-of-System Model.
+https://www.nrel.gov/docs/fy17osti/66874.pdf
+"""
+
+if (
+    semisub_design_cost := common_costs.get("semisubmersible_design", None)
+) is None:
+    raise KeyError("No spar_design in common costs.")
 
 
 class SemiSubmersibleDesign(DesignPhase):
@@ -61,53 +71,60 @@ class SemiSubmersibleDesign(DesignPhase):
 
     @property
     def stiffened_column_mass(self):
-        """
-        Calculates the mass of the stiffened column for a single
-        semi-submersible in tonnes. From original OffshoreBOS model.
+        """Calculates the mass of the stiffened column for a single
+        semi-submersible in tonnes [1].
         """
 
         rating = self.config["turbine"]["turbine_rating"]
+        mass = -0.9581 * rating**2 + 40.89 * rating + 802.09
         mass = -0.9581 * rating**2 + 40.89 * rating + 802.09
 
         return mass
 
     @property
     def stiffened_column_cost(self):
-        """
-        Calculates the cost of the stiffened column for a single
-        semi-submersible. From original OffshoreBOS model.
+        """Calculates the cost of the stiffened column for a single
+        semi-submersible [1].
         """
 
-        cr = self._design.get("stiffened_column_CR", 3120)
+        _key = "stiffened_column_CR"
+        if (
+            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
         return self.stiffened_column_mass * cr
 
     @property
     def truss_mass(self):
-        """
-        Calculates the truss mass for a single semi-submersible in tonnes. From
-        original OffshoreBOS model.
+        """Calculates the truss mass for a single semi-submersible in tonnes
+        [1].
         """
 
         rating = self.config["turbine"]["turbine_rating"]
+        mass = 2.7894 * rating**2 + 15.591 * rating + 266.03
         mass = 2.7894 * rating**2 + 15.591 * rating + 266.03
 
         return mass
 
     @property
     def truss_cost(self):
-        """
-        Calculates the cost of the truss for a signle semi-submerisble. From
-        original OffshoreBOS model.
+        """Calculates the cost of the truss for a signle semi-submerisble
+        [1].
         """
 
-        cr = self._design.get("truss_CR", 6250)
+        _key = "truss_CR"
+        if (
+            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
         return self.truss_mass * cr
 
     @property
     def heave_plate_mass(self):
-        """
-        Calculates the heave plate mass for a single semi-submersible in
-        tonnes. Source: original OffshoreBOS model.
+        """Calculates the heave plate mass for a single semi-submersible
+        in tonnes [1].
         """
 
         rating = self.config["turbine"]["turbine_rating"]
@@ -117,34 +134,42 @@ class SemiSubmersibleDesign(DesignPhase):
 
     @property
     def heave_plate_cost(self):
-        """
-        Calculates the heave plate cost for a single semi-submersible. From
-        original OffshoreBOS model.
+        """Calculates the heave plate cost for a single semi-submersible
+        [1].
         """
 
-        cr = self._design.get("heave_plate_CR", 6250)
+        _key = "heave_plate_CR"
+        if (
+            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
         return self.heave_plate_mass * cr
 
     @property
     def secondary_steel_mass(self):
-        """
-        Calculates the mass of the required secondary steel for a single
-        semi-submersible. From original OffshoreBOS model.
+        """Calculates the mass of the required secondary steel for a single
+        semi-submersible [1].
         """
 
         rating = self.config["turbine"]["turbine_rating"]
+        mass = -0.153 * rating**2 + 6.54 * rating + 128.34
         mass = -0.153 * rating**2 + 6.54 * rating + 128.34
 
         return mass
 
     @property
     def secondary_steel_cost(self):
-        """
-        Calculates the cost of the required secondary steel for a single
-        semi-submersible. For original OffshoreBOS model.
+        """Calculates the cost of the required secondary steel for a single
+        semi-submersible [1].
         """
 
-        cr = self._design.get("secondary_steel_CR", 7250)
+        _key = "secondary_steel_CR"
+        if (
+            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
         return self.secondary_steel_mass * cr
 
     @property

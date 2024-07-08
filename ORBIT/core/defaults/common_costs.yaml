@@ -27,7 +27,8 @@ offshore_design:
   oss_pile_cost_rate: 0                         # USD/t
 
 # Semisubmersible component cost rates
-#stiffened_column_CR: 3120                     # USD/t
-truss_cost: 6250                              # USD/t
-heave_plate_CR: 6250                          # USD/t
-#secondary_steel_CR: 7250                      # USD/t
+semisubmersible_design:
+  stiffened_column_CR: 3120                     # USD/t
+  truss_CR: 6250                              # USD/t
+  heave_plate_CR: 6250                          # USD/t
+  secondary_steel_CR: 7250                      # USD/t
