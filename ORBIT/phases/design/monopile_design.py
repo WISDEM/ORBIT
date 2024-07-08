@@ -13,6 +13,9 @@ from scipy.optimize import fsolve
 from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
+if (monopile_design_cost := common_costs.get("monopile_design", None)) is None:
+    raise KeyError("No spar_design in common costs.")
+
 
 class MonopileDesign(DesignPhase):
     """Monopile Design Class."""
@@ -75,6 +78,8 @@ class MonopileDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
+        self._design = self.config.get("monopile_design", {})
+
         self._outputs = {}
 
     def run(self):
@@ -306,14 +311,13 @@ class MonopileDesign(DesignPhase):
     def monopile_steel_cost(self):
         """Returns the cost of monopile steel (USD/t) fully fabricated."""
 
-        _design = self.config.get("monopile_design", {})
         _key = "monopile_steel_cost"
-
-        try:
-            cost = _design.get(_key, common_costs[_key])
-
-        except KeyError as exc:
-            raise Exception("Cost of monopile steel not found.") from exc
+        if (
+            cost := self._design.get(
+                _key, monopile_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         return cost
 
@@ -321,16 +325,13 @@ class MonopileDesign(DesignPhase):
     def tp_steel_cost(self):
         """Returns the cost of fabricated transition piece steel (USD/t)."""
 
-        _design = self.config.get("monopile_design", {})
         _key = "tp_steel_cost"
-
-        try:
-            cost = _design.get(_key, common_costs[_key])
-
-        except KeyError as exc:
-            raise Exception(
-                "Cost of transition piece steel not found."
-            ) from exc  # noqa: E501
+        if (
+            cost := self._design.get(
+                _key, monopile_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         return cost
 

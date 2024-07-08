@@ -1,6 +1,7 @@
 # Material costs
-monopile_steel_cost: 3000                     # USD/t
-tp_steel_cost: 3000                           # USD/t
+monopile_design:
+  monopile_steel_cost: 3000                     # USD/t
+  tp_steel_cost: 3000                           # USD/t
 
 # Port properties
 port_cost_per_month: 2e6                      # USD/month
@@ -29,6 +30,6 @@ offshore_design:
 # Semisubmersible component cost rates
 semisubmersible_design:
   stiffened_column_CR: 3120                     # USD/t
-  truss_CR: 6250                              # USD/t
+  truss_CR: 6250                                # USD/t
   heave_plate_CR: 6250                          # USD/t
   secondary_steel_CR: 7250                      # USD/t
