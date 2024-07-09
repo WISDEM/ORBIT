@@ -12,7 +12,21 @@ from math import sqrt
 
 from scipy.interpolate import interp1d
 
+from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
+
+"""
+[1] Maness et al. 2017, NREL Offshore Balance-of-System Model.
+https://www.nrel.gov/docs/fy17osti/66874.pdf
+
+[2] Cooperman et al. (2022), Assessment of Offshore Wind Energy Leasing Areas
+for Humboldt and Morry Bay. https://www.nrel.gov/docs/fy22osti/82341.pdf
+"""
+
+if (
+    mooring_design_cost := common_costs.get("mooring_system_design", None)
+) is None:
+    raise KeyError("No mooring design in common costs.")
 
 
 class MooringSystemDesign(DesignPhase):
@@ -68,8 +82,7 @@ class MooringSystemDesign(DesignPhase):
         self.anchor_type = self._design.get("anchor_type", "Suction Pile")
         self.mooring_type = self._design.get("mooring_type", "Catenary")
 
-        # Semi-Taut mooring system design parameters based on depth
-        # Cooperman et al. (2022), https://www.nrel.gov/docs/fy22osti/82341.pdf
+        # Semi-Taut mooring system design parameters based on depth [2].
         self._semitaut_params = {
             "depths": [500.0, 750.0, 1000.0, 1250.0, 1500.0],
             "rope_lengths": [478.41, 830.34, 1229.98, 1183.93, 1079.62],
@@ -108,26 +121,31 @@ class MooringSystemDesign(DesignPhase):
         tr = self.config["turbine"]["turbine_rating"]
         fit = -0.0004 * (tr**2) + 0.0132 * tr + 0.0536
 
+        _key = "mooring_line_cost_rate"
+        if (
+            mooring_line_cost_rate := self._design.get(
+                _key, mooring_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        if isinstance(mooring_line_cost_rate, (int, float)):
+            mooring_line_cost_rate = [mooring_line_cost_rate] * 3
+
         if fit <= 0.09:
             self.line_diam = 0.09
             self.line_mass_per_m = 0.161
-            self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate", 399.0
-            )
+            self.line_cost_rate = mooring_line_cost_rate[0]
 
         elif fit <= 0.12:
             self.line_diam = 0.12
             self.line_mass_per_m = 0.288
-            self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate", 721.0
-            )
+            self.line_cost_rate = mooring_line_cost_rate[1]
 
         else:
             self.line_diam = 0.15
             self.line_mass_per_m = 0.450
-            self.line_cost_rate = self._design.get(
-                "mooring_line_cost_rate", 1088.0
-            )
+            self.line_cost_rate = mooring_line_cost_rate[2]
 
     def calculate_breaking_load(self):
         """Returns the mooring line breaking load."""

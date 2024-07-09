@@ -62,3 +62,7 @@ semisubmersible_design:
   truss_CR: 6250                                # USD/t
   heave_plate_CR: 6250                          # USD/t
   secondary_steel_CR: 7250                      # USD/t
+
+# Mooring system component cost rates
+mooring_system_design:                          # USD/m
+  mooring_line_cost_rate: [399.0, 721.0, 1088.0]
