@@ -42,6 +42,19 @@ substation_design:
   oss_substructure_cost_rate: 3000              # USD/t
   oss_pile_cost_rate: 0                         # USD/t
 
+# Onshore substation component cost rates
+onshore_substation_design:
+  shunt_unit_cost: 1.3e4                        # USD/cable
+  switchgear_cost: 9.33e6                       # USD/cable
+  compensation_rate: 31.3e6                     # USD/cable
+  onshore_converter_cost:                       # USD
+    HVAC: 0
+    HVDC-monopole: 157e6
+    HVDC-bipole: 350e6
+  onshore_construction_rate:                    # USD
+    HVAC: 5e6
+    HVDC-monopole: 87.3e6
+    HVDC-bipole: 100e6
 
 # Semisubmersible component cost rates
 semisubmersible_design:

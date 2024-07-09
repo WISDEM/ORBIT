@@ -742,7 +742,7 @@ class ElectricalDesign(CableSystem):
             raise KeyError(f"{_key} not found in common_costs.")
 
         if isinstance(_converter_cost, dict):
-            _converter_cost = _converter_cost[self.cable_type.cable]
+            _converter_cost = _converter_cost[self.cable.cable_type]
 
         _key = "onshore_construction_rate"
         if (
@@ -753,7 +753,7 @@ class ElectricalDesign(CableSystem):
             raise KeyError(f"{_key} not found in common_costs.")
 
         if isinstance(_construction_rate, dict):
-            _construction_rate = _construction_rate[self.cable_type.cable]
+            _construction_rate = _construction_rate[self.cable.cable_type]
 
         if self.cable.cable_type == "HVDC-monopole":
             self.onshore_converter_cost = (
