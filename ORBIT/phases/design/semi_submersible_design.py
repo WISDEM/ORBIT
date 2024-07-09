@@ -16,7 +16,7 @@ https://www.nrel.gov/docs/fy17osti/66874.pdf
 if (
     semisub_design_cost := common_costs.get("semisubmersible_design", None)
 ) is None:
-    raise KeyError("No spar_design in common costs.")
+    raise KeyError("No semisub design in common costs.")
 
 
 class SemiSubmersibleDesign(DesignPhase):

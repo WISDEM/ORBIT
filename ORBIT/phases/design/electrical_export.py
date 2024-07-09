@@ -9,7 +9,21 @@ from warnings import warn
 
 import numpy as np
 
+from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design._cables import CableSystem
+
+"""
+[1] Maness et al. 2017, NREL Offshore Balance-of-System Model.
+https://www.nrel.gov/docs/fy17osti/66874.pdf
+"""
+
+if (
+    export_design_cost := common_costs.get("export_system_design", None)
+) is None:
+    raise KeyError("No export system in common costs.")
+
+if (oss_design_cost := common_costs.get("substation_design", None)) is None:
+    raise KeyError("No substation design in common costs.")
 
 
 class ElectricalDesign(CableSystem):
@@ -93,6 +107,7 @@ class ElectricalDesign(CableSystem):
                 "cable_type": "str",
             },
         },
+        "offshore_substation": "dict, (optional)",
     }
 
     def __init__(self, config, **kwargs):
@@ -106,10 +121,13 @@ class ElectricalDesign(CableSystem):
 
         for name in self.expected_config["site"]:
             setattr(self, "".join(("_", name)), config["site"][name])
+
         self._depth = config["site"]["depth"]
         self._distance_to_landfall = config["site"]["distance_to_landfall"]
         self._plant_capacity = self.config["plant"]["capacity"]
         self._get_touchdown_distance()
+
+        self._design = self.config["export_system_design"]
 
         _landfall = self.config.get("landfall", {})
         if _landfall:
@@ -121,23 +139,16 @@ class ElectricalDesign(CableSystem):
             )
 
         else:
-            _landfall = self.config["export_system_design"].get("landfall", {})
+            _landfall = self._design.get("landfall", {})
 
         self._distance_to_interconnection = _landfall.get(
             "interconnection_distance", 3
         )
 
-        self.export_system_design = self.config["export_system_design"]
-        self.offshore_substation_design = self.config.get(
-            "substation_design", {}
-        )
+        self._oss_design = self.config.get("substation_design", {})
 
-        self.substructure_type = self.offshore_substation_design.get(
+        self.substructure_type = self._oss_design.get(
             "oss_substructure_type", "Monopile"
-        )
-
-        self.onshore_substation_design = self.config.get(
-            "onshore_substation_design", {}
         )
 
         self._outputs = {}
@@ -187,6 +198,16 @@ class ElectricalDesign(CableSystem):
         self.calc_dc_breaker_cost()
         self.calc_onshore_cost()
 
+        self._outputs["offshore_substation"] = {
+            "substation_mpt_cost": self.mpt_cost,
+            "substation_shunt_cost": self.shunt_reactor_cost,
+            "substation_switchgear_cost": self.switchgear_cost,
+            "substation_converter_cost": self.converter_cost,
+            "substation_breaker_cost": self.dc_breaker_cost,
+            "substation_ancillary_cost": self.ancillary_system_costs,
+            "substation_land_assembly_cost": self.land_assembly_cost,
+        }
+
         self._outputs["offshore_substation_substructure"] = {
             "type": self.substructure_type,
             "deck_space": self.substructure_deck_space,
@@ -221,6 +242,13 @@ class ElectricalDesign(CableSystem):
             "substation_substructure_mass": self.substructure_mass,
             "substation_substructure_cost": self.substructure_cost,
             "total_substation_cost": self.total_substation_cost,
+            "substation_mpt_cost": self.mpt_cost,
+            "substation_shunt_cost": self.shunt_reactor_cost,
+            "substation_switchgear_cost": self.switchgear_cost,
+            "substation_converter_cost": self.converter_cost,
+            "substation_breaker_cost": self.dc_breaker_cost,
+            "substation_ancillary_cost": self.ancillary_system_costs,
+            "substation_land_assembly_cost": self.land_assembly_cost,
             "onshore_shunt_cost": self.onshore_shunt_reactor_cost,
             "onshore_converter_cost": self.onshore_converter_cost,
             "onshore_switchgear_cost": self.onshore_switchgear_cost,
@@ -253,8 +281,6 @@ class ElectricalDesign(CableSystem):
         ----------
         num_redundant : int
         """
-
-        _num_redundant = self._design.get("num_redundant", 0)
 
         num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
         num_redundant = self._design.get("num_redundant", 0)
@@ -320,12 +346,19 @@ class ElectricalDesign(CableSystem):
 
     def calc_crossing_cost(self):
         """Compute cable crossing costs."""
-        self._crossing_design = self.config["export_system_design"].get(
-            "cable_crossings", {}
+        _crossing_design = self._design.get("cable_crossings", {})
+
+        _key = "crossing_unit_cost"
+        if (
+            crossing_cost := _crossing_design.get(
+                _key, export_design_cost["cable_crossings"].get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        self.crossing_cost = crossing_cost * _crossing_design.get(
+            "crossing_number", 0
         )
-        self.crossing_cost = self._crossing_design.get(
-            "crossing_unit_cost", 500000
-        ) * self._crossing_design.get("crossing_number", 0)
 
         """SUBSTATION"""
 
@@ -347,16 +380,16 @@ class ElectricalDesign(CableSystem):
         """
 
         # HVAC substation capacity
-        _substation_capacity = self.offshore_substation_design.get(
+        _substation_capacity = self._oss_design.get(
             "substation_capacity", 1200
         )  # MW
 
         if "HVDC" in self.cable.cable_type:
-            self.num_substations = self.offshore_substation_design.get(
+            self.num_substations = self._oss_design.get(
                 "num_substations", int(self.num_cables / 2)
             )
         else:
-            self.num_substations = self.offshore_substation_design.get(
+            self.num_substations = self._oss_design.get(
                 "num_substations",
                 int(np.ceil(self._plant_capacity / _substation_capacity)),
             )
@@ -383,15 +416,19 @@ class ElectricalDesign(CableSystem):
         mpt_unit_cost : int | float
         """
 
-        _mpt_cost = self._design.get("mpt_unit_cost", 2.87e6)
+        _key = "mpt_unit_cost"
+        if (
+            _mpt_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         self.num_mpt = self.num_cables
 
-        if "HVDC" in self.cable.cable_type:
-            self.mpt_cost = 0
-
-        else:
-            self.mpt_cost = self.num_mpt * _mpt_cost
+        self.mpt_cost = (
+            0 if "HVDC" in self.cable.cable_type else self.num_mpt * _mpt_cost
+        )
 
         self.mpt_rating = (
             round((self._plant_capacity * 1.15 / self.num_mpt) / 10.0) * 10.0
@@ -406,13 +443,21 @@ class ElectricalDesign(CableSystem):
         """
 
         touchdown = self.config["site"]["distance_to_landfall"]
-        shunt_unit_cost = self._design.get("shunt_unit_cost", 1e4)
+
+        _key = "shunt_unit_cost"
+        if (
+            shunt_unit_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         if "HVDC" in self.cable.cable_type:
             self.compensation = 0
         else:
             for cable in self.cables.values():
                 self.compensation = touchdown * cable.compensation_factor  # MW
+
         self.shunt_reactor_cost = (
             self.compensation * shunt_unit_cost * self.num_cables
         )
@@ -425,7 +470,13 @@ class ElectricalDesign(CableSystem):
         switchgear_cost : int | float
         """
 
-        switchgear_cost = self._design.get("switchgear_cost", 4e6)
+        _key = "switchgear_cost"
+        if (
+            switchgear_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         num_switchgear = (
             0 if "HVDC" in self.cable.cable_type else self.num_cables
@@ -441,7 +492,13 @@ class ElectricalDesign(CableSystem):
         dc_breaker_cost : int | float
         """
 
-        dc_breaker_cost = self._design.get("dc_breaker_cost", 10.5e6)
+        _key = "dc_breaker_cost"
+        if (
+            dc_breaker_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         num_dc_breakers = (
             self.num_cables if "HVDC" in self.cable.cable_type else 0
@@ -460,28 +517,33 @@ class ElectricalDesign(CableSystem):
         other_ancillary_cost : int | float
         """
 
-        backup_gen_cost = self._design.get("backup_gen_cost", 1e6)
-        workspace_cost = self._design.get("workspace_cost", 2e6)
-        other_ancillary_cost = self._design.get("other_ancillary_cost", 3e6)
+        _key = "backup_gen_cost"
+        if (
+            backup_gen_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        _key = "workspace_cost"
+        if (
+            workspace_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        _key = "other_ancillary_cost"
+        if (
+            other_ancillary_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         self.ancillary_system_costs = (
             backup_gen_cost + workspace_cost + other_ancillary_cost
         ) * self.num_substations
-
-    def calc_converter_cost(self):
-        """Computes converter cost."""
-
-        if self.cable.cable_type == "HVDC-monopole":
-            self.converter_cost = self.num_substations * self._design.get(
-                "converter_cost", 127e6
-            )
-
-        elif self.cable.cable_type == "HVDC-bipole":
-            self.converter_cost = self.num_substations * self._design.get(
-                "converter_cost", 296e6
-            )
-        else:
-            self.converter_cost = 0
 
     def calc_assembly_cost(self):
         """
@@ -492,9 +554,16 @@ class ElectricalDesign(CableSystem):
         topside_assembly_factor : int | float
         """
 
-        topside_assembly_factor = self.offshore_substation_design.get(
-            "topside_assembly_factor", 0.075
-        )
+        _key = "topside_assembly_factor"
+        if (
+            topside_assembly_factor := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        if topside_assembly_factor > 1.0:
+            topside_assembly_factor /= 100
 
         self.land_assembly_cost = (
             self.switchgear_cost
@@ -502,9 +571,26 @@ class ElectricalDesign(CableSystem):
             + self.ancillary_system_costs
         ) * topside_assembly_factor
 
+    def calc_converter_cost(self):
+        """Computes converter cost."""
+
+        _key = "converter_cost"
+        if (
+            converter_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        if isinstance(converter_cost, dict):
+            converter_cost = converter_cost[self.cable.cable_type]
+
+        self.converter_cost = converter_cost
+
     def calc_substructure_mass_and_cost(self):
         """
-        Calculates the mass and associated cost of the substation substructure.
+        Calculates the mass and associated cost of the substation substructure
+        based on equations 81-84 [1].
 
         Parameters
         ----------
@@ -512,26 +598,32 @@ class ElectricalDesign(CableSystem):
         oss_pile_cost_rate : int | float
         """
 
-        oss_pile_cost_rate = self.offshore_substation_design.get(
-            "oss_pile_cost_rate", 0
-        )
-        oss_substructure_cost_rate = self.offshore_substation_design.get(
-            "oss_substructure_cost_rate", 3000
-        )
+        _key = "oss_substructure_cost_rate"
+        if (
+            oss_substructure_cost_rate := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
-        # Substructure mass components calculated by curve fits in
-        # equations 81-84 from Maness et al. 2017
-        # https://www.nrel.gov/docs/fy17osti/66874.pdf
-        #
+        _key = "oss_pile_cost_rate"
+        if (
+            oss_pile_cost_rate := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        # Substructure mass components
         # TODO: Determine a better method to calculate substructure mass
         #       for different substructure types
         substructure_mass = 0.4 * self.topside_mass
 
-        if self.substructure_type == "Floating":
-            substructure_pile_mass = 0  # No piles used for floating platform
-
-        else:
-            substructure_pile_mass = 8 * substructure_mass**0.5574
+        substructure_pile_mass = (
+            0
+            if "Floating" in self.substructure_type
+            else 8 * substructure_mass**0.5574
+        )
 
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
@@ -576,18 +668,23 @@ class ElectricalDesign(CableSystem):
         topside_design_cost: int | float
         """
 
-        _design = self.config.get("substation_design", {})
-
         self.topside_mass = (
             3.85 * (self.mpt_rating * self.num_mpt) / self.num_substations
             + 285
         )
-        if self.cable.cable_type == "HVDC-monopole":
-            self.topside_cost = _design.get("topside_design_cost", 294e6)
-        elif self.cable.cable_type == "HVDC-bipole":
-            self.topside_cost = _design.get("topside_design_cost", 476e6)
-        else:
-            self.topside_cost = _design.get("topside_design_cost", 107.3e6)
+
+        _key = "topside_design_cost"
+        if (
+            topside_design_cost := self._oss_design.get(
+                _key, oss_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        if isinstance(topside_design_cost, dict):
+            topside_design_cost = topside_design_cost[self.cable.cable_type]
+
+        self.topside_cost = topside_design_cost
 
     def calc_onshore_cost(self):
         """Minimum Cost of Onshore Substation Connection.
@@ -601,15 +698,62 @@ class ElectricalDesign(CableSystem):
 
         _design = self.config.get("onshore_substation_design", {})
 
-        _shunt_unit_cost = _design.get("shunt_unit_cost", 1.3e4)  # per cable
-        _switchgear_cost = _design.get("switchgear_cost", 9.33e6)  # per cable
-        _compensation_rate = _design.get(
-            "compensation_rate", 31.3e6
-        )  # per cable
+        if (
+            onshore_design_cost := common_costs.get(
+                "onshore_substation_design", None
+            )
+        ) is None:
+            raise KeyError("No onshore substation in common costs.")
+
+        _key = "shunt_unit_cost"
+        if (
+            _shunt_unit_cost := _design.get(
+                _key, onshore_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        _key = "switchgear_cost"
+        if (
+            _switchgear_cost := _design.get(
+                _key, onshore_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        _key = "compensation_rate"
+        if (
+            _compensation_rate := _design.get(
+                _key, onshore_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
 
         self.onshore_shunt_reactor_cost = (
             self.compensation * self.num_cables * _shunt_unit_cost
         )
+
+        _key = "onshore_converter_cost"
+        if (
+            _converter_cost := _design.get(
+                _key, onshore_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        if isinstance(_converter_cost, dict):
+            _converter_cost = _converter_cost[self.cable_type.cable]
+
+        _key = "onshore_construction_rate"
+        if (
+            _construction_rate := _design.get(
+                _key, onshore_design_cost.get(_key, None)
+            )
+        ) is None:
+            raise KeyError(f"{_key} not found in common_costs.")
+
+        if isinstance(_construction_rate, dict):
+            _construction_rate = _construction_rate[self.cable_type.cable]
 
         if self.cable.cable_type == "HVDC-monopole":
             self.onshore_converter_cost = (
