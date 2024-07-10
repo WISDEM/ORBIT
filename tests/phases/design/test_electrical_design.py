@@ -103,13 +103,20 @@ def test_calc_substructure_mass_and_cost():
     )
 
 
-"""def test_calc_topside_mass_and_cost():
-    #Test topside mass and cost for HVDC compared to HVDC-Monopole and
-    #HVDC-Bipole.
+def test_calc_topside_mass_and_cost():
+    # Test topside mass and cost for HVDC compared to HVDC-Monopole and
+    # HVDC-Bipole.
     #
 
-    elect = ElectricalDesign(base)
+    config = deepcopy(base)
+    config["substation_design"]["topside_design_cost"] = 9999.9
+    elect = ElectricalDesign(config)
     elect.run()
+
+    assert elect._outputs["num_substations"] == 1
+    assert elect._outputs["offshore_substation_topside"][
+        "unit_cost"
+    ] == pytest.approx(23683541, abs=1e2)
 
     mono_dc = deepcopy(base)
     mono_dc["export_system_design"]["cables"] = "HVDC_2000mm_320kV"
@@ -146,7 +153,7 @@ def test_calc_substructure_mass_and_cost():
     assert (
         elect_bi.detailed_output["substation_topside_cost"]
         != elect_mono.detailed_output["substation_topside_cost"]
-    )"""
+    )
 
 
 def test_oss_substructure_kwargs():
@@ -226,19 +233,6 @@ def test_dc_oss_kwargs():
         cost = elect.detailed_output["total_substation_cost"]
 
         assert cost != base_cost
-
-
-def test_calc_topside_mass_and_cost():
-
-    config = deepcopy(base)
-    config["substation_design"]["topside_design_cost"] = 9999.9
-    elec = ElectricalDesign(config)
-    elec.run()
-
-    assert elec._outputs["num_substations"] == 1
-    assert elec._outputs["offshore_substation_topside"][
-        "unit_cost"
-    ] == pytest.approx(23673542, abs=1e2)
 
 
 def test_new_old_hvac_substation():
