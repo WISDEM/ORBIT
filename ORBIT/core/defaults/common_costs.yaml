@@ -10,6 +10,7 @@ port_cost_per_month: 2e6                      # USD/month
 export_system_design:
   cable_crossings:
     crossing_unit_cost: 500000
+
 # Spar component cost rates
 spar_design:
   stiffened_column_CR: 3120                     # USD/t
@@ -28,7 +29,7 @@ substation_design:
     HVDC-bipole: 476e6
   shunt_cost_rate: 35000                        # USD/MW
   mpt_unit_cost: 2.87e6                         # USD/mpt
-  shunt_unit_cost: 1e4                          # USD/cable
+  shunt_unit_cost: 10000                        # USD/cable
   switchgear_cost: 4e6                          # USD/cable
   dc_breaker_cost: 10.5e6                       # USD/cable
   backup_gen_cost: 1e6                          # USD
@@ -44,7 +45,7 @@ substation_design:
 
 # Onshore substation component cost rates
 onshore_substation_design:
-  shunt_unit_cost: 1.3e4                        # USD/cable
+  shunt_unit_cost: 13000                        # USD/cable
   switchgear_cost: 9.33e6                       # USD/cable
   compensation_rate: 31.3e6                     # USD/cable
   onshore_converter_cost:                       # USD
