@@ -290,6 +290,8 @@ class CustomSemiSubmersibleDesign(DesignPhase):
     def run(self):
         """Main run function."""
 
+        self.calc_geometric_scale_factor()
+
         substructure = {
             "mass": self.substructure_mass,
             "unit_cost": self.substructure_unit_cost,
@@ -381,17 +383,17 @@ class CustomSemiSubmersibleDesign(DesignPhase):
 
         print(
             "Volumes: ",
-            self.num_column * self.bouyant_column_volume,
+            self.bouyant_column_volume,
             self.center_column_volume,
-            self.num_column * self.pontoon_volume,
-            self.num_column * self.strut_volume,
+            self.pontoon_volume,
+            self.strut_volume,
         )
 
         return (density / 1000) * (
-            self.num_column * self.bouyant_column_volume
+            self.num_columns * self.bouyant_column_volume
             + self.center_column_volume
-            + self.num_column * self.pontoon_volume
-            + self.num_column * self.strut_volume
+            + self.num_columns * self.pontoon_volume
+            + self.num_columns * self.strut_volume
         )
 
     @property
@@ -429,9 +431,11 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         """
 
         return sum(
-            self.substructure_steel_mass,
-            self.ballast_mass,
-            self.tower_interface_mass,
+            [
+                self.substructure_steel_mass,
+                self.ballast_mass,
+                self.tower_interface_mass,
+            ]
         )
 
     @property
