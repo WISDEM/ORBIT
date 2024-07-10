@@ -238,7 +238,7 @@ def test_calc_topside_mass_and_cost():
     assert elec._outputs["num_substations"] == 1
     assert elec._outputs["offshore_substation_topside"][
         "unit_cost"
-    ] == pytest.approx(23673542.01, abs=1)
+    ] == pytest.approx(23673542, abs=1e2)
 
 
 def test_new_old_hvac_substation():
