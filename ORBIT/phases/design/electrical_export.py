@@ -216,10 +216,11 @@ class ElectricalDesign(CableSystem):
             "unit_cost": self.substructure_cost,
         }
 
+        # TODO: cheap fix for topside unit_cost bug #168
         self._outputs["offshore_substation_topside"] = {
             "deck_space": self.topside_deck_space,
             "mass": self.topside_mass,
-            "unit_cost": self.substation_cost,
+            "unit_cost": self.substation_cost + self.topside_cost,
         }
 
         self._outputs["num_substations"] = self.num_substations
