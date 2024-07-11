@@ -12,6 +12,7 @@ from copy import deepcopy
 from benedict import benedict
 
 from ORBIT.core.library import initialize_library, extract_library_data
+from ORBIT.core.defaults import common_costs
 from ORBIT.core.exceptions import MissingInputs
 
 
@@ -116,6 +117,37 @@ class BasePhase(ABC):
 
         else:
             return benedict(config)
+
+    def set_default_cost(self, design_name, key, subkey=None):
+        """Return the cost value for a key in a design
+        dictionary read from common_cost.yaml.
+        """
+
+        if (design_dict := common_costs.get(design_name, None)) is None:
+            raise KeyError(f"No {design_name} in common_cost.yaml.")
+
+        # expected = deepcopy(getattr(self, "expected_config", None))
+        # if expected is None:
+        #    raise AttributeError(f"'expected_config' not set for '{self}'.")
+        # design_name = deepcopy(getattr(self,
+        # f"expected_config.{design_name}"))
+
+        if (cost_value := design_dict.get(key, None)) is None:
+            raise KeyError(
+                f"{key} not found in [{design_name}] common_costs.yaml."
+            )
+
+        if isinstance(cost_value, dict):
+            if (sub_cost_value := cost_value.get(subkey, None)) is None:
+                raise KeyError(
+                    f"{subkey} not found in [{design_name}][{cost_value}]"
+                    " common_costs."
+                )
+
+            return sub_cost_value
+
+        else:
+            return cost_value
 
     @abstractmethod
     def run(self):

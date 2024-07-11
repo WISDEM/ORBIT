@@ -105,10 +105,12 @@ class SparDesign(DesignPhase):
         """
 
         _key = "stiffened_column_CR"
-        if (
-            cr := self._design.get(_key, spar_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        cr = self._design.get(_key, self.set_default_cost("spar_design", _key))
+
+        # if (
+        #    cr := self._design.get(_key, spar_design_cost.get(_key, None))
+        # ) is None:
+        #    raise KeyError(f"{_key} not found in common_costs.")
 
         return self.stiffened_column_mass * cr
 
