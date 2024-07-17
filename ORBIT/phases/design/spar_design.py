@@ -8,16 +8,12 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from numpy import exp, log
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
 """
 [1] Maness et al. 2017, NREL Offshore Balance-of-System Model.
 https://www.nrel.gov/docs/fy17osti/66874.pdf
 """
-
-if (spar_design_cost := common_costs.get("spar_design", None)) is None:
-    raise KeyError("No spar design in common costs.")
 
 
 class SparDesign(DesignPhase):
@@ -105,12 +101,7 @@ class SparDesign(DesignPhase):
         """
 
         _key = "stiffened_column_CR"
-        cr = self._design.get(_key, self.set_default_cost("spar_design", _key))
-
-        # if (
-        #    cr := self._design.get(_key, spar_design_cost.get(_key, None))
-        # ) is None:
-        #    raise KeyError(f"{_key} not found in common_costs.")
+        cr = self._design.get(_key, self.get_default_cost("spar_design", _key))
 
         return self.stiffened_column_mass * cr
 
@@ -119,10 +110,7 @@ class SparDesign(DesignPhase):
         """Calculates the cost of the tapered column for a single spar [1]."""
 
         _key = "tapered_column_CR"
-        if (
-            cr := self._design.get(_key, spar_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        cr = self._design.get(_key, self.get_default_cost("spar_design", _key))
 
         return self.tapered_column_mass * cr
 
@@ -141,11 +129,7 @@ class SparDesign(DesignPhase):
         """Calculates the cost of ballast material for a single spar [1]."""
 
         _key = "ballast_material_CR"
-
-        if (
-            cr := self._design.get(_key, spar_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        cr = self._design.get(_key, self.get_default_cost("spar_design", _key))
 
         return self.ballast_mass * cr
 
@@ -174,10 +158,7 @@ class SparDesign(DesignPhase):
         """
 
         _key = "secondary_steel_CR"
-        if (
-            cr := self._design.get(_key, spar_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        cr = self._design.get(_key, self.get_default_cost("spar_design", _key))
 
         return self.secondary_steel_mass * cr
 
