@@ -45,13 +45,16 @@ substation_design:
 
 # Onshore substation component cost rates
 onshore_substation_design:
-  shunt_unit_cost: 13000                        # USD/cable
-  switchgear_cost: 9.33e6                       # USD/cable
-  compensation_rate: 31.3e6                     # USD/cable
   onshore_converter_cost:                       # USD
     HVAC: 0
     HVDC-monopole: 157e6
     HVDC-bipole: 350e6
+  shunt_unit_cost: 13000                        # USD/cable
+  switchgear_cost: 9.33e6                       # USD/cable
+  compensation_rate:                            # USD/cable
+    HVAC: 31.3e6
+    HVDC-monopole: 0
+    HVDC-bipole: 0
   onshore_construction_rate:                    # USD
     HVAC: 5e6
     HVDC-monopole: 87.3e6

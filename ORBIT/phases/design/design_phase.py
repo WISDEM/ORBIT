@@ -41,16 +41,15 @@ class DesignPhase(BasePhase):
         if (design_dict := common_costs.get(design_name, None)) is None:
             raise KeyError(f"No {design_name} in common_cost.yaml.")
 
-        # expected = deepcopy(getattr(self, "expected_config", None))
-        # if expected is None:
-        #    raise AttributeError(f"'expected_config' not set for '{self}'.")
-        # design_name = deepcopy(getattr(self,
-        # f"expected_config.{design_name}"))
-
         if (cost_value := design_dict.get(key, None)) is None:
             raise KeyError(f"{key} not found in [{design_name}] common_costs.")
 
         if isinstance(cost_value, dict):
+            if subkey is None:
+                raise ValueError(
+                    f"{key} is a dictionary and requires a" " 'subkey' input."
+                )
+
             if (sub_cost_value := cost_value.get(subkey, None)) is None:
                 raise KeyError(
                     f"{subkey} not found in [{design_name}][{cost_value}]"
