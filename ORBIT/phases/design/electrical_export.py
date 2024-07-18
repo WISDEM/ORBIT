@@ -471,11 +471,11 @@ class ElectricalDesign(CableSystem):
             _key, self.get_default_cost("substation_design", _key)
         )
 
-        num_switchgear = (
+        self.num_switchgear = (
             0 if "HVDC" in self.cable.cable_type else self.num_cables
         )
 
-        self.switchgear_cost = num_switchgear * switchgear_cost
+        self.switchgear_cost = self.num_switchgear * switchgear_cost
 
     def calc_dc_breaker_cost(self):
         """Computes HVDC circuit breaker cost. Breaker cost is 0 for HVAC.
@@ -679,7 +679,7 @@ class ElectricalDesign(CableSystem):
             _key, self.get_default_cost("onshore_substation_design", _key)
         )
 
-        self.onshore_switchgear_cost = self.num_cables * _switchgear_cost
+        self.onshore_switchgear_cost = self.num_switchgear * _switchgear_cost
 
         _key = "onshore_construction_rate"
         _construction_rate = _design.get(
@@ -711,6 +711,13 @@ class ElectricalDesign(CableSystem):
         self.onshore_compensation_cost = (
             self.num_cables * _compensation_rate
             + self.onshore_shunt_reactor_cost
+        )
+        print(
+            f"converter: {self.onshore_converter_cost}"
+            f" switchgear: {self.onshore_switchgear_cost}"
+            f"construction:{self.onshore_construction}"
+            f" compensation: {self.onshore_compensation_cost}"
+            f" mpt_cost:{self.mpt_cost}"
         )
 
         self.onshore_cost = (

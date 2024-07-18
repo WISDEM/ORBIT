@@ -298,7 +298,7 @@ def test_onshore_substation():
     o_monelect = ElectricalDesign(config_mono)
     o_monelect.run()
     assert o_monelect.onshore_compensation_cost == 0.0
-    # assert o_monelect.onshore_cost == 244.3e6
+    assert o_monelect.onshore_cost == 244.3e6
 
     config_bi = deepcopy(config)
     config_bi["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
