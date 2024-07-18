@@ -10,11 +10,7 @@ from math import pi, log
 
 from scipy.optimize import fsolve
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
-
-if (monopile_design_cost := common_costs.get("monopile_design", None)) is None:
-    raise KeyError("No monopile design in common costs.")
 
 
 class MonopileDesign(DesignPhase):

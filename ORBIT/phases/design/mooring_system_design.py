@@ -12,7 +12,6 @@ from math import sqrt
 
 from scipy.interpolate import interp1d
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
 """
@@ -22,11 +21,6 @@ https://www.nrel.gov/docs/fy17osti/66874.pdf
 [2] Cooperman et al. (2022), Assessment of Offshore Wind Energy Leasing Areas
 for Humboldt and Morry Bay. https://www.nrel.gov/docs/fy22osti/82341.pdf
 """
-
-if (
-    mooring_design_cost := common_costs.get("mooring_system_design", None)
-) is None:
-    raise KeyError("No mooring design in common costs.")
 
 
 class MooringSystemDesign(DesignPhase):
@@ -122,13 +116,14 @@ class MooringSystemDesign(DesignPhase):
         fit = -0.0004 * (tr**2) + 0.0132 * tr + 0.0536
 
         _key = "mooring_line_cost_rate"
-        if (
-            mooring_line_cost_rate := self._design.get(
-                _key, mooring_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
 
+        mooring_line_cost_rate = self._design.get(
+            _key,
+            self.get_default_cost(
+                "mooring_system_design",
+                _key,
+            ),
+        )
         if isinstance(mooring_line_cost_rate, (int, float)):
             mooring_line_cost_rate = [mooring_line_cost_rate] * 3
 
@@ -232,8 +227,8 @@ class MooringSystemDesign(DesignPhase):
         """
         Returns the mass and cost of anchors.
 
-        TODO: Anchor masses are rough estimates based on initial literature
-        review. Should be revised when this module is overhauled in the future.
+        TODO: Anchor masses are rough estimates based on [1]. Should be
+        revised when this module is overhauled in the future.
         TODO: Mooring types for Catenary, TLP, SemiTaut will likely have
         different anchors.
         """

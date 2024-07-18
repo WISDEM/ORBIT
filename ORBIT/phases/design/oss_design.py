@@ -36,6 +36,12 @@ class OffshoreSubstationDesign(DesignPhase):
             "oss_pile_cost_rate": "USD/t (optional)",
             "num_substations": "int (optional)",
         },
+        "export_system": {
+            "cable": {
+                "number": "int",
+                "cable_type": "str",
+            },
+        },
     }
 
     output_config = {
@@ -180,12 +186,9 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "mpt_cost_rate"
-        if (
-            mpt_cost_rate := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        mpt_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.mpt_cost = self.mpt_rating * self.num_mpt * mpt_cost_rate
 
@@ -200,20 +203,15 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "topside_fab_cost_rate"
-        if (
-            topside_fab_cost_rate := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        topside_fab_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         _key = "topside_design_cost"
-        if (
-            topside_design_cost := self._design.get(
-                _key, oss_design_cost[_key].get("HVAC", None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        topside_design_cost = self._design.get(
+            _key,
+            self.get_default_cost("substation_design", _key, subkey="HVAC"),
+        )
 
         self.topside_mass = 3.85 * self.mpt_rating * self.num_mpt + 285
         self.topside_cost = (
@@ -230,12 +228,9 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "shunt_cost_rate"
-        if (
-            shunt_cost_rate := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        shunt_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.shunt_reactor_cost = (
             self.mpt_rating * self.num_mpt * shunt_cost_rate * 0.5
@@ -251,12 +246,9 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "switchgear_cost"
-        if (
-            switchgear_cost_rate := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        switchgear_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.switchgear_costs = self.num_mpt * switchgear_cost_rate
 
@@ -272,28 +264,19 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "backup_gen_cost"
-        if (
-            backup_gen_cost := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        backup_gen_cost = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         _key = "workspace_cost"
-        if (
-            workspace_cost := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        workspace_cost = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         _key = "other_ancillary_cost"
-        if (
-            other_ancillary_cost := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        other_ancillary_cost = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.ancillary_system_costs = (
             backup_gen_cost + workspace_cost + other_ancillary_cost
@@ -309,12 +292,9 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "topside_assembly_factor"
-        if (
-            topside_assembly_factor := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        topside_assembly_factor = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.land_assembly_cost = (
             self.switchgear_costs
@@ -333,20 +313,14 @@ class OffshoreSubstationDesign(DesignPhase):
         """
 
         _key = "oss_substructure_cost_rate"
-        if (
-            oss_substructure_cost_rate := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        oss_substructure_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         _key = "oss_pile_cost_rate"
-        if (
-            oss_pile_cost_rate := self._design.get(
-                _key, oss_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        oss_pile_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         substructure_mass = 0.4 * self.topside_mass
         substructure_pile_mass = 8 * substructure_mass**0.5574
