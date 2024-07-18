@@ -312,12 +312,9 @@ class MonopileDesign(DesignPhase):
         """Returns the cost of monopile steel (USD/t) fully fabricated."""
 
         _key = "monopile_steel_cost"
-        if (
-            cost := self._design.get(
-                _key, monopile_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        cost = self._design.get(
+            _key, self.get_default_cost("monopile_design", _key)
+        )
 
         return cost
 
@@ -326,12 +323,9 @@ class MonopileDesign(DesignPhase):
         """Returns the cost of fabricated transition piece steel (USD/t)."""
 
         _key = "tp_steel_cost"
-        if (
-            cost := self._design.get(
-                _key, monopile_design_cost.get(_key, None)
-            )
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
+        cost = self._design.get(
+            _key, self.get_default_cost("monopile_design", _key)
+        )
 
         return cost
 
