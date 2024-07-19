@@ -32,12 +32,12 @@ class OffshoreSubstationDesign(DesignPhase):
             "oss_pile_cost_rate": "USD/t (optional)",
             "num_substations": "int (optional)",
         },
-        "export_system": {
-            "cable": {
-                "number": "int",
-                "cable_type": "str",
-            },
-        },
+        # "export_system": {
+        #    "cable": {
+        #        "number": "int",
+        #        "cable_type": "str",
+        #    },
+        # },
     }
 
     output_config = {
