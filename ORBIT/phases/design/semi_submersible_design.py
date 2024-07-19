@@ -247,14 +247,14 @@ class CustomSemiSubmersibleDesign(DesignPhase):
             "heave_plate_CR": "$/t (optional, default: 6250)",
             "secondary_steel_CR": "$/t (optional, default: 7250)",
             "towing_speed": "km/h (optional, default: 6)",
-            "column_diameter": "m",
-            "wall_thickness": "m",
-            "column_height": "m",
-            "pontoon_length": "m",
-            "pontoon_width": "m",
-            "pontoon_height": "m",
-            "strut_diameter": "m",
-            "steel_density": "kg/m^3 (optional, default: 8050)",
+            "column_diameter": "m (optional, default: 12.5)",
+            "wall_thickness": "m (optional, default: 0.045)",
+            "column_height": "m (optional, default: 35)",
+            "pontoon_length": "m (optional, default: 51.75)",
+            "pontoon_width": "m (optional, default: 12.5)",
+            "pontoon_height": "m (optional, default: 7)",
+            "strut_diameter": "m (optional, 0.9)",
+            "steel_density": "kg/m^3 (optional, default: 7980)",
             "ballast_mass": "tonnes (optional, default 0)",
             "tower_interface_mass": "tonnes (optional, default 100)",
             "steel_cost_rate": "$/tonne (optional, default: 4500)",
@@ -323,9 +323,9 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         assuming the wall-thickness remains constant [2].
         """
 
-        dc = self._design["column_diameter"] * self.geom_scale_factor
-        hc = self._design["column_height"] * self.geom_scale_factor
-        tc = self._design["wall_thickness"]
+        dc = self._design.get("column_diameter", 12.5) * self.geom_scale_factor
+        hc = self._design.get("column_height", 35) * self.geom_scale_factor
+        tc = self._design.get("wall_thickness", 0.045)
 
         return (np.pi / 4) * (hc * dc**2 - (hc - 2 * tc) * (dc - 2 * tc) ** 2)
 
@@ -337,9 +337,9 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         """
 
         dc = 10.0  # fixed tower diameter
-        hc = self._design["column_height"] * self.geom_scale_factor
-        hp = self._design["pontoon_height"] * self.geom_scale_factor
-        tc = self._design["wall_thickness"]
+        hc = self._design.get("column_height", 35) * self.geom_scale_factor
+        hp = self._design.get("pontoon_height", 7) * self.geom_scale_factor
+        tc = self._design.get("wall_thickness", 0.045)
 
         return (np.pi / 4) * (
             (hc - hp) * dc**2 - (hc - hp) * (dc - 2 * tc) ** 2
@@ -354,10 +354,10 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         """
         # TODO: Subtract semi-circular area from fairlead column?
 
-        lp = self._design["pontoon_length"] * self.geom_scale_factor
-        wp = self._design["pontoon_width"] * self.geom_scale_factor
-        hp = self._design["pontoon_height"] * self.geom_scale_factor
-        tp = self._design["wall_thickness"]
+        lp = self._design.get("pontoon_length", 51.75) * self.geom_scale_factor
+        wp = self._design.get("pontoon_width", 12.5) * self.geom_scale_factor
+        hp = self._design.get("pontoon_height", 7) * self.geom_scale_factor
+        tp = self._design.get("wall_thickness", 0.045)
 
         return (hp * wp - (hp - 2 * tp) * (wp - 2 * tp)) * lp
 
@@ -368,8 +368,8 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         the central column to the outer columns.
         """
 
-        lp = self._design["pontoon_length"] * self.geom_scale_factor
-        ds = self._design["strut_diameter"] * self.geom_scale_factor
+        lp = self._design.get("pontoon_length", 51.75) * self.geom_scale_factor
+        ds = self._design.get("strut_diameter", 0.9) * self.geom_scale_factor
 
         return (np.pi / 4) * (ds**2) * lp
 
@@ -419,9 +419,9 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         in $USD.
         """
 
-        steel_cr = self._design.get("steel_cost_rate", 4500)
+        self.steel_cr = self._design.get("steel_cost_rate", 4500)
 
-        return steel_cr * self.substructure_steel_mass
+        return self.steel_cr * self.substructure_steel_mass
 
     @property
     def substructure_mass(self):
@@ -447,7 +447,11 @@ class CustomSemiSubmersibleDesign(DesignPhase):
 
         ballast_cr = self._design.get("ballast_cost_rate", 150)
 
-        return self.substructure_steel_cost + ballast_cr * self.ballast_mass
+        return (
+            self.substructure_steel_cost
+            + ballast_cr * self.ballast_mass
+            + self.steel_cr * self.tower_interface_mass
+        )
 
     @property
     def design_result(self):
@@ -474,6 +478,8 @@ class CustomSemiSubmersibleDesign(DesignPhase):
             "substructure_steel_cost": self.substructure_steel_cost,
             "substructure_mass": self.substructure_mass,
             "substructure_cost": self.substructure_unit_cost,
+            "ballast_mass": self.ballast_mass,
+            "tower_interface_mass": self.tower_interface_mass,
         }
 
         return _outputs
