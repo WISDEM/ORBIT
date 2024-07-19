@@ -9,21 +9,12 @@ from warnings import warn
 
 import numpy as np
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design._cables import CableSystem
 
 """
 [1] Maness et al. 2017, NREL Offshore Balance-of-System Model.
 https://www.nrel.gov/docs/fy17osti/66874.pdf
 """
-
-if (
-    export_design_cost := common_costs.get("export_system_design", None)
-) is None:
-    raise KeyError("No export system in common costs.")
-
-if (oss_design_cost := common_costs.get("substation_design", None)) is None:
-    raise KeyError("No substation design in common costs.")
 
 
 class ElectricalDesign(CableSystem):
@@ -711,13 +702,6 @@ class ElectricalDesign(CableSystem):
         self.onshore_compensation_cost = (
             self.num_cables * _compensation_rate
             + self.onshore_shunt_reactor_cost
-        )
-        print(
-            f"converter: {self.onshore_converter_cost}"
-            f" switchgear: {self.onshore_switchgear_cost}"
-            f"construction:{self.onshore_construction}"
-            f" compensation: {self.onshore_compensation_cost}"
-            f" mpt_cost:{self.mpt_cost}"
         )
 
         self.onshore_cost = (

@@ -8,11 +8,7 @@ __email__ = "Jake.Nunemaker@nrel.gov"
 
 import numpy as np
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
-
-if (oss_design_cost := common_costs.get("substation_design", None)) is None:
-    raise KeyError("No substation design in common costs.")
 
 
 class OffshoreSubstationDesign(DesignPhase):

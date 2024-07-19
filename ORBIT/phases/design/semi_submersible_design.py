@@ -5,18 +5,12 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
 """
 [1] Maness et al. 2017, NREL Offshore Balance-of-System Model.
 https://www.nrel.gov/docs/fy17osti/66874.pdf
 """
-
-if (
-    semisub_design_cost := common_costs.get("semisubmersible_design", None)
-) is None:
-    raise KeyError("No semisub design in common costs.")
 
 
 class SemiSubmersibleDesign(DesignPhase):
@@ -88,11 +82,9 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         _key = "stiffened_column_CR"
-        if (
-            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
-
+        cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
         return self.stiffened_column_mass * cr
 
     @property
@@ -114,11 +106,9 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         _key = "truss_CR"
-        if (
-            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
-
+        cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
         return self.truss_mass * cr
 
     @property
@@ -139,11 +129,9 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         _key = "heave_plate_CR"
-        if (
-            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
-
+        cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
         return self.heave_plate_mass * cr
 
     @property
@@ -165,11 +153,9 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         _key = "secondary_steel_CR"
-        if (
-            cr := self._design.get(_key, semisub_design_cost.get(_key, None))
-        ) is None:
-            raise KeyError(f"{_key} not found in common_costs.")
-
+        cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
         return self.secondary_steel_mass * cr
 
     @property

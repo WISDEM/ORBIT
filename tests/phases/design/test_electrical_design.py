@@ -244,6 +244,8 @@ def test_new_old_hvac_substation():
     config["plant"]["num_turbines"] = 200
     config["turbine"] = {"turbine_rating": 5}
 
+    config["export_system"] = {"cable": {"number": 5, "cable_type": "HVAC"}}
+
     new = ElectricalDesign(config)
     new.run()
 
