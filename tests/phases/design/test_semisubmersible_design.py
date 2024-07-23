@@ -9,7 +9,11 @@ from itertools import product
 
 import pytest
 
-from ORBIT.phases.design import SemiSubmersibleDesign
+from ORBIT.core.library import extract_library_specs
+from ORBIT.phases.design import (
+    SemiSubmersibleDesign,
+    CustomSemiSubmersibleDesign,
+)
 
 base = {
     "site": {"depth": 500},
@@ -63,5 +67,88 @@ def test_design_kwargs():
         s = SemiSubmersibleDesign(config)
         s.run()
         cost = s.total_cost
+
+        assert cost != base_cost
+
+
+config_custom = extract_library_specs(
+    "config", "semisubmersible_design_custom"
+)
+
+
+def test_calc_geometric_scale_factor():
+    pass
+
+
+def test_bouyant_column_volume():
+    pass
+
+
+def test_center_column_volume():
+    pass
+
+
+def test_pontoon_volume():
+    pass
+
+
+def test_strut_volume():
+    pass
+
+
+def test_substructure_steel_mass():
+    pass
+
+
+def test_ballast_mass():
+    pass
+
+
+def test_tower_interface_mass():
+    pass
+
+
+def test_substructure_steel_cost():
+    pass
+
+
+def test_substructure_mass():
+    pass
+
+
+def test_substructure_unit_cost():
+    pass
+
+
+def test_custom_design_kwargs():
+
+    test_kwargs = {
+        "column_diameter": 15,
+        "wall_thickness": 0.1,
+        "column_height": 20,
+        "pontoon_length": 52,
+        "pontoon_width": 15,
+        "pontoon_height": 5,
+        "strut_diameter": 1.0,
+        "steel_density": 8500,
+        "ballast_mass": 1000,
+        "tower_interface_mass": 125,
+        "steel_CR": 3000,
+        "ballast_material_CR": 200,
+    }
+
+    cust = CustomSemiSubmersibleDesign(config_custom)
+    cust.run()
+    base_cost = cust.total_cost
+
+    for k, v in test_kwargs.items():
+
+        config = deepcopy(config_custom)
+        config["semisubmersible_design"] = {}
+        config["semisubmersible_design"][k] = v
+
+        cust = CustomSemiSubmersibleDesign(config)
+        cust.run()
+        cost = cust.total_cost
 
         assert cost != base_cost

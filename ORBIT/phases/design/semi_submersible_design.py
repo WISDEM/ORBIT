@@ -5,6 +5,7 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
+import numpy as np
 
 from ORBIT.phases.design import DesignPhase
 
@@ -217,10 +218,6 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Nick Riccobono"
 __email__ = "nicholas.riccobono@nrel.gov"
 
-import numpy as np
-
-from ORBIT.phases.design import DesignPhase
-
 """
 Based on semisub design from 15 MW RWT
 
@@ -255,9 +252,9 @@ class CustomSemiSubmersibleDesign(DesignPhase):
             "pontoon_height": "m (optional, default: 7)",
             "strut_diameter": "m (optional, 0.9)",
             "steel_density": "kg/m^3 (optional, default: 7980)",
-            "ballast_mass": "tonnes (optional, default 0)",
+            "ballast_mass": "tonnes (optional, default 2540)",
             "tower_interface_mass": "tonnes (optional, default 100)",
-            "steel_cost_rate": "$/tonne (optional, default: 4500)",
+            "steel_CR": "$/tonne (optional, default: 4500)",
             "ballast_material_CR": "$/tonne (optional, default: 150)",
         },
     }
@@ -419,7 +416,7 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         in $USD.
         """
 
-        self.steel_cr = self._design.get("steel_cost_rate", 4500)
+        self.steel_cr = self._design.get("steel_CR", 4500)
 
         return self.steel_cr * self.substructure_steel_mass
 
@@ -445,7 +442,7 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         Does not include final assembly or transportation costs.
         """
 
-        ballast_cr = self._design.get("ballast_cost_rate", 150)
+        ballast_cr = self._design.get("ballast_material_CR", 150)
 
         return (
             self.substructure_steel_cost

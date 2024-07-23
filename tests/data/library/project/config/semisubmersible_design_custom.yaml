@@ -1,0 +1,20 @@
+plant:
+  num_turbines: 50
+site:
+  depth: 500
+turbine:
+  rotor_diameter: 220
+  turbine_rating: 12
+semisubmersible_design:
+  column_diameter: 12.5
+  wall_thickness": 0.0.045
+  column_height": 35
+  pontoon_length": 51.75
+  pontoon_width": 12.5
+  pontoon_height": 7
+  strut_diameter": 0.9
+  steel_density": 7980
+  ballast_mass": 2540
+  tower_interface_mass": 100
+  steel_CR": 4500
+  ballast_material_CR": 150
