@@ -303,7 +303,10 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         Lines 335-340 [2].
         """
 
-        turbine_radius = float(self.config["turbine"]["rotor_diameter"] / 2)
+        turbine_diameter = self.config["turbine"].get("rotor_diameter")
+
+        if turbine_diameter is None:
+            raise KeyError("Turbine rotor diameter not specified.")
 
         # IEA-15MW 120m radius
         ref_radius = kwargs.get("ref_radius", 120.0)
@@ -311,7 +314,9 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         # power-law parameter
         alpha = kwargs.get("alpha", 0.72)
 
-        self.geom_scale_factor = (turbine_radius / ref_radius) ** alpha
+        self.geom_scale_factor = (
+            float(turbine_diameter) / 2 / ref_radius
+        ) ** alpha
 
     @property
     def bouyant_column_volume(self):

@@ -90,6 +90,10 @@ def test_calc_geometric_scale_factor():
 
     assert custom.geom_scale_factor == pytest.approx(0.9392, 1e-4)
 
+    with pytest.raises(KeyError):
+        config["turbine"]["rotor_diameter"] = None
+        custom.run()
+
 
 def test_bouyant_column_volume():
 
