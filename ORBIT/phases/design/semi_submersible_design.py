@@ -329,7 +329,7 @@ class CustomSemiSubmersibleDesign(DesignPhase):
     @property
     def center_column_volume(self):
         """
-        Returns the volume of a hollow column between turbine and
+        Returns the volume of a hollow cylindrical column between turbine and
         pontoons, assuming wall-thickness remains constant [2].
         """
 
@@ -377,14 +377,6 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         # TODO: Separate out different steels for each component
 
         density = self._design.get("steel_density", 7980)
-
-        print(
-            "Volumes: ",
-            self.bouyant_column_volume,
-            self.center_column_volume,
-            self.pontoon_volume,
-            self.strut_volume,
-        )
 
         return (density / 1000) * (
             self.num_columns * self.bouyant_column_volume

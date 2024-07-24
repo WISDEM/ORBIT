@@ -77,47 +77,98 @@ config_custom = extract_library_specs(
 
 
 def test_calc_geometric_scale_factor():
-    pass
+
+    config = deepcopy(config_custom)
+
+    custom = CustomSemiSubmersibleDesign(config)
+    custom.run()
+
+    assert custom.geom_scale_factor == 1.0
+
+    config["turbine"]["rotor_diameter"] = 220
+    custom.run()
+
+    assert custom.geom_scale_factor == pytest.approx(0.9392, 1e-4)
 
 
 def test_bouyant_column_volume():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.bouyant_column_volume == pytest.approx(72.5136, 1e-4)
 
 
 def test_center_column_volume():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.center_column_volume == pytest.approx(39.4059, 1e-4)
 
 
 def test_pontoon_volume():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.pontoon_volume == pytest.approx(90.4021, 1e-4)
 
 
 def test_strut_volume():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.strut_volume == pytest.approx(32.9219, 1e-4)
 
 
 def test_substructure_steel_mass():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.substructure_steel_mass == pytest.approx(5000, 1e0)
 
 
 def test_ballast_mass():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.ballast_mass == 2540
 
 
 def test_tower_interface_mass():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.tower_interface_mass == 100
 
 
 def test_substructure_steel_cost():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.steel_cr == 4500
 
 
 def test_substructure_mass():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.substructure_mass == pytest.approx(7642, 1e0)
 
 
 def test_substructure_unit_cost():
-    pass
+
+    custom = CustomSemiSubmersibleDesign(config_custom)
+    custom.run()
+
+    assert custom.substructure_unit_cost == pytest.approx(2.3343e7, 1e-4)
 
 
 def test_custom_design_kwargs():

@@ -3,11 +3,11 @@ plant:
 site:
   depth: 500
 turbine:
-  rotor_diameter: 220
-  turbine_rating: 12
+  rotor_diameter: 240
+  turbine_rating: 15
 semisubmersible_design:
   column_diameter: 12.5
-  wall_thickness": 0.0.045
+  wall_thickness": 0.045
   column_height": 35
   pontoon_length": 51.75
   pontoon_width": 12.5
