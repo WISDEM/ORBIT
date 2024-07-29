@@ -40,6 +40,7 @@ from ORBIT.phases.design import (
     SemiSubmersibleDesign,
     CustomArraySystemDesign,
     OffshoreSubstationDesign,
+    CustomSemiSubmersibleDesign,
     SemiTautMooringSystemDesign,
     OffshoreFloatingSubstationDesign,
 )
@@ -80,6 +81,7 @@ class ProjectManager:
         MooringSystemDesign,
         SemiTautMooringSystemDesign,
         SemiSubmersibleDesign,
+        CustomSemiSubmersibleDesign,
         SparDesign,
         ElectricalDesign,
     )
