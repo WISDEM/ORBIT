@@ -487,8 +487,7 @@ class MonopileDesign(DesignPhase):
             Rated windspeed of turbine (m/s).
         load_factor : float
             Added safety factor on the extreme wind moment.
-            Default: 3.375 (2.5x DNV standard as this model
-             does not design for buckling or fatigue)
+            Default: 1.3 (approximately matches DNV standard)
 
         Returns
         -------
@@ -496,7 +495,7 @@ class MonopileDesign(DesignPhase):
             50 year extreme wind moment (N-m).
         """
 
-        load_factor = kwargs.get("load_factor", 3.375)
+        load_factor = kwargs.get("load_factor", 1.3)
 
         F_50y = self.calculate_50year_wind_load(
             mean_windspeed=mean_windspeed,
