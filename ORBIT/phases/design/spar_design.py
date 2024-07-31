@@ -78,7 +78,6 @@ class SparDesign(DesignPhase):
         depth = self.config["site"]["depth"]
 
         mass = 535.93 + 17.664 * rating**2 + 0.02328 * depth * log(depth)
-        mass = 535.93 + 17.664 * rating**2 + 0.02328 * depth * log(depth)
 
         return mass
 
@@ -119,7 +118,7 @@ class SparDesign(DesignPhase):
         """Calculates the ballast mass of a single spar [1]."""
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -16.536 * rating**2 + 1261.8 * rating - 1554.6
+
         mass = -16.536 * rating**2 + 1261.8 * rating - 1554.6
 
         return mass
@@ -144,7 +143,6 @@ class SparDesign(DesignPhase):
 
         mass = exp(
             3.58
-            + 0.196 * (rating**0.5) * log(rating)
             + 0.196 * (rating**0.5) * log(rating)
             + 0.00001 * depth * log(depth)
         )

@@ -47,7 +47,7 @@ class DesignPhase(BasePhase):
         if isinstance(cost_value, dict):
             if subkey is None:
                 raise ValueError(
-                    f"{key} is a dictionary and requires a" " 'subkey' input."
+                    f"{key} is a dictionary and requires a 'subkey' input."
                 )
 
             if (sub_cost_value := cost_value.get(subkey, None)) is None:

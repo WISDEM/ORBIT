@@ -269,9 +269,6 @@ class ElectricalDesign(CableSystem):
         Calculate the total number of required and redundant cables to
         transmit power to the onshore interconnection.
 
-        Parameters
-        ----------
-        num_redundant : int
         """
 
         num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
@@ -365,10 +362,6 @@ class ElectricalDesign(CableSystem):
     def calc_num_substations(self):
         """Computes number of substations based on HVDC or HVAC
         export cables.
-
-        Parameters
-        ----------
-        substation_capacity : int | float
         """
 
         # HVAC substation capacity
@@ -401,11 +394,8 @@ class ElectricalDesign(CableSystem):
         ) / self.num_substations
 
     def calc_mpt_cost(self):
-        """Computes HVAC main power transformer (MPT). MPT cost is 0 for HVDC.
-
-        Parameters
-        ----------
-        mpt_unit_cost : int | float
+        """Computes HVAC main power transformer (MPT). MPT cost is 0 for
+        HVDC.
         """
 
         _key = "mpt_unit_cost"
@@ -424,11 +414,8 @@ class ElectricalDesign(CableSystem):
         )
 
     def calc_shunt_reactor_cost(self):
-        """Computes HVAC shunt reactor cost. Shunt reactor cost is 0 for HVDC.
-
-        Parameters
-        ----------
-        shunt_unit_cost : int | float
+        """Computes HVAC shunt reactor cost. Shunt reactor cost is 0 for
+        HVDC.
         """
 
         touchdown = self.config["site"]["distance_to_landfall"]
@@ -450,12 +437,7 @@ class ElectricalDesign(CableSystem):
         )
 
     def calc_switchgear_costs(self):
-        """Computes HVAC switchgear cost. Switchgear cost is 0 for HVDC.
-
-        Parameters
-        ----------
-        switchgear_cost : int | float
-        """
+        """Computes HVAC switchgear cost. Switchgear cost is 0 for HVDC."""
 
         _key = "switchgear_cost"
         switchgear_cost = self._oss_design.get(
@@ -469,12 +451,7 @@ class ElectricalDesign(CableSystem):
         self.switchgear_cost = self.num_switchgear * switchgear_cost
 
     def calc_dc_breaker_cost(self):
-        """Computes HVDC circuit breaker cost. Breaker cost is 0 for HVAC.
-
-        Parameters
-        ----------
-        dc_breaker_cost : int | float
-        """
+        """Computes HVDC circuit breaker cost. Breaker cost is 0 for HVAC."""
 
         _key = "dc_breaker_cost"
         dc_breaker_cost = self._oss_design.get(
@@ -488,15 +465,7 @@ class ElectricalDesign(CableSystem):
         self.dc_breaker_cost = num_dc_breakers * dc_breaker_cost
 
     def calc_ancillary_system_cost(self):
-        """
-        Calculates cost of ancillary systems.
-
-        Parameters
-        ----------
-        backup_gen_cost : int | float
-        workspace_cost : int | float
-        other_ancillary_cost : int | float
-        """
+        """Calculates cost of ancillary systems."""
 
         _key = "backup_gen_cost"
         backup_gen_cost = self._oss_design.get(
@@ -518,13 +487,7 @@ class ElectricalDesign(CableSystem):
         ) * self.num_substations
 
     def calc_assembly_cost(self):
-        """
-        Calculates the cost of assembly on land.
-
-        Parameters
-        ----------
-        topside_assembly_factor : int | float
-        """
+        """Calculates the cost of assembly on land."""
 
         _key = "topside_assembly_factor"
         topside_assembly_factor = self._oss_design.get(
@@ -557,11 +520,6 @@ class ElectricalDesign(CableSystem):
         """
         Calculates the mass and associated cost of the substation substructure
         based on equations 81-84 [1].
-
-        Parameters
-        ----------
-        oss_substructure_cost_rate : int | float
-        oss_pile_cost_rate : int | float
         """
 
         _key = "oss_substructure_cost_rate"
@@ -620,13 +578,7 @@ class ElectricalDesign(CableSystem):
         self.topside_deck_space = 1
 
     def calc_topside_mass_and_cost(self):
-        """
-        Calculates the mass and cost of the substation topsides.
-
-        Parameters
-        ----------
-        topside_design_cost: int | float
-        """
+        """Calculates the mass and cost of the substation topsides."""
 
         self.topside_mass = (
             3.85 * (self.mpt_rating * self.num_mpt) / self.num_substations
@@ -644,14 +596,7 @@ class ElectricalDesign(CableSystem):
         self.topside_cost = topside_design_cost
 
     def calc_onshore_cost(self):
-        """Minimum Cost of Onshore Substation Connection.
-
-        Parameters
-        ----------
-        shunt_unit_cost : int | float
-        onshore_converter_cost: int | float
-        switchgear_cost: int | float
-        """
+        """Minimum Cost of Onshore Substation Connection."""
 
         _design = self.config.get("onshore_substation_design", {})
 

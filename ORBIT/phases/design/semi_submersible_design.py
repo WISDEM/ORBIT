@@ -70,7 +70,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -0.9581 * rating**2 + 40.89 * rating + 802.09
+
         mass = -0.9581 * rating**2 + 40.89 * rating + 802.09
 
         return mass
@@ -94,7 +94,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = 2.7894 * rating**2 + 15.591 * rating + 266.03
+
         mass = 2.7894 * rating**2 + 15.591 * rating + 266.03
 
         return mass
@@ -118,6 +118,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
+
         mass = -0.4397 * rating**2 + 21.545 * rating + 177.42
 
         return mass
@@ -141,7 +142,7 @@ class SemiSubmersibleDesign(DesignPhase):
         """
 
         rating = self.config["turbine"]["turbine_rating"]
-        mass = -0.153 * rating**2 + 6.54 * rating + 128.34
+
         mass = -0.153 * rating**2 + 6.54 * rating + 128.34
 
         return mass
