@@ -10,7 +10,6 @@ from math import pi, log
 
 from scipy.optimize import fsolve
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
 
@@ -75,6 +74,8 @@ class MonopileDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
+        self._design = self.config.get("monopile_design", {})
+
         self._outputs = {}
 
     def run(self):
@@ -306,14 +307,10 @@ class MonopileDesign(DesignPhase):
     def monopile_steel_cost(self):
         """Returns the cost of monopile steel (USD/t) fully fabricated."""
 
-        _design = self.config.get("monopile_design", {})
         _key = "monopile_steel_cost"
-
-        try:
-            cost = _design.get(_key, common_costs[_key])
-
-        except KeyError as exc:
-            raise Exception("Cost of monopile steel not found.") from exc
+        cost = self._design.get(
+            _key, self.get_default_cost("monopile_design", _key)
+        )
 
         return cost
 
@@ -321,16 +318,10 @@ class MonopileDesign(DesignPhase):
     def tp_steel_cost(self):
         """Returns the cost of fabricated transition piece steel (USD/t)."""
 
-        _design = self.config.get("monopile_design", {})
         _key = "tp_steel_cost"
-
-        try:
-            cost = _design.get(_key, common_costs[_key])
-
-        except KeyError as exc:
-            raise Exception(
-                "Cost of transition piece steel not found."
-            ) from exc  # noqa: E501
+        cost = self._design.get(
+            _key, self.get_default_cost("monopile_design", _key)
+        )
 
         return cost
 
