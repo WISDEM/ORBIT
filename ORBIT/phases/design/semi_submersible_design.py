@@ -252,10 +252,6 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         "plant": {"num_turbines": "int"},
         "turbine": {"turbine_rating": "MW"},
         "semisubmersible_design": {
-            "stiffened_column_CR": "$/t (optional, default: 3120)",
-            "truss_CR": "$/t (optional, default: 6250)",
-            "heave_plate_CR": "$/t (optional, default: 6250)",
-            "secondary_steel_CR": "$/t (optional, default: 7250)",
             "towing_speed": "km/h (optional, default: 6)",
             "column_diameter": "m (optional, default: 12.5)",
             "wall_thickness": "m (optional, default: 0.045)",
@@ -426,8 +422,10 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         in $USD.
         """
 
-        self.steel_cr = self._design.get("steel_CR", 4500)
-
+        _key = "steel_CR"
+        self.steel_cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
         return self.steel_cr * self.substructure_steel_mass
 
     @property
@@ -452,7 +450,10 @@ class CustomSemiSubmersibleDesign(DesignPhase):
         Does not include final assembly or transportation costs.
         """
 
-        ballast_cr = self._design.get("ballast_material_CR", 150)
+        _key = "ballast_material_CR"
+        ballast_cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
 
         return (
             self.substructure_steel_cost
