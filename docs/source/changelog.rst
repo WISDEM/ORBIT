@@ -15,6 +15,10 @@ Custom Semi-Submersible Design
 - Added Example - Custom Semisubmersible notebook and yaml config file.
 - Updated docs with citations.
 
+Relocate-get-costs
+~~~~~~~~~~~~~~~~~~
+- Relocated all the get design costs in each design class to `common_cost.yaml`. Spar, Semisub, monopile, electrical, offshore substation, and mooring designs all recieved this update.
+
 Merged SemiTaut Moorings
 ~~~~~~~~~~~~~~~~~~~~~~~~
 

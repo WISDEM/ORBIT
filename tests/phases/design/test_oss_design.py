@@ -16,6 +16,7 @@ base = {
     "plant": {"num_turbines": 50},
     "turbine": {"turbine_rating": 6},
     "substation_design": {},
+    "export_system": {"cable": {"number": 3, "cable_type": "HVAC"}},
 }
 
 
@@ -30,6 +31,7 @@ def test_parameter_sweep(depth, num_turbines, turbine_rating):
         "plant": {"num_turbines": num_turbines},
         "turbine": {"turbine_rating": turbine_rating},
         "substation_design": {},
+        "export_system": {"cable": {"number": 3, "cable_type": "HVAC"}},
     }
 
     o = OffshoreSubstationDesign(config)
