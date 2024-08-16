@@ -267,11 +267,23 @@ def test_new_old_hvac_substation():
     assert new.shunt_reactor_cost != old.shunt_reactor_cost
 
 
+def test_hvac_substation():
+    config = deepcopy(base)
+
+    hvac = ElectricalDesign(config)
+    hvac.run()
+
+    assert hvac.total_substation_cost == pytest.approx(134448256, abs=1e0)
+
+
 def test_hvdc_substation():
     config = deepcopy(base)
     config["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
     elect = ElectricalDesign(config)
     elect.run()
+
+    assert elect.total_substation_cost == pytest.approx(451924714, abs=1e0)
+
     assert elect.converter_cost != 0
     assert elect.shunt_reactor_cost == 0
     assert elect.dc_breaker_cost != 0
@@ -285,7 +297,14 @@ def test_hvdc_substation():
     elect = ElectricalDesign(config)
     elect.run()
 
-    # assert elect.num_converters == elect.num_cables    # breaks
+    assert elect.total_substation_cost == pytest.approx(802924714, abs=1e0)
+
+    assert elect.converter_cost != 0
+    assert elect.shunt_reactor_cost == 0
+    assert elect.dc_breaker_cost != 0
+    assert elect.switchgear_cost == 0
+    assert elect.mpt_cost == 0
+    # assert elect.num_cables / elect.num_converters == 2  # breaks
 
 
 def test_onshore_substation():

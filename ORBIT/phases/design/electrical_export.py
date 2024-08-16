@@ -274,7 +274,7 @@ class ElectricalDesign(CableSystem):
         num_required = np.ceil(self._plant_capacity / self.cable.cable_power)
         num_redundant = self._design.get("num_redundant", 0)
 
-        if "HVDC" in self.cable.cable_type:
+        if "HVDC" in self.cable.cable_type.upper():
             num_required *= 2
             num_redundant *= 2
 
@@ -369,7 +369,7 @@ class ElectricalDesign(CableSystem):
             "substation_capacity", 1200
         )  # MW
 
-        if "HVDC" in self.cable.cable_type:
+        if "HVDC" in self.cable.cable_type.upper():
             self.num_substations = self._oss_design.get(
                 "num_substations", int(self.num_cables / 2)
             )
@@ -406,7 +406,9 @@ class ElectricalDesign(CableSystem):
         self.num_mpt = self.num_cables
 
         self.mpt_cost = (
-            0 if "HVDC" in self.cable.cable_type else self.num_mpt * _mpt_cost
+            0
+            if "HVDC" in self.cable.cable_type.upper()
+            else self.num_mpt * _mpt_cost
         )
 
         self.mpt_rating = (
@@ -426,7 +428,7 @@ class ElectricalDesign(CableSystem):
             _key, self.get_default_cost("substation_design", _key)
         )
 
-        if "HVDC" in self.cable.cable_type:
+        if "HVDC" in self.cable.cable_type.upper():
             self.compensation = 0
         else:
             for cable in self.cables.values():
@@ -445,7 +447,7 @@ class ElectricalDesign(CableSystem):
         )
 
         self.num_switchgear = (
-            0 if "HVDC" in self.cable.cable_type else self.num_cables
+            0 if "HVDC" in self.cable.cable_type.upper() else self.num_cables
         )
 
         self.switchgear_cost = self.num_switchgear * switchgear_cost
@@ -459,7 +461,7 @@ class ElectricalDesign(CableSystem):
         )
 
         num_dc_breakers = (
-            self.num_cables if "HVDC" in self.cable.cable_type else 0
+            self.num_cables if "HVDC" in self.cable.cable_type.upper() else 0
         )
 
         self.dc_breaker_cost = num_dc_breakers * dc_breaker_cost
@@ -539,7 +541,7 @@ class ElectricalDesign(CableSystem):
 
         substructure_pile_mass = (
             0
-            if "Floating" in self.substructure_type
+            if self.substructure_type.lower() == "floating"
             else 8 * substructure_mass**0.5574
         )
 
