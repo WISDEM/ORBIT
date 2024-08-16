@@ -161,7 +161,7 @@ class MooringSystemDesign(DesignPhase):
         """
 
         # Add extra fixed line length for drag embedments
-        if self.anchor_type == "Drag Embedment":
+        if any(w in self.anchor_type.lower() for w in ["drag", "embedment"]):
             fixed = self._design.get("drag_embedment_fixed_length", 500)
 
         else:
@@ -169,7 +169,7 @@ class MooringSystemDesign(DesignPhase):
 
         draft = self._design.get("draft_depth", 20)
 
-        if self.mooring_type == "SemiTaut":
+        if "semitaut" in self.mooring_type.lower():
 
             # Interpolation of rope and chain length at project depth
             self.chain_length = interp1d(
@@ -209,7 +209,7 @@ class MooringSystemDesign(DesignPhase):
                 + self.rope_length * rope_mass_per_m
             ) / 1e3  # tonnes
 
-        elif self.mooring_type == "TLP":
+        elif "tlp" in self.mooring_type.lower():
 
             self.line_length = self.depth - draft
 
@@ -233,9 +233,11 @@ class MooringSystemDesign(DesignPhase):
         different anchors.
         """
 
-        if self.mooring_type == "SemiTaut":
+        if "semitaut" in self.mooring_type.lower():
 
-            if self.anchor_type == "Drag Embedment":
+            if any(
+                w in self.anchor_type.lower() for w in ["drag", "embedment"]
+            ):
                 self.anchor_mass = 20
 
                 # Interpolation of anchor cost at project depth
@@ -253,7 +255,9 @@ class MooringSystemDesign(DesignPhase):
 
         else:
 
-            if self.anchor_type == "Drag Embedment":
+            if any(
+                w in self.anchor_type.lower() for w in ["drag", "embedment"]
+            ):
                 self.anchor_mass = 20
                 self.anchor_cost = self.breaking_load / 9.81 / 20.0 * 2000.0
 
@@ -267,7 +271,7 @@ class MooringSystemDesign(DesignPhase):
     def line_cost(self):
         """Returns cost of one line mooring line."""
 
-        if self.mooring_type == "SemiTaut":
+        if "semitaut" in self.mooring_type.lower():
             # Interpolation of line cost at project depth
             line_cost = interp1d(
                 self._semitaut_params["depths"],
