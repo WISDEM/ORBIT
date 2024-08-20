@@ -26,6 +26,9 @@ weather_df = pd.DataFrame(test_weather).set_index("datetime")
 
 config = extract_library_specs("config", "project_manager")
 complete_project = extract_library_specs("config", "complete_project")
+complete_floating_project = extract_library_specs(
+    "config", "complete_floating_project"
+)
 
 
 # Top Level
@@ -921,3 +924,17 @@ def test_capex_categories():
         new_breakdown["Export System Installation"]
         > baseline["Export System Installation"]
     )
+
+
+def test_total_capex():
+    """Test total capex for baseline fixed and floating project."""
+
+    fix_project = ProjectManager(complete_project)
+    fix_project.run()
+
+    assert fix_project.total_capex == pytest.approx(1207278397.56, abs=1e-1)
+
+    flt_project = ProjectManager(complete_floating_project)
+    flt_project.run()
+
+    assert flt_project.total_capex == pytest.approx(3284781912.73, abs=1e-1)
