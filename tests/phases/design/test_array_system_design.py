@@ -239,3 +239,11 @@ def test_floating_calculations():
 
     with_cat_length = sim3.total_length
     assert with_cat_length < no_cat_length
+
+
+def test_total_cable_cost():
+
+    array = ArraySystemDesign(config_full_ring)
+    array.run()
+
+    assert array.total_cable_cost == pytest.approx(11969999, abs=1e0)

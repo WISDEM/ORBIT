@@ -140,7 +140,7 @@ class ElectricalDesign(CableSystem):
 
         self.substructure_type = self._oss_design.get(
             "oss_substructure_type", "Monopile"
-        )
+        ).title()
 
         self._outputs = {}
 
@@ -539,7 +539,7 @@ class ElectricalDesign(CableSystem):
 
         substructure_pile_mass = (
             0
-            if "Floating" in self.substructure_type
+            if self.substructure_type == "Floating"
             else 8 * substructure_mass**0.5574
         )
 

@@ -84,7 +84,18 @@ class Cable:
             raise ValueError(f"{needs_value} must be defined in cable_specs")
 
         self.line_frequency = cable_specs.get("line_frequency", 60)
-        self.cable_type = cable_specs.get("cable_type", "HVAC")
+        cable_type = cable_specs.get("cable_type", "HVAC").split("-")
+        if len(cable_type) == 1:
+            self.cable_type = cable_type[0].upper()
+        elif len(cable_type) == 2:
+            self.cable_type = (
+                f"{cable_type[0].upper()}-{cable_type[1].lower()}"
+            )
+        else:
+            raise ValueError(
+                "`cable_type` should be of the form `type-subtype`,"
+                " e.g. 'HVDC-monopole'."
+            )
 
         # Calc additional cable specs
         if self.cable_type == "HVAC":
