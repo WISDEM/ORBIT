@@ -86,3 +86,11 @@ def test_oss_kwargs():
         cost = o.total_cost
 
         assert cost != base_cost
+
+
+def test_total_cost():
+
+    oss = OffshoreSubstationDesign(base)
+    oss.run()
+
+    assert oss.total_cost == pytest.approx(158022050, abs=1e0)

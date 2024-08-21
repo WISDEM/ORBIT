@@ -73,8 +73,12 @@ class MooringSystemDesign(DesignPhase):
 
         self._design = self.config.get("mooring_system_design", {})
         self.num_lines = self._design.get("num_lines", 4)
-        self.anchor_type = self._design.get("anchor_type", "Suction Pile")
-        self.mooring_type = self._design.get("mooring_type", "Catenary")
+        self.anchor_type = self._design.get(
+            "anchor_type", "Suction Pile"
+        ).title()
+        self.mooring_type = self._design.get(
+            "mooring_type", "Catenary"
+        ).title()
 
         # Semi-Taut mooring system design parameters based on depth [2].
         self._semitaut_params = {
@@ -169,7 +173,7 @@ class MooringSystemDesign(DesignPhase):
 
         draft = self._design.get("draft_depth", 20)
 
-        if self.mooring_type == "SemiTaut":
+        if self.mooring_type == "Semitaut":
 
             # Interpolation of rope and chain length at project depth
             self.chain_length = interp1d(
@@ -209,7 +213,7 @@ class MooringSystemDesign(DesignPhase):
                 + self.rope_length * rope_mass_per_m
             ) / 1e3  # tonnes
 
-        elif self.mooring_type == "TLP":
+        elif self.mooring_type == "Tlp":
 
             self.line_length = self.depth - draft
 
@@ -233,7 +237,7 @@ class MooringSystemDesign(DesignPhase):
         different anchors.
         """
 
-        if self.mooring_type == "SemiTaut":
+        if self.mooring_type == "Semitaut":
 
             if self.anchor_type == "Drag Embedment":
                 self.anchor_mass = 20
@@ -267,7 +271,7 @@ class MooringSystemDesign(DesignPhase):
     def line_cost(self):
         """Returns cost of one line mooring line."""
 
-        if self.mooring_type == "SemiTaut":
+        if self.mooring_type == "Semitaut":
             # Interpolation of line cost at project depth
             line_cost = interp1d(
                 self._semitaut_params["depths"],

@@ -65,3 +65,11 @@ def test_design_kwargs():
         cost = s.total_cost
 
         assert cost != base_cost
+
+
+def test_total_cost():
+
+    spar = SparDesign(base)
+    spar.run()
+
+    assert spar.total_cost == pytest.approx(698569358, abs=1e0)
