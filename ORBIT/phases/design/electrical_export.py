@@ -140,7 +140,7 @@ class ElectricalDesign(CableSystem):
 
         self.substructure_type = self._oss_design.get(
             "oss_substructure_type", "Monopile"
-        )
+        ).title()
 
         self._outputs = {}
 
@@ -565,7 +565,7 @@ class ElectricalDesign(CableSystem):
 
         substructure_pile_mass = (
             0
-            if "Floating" in self.substructure_type
+            if self.substructure_type == "Floating"
             else 8 * substructure_mass**0.5574
         )
 
@@ -627,7 +627,7 @@ class ElectricalDesign(CableSystem):
         """Minimum Cost of Onshore Substation Connection."""
 
         _design = self.config.get("onshore_substation_design", {})
-        onshore_substation_design =self.get_onshore_substation_design()
+        onshore_substation_design = self.get_onshore_substation_design()
 
         _key = "onshore_converter_cost"
         _converter_cost = _design.get(
