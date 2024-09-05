@@ -351,9 +351,6 @@ class ElectricalDesign(CableSystem):
 
         """SUBSTATION"""
     def get_substation_design(self):   
-        #Matching cable name with corresponding section in common_costs
-        #cable_name = self.cable.name
-        #voltage = next(part for part in cable_name.split('_') if part.endswith("kV"))
         voltage = self.cable.rated_voltage
         substation_design = f"substation_design_{voltage}kV"
 
@@ -366,7 +363,6 @@ class ElectricalDesign(CableSystem):
         return substation_design
     
     def get_onshore_substation_design(self):   
-        #Matching cable name with corresponding section in common_costs
         voltage = self.cable.rated_voltage
         onshore_substation_design = f"onshore_substation_design_{voltage}kV"
 
