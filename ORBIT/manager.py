@@ -324,20 +324,20 @@ class ProjectManager:
             "discount_rate": "yearly (optional, default: .025)",
             "opex_rate": "$/kW/year (optional, default: 150)",
             "construction_insurance": "$/kW (optional, default: value calculated using construction_insurance_factor)",
-            "construction_insurance_factor": "float (optional, default: 0.0115)",
-            "decommissioning": "$/kW (optional, default: value calculated using decommissioning_factor)",
-            "decommissioning_factor": "float (optional, default: 0.1725)",
-            "project_completion": "$/kW (optional, default: value calculated using project_completion_factor)",
-            "project_completion_factor": "float (optional, default: 0.0115)",
-            "procurement_contingency": "$/kW (optional, default: value calculated using procurement_contingency_factor)",
-            "procurement_contingency_factor": "float (optional, default: 0.0575)",
-            "installation_contingency": "$/kW (optional, default: value calculated using installation_contingency_factor)",
-            "installation_contingency_factor": "float (optional, default: 0.345)",
             "construction_financing": "$/kW (optional, default: value calculated using construction_financing_factor))",
+            "procurement_contingency": "$/kW (optional, default: value calculated using procurement_contingency_factor)",
+            "installation_contingency": "$/kW (optional, default: value calculated using installation_contingency_factor)",
+             "decommissioning": "$/kW (optional, default: value calculated using decommissioning_factor)",
+            "project_completion": "$/kW (optional, default: value calculated using project_completion_factor)",
+            "construction_insurance_factor": "float (optional, default: 0.0115)",
             "construction_financing_factor": "$/kW (optional, default: value calculated using spend_schedule, tax_rate and interest_during_construction))",
             "spend_schedule": "dict (optional, default: {0: 0.25, 1: 0.25, 2: 0.3, 3: 0.1, 4: 0.1, 5: 0.0}",
             "tax_rate": "float (optional, default: 0.26",
             "interest_during_construction": "float (optional, default: 0.044",
+            "procurement_contingency_factor": "float (optional, default: 0.0575)",
+            "installation_contingency_factor": "float (optional, default: 0.345)",
+            "decommissioning_factor": "float (optional, default: 0.1725)",
+            "project_completion_factor": "float (optional, default: 0.0115)",
             "site_auction_price": "$ (optional, default: 100e6)",
             "site_assessment_cost": "$ (optional, default: 50e6)",
             "construction_plan_cost": "$ (optional, default: 1e6)",
@@ -984,8 +984,8 @@ class ProjectManager:
             "system_capex_per_kw": self.system_capex_per_kw,
             "overnight_capex": self.overnight_capex,
             "overnight_capex_per_kw": self.overnight_capex_per_kw,
-            "soft_capex": sum(self.soft_capex.values()),
-            "soft_capex_per_kw": sum(self.soft_capex_per_kw.values()), 
+            "soft_capex": self.soft_capex,
+            "soft_capex_per_kw": self.soft_capex_per_kw,
             "bos_capex": self.bos_capex,
             "bos_capex_per_kw": self.bos_capex_per_kw,
             "project_capex": self.project_capex,
@@ -1383,7 +1383,7 @@ class ProjectManager:
 
         outputs["Turbine"] = self.turbine_capex
         
-        outputs["Soft"] = sum(self.soft_capex.values())
+        outputs["Soft"] = self.soft_capex
         
         outputs["Project"] = self.project_capex
 
@@ -1442,7 +1442,7 @@ class ProjectManager:
 
         outputs["Turbine"] = self.turbine_capex
         
-        outputs = {**outputs, **self.soft_capex}
+        outputs = {**outputs, **self.soft_capex_breakdown}
         
         outputs["Project"] = self.project_capex
 
@@ -1506,6 +1506,40 @@ class ProjectManager:
         """Returns the overnight capital cost of the project."""
 
         return self.system_capex + self.turbine_capex
+
+    @property
+    def soft_capex(self):
+        """Returns Total Soft CapEx."""
+
+        return sum(self.soft_capex_breakdown.values())
+
+    @property
+    def soft_capex_per_kw(self):
+        """Returns Total Soft CapEx per kW."""
+
+        try:
+            capex = sum(self.soft_capex_breakdown.values()) / (self.capacity * 1000)
+
+        except TypeError:
+            capex = None
+
+        return capex
+
+    @property
+    def soft_capex_breakdown(self):
+        """Returns soft cost breakdown."""
+
+        soft_capex = {"Construction Insurance": self.construction_insurance_capex,
+                      "Decommissioning": self.decommissioning_capex,
+                      "Project Completion": self.project_completion_capex,
+                      "Procurement Contingency": self.procurement_contingency_capex,
+                      "Installation Contingency": self.installation_contingency_capex,
+                      "Construction Financing": self.construction_financing_capex
+                     }
+
+        return soft_capex
+
+    
 
     @property
     def construction_insurance_capex(self):
@@ -1674,34 +1708,7 @@ class ProjectManager:
 
         return construction_financing
 
-    @property
-    def soft_capex_breakdown(self):
-        """Returns soft cost breakdown."""
 
-        soft_capex = {"Construction Insurance": self.construction_insurance_capex,
-                      "Decommissioning": self.decommissioning_capex,
-                      "Project Completion": self.project_completion_capex,
-                      "Procurement Contingency": self.procurement_contingency_capex,
-                      "Installation Contingency": self.installation_contingency_capex,
-                      "Construction Financing": self.construction_financing_capex
-                     }
-
-        return soft_capex
-
-    @property
-    def soft_capex(self):
-        """Returns soft cost breakdown."""
-
-        return soft_capex
-
-    @property
-    def soft_capex_per_kw(self):
-        """Returns Soft Cost CapEx per kW breakdown by category."""
-
-        return {
-            k: v / (self.capacity * 1000)
-            for k, v in self.soft_capex.items()
-        }
 
     @property
     def project_capex(self):
@@ -1747,7 +1754,7 @@ class ProjectManager:
         return (
             self.bos_capex
             + self.turbine_capex
-            + sum(self.soft_capex.values())
+            + self.soft_capex
             + self.project_capex
         )
 
