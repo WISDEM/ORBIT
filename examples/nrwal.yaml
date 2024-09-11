@@ -1,0 +1,60 @@
+# --- Minimum Required ---
+site:
+  depth: 30
+  distance: 100
+  distance_to_landfall: 60
+  mean_windspeed: 9
+turbine: 17MW_low_SP
+plant:
+  layout: grid
+  num_turbines: 36
+  row_spacing: 7
+  substation_distance: 1
+  turbine_spacing: 7
+# --- Additional Configs ---
+OffshoreSubstationInstallation:
+  feeder: example_heavy_feeder
+  num_feeders: 1
+array_cable_install_vessel: example_cable_lay_vessel
+array_system_design:
+  cables:
+  - XLPE_630mm_66kV
+commissioning: 0.01
+decommissioning: 0.15
+export_cable_bury_vessel: example_cable_lay_vessel
+export_cable_install_vessel: example_cable_lay_vessel
+export_system_design:
+  cables: XLPE_1000mm_220kV
+  percent_added_length: 0.05
+landfall:
+  interconnection_distance: 3
+  trench_length: 2
+oss_install_vessel: example_heavy_lift_vessel
+
+scour_protection_design:
+  cost_per_tonne: 40
+  scour_protection_depth: 1
+spi_vessel: example_scour_protection_vessel
+wtiv: example_wtiv
+port:
+  monthly_rate: 2000000.0
+  sub_assembly_lines: 1
+  turbine_assembly_cranes: 1
+# --- Don't specify these here since they're set in the curve generator ---
+# design_phases:
+# - MonopileDesign
+# - ScourProtectionDesign
+# - ArraySystemDesign
+# - ExportSystemDesign
+# - OffshoreSubstationDesign
+# install_phases:
+#   ArrayCableInstallation: 0
+#   ExportCableInstallation: 0
+#   MonopileInstallation: !!python/tuple
+#   - ScourProtectionInstallation
+#   - 0.5
+#   OffshoreSubstationInstallation: 0
+#   ScourProtectionInstallation: 0
+#   TurbineInstallation: !!python/tuple
+#   - MonopileInstallation
+#   - 0.1
