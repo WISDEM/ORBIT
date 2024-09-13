@@ -41,7 +41,7 @@ the BOS process, split into :ref:`design <design>` and
 define which phases are needed to model their project or scenario using
 :ref:`ProjectManager <manager>`.
 
-ORBIT is written in Python 3.7 and utilizes
+ORBIT is written in Python 3.10 and utilizes
 `SimPy <https://simpy.readthedocs.io/en/latest/>`_'s discrete event simulation
 framework to model individual processes during the installation phases,
 allowing for the effects of weather delays and vessel interactions to be

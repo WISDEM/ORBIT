@@ -3,7 +3,7 @@
 __author__ = ["Jake Nunemaker", "Rob Hammond"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = ["Jake Nunemaker", "Rob Hammond"]
-__email__ = ["jake.nunemaker@nrel.gov" "robert.hammond@nrel.gov"]
+__email__ = ["jake.nunemaker@nrel.gov" "rob.hammond@nrel.gov"]
 
 
 from .design_phase import DesignPhase  # isort:skip
@@ -17,4 +17,3 @@ from .export_system_design import ExportSystemDesign
 from .mooring_system_design import MooringSystemDesign
 from .scour_protection_design import ScourProtectionDesign
 from .semi_submersible_design import SemiSubmersibleDesign
-from .SemiTaut_mooring_system_design import SemiTautMooringSystemDesign
