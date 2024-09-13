@@ -31,8 +31,8 @@ substructure:
 substation_design:
   oss_substructure_type: Floating
 mooring_system_design:
-  anchor_type: Drag Embedment
-  mooring_type: SemiTaut
+  anchor_type: Suction Pile
+  mooring_type: Catenary
 array_system:
   free_cable_length: 0.5
 array_system_design:
