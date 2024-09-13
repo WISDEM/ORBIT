@@ -54,7 +54,7 @@ def test_paramater_sweep(depth, mean_ws, turbine):
     assert 4 < m._outputs["monopile"]["diameter"] < 13
 
     # Check valid monopile mass
-    assert 200 < m._outputs["monopile"]["mass"] < 5000
+    assert 200 < m._outputs["monopile"]["mass"] < 2500
 
     # Check valid transition piece diameter
     assert 4 < m._outputs["transition_piece"]["diameter"] < 14
@@ -117,3 +117,14 @@ def test_transition_piece_kwargs():
         results = m._outputs["transition_piece"]
 
         assert results != base_results
+
+
+def test_total_cost():
+    """Simple unit test to track total cost of base configuration."""
+
+    mono = MonopileDesign(base)
+    mono.run()
+
+    print(mono.total_cost)
+
+    assert mono.total_cost == pytest.approx(68833066, abs=1e0)

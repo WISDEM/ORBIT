@@ -207,3 +207,11 @@ def test_custom_design_kwargs():
         cost = cust.total_cost
 
         assert cost != base_cost
+
+
+def test_total_cost():
+
+    semi = SemiSubmersibleDesign(base)
+    semi.run()
+
+    assert semi.total_cost == pytest.approx(630709636, abs=1e0)
