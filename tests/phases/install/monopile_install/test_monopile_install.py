@@ -71,7 +71,9 @@ def test_vessel_initialization(config):
     ids=["wtiv_only", "single_feeder", "multi_feeder"],
 )
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging(weather, config):
 
@@ -86,7 +88,7 @@ def test_for_complete_logging(weather, config):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 
@@ -207,10 +209,10 @@ def test_grout_kwargs():
     sim = MonopileInstallation(config_wtiv)
     sim.run()
 
-    assert "Bolt TP" in list([a["action"] for a in sim.env.actions])
+    assert "Bolt TP" in [a["action"] for a in sim.env.actions]
 
     sim = MonopileInstallation(config_wtiv, tp_connection_type="grouted")
     sim.run()
 
-    assert "Pump TP Grout" in list([a["action"] for a in sim.env.actions])
-    assert "Cure TP Grout" in list([a["action"] for a in sim.env.actions])
+    assert "Pump TP Grout" in [a["action"] for a in sim.env.actions]
+    assert "Cure TP Grout" in [a["action"] for a in sim.env.actions]

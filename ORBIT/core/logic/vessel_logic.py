@@ -1,4 +1,4 @@
-"""This module contains common simulation logic related to vessels."""
+"""Provides common simulation logic related to vessels."""
 
 __author__ = ["Jake Nunemaker", "Rob Hammond"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -71,13 +71,17 @@ def stabilize(vessel, **kwargs):
         extension = kwargs.get("extension", site_depth + 10)
         jackup_time = jacksys.jacking_time(extension, site_depth)
         yield vessel.task_wrapper(
-            "Jackup", jackup_time, constraints=vessel.transit_limits, **kwargs
+            "Jackup",
+            jackup_time,
+            constraints=vessel.transit_limits,
+            **kwargs,
         )
 
-    except MissingComponent:
+    except MissingComponent as exc:
         raise MissingComponent(
-            vessel, ["Dynamic Positioning", "Jacking System"]
-        )
+            vessel,
+            ["Dynamic Positioning", "Jacking System"],
+        ) from exc
 
 
 @process
@@ -123,7 +127,9 @@ def position_onsite(vessel, **kwargs):
     position_time = kwargs.get("site_position_time", pt["site_position_time"])
 
     yield vessel.task_wrapper(
-        "Position Onsite", position_time, constraints=vessel.transit_limits
+        "Position Onsite",
+        position_time,
+        constraints=vessel.transit_limits,
     )
 
 
@@ -162,7 +168,10 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             # Get list of items
             try:
                 yield get_list_of_items_from_port(
-                    vessel, port, items, **kwargs
+                    vessel,
+                    port,
+                    items,
+                    **kwargs,
                 )
 
             except ItemNotFound:
@@ -178,7 +187,9 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             vessel.update_trip_data()
             vessel.at_port = False
             yield vessel.task_wrapper(
-                "Transit", transit_time, constraints=vessel.transit_limits
+                "Transit",
+                transit_time,
+                constraints=vessel.transit_limits,
             )
             yield stabilize(vessel, **kwargs)
             vessel.at_site = True
@@ -194,7 +205,9 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
                 queue_time = vessel.env.now - queue_start
                 if queue_time > 0:
                     vessel.submit_action_log(
-                        "Queue", queue_time, location="Site"
+                        "Queue",
+                        queue_time,
+                        location="Site",
                     )
 
                 queue.vessel = vessel
@@ -207,7 +220,9 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
                 active_time = vessel.env.now - active_start
 
                 vessel.submit_action_log(
-                    "ActiveFeeder", active_time, location="Site"
+                    "ActiveFeeder",
+                    active_time,
+                    location="Site",
                 )
 
                 queue.vessel = None
@@ -217,7 +232,9 @@ def shuttle_items_to_queue(vessel, port, queue, distance, items, **kwargs):
             vessel.at_site = False
             yield jackdown_if_required(vessel, **kwargs)
             yield vessel.task_wrapper(
-                "Transit", transit_time, constraints=vessel.transit_limits
+                "Transit",
+                transit_time,
+                constraints=vessel.transit_limits,
             )
             vessel.at_port = True
 
@@ -307,7 +324,14 @@ def get_list_of_items_from_port(vessel, port, items, **kwargs):
 
 @process
 def shuttle_items_to_queue_wait(
-    vessel, port, queue, distance, items, per_trip, assigned, **kwargs
+    vessel,
+    port,
+    queue,
+    distance,
+    items,
+    per_trip,
+    assigned,
+    **kwargs,
 ):
     """
     Shuttles a list of items from port to queue.
@@ -338,13 +362,18 @@ def shuttle_items_to_queue_wait(
         # Get list of items
         per_trip = max([per_trip, 1])
         yield get_list_of_items_from_port_wait(
-            vessel, port, items * per_trip, **kwargs
+            vessel,
+            port,
+            items * per_trip,
+            **kwargs,
         )
 
         # Transit to site
         vessel.update_trip_data()
         yield vessel.task(
-            "Transit", transit_time, constraints=vessel.transit_limits
+            "Transit",
+            transit_time,
+            constraints=vessel.transit_limits,
         )
         yield stabilize(vessel, **kwargs)
 
@@ -369,7 +398,9 @@ def shuttle_items_to_queue_wait(
             active_time = vessel.env.now - active_start
 
             vessel.submit_action_log(
-                "ActiveFeeder", active_time, location="Site"
+                "ActiveFeeder",
+                active_time,
+                location="Site",
             )
 
             queue.vessel = None
@@ -379,7 +410,9 @@ def shuttle_items_to_queue_wait(
             vessel.at_site = False
             yield jackdown_if_required(vessel, **kwargs)
             yield vessel.task(
-                "Transit", transit_time, constraints=vessel.transit_limits
+                "Transit",
+                transit_time,
+                constraints=vessel.transit_limits,
             )
 
         n += per_trip
@@ -411,7 +444,7 @@ def get_list_of_items_from_port_wait(vessel, port, items, **kwargs):
 
         for i in items:
             wait_start = vessel.env.now
-            item = yield port.get(lambda x: x.type == i)
+            item = yield port.get(lambda x: x.type == i)  # noqa: B023
             wait_time = vessel.env.now - wait_start
 
             if wait_time > 0:
@@ -422,5 +455,8 @@ def get_list_of_items_from_port_wait(vessel, port, items, **kwargs):
 
             if time > 0:
                 yield vessel.task(
-                    action, time, constraints=vessel.transit_limits, **kwargs
+                    action,
+                    time,
+                    constraints=vessel.transit_limits,
+                    **kwargs,
                 )

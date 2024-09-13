@@ -1,10 +1,11 @@
-"""Tests for the `GravityBasedInstallation` class and related infrastructure."""
+"""Tests for the `GravityBasedInstallation` class and infrastructure."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
+from copy import deepcopy
 
 import pandas as pd
 import pytest
@@ -37,7 +38,9 @@ def test_simulation_setup():
 
 
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 @pytest.mark.parametrize("config", (config, no_supply))
 def test_for_complete_logging(weather, config):
@@ -53,6 +56,23 @@ def test_for_complete_logging(weather, config):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
+
+
+def test_deprecated_vessel():
+
+    deprecated = deepcopy(config)
+    deprecated["support_vessel"] = "test_support_vessel"
+
+    with pytest.deprecated_call():
+        sim = GravityBasedInstallation(deprecated)
+        sim.run()
+
+    deprecated2 = deepcopy(config)
+    deprecated2["towing_vessel_groups"]["station_keeping_vessels"] = 2
+
+    with pytest.deprecated_call():
+        sim = GravityBasedInstallation(deprecated2)
+        sim.run()

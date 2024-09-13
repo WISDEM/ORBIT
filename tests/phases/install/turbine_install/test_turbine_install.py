@@ -19,12 +19,15 @@ from ORBIT.phases.install import TurbineInstallation
 
 config_wtiv = extract_library_specs("config", "turbine_install_wtiv")
 config_long_mobilize = extract_library_specs(
-    "config", "turbine_install_long_mobilize"
+    "config",
+    "turbine_install_long_mobilize",
 )
 config_wtiv_feeder = extract_library_specs("config", "turbine_install_feeder")
 config_wtiv_multi_feeder = deepcopy(config_wtiv_feeder)
 config_wtiv_multi_feeder["num_feeders"] = 2
 floating = extract_library_specs("config", "floating_turbine_install_feeder")
+
+config_22mw = extract_library_specs("config", "turbine_install_22mw_generic")
 
 
 @pytest.mark.parametrize(
@@ -65,8 +68,7 @@ def test_vessel_creation(config):
     js = sim.wtiv._jacksys_specs
     dp = sim.wtiv._dp_specs
 
-    if not any([js, dp]):
-        assert False
+    assert any([js, dp])
 
     if config.get("feeder", None) is not None:
         assert len(sim.feeders) == config["num_feeders"]
@@ -77,7 +79,8 @@ def test_vessel_creation(config):
 
 
 @pytest.mark.parametrize(
-    "config, expected", [(config_wtiv, 72), (config_long_mobilize, 14 * 24)]
+    "config, expected",
+    [(config_wtiv, 72), (config_long_mobilize, 14 * 24)],
 )
 def test_vessel_mobilize(config, expected):
 
@@ -94,7 +97,9 @@ def test_vessel_mobilize(config, expected):
     ids=["wtiv_only", "single_feeder", "multi_feeder", "floating"],
 )
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging(weather, config):
 
@@ -109,7 +114,7 @@ def test_for_complete_logging(weather, config):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 
@@ -250,3 +255,41 @@ def test_multiple_tower_sections():
         vl = vl.assign(shift=(vl["time"] - vl["time"].shift(1)))
 
         assert (vl["shift"] - vl["duration"]).abs().max() < 1e-9
+
+
+def test_large_turbine_installation():
+    """
+    Tests that the library extracted 22MW turbine differs from the project
+    test config.
+    """
+
+    sim = TurbineInstallation(config_wtiv)
+    sim.run()
+
+    sim_22 = TurbineInstallation(config_22mw)
+    sim_22.run()
+
+    def count_component(component_list, component):
+
+        return sum(1 for i in component_list if i == component)
+
+    assert sim.config != sim_22.config
+    assert sim.capex_category == sim_22.capex_category
+
+    assert sim.installation_capex < sim_22.installation_capex
+    assert sim.total_phase_time != sim_22.total_phase_time
+
+    # sim has 1 Nacelle, 3 Blades, and 1 TowerSection
+    # sim_22 has 1 Nacelle, 3 Blades, and 3 TowerSections
+    assert count_component(sim.component_list, "Blade") == count_component(
+        sim_22.component_list,
+        "Blade",
+    )
+    assert count_component(sim.component_list, "Nacelle") == count_component(
+        sim_22.component_list,
+        "Nacelle",
+    )
+    assert count_component(
+        sim.component_list,
+        "TowerSection",
+    ) < count_component(sim_22.component_list, "TowerSection")

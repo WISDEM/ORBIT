@@ -2,20 +2,19 @@ ci:
     skip: [isort, black, pylint]
 
 repos:
--   repo: https://github.com/timothycrosley/isort
-    rev: 4.3.21
+-   repo: https://github.com/pycqa/isort
+    rev:  5.13.2
     hooks:
-        - id: isort
-          name: isort
-          stages: [commit]
+    -   id: isort
+        name: isort (python)
 
 -   repo: https://github.com/psf/black
-    rev: stable
+    rev: 24.2.0
     hooks:
-        - id: black
-          name: black
-          stages: [commit]
-          exclude: ^ORBIT/api/wisdem
+    -   id: black
+        name: black
+        stages: [commit]
+        exclude: ^ORBIT/api/wisdem
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
@@ -25,16 +24,16 @@ repos:
     -   id: check-executables-have-shebangs
     -   id: check-json
     -   id: check-yaml
+        args: [--unsafe]  # allow Python constructors
     -   id: check-merge-conflict
     -   id: check-symlinks
-    -   id: flake8
-        exclude: ^tests/
     -   id: mixed-line-ending
     -   id: pretty-format-json
         args: [--autofix]
 
--   repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.1.1
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.4.10
     hooks:
-    -   id: pylint
-        exclude: ^tests/
+    -   id: ruff
+        args: [--fix]

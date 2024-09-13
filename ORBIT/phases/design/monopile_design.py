@@ -10,7 +10,6 @@ from math import pi, log
 
 from scipy.optimize import fsolve
 
-from ORBIT.core.defaults import common_costs
 from ORBIT.phases.design import DesignPhase
 
 
@@ -75,6 +74,8 @@ class MonopileDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
+        self._design = self.config.get("monopile_design", {})
+
         self._outputs = {}
 
     def run(self):
@@ -230,7 +231,7 @@ class MonopileDesign(DesignPhase):
             "diameter": D_tp,
             "mass": m_tp,
             "length": L_tp,
-            "deck_space": D_tp ** 2,
+            "deck_space": D_tp**2,
             "unit_cost": m_tp * self.tp_steel_cost,
         }
 
@@ -306,31 +307,21 @@ class MonopileDesign(DesignPhase):
     def monopile_steel_cost(self):
         """Returns the cost of monopile steel (USD/t) fully fabricated."""
 
-        _design = self.config.get("monopile_design", {})
         _key = "monopile_steel_cost"
-
-        try:
-            cost = _design.get(_key, common_costs[_key])
-
-        except KeyError:
-            raise Exception("Cost of monopile steel not found.")
+        cost = self._design.get(
+            _key, self.get_default_cost("monopile_design", _key)
+        )
 
         return cost
 
     @property
     def tp_steel_cost(self):
-        """
-        Returns the cost of transition piece steel (USD/t) fully fabricated.
-        """
+        """Returns the cost of fabricated transition piece steel (USD/t)."""
 
-        _design = self.config.get("monopile_design", {})
         _key = "tp_steel_cost"
-
-        try:
-            cost = _design.get(_key, common_costs[_key])
-
-        except KeyError:
-            raise Exception("Cost of transition piece steel not found.")
+        cost = self._design.get(
+            _key, self.get_default_cost("monopile_design", _key)
+        )
 
         return cost
 
@@ -355,7 +346,7 @@ class MonopileDesign(DesignPhase):
         """
 
         density = kwargs.get("monopile_density", 7860)  # kg/m3
-        volume = (pi / 4) * (Dp ** 2 - (Dp - tp) ** 2) * Lt
+        volume = (pi / 4) * (Dp**2 - (Dp - 2 * tp) ** 2) * Lt
         mass = density * volume / 907.185
 
         return mass
@@ -364,6 +355,7 @@ class MonopileDesign(DesignPhase):
     def pile_embedment_length(Ip, **kwargs):
         """
         Calculates required pile embedment length.
+
         Source: Arany & Bhattacharya (2016)
         - Equation 7 (Enforces a rigid/lower aspect ratio monopile)
 
@@ -389,6 +381,7 @@ class MonopileDesign(DesignPhase):
     def pile_thickness(Dp):
         """
         Calculates pile wall thickness.
+
         Source: Arany & Bhattacharya (2016)
         - Equation 1
 
@@ -432,8 +425,9 @@ class MonopileDesign(DesignPhase):
     @staticmethod
     def pile_diam_equation(Dp, *data):
         """
-        Equation to be solved for Pile Diameter. Combination of equations 99 &
-        101 in this paper:
+        Equation to be solved for Pile Diameter.
+
+        Combination of equations 99 & 101 in this paper:
         Source: Arany & Bhattacharya (2016)
         - Equations 99 & 101
 
@@ -465,7 +459,9 @@ class MonopileDesign(DesignPhase):
     ):
         """
         Calculates the 50 year extreme wind moment using methodology from
-        DNV-GL. Source: Arany & Bhattacharya (2016)
+        DNV-GL.
+
+        Source: Arany & Bhattacharya (2016)
         - Equation 30
 
         Parameters
@@ -482,7 +478,7 @@ class MonopileDesign(DesignPhase):
             Rated windspeed of turbine (m/s).
         load_factor : float
             Added safety factor on the extreme wind moment.
-            Default: 3.375 (2.5x DNV standard as this model does not design for buckling or fatigue)
+            Default: 1.3 (approximately matches DNV standard)
 
         Returns
         -------
@@ -490,7 +486,7 @@ class MonopileDesign(DesignPhase):
             50 year extreme wind moment (N-m).
         """
 
-        load_factor = kwargs.get("load_factor", 3.375)
+        load_factor = kwargs.get("load_factor", 1.3)
 
         F_50y = self.calculate_50year_wind_load(
             mean_windspeed=mean_windspeed,
@@ -504,10 +500,15 @@ class MonopileDesign(DesignPhase):
         return M_50y * load_factor
 
     def calculate_50year_wind_load(
-        self, mean_windspeed, rotor_diameter, rated_windspeed, **kwargs
+        self,
+        mean_windspeed,
+        rotor_diameter,
+        rated_windspeed,
+        **kwargs,
     ):
         """
         Calculates the 50 year extreme wind load using methodology from DNV-GL.
+
         Source: Arany & Bhattacharya (2016)
         - Equation 29
 
@@ -546,6 +547,7 @@ class MonopileDesign(DesignPhase):
     def calculate_thrust_coefficient(rated_windspeed):
         """
         Calculates the thrust coefficient using rated windspeed.
+
         Source: Frohboese & Schmuck (2010)
 
         Parameters
@@ -559,16 +561,16 @@ class MonopileDesign(DesignPhase):
             Coefficient of thrust.
         """
 
-        ct = min(
-            [3.5 * (2 * rated_windspeed + 3.5) / (rated_windspeed ** 2), 1]
-        )
+        ct = min([3.5 * (2 * rated_windspeed + 3.5) / (rated_windspeed**2), 1])
 
         return ct
 
     @staticmethod
     def calculate_50year_extreme_ws(mean_windspeed, **kwargs):
         """
-        Calculates the 50 year extreme wind speed using methodology from DNV-GL.
+        Calculates the 50 year extreme wind speed using methodology
+        from DNV-GL.
+
         Source: Arany & Bhattacharya (2016)
         - Equation 27
 
@@ -594,10 +596,15 @@ class MonopileDesign(DesignPhase):
         return U_50y
 
     def calculate_50year_extreme_gust(
-        self, mean_windspeed, rotor_diameter, rated_windspeed, **kwargs
+        self,
+        mean_windspeed,
+        rotor_diameter,
+        rated_windspeed,
+        **kwargs,
     ):
         """
         Calculates the 50 year extreme wind gust using methodology from DNV-GL.
+
         Source: Arany & Bhattacharya (2016)
         - Equation 28
 

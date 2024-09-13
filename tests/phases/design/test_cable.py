@@ -3,7 +3,7 @@
 __author__ = "Rob Hammond"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
-__email__ = "robert.hammond@nrel.gov"
+__email__ = "rob.hammond@nrel.gov"
 
 
 import copy
@@ -18,7 +18,7 @@ cables = {
     "empty": {},
     "passes": {
         "conductor_size": 400,
-        "current_capacity": 610,
+        "current_capacity": 600,
         "rated_voltage": 33,
         "ac_resistance": 0.06,
         "inductance": 0.375,
@@ -26,6 +26,7 @@ cables = {
         "linear_density": 35,
         "cost_per_km": 300000,
         "name": "passes",
+        "cable_type": "HVAC",
     },
 }
 
@@ -122,6 +123,17 @@ def test_power_factor():
 
     if any((a < 0) | (a > 1) for a in results):
         raise Exception("Invalid Power Factor.")
+
+
+def test_cable_power():
+    cable = Cable(cables["passes"])
+    assert cable.cable_power == pytest.approx(34.1341, abs=2e-1)
+
+    c = copy.deepcopy(cables["passes"])
+    c["cable_type"] = "HVDC-monopole"
+    cable = Cable(c)
+    print(c)
+    assert cable.cable_power == pytest.approx(39.6, abs=2e-1)
 
 
 @pytest.mark.parametrize(

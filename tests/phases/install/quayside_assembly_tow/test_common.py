@@ -1,4 +1,4 @@
-"""Tests for common infrastructure for quayside assembly tow-out simulations"""
+"""Tests for the common infrastructure for the quayside assembly tow-out."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -59,12 +59,15 @@ def test_TurbineAssemblyLine(env, num, assigned):
     feed = WetStorage(env, capacity=float("inf"))
     target = WetStorage(env, capacity=float("inf"))
 
-    for i in assigned:
+    for _ in assigned:
         feed.put(0)
 
     for a in range(num):
         assembly = TurbineAssemblyLine(
-            feed, target, {"tower": {"sections": 1}}, a + 1
+            feed,
+            target,
+            {"tower": {"sections": 1}},
+            a + 1,
         )
         env.register(assembly)
         assembly.start()
@@ -106,7 +109,10 @@ def test_Sub_to_Turbine_assembly_interaction(env, sub_lines, turb_lines):
 
     for a in range(turb_lines):
         assembly = TurbineAssemblyLine(
-            feed, target, {"tower": {"sections": 1}}, a + 1
+            feed,
+            target,
+            {"tower": {"sections": 1}},
+            a + 1,
         )
         env.register(assembly)
         assembly.start()

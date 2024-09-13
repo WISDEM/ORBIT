@@ -1,6 +1,4 @@
-"""
-Testing framework for the `ArrayCableInstallation` class.
-"""
+"""Testing framework for the `ArrayCableInstallation` class."""
 
 __author__ = ["Rob Hammond", "Jake Nunemaker"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -25,19 +23,21 @@ _ = simul_config.pop("array_cable_bury_vessel")
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 def test_simulation_setup(config):
-
     sim = ArrayCableInstallation(config)
     assert sim.env
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 def test_vessel_initialization(config):
-
     sim = ArrayCableInstallation(config)
     assert sim.install_vessel
     assert sim.install_vessel.cable_storage
@@ -47,13 +47,16 @@ def test_vessel_initialization(config):
 
 
 @pytest.mark.parametrize(
-    "config", (base_config, simul_config), ids=["separate", "simultaneous"]
+    "config",
+    (base_config, simul_config),
+    ids=["separate", "simultaneous"],
 )
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_for_complete_logging(config, weather):
-
     sim = ArrayCableInstallation(config, weather=weather)
     sim.run()
 
@@ -66,30 +69,27 @@ def test_for_complete_logging(config, weather):
         _df = _df.assign(shift=(_df["time"] - _df["time"].shift(1)))
         assert (_df["shift"] - _df["duration"]).fillna(0.0).abs().max() < 1e-9
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 
 
 def test_simultaneous_speed_kwargs():
-
     sim = ArrayCableInstallation(simul_config)
     sim.run()
     baseline = sim.total_phase_time
 
-    key = "cable_lay_bury_speed"
-    val = pt[key] * 0.1
+    sim.install_vessel._vessel_specs["cable_lay_bury_speed"] = (
+        sim.install_vessel._vessel_specs["cable_lay_bury_speed"] * 0.1
+    )
 
-    kwargs = {key: val}
-
-    sim = ArrayCableInstallation(simul_config, **kwargs)
+    sim = ArrayCableInstallation(simul_config)
     sim.run()
 
     assert sim.total_phase_time > baseline
 
 
 def test_separate_speed_kwargs():
-
     sim = ArrayCableInstallation(base_config)
     sim.run()
     df = pd.DataFrame(sim.env.actions)
@@ -114,7 +114,6 @@ def test_separate_speed_kwargs():
 
 
 def test_kwargs_for_array_install():
-
     sim = ArrayCableInstallation(base_config)
     sim.run()
     baseline = sim.total_phase_time
@@ -131,7 +130,6 @@ def test_kwargs_for_array_install():
     failed = []
 
     for kw in keywords:
-
         default = pt[kw]
 
         if "speed" in kw:
@@ -163,7 +161,6 @@ def test_kwargs_for_array_install():
 
 
 def test_kwargs_for_array_install_in_ProjectManager():
-
     base = deepcopy(base_config)
     base["install_phases"] = ["ArrayCableInstallation"]
 
@@ -183,7 +180,6 @@ def test_kwargs_for_array_install_in_ProjectManager():
     failed = []
 
     for kw in keywords:
-
         default = pt[kw]
 
         if "speed" in kw:

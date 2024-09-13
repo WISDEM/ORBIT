@@ -12,7 +12,7 @@ from ORBIT.core.exceptions import ItemNotFound
 
 
 class Port(simpy.FilterStore):
-    """Port Class"""
+    """Port Class."""
 
     def __init__(self, env, **kwargs):
         """

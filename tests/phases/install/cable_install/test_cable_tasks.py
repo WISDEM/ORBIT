@@ -1,6 +1,4 @@
-"""
-Testing framework for common cable installation tasks.
-"""
+"""Testing framework for common cable installation tasks."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -14,7 +12,6 @@ from ORBIT.core.exceptions import MissingComponent
 from ORBIT.phases.install.cable_install.common import (
     tow_plow,
     lay_cable,
-    bury_cable,
     prep_cable,
     pull_winch,
     lower_cable,

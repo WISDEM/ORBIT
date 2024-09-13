@@ -1,6 +1,4 @@
-"""
-Testing framework for common oss installation tasks.
-"""
+"""Testing framework for common oss installation tasks."""
 
 __author__ = "Jake Nunemaker"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"

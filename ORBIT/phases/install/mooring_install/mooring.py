@@ -8,7 +8,7 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 from marmot import process
 
-from ORBIT.core import Cargo, Vessel
+from ORBIT.core import Cargo
 from ORBIT.core.logic import position_onsite, get_list_of_items_from_port
 from ORBIT.core.defaults import process_times as pt
 from ORBIT.phases.install import InstallPhase
@@ -75,7 +75,12 @@ class MooringSystemInstallation(InstallPhase):
         self.anchor_cost = self.config["mooring_system"]["anchor_cost"]
 
         install_mooring_systems(
-            self.vessel, self.port, distance, depth, self.num_systems, **kwargs
+            self.vessel,
+            self.port,
+            distance,
+            depth,
+            self.num_systems,
+            **kwargs,
         )
 
     @property
@@ -142,7 +147,10 @@ def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
             try:
                 # Get mooring systems from port.
                 yield get_list_of_items_from_port(
-                    vessel, port, ["MooringSystem"], **kwargs
+                    vessel,
+                    port,
+                    ["MooringSystem"],
+                    **kwargs,
                 )
 
             except ItemNotFound:
@@ -171,7 +179,10 @@ def install_mooring_systems(vessel, port, distance, depth, systems, **kwargs):
                     yield position_onsite(vessel, **kwargs)
                     yield perform_mooring_site_survey(vessel, **kwargs)
                     yield install_mooring_anchor(
-                        vessel, depth, system.anchor_type, **kwargs
+                        vessel,
+                        depth,
+                        system.anchor_type,
+                        **kwargs,
                     )
                     yield install_mooring_line(vessel, depth, **kwargs)
 
@@ -243,12 +254,15 @@ def install_mooring_anchor(vessel, depth, _type, **kwargs):
 
     else:
         raise ValueError(
-            f"Mooring System Anchor Type: {_type} not recognized."
+            f"Mooring System Anchor Type: {_type} not recognized.",
         )
 
     install_time = fixed + 0.005 * depth
     yield vessel.task_wrapper(
-        task, install_time, constraints=vessel.transit_limits, **kwargs
+        task,
+        install_time,
+        constraints=vessel.transit_limits,
+        **kwargs,
     )
 
 
@@ -280,7 +294,7 @@ def install_mooring_line(vessel, depth, **kwargs):
 
 
 class MooringSystem(Cargo):
-    """Mooring System Cargo"""
+    """Mooring System Cargo."""
 
     def __init__(
         self,
@@ -290,7 +304,7 @@ class MooringSystem(Cargo):
         anchor_type="Suction Pile",
         **kwargs,
     ):
-        """Creates an instance of MooringSystem"""
+        """Creates an instance of MooringSystem."""
 
         self.num_lines = num_lines
         self.line_mass = line_mass
@@ -319,26 +333,3 @@ class MooringSystem(Cargo):
         """Dummy method to work with `get_list_of_items_from_port`."""
 
         return "", 0
-
-    def anchor_install_time(self, depth):
-        """
-        Returns time to install anchor. Varies by depth.
-
-        Parameters
-        ----------
-        depth : int | float
-            Depth at site (m).
-        """
-
-        if self.anchor_type == "Suction Pile":
-            fixed = 11
-
-        elif self.anchor_type == "Drag Embedment":
-            fixed = 5
-
-        else:
-            raise ValueError(
-                f"Mooring System Anchor Type: {self.anchor_type} not recognized."
-            )
-
-        return fixed + 0.005 * depth

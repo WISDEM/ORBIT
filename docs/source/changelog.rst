@@ -3,11 +3,96 @@
 ORBIT Changelog
 ===============
 
+1.1
+---
+
+New features
+~~~~~~~~~~~~
+- Enhanced ``MooringSystemDesign``:
+    - Can specify catenary or semitaut mooring systems. (use `mooring_type`)
+    - Can specify drag embedment or suction pile anchors. (use `anchor_type`)
+    - Description: This class received some new options that the user can
+      specify to customize the mooring system. By default, this design uses
+      catenary mooring lines and suction pile anchors. The new semitaut mooring
+      lines use interpolation to calculate the geometry and cost based on
+      (Cooperman et al. 2022, https://www.nrel.gov/docs/fy22osti/82341.pdf).
+    - See ``5. Example Floating Project`` for more details.
+- New ``ElectricalDesign``:
+    - Now has HVDC or HVAC transmission capabilities.
+    - New tests created ``test_electrical_export.py``
+    - Description: This class combines the elements of ``ExportSystemDesign`` and the
+      ``OffshoreSubstationDesign`` modules. Its purpose is to represent the
+      entire export system more accurately by linking the type of cable
+      (AC versus DC) and substation’s components (i.e. transformers versus converters).
+      Most export and substation component costs were updated to include a per-unit cost
+      rather than a per-MW cost rate and they can be added to the project config file too.
+      Otherwise, those per-unit costs use default and were determined with the help of
+      industry experts.
+        - This module’s components’ cost scales with number of cables and
+          substations rather than plant capacity.
+        - The offshore substation cost is calculated based on the cable type
+          and number of cables, rather than scaling function based on plant capacity.
+        - The mass of an HVDC and HVAC substation are assumed to be the same.
+          Therefore, the substructure mass and cost functions did not change.
+        - An experimental onshore cost function was also added to account for
+          the duplicated interconnection components. Costs will vary depending
+          on the cable type.
+    - See new example ``Example - Using HVDC or HVAC`` for more details.
+- Enhanced ``FloatingOffshoreSubStation``:
+    - Fixed the output substructure type from Monopile to Floating. (use `oss_substructure_type`)
+    - Removes any pile or fixed-bottom substructure geometry.
+    - See ``Example 5. Example Floating Project`` for more details.
+- Updated ``MoredSubInstallation``:
+    - Uses an AHTS vessel which must be added to project config file.
+    - See ``example/example_floating_project.yaml`` (use `ahts_vessel`)
+- New ``22MW_generic.yaml`` turbine.
+    - Based on the IEA - 22 MW reference wind turbine.
+    - See ``library/turbines`` for more details.
+- New cables:
+    - Varying HVDC ratings
+    - Varying HVDC and HVAC "dynamic" cables for floating projects.
+    - See ``library/cables`` for all the cables and more details.
+
+Updated default values
+~~~~~~~~~~~~~~~~~~~~~~
+- ``defaults/process_times.yaml``
+    - `drag_embedment_install_time`` increased from 5 to 12 hours.
+- ``phases/install/quayside_assembly_tow/common.py``:
+    - lift and attach tower section time changed from 12 to 4 hours per section,
+    - lift and attach nacelle time changed from 7 to 12 hours.
+- ``library/cables/XLPE_500mm_132kV.yaml``:
+    - `cost_per_km` changed from $200k to $500k.
+- ``library/vessels/example_cable_lay_vessel.yaml``:
+    - `min_draft` changed from 4.8m to 8.5m,
+    - `overall_length` changed from 99m to 171m,
+    - `max_mass` changed 4000t to 13000t,
+- ``library/vessels/example_towing_vessel.yaml``:
+    - `max_waveheight` changed from 2.5m to 3.0m,
+    - `max_windspeed` changed 20m to 15m,
+    - `transit_speed` changed 6km/h to 14 km/h,
+    - `day_rate` changed $30k to $35k
+
+Improvements
+~~~~~~~~~~~~
+- All design classes have new tests to track total cost to flag any changes that may
+  impact final project cost.
+- Relocated all the get design costs in each design class to `common_cost.yaml`.
+- Fully adopted `pyproject.toml` for managing all possible tool settings, and
+  removed the tool-specific files from the top-level of the directory.
+- Replaced flake8 and pylint with ruff to adopt a cleaner, faster, and easier
+  to manage linting and autoformatting workflow. As a result, some of the more
+  onerous checks have been removed to discourage the use of
+  `git commit --no-verify`. This change has also added in other rules that
+  discourage Python anti-patterns and encourage modern Python usage.
+- NOTE: Users may wish to run
+  `git config blame.ignoreRevsFile .git-blame-ignore-revs` to ignore the
+  reformatting edits in their blame.
+
 1.0.8
 -----
 
 - Added explicit methods for adding custom design or install phases to
-  ProjectManager.
+  ``ProjectManager``.
 - Added WOMBAT compatibility for custom array system files.
 - Fixed bug in custom array cable system design that breaks for plants with
   more than two substations.

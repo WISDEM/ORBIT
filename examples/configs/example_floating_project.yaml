@@ -19,6 +19,7 @@ export_cable_install_vessel: example_cable_lay_vessel
 mooring_install_vessel: example_support_vessel
 oss_install_vessel: floating_heavy_lift_vessel
 support_vessel: example_support_vessel
+ahts_vessel: example_ahts_vessel
 towing_vessel: example_towing_vessel
 towing_vessel_groups:
   station_keeping_vessels: 2
@@ -27,8 +28,11 @@ wtiv: floating_heavy_lift_vessel
 # Module Specific
 substructure:
   takt_time: 168
-OffshoreSubstationInstallation:
-  feeder: floating_barge
+substation_design:
+  oss_substructure_type: Floating
+mooring_system_design:
+  anchor_type: Suction Pile
+  mooring_type: Catenary
 array_system:
   free_cable_length: 0.5
 array_system_design:
@@ -40,16 +44,16 @@ export_system_design:
 # Configured Phases
 design_phases:
 - ArraySystemDesign
-- ExportSystemDesign
+- ElectricalDesign
 - MooringSystemDesign
-- OffshoreSubstationDesign
+- OffshoreFloatingSubstationDesign
 - SemiSubmersibleDesign
 install_phases:
   ArrayCableInstallation: 0
   ExportCableInstallation: 0
   MooredSubInstallation: 0
   MooringSystemInstallation: 0
-  OffshoreSubstationInstallation: 0
+  FloatingSubstationInstallation: 0
   TurbineInstallation: 0
 # Project Inputs
 turbine: 12MW_generic

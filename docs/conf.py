@@ -1,24 +1,18 @@
 """
+Configuration file for the Sphinx documentation builder.
+
 Jake Nunemaker
 National Renewable Energy Lab
 09/13/2019
-
-Configuration file for the Sphinx documentation builder.
 """
 
-
 # -- Path setup --------------------------------------------------------------
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath(".."))
 
 import ORBIT
 
-
 # -- Project information -----------------------------------------------------
 project = "ORBIT"
-copyright = "2020, National Renewable Energy Lab"
+copyright = "2020, National Renewable Energy Lab"  # noqa: A001
 author = "Jake Nunemaker, Matt Shields, Rob Hammond"
 release = ORBIT.__version__
 

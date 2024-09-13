@@ -1,7 +1,6 @@
 """Shared pytest settings and fixtures."""
 
-
-import os
+from pathlib import Path
 
 import pytest
 from marmot import Environment
@@ -17,8 +16,8 @@ def pytest_configure():
     when required.
     """
 
-    test_dir = os.path.split(os.path.abspath(__file__))[0]
-    pytest.library = os.path.join(test_dir, "data", "library")
+    test_dir = Path(__file__).resolve().parent
+    pytest.library = str(test_dir / "data" / "library")
     initialize_library(pytest.library)
 
 
@@ -46,7 +45,8 @@ def feeder():
 def cable_vessel():
 
     specs = extract_library_specs(
-        "array_cable_install_vessel", "test_cable_lay_vessel"
+        "array_cable_install_vessel",
+        "test_cable_lay_vessel",
     )
     return Vessel("Test Cable Vessel", specs)
 
@@ -55,7 +55,8 @@ def cable_vessel():
 def heavy_lift():
 
     specs = extract_library_specs(
-        "oss_install_vessel", "test_heavy_lift_vessel"
+        "oss_install_vessel",
+        "test_heavy_lift_vessel",
     )
     return Vessel("Test Heavy Vessel", specs)
 
@@ -77,4 +78,4 @@ def simple_cable():
 def tmp_yaml_del():
 
     yield
-    os.remove("tmp.yaml")
+    Path("tmp.yaml").unlink()

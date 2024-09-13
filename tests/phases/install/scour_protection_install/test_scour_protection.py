@@ -1,6 +1,4 @@
-"""
-Testing framework for the `ScourProtectionInstallation` class.
-"""
+"""Testing framework for the `ScourProtectionInstallation` class."""
 
 __author__ = "Rob Hammond"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
@@ -34,7 +32,9 @@ def test_simulation_creation():
 
 
 @pytest.mark.parametrize(
-    "weather", (None, test_weather), ids=["no_weather", "test_weather"]
+    "weather",
+    (None, test_weather),
+    ids=["no_weather", "test_weather"],
 )
 def test_full_run_logging(weather):
     sim = ScourProtectionInstallation(config, weather=weather)
@@ -45,7 +45,7 @@ def test_full_run_logging(weather):
     assert (df.duration - df["shift"]).fillna(0.0).abs().max() < 1e-9
     assert df[df.action == "Drop SP Material"].shape[0] == sim.num_turbines
 
-    assert ~df["cost"].isnull().any()
+    assert ~df["cost"].isna().any()
     _ = sim.agent_efficiencies
     _ = sim.detailed_output
 

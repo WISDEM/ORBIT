@@ -3,7 +3,7 @@
 __author__ = "Rob Hammond"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
-__email__ = "robert.hammond@nrel.gov"
+__email__ = "rob.hammond@nrel.gov"
 
 
 from copy import deepcopy
@@ -69,7 +69,7 @@ def test_cable_not_found():
 
 
 @pytest.mark.parametrize(
-    "config,num_full_strings,num_partial_strings,num_turbines_full_string,num_turbines_partial_string",
+    "config,num_full_strings,num_partial_strings,num_turbines_full_string,num_turbines_partial_string",  # noqa: E501
     (
         (config_full_ring, 10, 0, 4, 0),
         (config_partial_ring, 12, 1, 4, 1),
@@ -239,3 +239,11 @@ def test_floating_calculations():
 
     with_cat_length = sim3.total_length
     assert with_cat_length < no_cat_length
+
+
+def test_total_cable_cost():
+
+    array = ArraySystemDesign(config_full_ring)
+    array.run()
+
+    assert array.total_cable_cost == pytest.approx(11969999, abs=1e0)

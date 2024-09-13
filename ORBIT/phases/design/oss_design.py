@@ -32,6 +32,12 @@ class OffshoreSubstationDesign(DesignPhase):
             "oss_pile_cost_rate": "USD/t (optional)",
             "num_substations": "int (optional)",
         },
+        # "export_system": {
+        #    "cable": {
+        #        "number": "int",
+        #        "cable_type": "str",
+        #    },
+        # },
     }
 
     output_config = {
@@ -51,6 +57,8 @@ class OffshoreSubstationDesign(DesignPhase):
 
         config = self.initialize_library(config, **kwargs)
         self.config = self.validate_config(config)
+        self._design = self.config.get("substation_design", {})
+
         self._outputs = {}
 
     def run(self):
@@ -110,9 +118,7 @@ class OffshoreSubstationDesign(DesignPhase):
         ) * self.num_substations
 
     def calc_substructure_length(self):
-        """
-        Calculates substructure length as the site depth + 10m
-        """
+        """Calculates substructure length as the site depth + 10m."""
 
         self.substructure_length = self.config["site"]["depth"] + 10
 
@@ -136,7 +142,8 @@ class OffshoreSubstationDesign(DesignPhase):
 
     def calc_num_mpt_and_rating(self):
         """
-        Calculates the number of main power transformers (MPTs) and their rating.
+        Calculates the number of main power transformers (MPTs)
+        and their rating.
 
         Parameters
         ----------
@@ -144,14 +151,12 @@ class OffshoreSubstationDesign(DesignPhase):
         turbine_rating : float
         """
 
-        _design = self.config.get("substation_design", {})
-
         num_turbines = self.config["plant"]["num_turbines"]
         turbine_rating = self.config["turbine"]["turbine_rating"]
         capacity = num_turbines * turbine_rating
 
-        self.num_substations = _design.get(
-            "num_substations", int(np.ceil(capacity / 500))
+        self.num_substations = self._design.get(
+            "num_substations", int(np.ceil(capacity / 1200))
         )
         self.num_mpt = np.ceil(
             num_turbines * turbine_rating / (250 * self.num_substations)
@@ -176,8 +181,10 @@ class OffshoreSubstationDesign(DesignPhase):
         mpt_cost_rate : float
         """
 
-        _design = self.config.get("substation_design", {})
-        mpt_cost_rate = _design.get("mpt_cost_rate", 12500)
+        _key = "mpt_cost_rate"
+        mpt_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.mpt_cost = self.mpt_rating * self.num_mpt * mpt_cost_rate
 
@@ -191,9 +198,16 @@ class OffshoreSubstationDesign(DesignPhase):
         topside_design_cost: int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        topside_fab_cost_rate = _design.get("topside_fab_cost_rate", 14500)
-        topside_design_cost = _design.get("topside_design_cost", 4.5e6)
+        _key = "topside_fab_cost_rate"
+        topside_fab_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
+
+        _key = "topside_design_cost"
+        topside_design_cost = self._design.get(
+            _key,
+            self.get_default_cost("substation_design", _key, subkey="HVAC"),
+        )
 
         self.topside_mass = 3.85 * self.mpt_rating * self.num_mpt + 285
         self.topside_cost = (
@@ -209,8 +223,10 @@ class OffshoreSubstationDesign(DesignPhase):
         shunt_cost_rate : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        shunt_cost_rate = _design.get("shunt_cost_rate", 35000)
+        _key = "shunt_cost_rate"
+        shunt_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.shunt_reactor_cost = (
             self.mpt_rating * self.num_mpt * shunt_cost_rate * 0.5
@@ -225,10 +241,12 @@ class OffshoreSubstationDesign(DesignPhase):
         switchgear_cost : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        switchgear_cost = _design.get("switchgear_cost", 14.5e5)
+        _key = "switchgear_cost"
+        switchgear_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
-        self.switchgear_costs = self.num_mpt * switchgear_cost
+        self.switchgear_costs = self.num_mpt * switchgear_cost_rate
 
     def calc_ancillary_system_cost(self):
         """
@@ -241,10 +259,20 @@ class OffshoreSubstationDesign(DesignPhase):
         other_ancillary_cost : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        backup_gen_cost = _design.get("backup_gen_cost", 1e6)
-        workspace_cost = _design.get("workspace_cost", 2e6)
-        other_ancillary_cost = _design.get("other_ancillary_cost", 3e6)
+        _key = "backup_gen_cost"
+        backup_gen_cost = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
+
+        _key = "workspace_cost"
+        workspace_cost = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
+
+        _key = "other_ancillary_cost"
+        other_ancillary_cost = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         self.ancillary_system_costs = (
             backup_gen_cost + workspace_cost + other_ancillary_cost
@@ -259,8 +287,11 @@ class OffshoreSubstationDesign(DesignPhase):
         topside_assembly_factor : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        topside_assembly_factor = _design.get("topside_assembly_factor", 0.075)
+        _key = "topside_assembly_factor"
+        topside_assembly_factor = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
+
         self.land_assembly_cost = (
             self.switchgear_costs
             + self.shunt_reactor_cost
@@ -277,14 +308,18 @@ class OffshoreSubstationDesign(DesignPhase):
         oss_pile_cost_rate : int | float
         """
 
-        _design = self.config.get("substation_design", {})
-        oss_substructure_cost_rate = _design.get(
-            "oss_substructure_cost_rate", 3000
+        _key = "oss_substructure_cost_rate"
+        oss_substructure_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
         )
-        oss_pile_cost_rate = _design.get("oss_pile_cost_rate", 0)
+
+        _key = "oss_pile_cost_rate"
+        oss_pile_cost_rate = self._design.get(
+            _key, self.get_default_cost("substation_design", _key)
+        )
 
         substructure_mass = 0.4 * self.topside_mass
-        substructure_pile_mass = 8 * substructure_mass ** 0.5574
+        substructure_pile_mass = 8 * substructure_mass**0.5574
         self.substructure_cost = (
             substructure_mass * oss_substructure_cost_rate
             + substructure_pile_mass * oss_pile_cost_rate
@@ -294,9 +329,7 @@ class OffshoreSubstationDesign(DesignPhase):
 
     @property
     def design_result(self):
-        """
-        Returns the results of self.run().
-        """
+        """Returns the results of self.run()."""
 
         if not self._outputs:
             raise Exception("Has OffshoreSubstationDesign been ran yet?")

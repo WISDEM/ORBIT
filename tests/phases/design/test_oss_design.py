@@ -16,6 +16,7 @@ base = {
     "plant": {"num_turbines": 50},
     "turbine": {"turbine_rating": 6},
     "substation_design": {},
+    "export_system": {"cable": {"number": 3, "cable_type": "HVAC"}},
 }
 
 
@@ -30,6 +31,7 @@ def test_parameter_sweep(depth, num_turbines, turbine_rating):
         "plant": {"num_turbines": num_turbines},
         "turbine": {"turbine_rating": turbine_rating},
         "substation_design": {},
+        "export_system": {"cable": {"number": 3, "cable_type": "HVAC"}},
     }
 
     o = OffshoreSubstationDesign(config)
@@ -62,6 +64,7 @@ def test_oss_kwargs():
         "workspace_cost": 3e6,
         "other_ancillary_cost": 4e6,
         "topside_assembly_factor": 0.08,
+        "oss_substructure_type": "Floating",
         "oss_substructure_cost_rate": 7250,
         "oss_pile_cost_rate": 2500,
         "num_substations": 2,
@@ -75,6 +78,7 @@ def test_oss_kwargs():
 
         config = deepcopy(base)
         config["substation_design"] = {}
+        config["substation_design"]["oss_pile_cost_rate"] = 1500
         config["substation_design"][k] = v
 
         o = OffshoreSubstationDesign(config)
@@ -82,3 +86,11 @@ def test_oss_kwargs():
         cost = o.total_cost
 
         assert cost != base_cost
+
+
+def test_total_cost():
+
+    oss = OffshoreSubstationDesign(base)
+    oss.run()
+
+    assert oss.total_cost == pytest.approx(158022050, abs=1e0)

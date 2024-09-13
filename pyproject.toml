@@ -1,6 +1,87 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orbit-nrel"
+dynamic = ["version"]
+authors = [
+  {name = "Nick Riccobono", email = "nicholas.riccobono@nrel.gov"},
+  {name = "Rob Hammond", email = "rob.hammond@nrel.gov"},
+  {name = "Jake Nunemaker", email = "jacob.nunemaker@nrel.gov"},
+]
+readme = {file = "README.rst", content-type = "text/x-rst"}
+description = "Offshore Renewables Balance of system and Installation Tool"
+requires-python = ">=3.9, <3.12"
+license = {file = "LICENSE"}
+dependencies = [
+  "numpy",
+  "matplotlib",
+  "simpy",
+  "marmot-agents>=0.2.5",
+  "scipy",
+  "pandas",
+  "pyyaml",
+  "openmdao>=3.2",
+  "python-benedict<0.33.2",
+  "statsmodels",
+]
+keywords = [
+  "python3",
+  "wind-energy",
+  "balance-of-system",
+  "wind-installation",
+  "discrete-event-simulation",
+  "simulation",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Other Audience",
+  "License :: OSI Approved :: Apache Software License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+source = "https://github.com/WISDEM/ORBIT"
+documentation = "https://wisdem.github.io/ORBIT/"
+issues = "https://github.com/WISDEM/ORBIT/issues"
+changelog = "https://github.com/WISDEM/ORBIT/blob/main/docs/source/changelog.rst"
+
+[project.optional-dependencies]
+dev = [
+  "pre-commit",
+  "black",
+  "isort",
+  "pytest",
+  "pytest-cov",
+  "sphinx",
+  "sphinx-rtd-theme",
+  "ruff",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["ORBIT", "library", "*.yaml", "*.csv"]
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests"]
+
+[tool.setuptools.dynamic]
+version = {attr = "ORBIT.__version__"}
+
 [tool.black]
 line-length = 79
-target-version = ['py37']
+target-version = ['py39']
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -15,3 +96,75 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 79
+sections = [
+  "FUTURE",
+  "STDLIB",
+  "THIRDPARTY",
+  "FIRSTPARTY",
+  "LOCALFOLDER",
+]
+known_first_party = [
+  "ORBIT",
+  "tests",
+  "library",
+]
+length_sort = "1"
+
+[tool.ruff]
+line-length = 79
+target-version = "py39"
+exclude = [
+  ".git",
+  "__pycache__",
+  "docs/source/conf.py",
+  "old",
+  "build",
+  "dist",
+  "^tests/",
+  ".ruff_cache",
+]
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+unfixable = []
+select = [
+  "F",
+  "E",
+  "W",
+  "C4",
+  "D",
+  "UP",
+  "BLE",
+  "B",
+  "A",
+  "NPY",
+  "PD",
+  "PTH",
+  "PERF",
+  "Q",
+]
+ignore = [
+  "E731",
+  "E402",
+  "D202",
+  "D212",
+  "C901",
+  "D205",
+  "D401",
+  "PD901",
+  "PERF203",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*/__init__.py" = ["D104", "F401"]
+"tests/*" = ["D100", "D101", "D102", "D103"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"

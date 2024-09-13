@@ -3,7 +3,7 @@
 __author__ = ["Jake Nunemaker", "Rob Hammond"]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = ["Jake Nunemaker", "Rob Hammond"]
-__email__ = ["jake.nunemaker@nrel.gov" "robert.hammond@nrel.gov"]
+__email__ = ["jake.nunemaker@nrel.gov" "rob.hammond@nrel.gov"]
 
 from .install_phase import InstallPhase  # isort:skip
 from .oss_install import (
