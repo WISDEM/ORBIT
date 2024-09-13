@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Array System Design API &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Export System Design API" href="api_ExportSystemDesign.html" />
+    <link rel="prev" title="Scour Protection Design API" href="api_ScourProtectionDesign.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="api_MonopileDesign.html">Monopile Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ScourProtectionDesign.html">Scour Protection Design API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Array System Design API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.design.ArraySystemDesign"><code class="docutils literal notranslate"><span class="pre">ArraySystemDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_ExportSystemDesign.html">Export System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ElectricalDesign.html">Electrical System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_OffshoreSubstationDesign.html">Offshore Substation Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SemiSubmersibleDesign.html">Semi-Submersible Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SparDesign.html">Spar Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_MooringSystemDesign.html">Mooring System Design API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+      <li class="breadcrumb-item active">Array System Design API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/api_ArraySystemDesign.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="array-system-design-api">
+<h1>Array System Design API<a class="headerlink" href="#array-system-design-api" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_ArraySystemDesign.html"><span class="doc">Array System Design</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design.</span></span><span class="sig-name descname"><span class="pre">ArraySystemDesign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign" title="Link to this definition"></a></dt>
+<dd><p>The design phase for an array cabling system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system</strong> (<cite>Plant</cite>) – A <cite>Plant</cite> object for wind farm specifications.</p></li>
+<li><p><strong>cables</strong> (<cite>collections.OrderedDict</cite>) – A dictionary of <cite>Cable</cite> objects sorted from smallest to largest.</p></li>
+<li><p><strong>full_string</strong> (<em>list</em>) – A list of <cite>Cable.name</cite> that represents the longest (in turbine
+connections) possible string.</p></li>
+<li><p><strong>partial_string</strong> (<em>list</em>) – A list of <cite>Cable.name</cite> that represents the leftover turbines that could
+not create another <cite>full_string</cite> to complete the layout.</p></li>
+<li><p><strong>num_turbines_full_string</strong> (<em>int</em>) – Number of turbines on a <cite>full_string</cite>.</p></li>
+<li><p><strong>num_turbines_partial_string</strong> (<em>int</em>) – Number of turbines on a <cite>partial_string</cite>.</p></li>
+<li><p><strong>num_full_strings</strong> (<em>int</em>) – Number of full strings required to connect the wind farm.</p></li>
+<li><p><strong>num_partial_strings</strong> (<em>int</em>) – Number of partial strings required to connect the wind farm.</p></li>
+<li><p><strong>num_strings</strong> (<em>int</em>) – Total number of strings in the system.</p></li>
+<li><p><strong>turbines_x</strong> (np.ndarray, [<cite>num_strings</cite>, <cite>num_turbines_full_string</cite>]) – The relative x-coordinates of every turbine.</p></li>
+<li><p><strong>turbines_y</strong> (np.ndarray, [<cite>num_strings</cite>, <cite>num_turbines_full_string</cite>]) – The relative y-coordinates of every turbines.</p></li>
+<li><p><strong>oss_x</strong> (<em>float</em>) – The relative x-coordinates for the OSS.</p></li>
+<li><p><strong>oss_y</strong> (<em>float</em>) – The relative y-coordinates for the OSS.</p></li>
+<li><p><strong>coordinates</strong> (np.ndarray, [<cite>num_strings</cite>, <cite>num_turbines_full_string</cite> + 1, 2]) – The relative (x, y) coordinates for the entire wind farm with the
+first column representing the OSS.</p></li>
+<li><p><strong>sections_distances</strong> (np.ndarray, [<cite>num_strings</cite>, <cite>num_turbines_full_string</cite>]) – The Euclidean distance between any two points in a string extending
+outward from the OSS.</p></li>
+<li><p><strong>sections_cable_lengths</strong> (np.ndarray, [<cite>num_strings</cite>, <cite>num_turbines_full_string</cite>]) – <cite>sections_distances</cite> + 2 * <cite>system.site_depth</cite> to account for the water
+depth at each turbine.</p></li>
+<li><p><strong>sections_cables</strong> (np.ndarray, [<cite>num_strings</cite>, <cite>num_turbines_full_string</cite>]) – The type of cable being used to connect turbines in a string. All
+values are either <code class="docutils literal notranslate"><span class="pre">None</span></code> or <cite>Cable.name</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.total_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_length</span></span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.total_length" title="Link to this definition"></a></dt>
+<dd><p>Returns total array system length.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.total_cable_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_cable_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.total_cable_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns total array system cable cost.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Returns array system design outputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.create_strings">
+<span class="sig-name descname"><span class="pre">create_strings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.create_strings" title="Link to this definition"></a></dt>
+<dd><p>Calculates the required full and partial string design.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For custom layouts this is to provide guidance on the number</p>
+</div>
+<p>of strings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.run" title="Link to this definition"></a></dt>
+<dd><p>Runs all the functions to create an array sytem.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.save_layout">
+<span class="sig-name descname"><span class="pre">save_layout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cables'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.save_layout" title="Link to this definition"></a></dt>
+<dd><p>Outputs a csv of the substation and turbine positional and cable
+related components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_name</strong> (<em>str</em>) – The name of the file without an extension to be saved to
+&lt;library_path&gt;/cables/&lt;save_name&gt;.csv.</p></li>
+<li><p><strong>return_df</strong> (<em>bool, optional</em>) – If true, returns layout_df, a pandas.DataFrame of the cabling
+layout, by default False.</p></li>
+<li><p><strong>folder</strong> (<em>str, optional</em>) – If “cables”, then the layout will saved to the “cables” folder, and
+if “plant”, then the layout will be saved to the “project/plant”
+folder.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The DataFrame with the layout data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if <code class="docutils literal notranslate"><span class="pre">folder</span></code> is not one of “cables” or “plant”.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ArraySystemDesign.plot_array_system">
+<span class="sig-name descname"><span class="pre">plot_array_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ArraySystemDesign.plot_array_system" title="Link to this definition"></a></dt>
+<dd><p>Plot the array cabling system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>show</strong> (<em>bool, default: True</em>) – If True the plot will be output inline or to screen.</p></li>
+<li><p><strong>save_path_name</strong> (<em>str, default: None</em>) – The &lt;path_to_file&gt;/&lt;file_name&gt; of where to save the created plot.
+If None then the plot will not be saved.</p></li>
+<li><p><strong>return_fig</strong> (<em>bool, default: False</em>) – If true, the figure (<cite>fig</cite>) and axes (<cite>ax</cite>) objects will be
+returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.pyplot.figure</em>) – The matplotlib figure object. This will contain the overarching
+figure settings, and can be manipulated to change dimensions,
+resolotion, and etc.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.pyplot.axes</em>) – The matplotlib axes object. This will contain the actual plot
+settings, and can be manipulated to add annotations, or other
+elements.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_ScourProtectionDesign.html" class="btn btn-neutral float-left" title="Scour Protection Design API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_ExportSystemDesign.html" class="btn btn-neutral float-right" title="Export System Design API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

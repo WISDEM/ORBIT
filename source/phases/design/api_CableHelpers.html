@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cabling Helper Classes &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Cabling Helper Classes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/api_CableHelpers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cabling-helper-classes">
+<h1>Cabling Helper Classes<a class="headerlink" href="#cabling-helper-classes" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_CableHelpers.html"><span class="doc">Cable Helper Design</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.Cable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design._cables.</span></span><span class="sig-name descname"><span class="pre">Cable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cable_specs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.Cable" title="Link to this definition"></a></dt>
+<dd><p>Base cable class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conductor_size</strong> (<em>float</em>) – Cable cross section in <span class="math notranslate nohighlight">\(mm^2\)</span>.</p></li>
+<li><p><strong>current_capacity</strong> (<em>float</em>) – Cable current rating at 1m burial depth, <span class="math notranslate nohighlight">\(A\)</span>.</p></li>
+<li><p><strong>rated_voltage</strong> (<em>float</em>) – Cable rated line-to-line voltage, <span class="math notranslate nohighlight">\(kV\)</span>.</p></li>
+<li><p><strong>ac_resistance</strong> (<em>float</em>) – Cable resistance for AC current, (ohms/km).</p></li>
+<li><p><strong>inductance</strong> (<em>float</em>) – Cable inductance, <span class="math notranslate nohighlight">\(\\frac{MHz}{km}\)</span>.</p></li>
+<li><p><strong>capacitance</strong> (<em>float</em>) – Cable capacitance, <span class="math notranslate nohighlight">\(\\frac{nF}{km}\)</span>.</p></li>
+<li><p><strong>linear_density</strong> (<em>float</em>) – Dry mass per kilometer, <span class="math notranslate nohighlight">\(\\frac{tonnes}{km}\)</span>.</p></li>
+<li><p><strong>cost_per_km</strong> (<em>int</em>) – Cable cost per kilometer, <span class="math notranslate nohighlight">\(\\frac{USD}{km}\)</span>.</p></li>
+<li><p><strong>char_impedance</strong> (<em>float</em>) – Characteristic impedance of equivalent cable circuit, (ohms).</p></li>
+<li><p><strong>power_factor</strong> (<em>float</em>) – Power factor of AC current in cable, no units.</p></li>
+<li><p><strong>cable_power</strong> (<em>float</em>) – Maximum 3-phase power dissipated in cable in <span class="math notranslate nohighlight">\(MW\)</span>.</p></li>
+<li><p><strong>line_frequency</strong> (<em>int, default: 60</em>) – Frequency of the AC current, <span class="math notranslate nohighlight">\(Hz\)</span>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.Cable.calc_char_impedance">
+<span class="sig-name descname"><span class="pre">calc_char_impedance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.Cable.calc_char_impedance" title="Link to this definition"></a></dt>
+<dd><p>Calculate characteristic impedance of cable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.Cable.calc_power_factor">
+<span class="sig-name descname"><span class="pre">calc_power_factor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.Cable.calc_power_factor" title="Link to this definition"></a></dt>
+<dd><p>Calculate power factor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.Cable.calc_cable_power">
+<span class="sig-name descname"><span class="pre">calc_cable_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.Cable.calc_cable_power" title="Link to this definition"></a></dt>
+<dd><p>Calculates the maximum power transfer through a 3-phase cable,
+in <span class="math notranslate nohighlight">\(MW\)</span>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.Cable.calc_compensation_factor">
+<span class="sig-name descname"><span class="pre">calc_compensation_factor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.Cable.calc_compensation_factor" title="Link to this definition"></a></dt>
+<dd><p>Calculates the compensation factor for the shunt reactor cost.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.Plant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design._cables.</span></span><span class="sig-name descname"><span class="pre">Plant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.Plant" title="Link to this definition"></a></dt>
+<dd><p>A “data class” to create the windfarm specifications for
+<cite>ArraySystemDesign</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layout</strong> (<em>str</em>) – The layout of the windfarm. Can only be “grid”, “ring”, or “custom”.
+..note:: custom is not implemented at this time.</p></li>
+<li><p><strong>num_turbines</strong> (<em>int</em>) – Number of turbines contained in the windfarm.</p></li>
+<li><p><strong>site_depth</strong> (<em>float</em>) – Average depth at the site in km.</p></li>
+<li><p><strong>turbine_rating</strong> (<em>float</em>) – Capacity of an individual turbine in MW.</p></li>
+<li><p><strong>row_distance</strong> (<em>float</em>) – Distance between any two strings in a grid layout in km. This is not
+used for ring layouts or custom layouts.</p></li>
+<li><p><strong>turbine_distance</strong> (<em>float</em>) – Distance between any two turbines in a string in km. This is not used
+for custom layouts.</p></li>
+<li><p><strong>substation_distance</strong> (<em>float</em>) – The shortest distance between the offshore substation and the first
+turbine of each string in km. In the ring layout this distance is
+uniform across all strings. In grid layout this represents the
+perpendicular distance to the first row of turbines. This is not used
+in custom layouts.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design._cables.</span></span><span class="sig-name descname"><span class="pre">CableSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cable_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem" title="Link to this definition"></a></dt>
+<dd><p>Base cabling system class. This is the parent class to
+<cite>ArraySystemDesign</cite> and <cite>ExportSystemDesign</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cable_type</strong> (<em>str</em>) – An input of “array” or “export” to signify which cabling system is
+being designed.</p></li>
+<li><p><strong>cables</strong> (<em>dict</em>) – Dictionary of cables being used with items as {“cable_name”: <cite>Cable</cite>}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>NotImplementedError</strong> – The property <cite>detailed_output</cite> is not yet defined.</p></li>
+<li><p><strong>Exception</strong> – <cite>cables</cite> must be created in order to get outputs.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.free_cable_length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">free_cable_length</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.free_cable_length" title="Link to this definition"></a></dt>
+<dd><p>Returns the vertical length of a cable section, in <a href="#id1"><span class="problematic" id="id2">:mat:`km`</span></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.cable_lengths_by_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cable_lengths_by_type</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.cable_lengths_by_type" title="Link to this definition"></a></dt>
+<dd><p>Creates dictionary of lists of cable sections for each type of cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lengths</strong> – A dictionary of the section lengths required for each type of cable
+to fully connect the array cabling system.
+E.g.: {<cite>Cable</cite>.`name`: np.ndarray(float)}</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.total_cable_length_by_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_cable_length_by_type</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.total_cable_length_by_type" title="Link to this definition"></a></dt>
+<dd><p>Calculates the total cable length for each type of cable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>total</strong> – A dictionary of the total cable length for each type of cable.
+E.g.: {<cite>Cable.name</cite>: list(section_lengths)}</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.cost_by_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cost_by_type</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.cost_by_type" title="Link to this definition"></a></dt>
+<dd><p>Calculates the cost of each array cable type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cost</strong> – A dictionary of the total cost of each type of array cable.
+E.g.: {<cite>Cable.name</cite>: cost}</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.total_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_cost</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.total_cost" title="Link to this definition"></a></dt>
+<dd><p>Calculates the cost of the array cabling system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Total cost of the array cabling system.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Returns detailed design outputs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design._cables.CableSystem.design_result">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">design_result</span></span><a class="headerlink" href="#ORBIT.phases.design._cables.CableSystem.design_result" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of cables types and number of different cable lengths and
+linear density.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><strong>output</strong> – Dictionary of the number of section lengths and the linear density
+of each cable type.</p>
+<blockquote>
+<div><ul>
+<li><dl>
+<dt>&lt;<cite>cable_type</cite>&gt;_system: dict</dt><dd><ul>
+<li><dl>
+<dt>cables: dict</dt><dd><ul>
+<li><dl>
+<dt><cite>Cable.name</cite>: dict</dt><dd><ul>
+<li><dl class="simple">
+<dt>sections: [</dt><dd><p>(length of unique section, number of sections)</p>
+</dd>
+</dl>
+<p>],</p>
+</li>
+<li><p>linear_density: <cite>Cable.linear_density</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

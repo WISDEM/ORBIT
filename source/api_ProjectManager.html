@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Configuration and Management - ORBIT.manager &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parametric Configurations - ORBIT.ParametricManager" href="api_ParametricManager.html" />
+    <link rel="prev" title="API Reference" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ORBIT.manager.ProjectManager"><code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.start_date"><code class="docutils literal notranslate"><span class="pre">ProjectManager.start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.phases"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phases</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.register_design_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.register_design_phase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.register_install_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.register_install_phase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.project_params"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_params</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.compile_input_dict"><code class="docutils literal notranslate"><span class="pre">ProjectManager.compile_input_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.resolve_project_capacity"><code class="docutils literal notranslate"><span class="pre">ProjectManager.resolve_project_capacity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.find_key_match"><code class="docutils literal notranslate"><span class="pre">ProjectManager.find_key_match()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.phase_dict"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phase_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.merge_dicts"><code class="docutils literal notranslate"><span class="pre">ProjectManager.merge_dicts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.remove_keys"><code class="docutils literal notranslate"><span class="pre">ProjectManager.remove_keys()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.create_config_for_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.create_config_for_phase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.phase_ends"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phase_ends</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run_install_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_install_phase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.get_phase_class"><code class="docutils literal notranslate"><span class="pre">ProjectManager.get_phase_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run_all_design_phases"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_all_design_phases()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run_design_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_design_phase()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run_multiple_phases_in_serial"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_multiple_phases_in_serial()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run_multiple_phases_overlapping"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_multiple_phases_overlapping()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.run_dependent_phases"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_dependent_phases()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.get_dependency_start_time"><code class="docutils literal notranslate"><span class="pre">ProjectManager.get_dependency_start_time()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.transform_weather_input"><code class="docutils literal notranslate"><span class="pre">ProjectManager.transform_weather_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.get_weather_profile"><code class="docutils literal notranslate"><span class="pre">ProjectManager.get_weather_profile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.outputs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.outputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.capacity"><code class="docutils literal notranslate"><span class="pre">ProjectManager.capacity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.num_turbines"><code class="docutils literal notranslate"><span class="pre">ProjectManager.num_turbines</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.turbine_rating"><code class="docutils literal notranslate"><span class="pre">ProjectManager.turbine_rating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.logs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.logs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.project_time"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.month_bins"><code class="docutils literal notranslate"><span class="pre">ProjectManager.month_bins</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.monthly_expenses"><code class="docutils literal notranslate"><span class="pre">ProjectManager.monthly_expenses</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.monthly_opex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.monthly_opex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.monthly_revenue"><code class="docutils literal notranslate"><span class="pre">ProjectManager.monthly_revenue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.cash_flow"><code class="docutils literal notranslate"><span class="pre">ProjectManager.cash_flow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.npv"><code class="docutils literal notranslate"><span class="pre">ProjectManager.npv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.progress_logs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.progress_logs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.progress_summary"><code class="docutils literal notranslate"><span class="pre">ProjectManager.progress_summary</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.actions"><code class="docutils literal notranslate"><span class="pre">ProjectManager.actions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.create_input_xlsx"><code class="docutils literal notranslate"><span class="pre">ProjectManager.create_input_xlsx()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.phase_dates"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phase_dates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.installation_time"><code class="docutils literal notranslate"><span class="pre">ProjectManager.installation_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.project_days"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_days</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.overnight_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.overnight_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.system_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.system_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.system_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.system_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.installation_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.installation_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.installation_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.installation_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.capex_breakdown"><code class="docutils literal notranslate"><span class="pre">ProjectManager.capex_breakdown</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.capex_breakdown_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.capex_breakdown_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.bos_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.bos_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.bos_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.bos_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.turbine_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.turbine_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.turbine_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.turbine_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.overnight_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.overnight_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.soft_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.soft_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.soft_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.soft_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.project_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.project_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.total_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.total_capex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.total_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.total_capex_per_kw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.export_configuration"><code class="docutils literal notranslate"><span class="pre">ProjectManager.export_configuration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.manager.ProjectManager.export_project_logs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.export_project_logs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api.html">API Reference</a></li>
+      <li class="breadcrumb-item active">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/api_ProjectManager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="project-configuration-and-management-orbit-manager">
+<span id="manager"></span><h1>Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code><a class="headerlink" href="#project-configuration-and-management-orbit-manager" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.manager.</span></span><span class="sig-name descname"><span class="pre">ProjectManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">library_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weather</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager" title="Link to this definition"></a></dt>
+<dd><p>Base Project Manager Class.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.start_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_date</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.start_date" title="Link to this definition"></a></dt>
+<dd><p>Return start date for the analysis. If weather is configured, the
+first date in the weather profile is used. If weather is not
+configured, an arbitary start date is assumed and used to index phase
+times.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run" title="Link to this definition"></a></dt>
+<dd><p>Main project run method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self.config[‘design_phases’]</strong> (<em>list</em>) – Defines which design phases are ran. These phases are ran before
+install phases and merge the result of the design into self.config.</p></li>
+<li><p><strong>self.config[‘install_phases’]</strong> (<em>list | dict</em>) – Defines which installation phases are ran.</p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.config['install_phases']</span></code> is a list, phases are ran
+sequentially using <code class="docutils literal notranslate"><span class="pre">self.run_multiple_phases_in_serial()</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.config['install_phases']</span></code> is a dict, phases are ran
+using <code class="docutils literal notranslate"><span class="pre">self.run_multiple_phases_overlapping()</span></code>. The expected
+format for the dictionary is <code class="docutils literal notranslate"><span class="pre">{'phase_name':</span> <span class="pre">'%m/%d/%Y'}</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.phases">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phases</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.phases" title="Link to this definition"></a></dt>
+<dd><p>Returns dict of phases that have been ran.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.register_design_phase">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_design_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.register_design_phase" title="Link to this definition"></a></dt>
+<dd><p>Add a custom design phase to the <cite>ProjectManager</cite> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>ORBIT.phases.DesignPhase</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.register_install_phase">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_install_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.register_install_phase" title="Link to this definition"></a></dt>
+<dd><p>Add a custom install phase to the <cite>ProjectManager</cite> class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>ORBIT.phases.InstallPhase</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.project_params">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_params</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.project_params" title="Link to this definition"></a></dt>
+<dd><p>Returns defined project parameters, if found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.compile_input_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compile_input_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.compile_input_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns a compiled input dictionary given a list of phases to run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phases</strong> (<em>list</em>) – A collection of offshore design or installation phases.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.resolve_project_capacity">
+<span class="sig-name descname"><span class="pre">resolve_project_capacity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.resolve_project_capacity" title="Link to this definition"></a></dt>
+<dd><p>Resolves the relationship between ‘project_capacity’, ‘num_turbines’
+and ‘turbine_rating’ and verifies that input and calculated values
+match. Adds missing values that can be calculated to the ‘self.config’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.find_key_match">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_key_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.find_key_match" title="Link to this definition"></a></dt>
+<dd><p>Searches cls.phase_dict() for a key that matches text in ‘target’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target</strong> (<em>str</em>) – Phase name to search for a match with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>phase_class</strong> – Matched module class or None if no match is found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BasePhase | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.phase_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.phase_dict" title="Link to this definition"></a></dt>
+<dd><p>Returns dictionary of all phases with format {‘name’: ‘class’}.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.merge_dicts">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">merge_dicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.merge_dicts" title="Link to this definition"></a></dt>
+<dd><p>Merges two dicts (right into left) with an option to add keys of right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>dict</em>)</p></li>
+<li><p><strong>right</strong> (<em>dict</em>)</p></li>
+<li><p><strong>add_keys</strong> (<em>bool</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>new</strong> – Merged dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.remove_keys">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.remove_keys" title="Link to this definition"></a></dt>
+<dd><p>Recursively removes keys from left that are found in right.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>dict</em>)</p></li>
+<li><p><strong>right</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>new</strong> – Left dictionary with keys of right removed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.create_config_for_phase">
+<span class="sig-name descname"><span class="pre">create_config_for_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.create_config_for_phase" title="Link to this definition"></a></dt>
+<dd><p>Produces a configuration input dictionary for ‘phase’.</p>
+<p>This method will pick the most specific definition of each parameter.
+For example, if self.master_config[‘site’][‘distance’] and
+self.config[‘PhaseName’][‘site’][‘distance’] are both defined,
+the latter will be chosen as it is more specific. This allows for phase
+specific definitions, eg. distance to port dependent on phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>str</em>) – Name of phase. Phase specific information will be pulled from
+self.config[‘PhaseName’] if this key exists.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>phase_config</strong> – Configuration dictionary with phase specific information merged in.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.phase_ends">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_ends</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.phase_ends" title="Link to this definition"></a></dt>
+<dd><p>Calculates hte end date for all phases.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run_install_phase">
+<span class="sig-name descname"><span class="pre">run_install_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run_install_phase" title="Link to this definition"></a></dt>
+<dd><p>Compiles the phase specific configuration input dictionary for input
+‘name’, checks the input against _class.expected_config and runs the
+phase calculations with ‘phase.run()’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Phase to run.</p></li>
+<li><p><strong>weather</strong> (<em>None | np.ndarray</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>time</strong> (<em>int | float</em>) – Total phase time.</p></li>
+<li><p><strong>logs</strong> (<em>list</em>) – List of phase logs.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.get_phase_class">
+<span class="sig-name descname"><span class="pre">get_phase_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.get_phase_class" title="Link to this definition"></a></dt>
+<dd><p>Returns the class object for input ‘phase’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>str</em>) – Name of phase. Must match a class name in either
+‘self._install_phases’ or ‘self._design_phases’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>phase_class</strong> – Class of base type Phase that represents input ‘phase’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Phase</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run_all_design_phases">
+<span class="sig-name descname"><span class="pre">run_all_design_phases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run_all_design_phases" title="Link to this definition"></a></dt>
+<dd><p>Runs the design phases and adds ‘.design_result’ to self.config.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run_design_phase">
+<span class="sig-name descname"><span class="pre">run_design_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run_design_phase" title="Link to this definition"></a></dt>
+<dd><p>Runs a design phase defined by ‘name’ and merges the ‘.design_result’
+into self.config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of design phase that partially matches a key in <cite>phase_dict</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run_multiple_phases_in_serial">
+<span class="sig-name descname"><span class="pre">run_multiple_phases_in_serial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run_multiple_phases_in_serial" title="Link to this definition"></a></dt>
+<dd><p>Runs multiple phases listed in self.config[‘install_phases’] in serial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase_list</strong> (<em>list</em>) – List of installation phases to run.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run_multiple_phases_overlapping">
+<span class="sig-name descname"><span class="pre">run_multiple_phases_overlapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phases</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run_multiple_phases_overlapping" title="Link to this definition"></a></dt>
+<dd><p>Runs multiple phases overlapping using a mixture of dates, indices or
+dependencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phases</strong> (<em>dict</em>) – Dictionary of phases to run.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.run_dependent_phases">
+<span class="sig-name descname"><span class="pre">run_dependent_phases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_phases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.run_dependent_phases" title="Link to this definition"></a></dt>
+<dd><p>Runs remaining phases that depend on other phase times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_phases</strong> (<em>dict</em>) – Dictionary of phases to run.</p></li>
+<li><p><strong>zero</strong> (<em>int | float</em>) – Zero time for the simulation. Used to aggregate total logs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.get_dependency_start_time">
+<span class="sig-name descname"><span class="pre">get_dependency_start_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.get_dependency_start_time" title="Link to this definition"></a></dt>
+<dd><p>Returns start time based on the <cite>perc</cite> complete of <cite>target</cite> phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>str</em>) – Phase that start time is dependent on.</p></li>
+<li><p><strong>perc</strong> (<em>int | float</em>) – Percentage of the target phase completion time. <cite>0</cite>: starts at the
+same time. <cite>1</cite>: starts when target phase is completed.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.transform_weather_input">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform_weather_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weather</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.transform_weather_input" title="Link to this definition"></a></dt>
+<dd><p>Checks that an input weather profile matches the required format and
+converts the index to a datetime index if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>weather</strong> (<em>pd.DataFrame</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.get_weather_profile">
+<span class="sig-name descname"><span class="pre">get_weather_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.get_weather_profile" title="Link to this definition"></a></dt>
+<dd><p>Pulls weather profile from ‘self.weather’ starting at ‘start’, raising
+any errors if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>start</strong> (<em>datetime</em>) – Starting index for output weather profile.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>profile</strong> – Weather profile with first index at ‘start’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.outputs">
+<span class="sig-name descname"><span class="pre">outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_logs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npv_detailed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.outputs" title="Link to this definition"></a></dt>
+<dd><p>Returns dict of all available outputs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">capacity</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.capacity" title="Link to this definition"></a></dt>
+<dd><p>Returns project capacity in MW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.num_turbines">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_turbines</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.num_turbines" title="Link to this definition"></a></dt>
+<dd><p>Returns number of turbines in the project.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.turbine_rating">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">turbine_rating</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.turbine_rating" title="Link to this definition"></a></dt>
+<dd><p>Returns turbine rating in MW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.logs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">logs</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.logs" title="Link to this definition"></a></dt>
+<dd><p>Returns list of all logs in the project.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.project_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_time</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.project_time" title="Link to this definition"></a></dt>
+<dd><p>Returns total project time as the time of the last log.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.month_bins">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">month_bins</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.month_bins" title="Link to this definition"></a></dt>
+<dd><p>Returns bins representing project months.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.monthly_expenses">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">monthly_expenses</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.monthly_expenses" title="Link to this definition"></a></dt>
+<dd><p>Returns the monthly expenses of the project from development through
+construction.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.monthly_opex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">monthly_opex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.monthly_opex" title="Link to this definition"></a></dt>
+<dd><p>Returns the monthly OpEx expenditures based on project size.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.monthly_revenue">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">monthly_revenue</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.monthly_revenue" title="Link to this definition"></a></dt>
+<dd><p>Returns the monthly revenue based on when array system strings can
+be energized, eg. ‘self.progress.energize_points’.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.cash_flow">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cash_flow</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.cash_flow" title="Link to this definition"></a></dt>
+<dd><p>Returns the net cash flow based on <cite>self.monthly_expenses</cite> and
+<cite>self.monthly_revenue</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.npv">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">npv</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.npv" title="Link to this definition"></a></dt>
+<dd><p>Returns the net present value of the project based on
+<cite>self.cash_flow</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.progress_logs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">progress_logs</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.progress_logs" title="Link to this definition"></a></dt>
+<dd><p>Returns logs of progress points.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.progress_summary">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">progress_summary</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.progress_summary" title="Link to this definition"></a></dt>
+<dd><p>Returns a summary of progress by month.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.actions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">actions</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.actions" title="Link to this definition"></a></dt>
+<dd><p>Returns list of all actions in the project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.create_input_xlsx">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_input_xlsx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.create_input_xlsx" title="Link to this definition"></a></dt>
+<dd><p>A wrapper around self.compile_input_dict that produces an excel input
+file instead of a .json file.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.phase_dates">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase_dates</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.phase_dates" title="Link to this definition"></a></dt>
+<dd><p>Returns a combination of phase start dates and timing.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.installation_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">installation_time</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.installation_time" title="Link to this definition"></a></dt>
+<dd><p>Returns sum of installation module times. This does not consider
+overlaps if phase dates are supplied.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.project_days">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_days</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.project_days" title="Link to this definition"></a></dt>
+<dd><p>Returns days elapsed during installation phases accounting for
+overlapping phases.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.overnight_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overnight_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.overnight_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns overnight CAPEX/kW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.system_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">system_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.system_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns total system procurement CapEx.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.system_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">system_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.system_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns system CapEx/kW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.installation_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">installation_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.installation_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns total installation related CapEx.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.installation_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">installation_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.installation_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns installation CapEx/kW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.capex_breakdown">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">capex_breakdown</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.capex_breakdown" title="Link to this definition"></a></dt>
+<dd><p>Returns CapEx breakdown by category.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.capex_breakdown_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">capex_breakdown_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.capex_breakdown_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns CapEx per kW breakdown by category.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.bos_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bos_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.bos_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns total balance of system CapEx.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.bos_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bos_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.bos_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns balance of system CapEx/kW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.turbine_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">turbine_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.turbine_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns the total turbine CAPEX.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.turbine_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">turbine_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.turbine_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns the turbine CapEx/kW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.overnight_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">overnight_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.overnight_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns the overnight capital cost of the project.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.soft_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">soft_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.soft_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns total project cost costs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.soft_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">soft_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.soft_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns project soft costs per kW. Default numbers are based on the
+Cost of Energy Review (Stehly and Beiter 2018).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.project_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.project_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns project related CapEx line items. To override the defaults,
+the keys below should be passed to the ‘project_parameters’ subdict.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.project_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">project_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.project_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns project related CapEx per kW.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.total_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_capex</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.total_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns total project CapEx including soft costs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.total_capex_per_kw">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_capex_per_kw</span></span><a class="headerlink" href="#ORBIT.manager.ProjectManager.total_capex_per_kw" title="Link to this definition"></a></dt>
+<dd><p>Returns total CapEx/kW.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.export_configuration">
+<span class="sig-name descname"><span class="pre">export_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.export_configuration" title="Link to this definition"></a></dt>
+<dd><p>Exports the configuration settings for the project to
+<cite>library_path/project/config/file_name.yaml</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_name</strong> (<em>str</em>) – Name to use for the file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.manager.ProjectManager.export_project_logs">
+<span class="sig-name descname"><span class="pre">export_project_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ACTION'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.manager.ProjectManager.export_project_logs" title="Link to this definition"></a></dt>
+<dd><p>Exports the project logs to a .csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Filepath to save logs at.</p></li>
+<li><p><strong>level</strong> (<em>str, optional</em>) – Log level to save.
+Options: ‘ACTION’ | ‘DEBUG’
+Default: ‘ACTION’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_ParametricManager.html" class="btn btn-neutral float-right" title="Parametric Configurations - ORBIT.ParametricManager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

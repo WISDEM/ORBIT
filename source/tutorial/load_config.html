@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Working with ORBIT Modules and Projects &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ProjectManager" href="project_manager.html" />
+    <link rel="prev" title="Tutorial" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Working with ORBIT Modules and Projects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-individual-modules">Running Individual Modules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-and-saving-configurations">Loading and Saving Configurations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-multiple-phases">Running Multiple Phases</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="project_manager.html">ProjectManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design_phases.html">Design Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_specific.html">Phase Specific Configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available_outputs.html">Available Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="start_dates.html">Phase Start Dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="define_vessels.html">Vessels and Cable Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parametric_manager.html">ParametricManager</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Working with ORBIT Modules and Projects</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorial/load_config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="working-with-orbit-modules-and-projects">
+<h1>Working with ORBIT Modules and Projects<a class="headerlink" href="#working-with-orbit-modules-and-projects" title="Link to this heading"></a></h1>
+<p>ORBIT is made up of many different modules representing the design and
+installation of offshore wind components. Each module can be ran indepenently
+or within a project using <a class="reference internal" href="project_manager.html#manager"><span class="std std-ref">ProjectManager</span></a>. Modules and
+projects are configured with a set of nested dictionaries.</p>
+<section id="running-individual-modules">
+<h2>Running Individual Modules<a class="headerlink" href="#running-individual-modules" title="Link to this heading"></a></h2>
+<p>To run a module indepenently:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ORBIT.phases.install</span> <span class="kn">import</span> <span class="n">MonopileInstallation</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;site&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;depth&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s1">&#39;mean_windspeed&#39;</span><span class="p">:</span> <span class="mi">9</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;turbine&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;rotor_diameter&#39;</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span>
+        <span class="s1">&#39;hub_height&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="c1"># etc...</span>
+<span class="p">}</span>
+
+<span class="n">phase</span> <span class="o">=</span> <span class="n">MonopileInstallation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">phase</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">phase</span><span class="o">.</span><span class="n">total_cost</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The inputs required for each module are stored in <code class="docutils literal notranslate"><span class="pre">expected_config</span></code>.
+For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ORBIT.phases.install</span> <span class="kn">import</span> <span class="n">MonopileInstallation</span>
+<span class="n">MonopileInstallation</span><span class="o">.</span><span class="n">expected_config</span>
+
+<span class="o">&gt;&gt;&gt;</span>
+
+<span class="p">{</span>
+    <span class="s1">&#39;site&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;depth&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;mean_windspeed&#39;</span><span class="p">:</span> <span class="s1">&#39;m/s&#39;</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;turbine&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;rotor_diameter&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;hub_height&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="c1"># etc...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The returned nested dictionary can then be filled out by replacing the strings
+(‘m’, ‘m/s’, etc.) with the appropriate inputs for the analysis question.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>expected_config</cite> will return the required unit of the input where applicable.</p>
+</div>
+</section>
+<section id="loading-and-saving-configurations">
+<h2>Loading and Saving Configurations<a class="headerlink" href="#loading-and-saving-configurations" title="Link to this heading"></a></h2>
+<p>There are utility functions within ORBIT that allow configurations to be saved
+and loaded from a ‘.yaml’ format. Yaml is a data format similar to json in that
+it can store nested data structures. Yaml has several advantages though, the
+primary being that it supports comments.</p>
+<p>To load a configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ORBIT</span> <span class="kn">import</span> <span class="n">load_config</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;filepath/to/config.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To save a configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ORBIT</span> <span class="kn">import</span> <span class="n">save_config</span>
+<span class="n">save_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;filepath/to/config.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It isn’t required to use these utility functions. The standard yaml load and
+dump routines will work for converting python nested dictionaries to and from
+the yaml format. However, the <code class="docutils literal notranslate"><span class="pre">load_config</span></code> method supports scientific
+notation and the standard yaml routine does not.</p>
+</div>
+</section>
+<section id="running-multiple-phases">
+<h2>Running Multiple Phases<a class="headerlink" href="#running-multiple-phases" title="Link to this heading"></a></h2>
+<p>To run multiple phases, see the <a class="reference internal" href="project_manager.html#manager"><span class="std std-ref">ProjectManager</span></a> documentation.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="project_manager.html" class="btn btn-neutral float-right" title="ProjectManager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Electrical System Design API &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Offshore Substation Design API" href="api_OffshoreSubstationDesign.html" />
+    <link rel="prev" title="Export System Design API" href="api_ExportSystemDesign.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="api_MonopileDesign.html">Monopile Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ScourProtectionDesign.html">Scour Protection Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ArraySystemDesign.html">Array System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ExportSystemDesign.html">Export System Design API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Electrical System Design API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.design.ElectricalDesign"><code class="docutils literal notranslate"><span class="pre">ElectricalDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_OffshoreSubstationDesign.html">Offshore Substation Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SemiSubmersibleDesign.html">Semi-Submersible Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SparDesign.html">Spar Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_MooringSystemDesign.html">Mooring System Design API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+      <li class="breadcrumb-item active">Electrical System Design API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/api_ElectricalDesign.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="electrical-system-design-api">
+<h1>Electrical System Design API<a class="headerlink" href="#electrical-system-design-api" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_ElectricalDesign.html"><span class="doc">Electrical System Design</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design.</span></span><span class="sig-name descname"><span class="pre">ElectricalDesign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign" title="Link to this definition"></a></dt>
+<dd><p>Design phase for export cabling and offshore substation systems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_cables</strong> (<em>int</em>) – Total number of cables required for transmitting power.</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length of a single cable connecting the OSS to the interconnection
+in km.</p></li>
+<li><p><strong>mass</strong> (<em>float</em>) – Mass of <cite>length</cite> in tonnes.</p></li>
+<li><p><strong>cable</strong> (<cite>Cable</cite>) – Instance of <cite>ORBIT.phases.design.Cable</cite>. An export system will
+only require a single type of cable.</p></li>
+<li><p><strong>total_length</strong> (<em>float</em>) – Total length of cable required to trasmit power.</p></li>
+<li><p><strong>total_mass</strong> (<em>float</em>) – Total mass of cable required to transmit power.</p></li>
+<li><p><strong>sections_cables</strong> (np.ndarray, shape: (<a href="#id1"><span class="problematic" id="id2">`</span></a>num_cables, )) – An array of <cite>cable</cite>.</p></li>
+<li><p><strong>sections_lengths</strong> (np.ndarray, shape: (<a href="#id3"><span class="problematic" id="id4">`</span></a>num_cables, )) – An array of <cite>length</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.expected_config">
+<span class="sig-name descname"><span class="pre">expected_config</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'export_system_design':</span> <span class="pre">{'cable_crossings':</span> <span class="pre">{'crossing_number':</span> <span class="pre">'int</span> <span class="pre">(optional)',</span> <span class="pre">'crossing_unit_cost':</span> <span class="pre">'float</span> <span class="pre">(optional)'},</span> <span class="pre">'cables':</span> <span class="pre">'str',</span> <span class="pre">'interconnection_distance':</span> <span class="pre">'km</span> <span class="pre">(optional)',</span> <span class="pre">'num_redundant':</span> <span class="pre">'int</span> <span class="pre">(optional)',</span> <span class="pre">'percent_added_length':</span> <span class="pre">'float</span> <span class="pre">(optional)',</span> <span class="pre">'touchdown_distance':</span> <span class="pre">'m</span> <span class="pre">(optional,</span> <span class="pre">default:</span> <span class="pre">0)'},</span> <span class="pre">'landfall':</span> <span class="pre">{'interconnection_distance':</span> <span class="pre">'km</span> <span class="pre">(optional)'},</span> <span class="pre">'onshore_substation_design':</span> <span class="pre">{'onshore_converter_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'shunt_unit_cost':</span> <span class="pre">'USD/cable</span> <span class="pre">(optional)'},</span> <span class="pre">'plant':</span> <span class="pre">{'capacity':</span> <span class="pre">'MW'},</span> <span class="pre">'site':</span> <span class="pre">{'depth':</span> <span class="pre">'m',</span> <span class="pre">'distance_to_landfall':</span> <span class="pre">'km'},</span> <span class="pre">'substation_design':</span> <span class="pre">{'backup_gen_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'converter_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'dc_breaker_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'mpt_unit_cost':</span> <span class="pre">'USD/cable</span> <span class="pre">(optional)',</span> <span class="pre">'num_substations':</span> <span class="pre">'int</span> <span class="pre">(optional)',</span> <span class="pre">'onshore_converter_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'oss_pile_cost_rate':</span> <span class="pre">'USD/t</span> <span class="pre">(optional)',</span> <span class="pre">'oss_substructure_cost_rate':</span> <span class="pre">'USD/t</span> <span class="pre">(optional)',</span> <span class="pre">'oss_substructure_type':</span> <span class="pre">'str</span> <span class="pre">(optional,</span> <span class="pre">default:</span> <span class="pre">Monopile)',</span> <span class="pre">'other_ancillary_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'shunt_unit_cost':</span> <span class="pre">'USD/cable</span> <span class="pre">(optional)',</span> <span class="pre">'substation_capacity':</span> <span class="pre">'MW</span> <span class="pre">(optional)',</span> <span class="pre">'switchgear_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'topside_assembly_factor':</span> <span class="pre">'float</span> <span class="pre">(optional)',</span> <span class="pre">'topside_design_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)',</span> <span class="pre">'workspace_cost':</span> <span class="pre">'USD</span> <span class="pre">(optional)'}}</span></em><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.expected_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.run" title="Link to this definition"></a></dt>
+<dd><p>Main run function.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Returns export system design outputs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.design_result">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">design_result</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.design_result" title="Link to this definition"></a></dt>
+<dd><p>Returns the results of self.run().</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.total_cable_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_cable_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.total_cable_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns total export system cable cost.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.compute_number_cables">
+<span class="sig-name descname"><span class="pre">compute_number_cables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.compute_number_cables" title="Link to this definition"></a></dt>
+<dd><p>Calculate the total number of required and redundant cables to
+transmit power to the onshore interconnection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.compute_cable_length">
+<span class="sig-name descname"><span class="pre">compute_cable_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.compute_cable_length" title="Link to this definition"></a></dt>
+<dd><p>Calculates the total distance an export cable must travel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.compute_cable_mass">
+<span class="sig-name descname"><span class="pre">compute_cable_mass</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.compute_cable_mass" title="Link to this definition"></a></dt>
+<dd><p>Calculates the total mass of a single length of export cable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.compute_total_cable">
+<span class="sig-name descname"><span class="pre">compute_total_cable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.compute_total_cable" title="Link to this definition"></a></dt>
+<dd><p>Calculates the total length and mass of cables required to fully
+connect the OSS to the interconnection point.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.sections_cable_lengths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sections_cable_lengths</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.sections_cable_lengths" title="Link to this definition"></a></dt>
+<dd><p>Creates an array of section lengths to work with <code class="docutils literal notranslate"><span class="pre">CableSystem</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of <cite>length</cite> with shape (<code class="docutils literal notranslate"><span class="pre">num_cables</span></code>, ).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.sections_cables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sections_cables</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.sections_cables" title="Link to this definition"></a></dt>
+<dd><p>Creates an array of cable names to work with <code class="docutils literal notranslate"><span class="pre">CableSystem</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Array of <code class="docutils literal notranslate"><span class="pre">cable.name</span></code> with shape (<code class="docutils literal notranslate"><span class="pre">num_cables</span></code>, ).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_crossing_cost">
+<span class="sig-name descname"><span class="pre">calc_crossing_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_crossing_cost" title="Link to this definition"></a></dt>
+<dd><p>Compute cable crossing costs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.total_substation_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_substation_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.total_substation_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns the total substation cost.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_num_substations">
+<span class="sig-name descname"><span class="pre">calc_num_substations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_num_substations" title="Link to this definition"></a></dt>
+<dd><p>Computes number of substations based on HVDC or HVAC
+export cables.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.substation_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">substation_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.substation_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns total procuremet cost of the topside.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_mpt_cost">
+<span class="sig-name descname"><span class="pre">calc_mpt_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_mpt_cost" title="Link to this definition"></a></dt>
+<dd><p>Computes HVAC main power transformer (MPT). MPT cost is 0 for
+HVDC.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_shunt_reactor_cost">
+<span class="sig-name descname"><span class="pre">calc_shunt_reactor_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_shunt_reactor_cost" title="Link to this definition"></a></dt>
+<dd><p>Computes HVAC shunt reactor cost. Shunt reactor cost is 0 for
+HVDC.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_switchgear_costs">
+<span class="sig-name descname"><span class="pre">calc_switchgear_costs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_switchgear_costs" title="Link to this definition"></a></dt>
+<dd><p>Computes HVAC switchgear cost. Switchgear cost is 0 for HVDC.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_dc_breaker_cost">
+<span class="sig-name descname"><span class="pre">calc_dc_breaker_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_dc_breaker_cost" title="Link to this definition"></a></dt>
+<dd><p>Computes HVDC circuit breaker cost. Breaker cost is 0 for HVAC.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_ancillary_system_cost">
+<span class="sig-name descname"><span class="pre">calc_ancillary_system_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_ancillary_system_cost" title="Link to this definition"></a></dt>
+<dd><p>Calculates cost of ancillary systems.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_assembly_cost">
+<span class="sig-name descname"><span class="pre">calc_assembly_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_assembly_cost" title="Link to this definition"></a></dt>
+<dd><p>Calculates the cost of assembly on land.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_converter_cost">
+<span class="sig-name descname"><span class="pre">calc_converter_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_converter_cost" title="Link to this definition"></a></dt>
+<dd><p>Computes converter cost.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_substructure_mass_and_cost">
+<span class="sig-name descname"><span class="pre">calc_substructure_mass_and_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_substructure_mass_and_cost" title="Link to this definition"></a></dt>
+<dd><p>Calculates the mass and associated cost of the substation substructure
+based on equations 81-84 [1].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_substructure_length">
+<span class="sig-name descname"><span class="pre">calc_substructure_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_substructure_length" title="Link to this definition"></a></dt>
+<dd><p>Calculates substructure length as the site depth + 10m.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_substructure_deck_space">
+<span class="sig-name descname"><span class="pre">calc_substructure_deck_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_substructure_deck_space" title="Link to this definition"></a></dt>
+<dd><p>Calculates required deck space for the substation substructure.</p>
+<p>Coming soon!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_topside_deck_space">
+<span class="sig-name descname"><span class="pre">calc_topside_deck_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_topside_deck_space" title="Link to this definition"></a></dt>
+<dd><p>Calculates required deck space for the substation topside.</p>
+<p>Coming soon!</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_topside_mass_and_cost">
+<span class="sig-name descname"><span class="pre">calc_topside_mass_and_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_topside_mass_and_cost" title="Link to this definition"></a></dt>
+<dd><p>Calculates the mass and cost of the substation topsides.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ElectricalDesign.calc_onshore_cost">
+<span class="sig-name descname"><span class="pre">calc_onshore_cost</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ElectricalDesign.calc_onshore_cost" title="Link to this definition"></a></dt>
+<dd><p>Minimum Cost of Onshore Substation Connection.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_ExportSystemDesign.html" class="btn btn-neutral float-left" title="Export System Design API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_OffshoreSubstationDesign.html" class="btn btn-neutral float-right" title="Offshore Substation Design API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

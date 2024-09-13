@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Project Configuration and Management - ORBIT.manager" href="api_ProjectManager.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<span id="api"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager"><code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.start_date"><code class="docutils literal notranslate"><span class="pre">ProjectManager.start_date</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.phases"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phases</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.register_design_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.register_design_phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.register_install_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.register_install_phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.project_params"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_params</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.compile_input_dict"><code class="docutils literal notranslate"><span class="pre">ProjectManager.compile_input_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.resolve_project_capacity"><code class="docutils literal notranslate"><span class="pre">ProjectManager.resolve_project_capacity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.find_key_match"><code class="docutils literal notranslate"><span class="pre">ProjectManager.find_key_match()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.phase_dict"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phase_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.merge_dicts"><code class="docutils literal notranslate"><span class="pre">ProjectManager.merge_dicts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.remove_keys"><code class="docutils literal notranslate"><span class="pre">ProjectManager.remove_keys()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.create_config_for_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.create_config_for_phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.phase_ends"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phase_ends</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run_install_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_install_phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.get_phase_class"><code class="docutils literal notranslate"><span class="pre">ProjectManager.get_phase_class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run_all_design_phases"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_all_design_phases()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run_design_phase"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_design_phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run_multiple_phases_in_serial"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_multiple_phases_in_serial()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run_multiple_phases_overlapping"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_multiple_phases_overlapping()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.run_dependent_phases"><code class="docutils literal notranslate"><span class="pre">ProjectManager.run_dependent_phases()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.get_dependency_start_time"><code class="docutils literal notranslate"><span class="pre">ProjectManager.get_dependency_start_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.transform_weather_input"><code class="docutils literal notranslate"><span class="pre">ProjectManager.transform_weather_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.get_weather_profile"><code class="docutils literal notranslate"><span class="pre">ProjectManager.get_weather_profile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.outputs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.outputs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.capacity"><code class="docutils literal notranslate"><span class="pre">ProjectManager.capacity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.num_turbines"><code class="docutils literal notranslate"><span class="pre">ProjectManager.num_turbines</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.turbine_rating"><code class="docutils literal notranslate"><span class="pre">ProjectManager.turbine_rating</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.logs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.logs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.project_time"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.month_bins"><code class="docutils literal notranslate"><span class="pre">ProjectManager.month_bins</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.monthly_expenses"><code class="docutils literal notranslate"><span class="pre">ProjectManager.monthly_expenses</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.monthly_opex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.monthly_opex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.monthly_revenue"><code class="docutils literal notranslate"><span class="pre">ProjectManager.monthly_revenue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.cash_flow"><code class="docutils literal notranslate"><span class="pre">ProjectManager.cash_flow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.npv"><code class="docutils literal notranslate"><span class="pre">ProjectManager.npv</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.progress_logs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.progress_logs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.progress_summary"><code class="docutils literal notranslate"><span class="pre">ProjectManager.progress_summary</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.actions"><code class="docutils literal notranslate"><span class="pre">ProjectManager.actions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.create_input_xlsx"><code class="docutils literal notranslate"><span class="pre">ProjectManager.create_input_xlsx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.phase_dates"><code class="docutils literal notranslate"><span class="pre">ProjectManager.phase_dates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.installation_time"><code class="docutils literal notranslate"><span class="pre">ProjectManager.installation_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.project_days"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_days</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.overnight_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.overnight_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.system_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.system_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.system_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.system_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.installation_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.installation_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.installation_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.installation_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.capex_breakdown"><code class="docutils literal notranslate"><span class="pre">ProjectManager.capex_breakdown</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.capex_breakdown_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.capex_breakdown_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.bos_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.bos_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.bos_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.bos_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.turbine_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.turbine_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.turbine_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.turbine_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.overnight_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.overnight_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.soft_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.soft_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.soft_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.soft_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.project_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.project_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.project_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.total_capex"><code class="docutils literal notranslate"><span class="pre">ProjectManager.total_capex</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.total_capex_per_kw"><code class="docutils literal notranslate"><span class="pre">ProjectManager.total_capex_per_kw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.export_configuration"><code class="docutils literal notranslate"><span class="pre">ProjectManager.export_configuration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ProjectManager.html#ORBIT.manager.ProjectManager.export_project_logs"><code class="docutils literal notranslate"><span class="pre">ProjectManager.export_project_logs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager"><code class="docutils literal notranslate"><span class="pre">ParametricManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.run"><code class="docutils literal notranslate"><span class="pre">ParametricManager.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.run_list"><code class="docutils literal notranslate"><span class="pre">ParametricManager.run_list</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.num_runs"><code class="docutils literal notranslate"><span class="pre">ParametricManager.num_runs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.map_funcs"><code class="docutils literal notranslate"><span class="pre">ParametricManager.map_funcs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.preview"><code class="docutils literal notranslate"><span class="pre">ParametricManager.preview()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.create_model"><code class="docutils literal notranslate"><span class="pre">ParametricManager.create_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ParametricManager.html#ORBIT.ParametricManager.from_config"><code class="docutils literal notranslate"><span class="pre">ParametricManager.from_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_MonopileDesign.html">Monopile Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_MonopileDesign.html#ORBIT.phases.design.MonopileDesign"><code class="docutils literal notranslate"><span class="pre">MonopileDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_ScourProtectionDesign.html">Scour Protection Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_ScourProtectionDesign.html#ORBIT.phases.design.ScourProtectionDesign"><code class="docutils literal notranslate"><span class="pre">ScourProtectionDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_ArraySystemDesign.html">Array System Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_ArraySystemDesign.html#ORBIT.phases.design.ArraySystemDesign"><code class="docutils literal notranslate"><span class="pre">ArraySystemDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_ExportSystemDesign.html">Export System Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_ExportSystemDesign.html#ORBIT.phases.design.ExportSystemDesign"><code class="docutils literal notranslate"><span class="pre">ExportSystemDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_ElectricalDesign.html">Electrical System Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_ElectricalDesign.html#ORBIT.phases.design.ElectricalDesign"><code class="docutils literal notranslate"><span class="pre">ElectricalDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_OffshoreSubstationDesign.html">Offshore Substation Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_OffshoreSubstationDesign.html#ORBIT.phases.design.OffshoreSubstationDesign"><code class="docutils literal notranslate"><span class="pre">OffshoreSubstationDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_SemiSubmersibleDesign.html">Semi-Submersible Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_SemiSubmersibleDesign.html#ORBIT.phases.design.SemiSubmersibleDesign"><code class="docutils literal notranslate"><span class="pre">SemiSubmersibleDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_SparDesign.html">Spar Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_SparDesign.html#ORBIT.phases.design.SparDesign"><code class="docutils literal notranslate"><span class="pre">SparDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/design/api_MooringSystemDesign.html">Mooring System Design API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/design/api_MooringSystemDesign.html#ORBIT.phases.design.MooringSystemDesign"><code class="docutils literal notranslate"><span class="pre">MooringSystemDesign</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/monopile/api_MonopileInstallation.html">Monopile Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/monopile/api_MonopileInstallation.html#ORBIT.phases.install.monopile_install.standard.MonopileInstallation"><code class="docutils literal notranslate"><span class="pre">MonopileInstallation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/monopile/api_MonopileInstallation.html#ORBIT.phases.install.monopile_install.standard.solo_install_monopiles"><code class="docutils literal notranslate"><span class="pre">solo_install_monopiles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/monopile/api_MonopileInstallation.html#ORBIT.phases.install.monopile_install.standard.install_monopiles_from_queue"><code class="docutils literal notranslate"><span class="pre">install_monopiles_from_queue()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/scour/api_ScourProtectionInstall.html">Scour Protection Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/scour/api_ScourProtectionInstall.html#ORBIT.phases.install.ScourProtectionInstallation"><code class="docutils literal notranslate"><span class="pre">ScourProtectionInstallation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/turbine/api_TurbineInstallation.html">Turbine Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/turbine/api_TurbineInstallation.html#ORBIT.phases.install.turbine_install.standard.TurbineInstallation"><code class="docutils literal notranslate"><span class="pre">TurbineInstallation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/turbine/api_TurbineInstallation.html#ORBIT.phases.install.turbine_install.standard.solo_install_turbines"><code class="docutils literal notranslate"><span class="pre">solo_install_turbines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/turbine/api_TurbineInstallation.html#ORBIT.phases.install.turbine_install.standard.install_turbine_components_from_queue"><code class="docutils literal notranslate"><span class="pre">install_turbine_components_from_queue()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/array/api_ArrayCableInstall.html">Array Cabling System Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/array/api_ArrayCableInstall.html#ORBIT.phases.install.ArrayCableInstallation"><code class="docutils literal notranslate"><span class="pre">ArrayCableInstallation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/export/api_ExportCableInstall.html">Export Cabling System Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/export/api_ExportCableInstall.html#ORBIT.phases.install.ExportCableInstallation"><code class="docutils literal notranslate"><span class="pre">ExportCableInstallation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/oss/api_OffshoreSubstationInstall.html">Offshore Substation Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/oss/api_OffshoreSubstationInstall.html#ORBIT.phases.install.OffshoreSubstationInstallation"><code class="docutils literal notranslate"><span class="pre">OffshoreSubstationInstallation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/quayside_towout/api_MooredSubInstallation.html">Moored Substructure Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/quayside_towout/api_MooredSubInstallation.html#ORBIT.phases.install.MooredSubInstallation"><code class="docutils literal notranslate"><span class="pre">MooredSubInstallation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="phases/install/mooring/api_MooringSystemInstallation.html">Mooring System Installation API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phases/install/mooring/api_MooringSystemInstallation.html#ORBIT.phases.install.MooringSystemInstallation"><code class="docutils literal notranslate"><span class="pre">MooringSystemInstallation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_ProjectManager.html" class="btn btn-neutral float-right" title="Project Configuration and Management - ORBIT.manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

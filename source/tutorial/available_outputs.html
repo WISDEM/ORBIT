@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Available Outputs &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Phase Start Dates" href="start_dates.html" />
+    <link rel="prev" title="Phase Specific Configurations" href="phase_specific.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="load_config.html">Working with ORBIT Modules and Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_manager.html">ProjectManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design_phases.html">Design Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_specific.html">Phase Specific Configurations</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Available Outputs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#system-and-installation-capex">System and Installation CapEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bos-capex">BOS CapEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#soft-capex">Soft CapEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#project-capex">Project CapEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#total-capex">Total CapEx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#actions">Actions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detailed-outputs">Detailed Outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cash-flow-and-net-present-value">Cash Flow and Net Present Value</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="start_dates.html">Phase Start Dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="define_vessels.html">Vessels and Cable Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parametric_manager.html">ParametricManager</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Available Outputs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorial/available_outputs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="available-outputs">
+<h1>Available Outputs<a class="headerlink" href="#available-outputs" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> is used to run a collection of ORBIT modules representing a
+complete offshore wind project installation. The outputs of each module are
+then aggregated into several different project-level outputs available via
+the <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> API.</p>
+<section id="system-and-installation-capex">
+<h2>System and Installation CapEx<a class="headerlink" href="#system-and-installation-capex" title="Link to this heading"></a></h2>
+<p>The two main outputs of ORBIT are the System CapEx (the total cost of procuring
+the configured subsystems) and the Installation CapEx (the total cost of
+installing the subsystems).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ORBIT</span> <span class="kn">import</span> <span class="n">ProjectManager</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">ProjectManager</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">system_capex</span>
+<span class="n">project</span><span class="o">.</span><span class="n">installation_capex</span>
+</pre></div>
+</div>
+<p>System CapEx is the sum of the unit costs (either user inputs or results from
+design phases) multiplied by the configured number of turbines, cable section
+lenghts or other appropriate unit. This output does not change based on the
+installation simulation.</p>
+<p>Installation CapEx is a dynamic result based on the installation simulation and
+is based on the times associated with each subsystem installation, day rates of
+any vessels/ports and any accrued weather delays.</p>
+</section>
+<section id="bos-capex">
+<h2>BOS CapEx<a class="headerlink" href="#bos-capex" title="Link to this heading"></a></h2>
+<p>The balance-of-system CapEx (available as <code class="docutils literal notranslate"><span class="pre">project.bos_capex</span></code>) is the sum of
+the system and installation capex numbers and is one of the core outputs of the
+ORBIT module.</p>
+</section>
+<section id="soft-capex">
+<h2>Soft CapEx<a class="headerlink" href="#soft-capex" title="Link to this heading"></a></h2>
+<p>Soft CapEx (<code class="docutils literal notranslate"><span class="pre">project.soft_capex</span></code>) represents additional project level costs
+associated with commissioning, decommissioning and financing of the project.
+The cost factors can be input in the <code class="docutils literal notranslate"><span class="pre">project_parameters</span></code> subdict of an ORBIT
+configuration. The default cost factors for these categories are derived from the
+<a class="reference external" href="https://www.nrel.gov/docs/fy20osti/74598.pdf">2018 Cost of Wind Energy Review</a>.</p>
+</section>
+<section id="project-capex">
+<h2>Project CapEx<a class="headerlink" href="#project-capex" title="Link to this heading"></a></h2>
+<p>Project CapEx (<code class="docutils literal notranslate"><span class="pre">project.project_capex</span></code>) includes the costs associated with
+the lease area, the development of the construction operations plan and any
+environmental review and other upfront project costs. There are default values
+for all of these subcategories, however the values can also be overridden in the
+<code class="docutils literal notranslate"><span class="pre">project_parameters</span></code> subdict.</p>
+</section>
+<section id="total-capex">
+<h2>Total CapEx<a class="headerlink" href="#total-capex" title="Link to this heading"></a></h2>
+<p>Total CapEx (<code class="docutils literal notranslate"><span class="pre">project.total_capex</span></code>) is the sum of the BOS, Soft and Project
+CapEx numbers. This represents complete project costs including all upfront
+costs, financing, procurement and installation of BOS subsystems and the
+procurement costs of the turbines.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ORBIT doesn’t explicity model the procurement of turbines, however the
+Turbine CapEx is included within <code class="docutils literal notranslate"><span class="pre">project.total_capex</span></code>. To configure the
+cost of the turbines, <code class="docutils literal notranslate"><span class="pre">turbine_capex</span></code> can be passed into the
+<code class="docutils literal notranslate"><span class="pre">project_parameters</span></code> subdict of an ORBIT config. The default is $1300/kW.</p>
+</div>
+</section>
+<section id="actions">
+<h2>Actions<a class="headerlink" href="#actions" title="Link to this heading"></a></h2>
+<p>A list of every step taken during the installation modules is available at
+<code class="docutils literal notranslate"><span class="pre">project.actions</span></code>. The best way to view, sort and save these results is as
+a pandas DataFrame. A few example use cases are presented below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">actions</span><span class="p">)</span>
+
+<span class="c1"># Sort by a specific phase</span>
+<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;MonopileInstallation&quot;</span><span class="p">]</span>
+
+<span class="c1"># Group by vessel and action to see where each vessel spent the most time</span>
+<span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;vessel&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s2">&quot;duration&quot;</span><span class="p">]</span>
+
+<span class="c1"># Save results to &#39;csv&#39;</span>
+<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;filename.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="detailed-outputs">
+<h2>Detailed Outputs<a class="headerlink" href="#detailed-outputs" title="Link to this heading"></a></h2>
+<p>More detailed results from individual phases are available at
+<code class="docutils literal notranslate"><span class="pre">project.detailed_outputs</span></code>.</p>
+</section>
+<section id="cash-flow-and-net-present-value">
+<h2>Cash Flow and Net Present Value<a class="headerlink" href="#cash-flow-and-net-present-value" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> also includes a basic cash flow and net present value model.
+The project must have the array system, export system and the substation
+installation modules configured for this model to be applicable. The model will
+find the point in the project logs where the substation and export system
+installations were completed and where each array system string was installed.
+When all three of these conditions are met, the project can begin to generate
+energy and produce revenue. The revenue generation is then superimposed on the
+monthly spend of the installation modules for the <code class="docutils literal notranslate"><span class="pre">project.cash_flow</span></code>.</p>
+<p>The net present value of the project can then be calculated and is available at
+<code class="docutils literal notranslate"><span class="pre">project.npv</span></code>. The underlying financial assumptions for this model are also
+contained within the <code class="docutils literal notranslate"><span class="pre">project_parameters</span></code> subdict of the ORBIT configuration.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="phase_specific.html" class="btn btn-neutral float-left" title="Phase Specific Configurations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="start_dates.html" class="btn btn-neutral float-right" title="Phase Start Dates" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

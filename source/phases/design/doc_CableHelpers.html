@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cabling Design Helpers &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Cabling Design Helpers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/doc_CableHelpers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cabling-design-helpers">
+<h1>Cabling Design Helpers<a class="headerlink" href="#cabling-design-helpers" title="Link to this heading"></a></h1>
+<p>For details of the code implementation, please see the
+<a class="reference internal" href="api_CableHelpers.html"><span class="doc">Cabling Helpers API</span></a>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>This overview provides the <code class="xref py py-class docutils literal notranslate"><span class="pre">Cable</span></code> class, <code class="xref py py-class docutils literal notranslate"><span class="pre">Plant</span></code> class, and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CableSystem</span></code> parent class.</p>
+</section>
+<section id="cable">
+<h2>Cable<a class="headerlink" href="#cable" title="Link to this heading"></a></h2>
+<p>The cable class calculates a provided cable’s power rating for determining the
+maximum number of turbines that can be supported by a string of cable.</p>
+<section id="character-impedance-omega">
+<h3>Character Impedance (<span class="math notranslate nohighlight">\(\Omega\)</span>)<a class="headerlink" href="#character-impedance-omega" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[Z_0 = \sqrt{\frac{R + 2 \pi f L}{G + j 2 \pi f C}}\]</div>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(R=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">ac_resistance</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(j=\)</span> the imaginary unit</div>
+<div class="line"><span class="math notranslate nohighlight">\(f=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">line_frequency</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(L=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">inductance</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(G = \frac{1}{R} =\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">conductance</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(C=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">capacitance</span></code></div>
+</div>
+</section>
+<section id="power-factor">
+<h3>Power Factor<a class="headerlink" href="#power-factor" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[\begin{split}|P| &amp;= \cos(\theta) \\
+    &amp;= \cos(\arctan(\frac{j Z_0}{Z_0}))\end{split}\]</div>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(\theta=\)</span> the phase angle</div>
+<div class="line"><span class="math notranslate nohighlight">\(jZ_0=\)</span> the imaginary portion of <code class="xref py py-attr docutils literal notranslate"><span class="pre">character_impedance</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(Z_0=\)</span> the real portion of <code class="xref py py-attr docutils literal notranslate"><span class="pre">character_impedance</span></code></div>
+</div>
+</section>
+<section id="cable-power-mw">
+<h3>Cable Power (<span class="math notranslate nohighlight">\(MW\)</span>)<a class="headerlink" href="#cable-power-mw" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[P = \sqrt{3} * V * I * |P|\]</div>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(V=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">rated_voltage</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(I=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">current_capacity</span></code></div>
+<div class="line"><span class="math notranslate nohighlight">\(|P|=\)</span> <code class="xref py py-attr docutils literal notranslate"><span class="pre">power_factor</span></code></div>
+</div>
+</section>
+</section>
+<section id="plant">
+<h2>Plant<a class="headerlink" href="#plant" title="Link to this heading"></a></h2>
+<p>Calculates the wind farm specifications to be used for
+<a class="reference internal" href="doc_ArraySystemDesign.html"><span class="doc">array cable design phase</span></a>. The “data class”
+accepts either set distances between turbines and rows or calculates them
+based off of the number of rotor diameters specified, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># First see if there is a distance defined</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">turbine_distance</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;plant&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;turbine_distance&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="c1"># If not, then multiply the rotor diameter by the turbine spacing,</span>
+<span class="c1"># an integer representation of the number of rotor diameters and covert</span>
+<span class="c1"># to kilometers</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbine_distance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">turbine_distance</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">rotor_diameter</span> <span class="o">*</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;plant&quot;</span><span class="p">][</span><span class="s2">&quot;turbine_spacing&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>
+        <span class="p">)</span>
+
+<span class="c1"># Repeat the same process for row distance.</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">row_distance</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;plant&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;row_distance&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_distance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">row_distance</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">rotor_diameter</span> <span class="o">*</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;plant&quot;</span><span class="p">][</span><span class="s2">&quot;row_spacing&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="xref py py-attr docutils literal notranslate"><span class="pre">config</span></code> is the configuration dictionary passed to the
+<a class="reference internal" href="api_ArraySystemDesign.html"><span class="doc">array cable design phase</span></a></p>
+<p>The cable section length for the first turbine in each string is calculated as
+the distance to the substation, <code class="docutils literal notranslate"><span class="pre">substation_distance</span></code>.</p>
+</section>
+<section id="cablesystem">
+<h2>CableSystem<a class="headerlink" href="#cablesystem" title="Link to this heading"></a></h2>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">CableSystem</span></code> acts as the parent class for both
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayDesignSystem</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ExportDesignSystem</span></code>. As such, it
+is not intended to be invoked on its own, however it provides the shared
+frameworks for both cabling system.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">CableSystem</span></code> offers the cabling initialization and most of
+the output properties such as <code class="xref py py-attr docutils literal notranslate"><span class="pre">cable_lengths_by_type</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">total_cable_lengths_by_type</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">cost_by_type</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">total_phase_cost</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">total_phase_time</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">detailed_output</span></code>, and most importantly <code class="xref py py-attr docutils literal notranslate"><span class="pre">design_result</span></code>.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

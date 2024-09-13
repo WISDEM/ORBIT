@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monopile Design API &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Scour Protection Design API" href="api_ScourProtectionDesign.html" />
+    <link rel="prev" title="Design Phases - ORBIT.phases.design" href="../../api_DesignPhase.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Monopile Design API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.design.MonopileDesign"><code class="docutils literal notranslate"><span class="pre">MonopileDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_ScourProtectionDesign.html">Scour Protection Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ArraySystemDesign.html">Array System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ExportSystemDesign.html">Export System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ElectricalDesign.html">Electrical System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_OffshoreSubstationDesign.html">Offshore Substation Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SemiSubmersibleDesign.html">Semi-Submersible Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SparDesign.html">Spar Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_MooringSystemDesign.html">Mooring System Design API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+      <li class="breadcrumb-item active">Monopile Design API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/api_MonopileDesign.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="monopile-design-api">
+<h1>Monopile Design API<a class="headerlink" href="#monopile-design-api" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see <a class="reference internal" href="doc_MonopileDesign.html"><span class="doc">Monopile Design</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design.</span></span><span class="sig-name descname"><span class="pre">MonopileDesign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign" title="Link to this definition"></a></dt>
+<dd><p>Monopile Design Class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.run" title="Link to this definition"></a></dt>
+<dd><p>Main run function. Passes required config parameters to
+<a class="reference internal" href="#ORBIT.phases.design.MonopileDesign.design_monopile" title="ORBIT.phases.design.MonopileDesign.design_monopile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">design_monopile()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.design_monopile">
+<span class="sig-name descname"><span class="pre">design_monopile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_windspeed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotor_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hub_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_windspeed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.design_monopile" title="Link to this definition"></a></dt>
+<dd><p>Solves system of equations for the required pile diameter to satisfy
+the 50 year extreme operating gust moment. Using the result from the
+diameter equation, calculates the wall thickness and the required
+embedment length and other important sizing parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_windspeed</strong> (<em>int | float</em>) – Mean wind speed at site (m/s).</p></li>
+<li><p><strong>site_depth</strong> (<em>int | float</em>) – Water depth at site (m).</p></li>
+<li><p><strong>rotor_diameter</strong> (<em>int | float</em>) – Rotor diameter (m).</p></li>
+<li><p><strong>hub_height</strong> (<em>int | float</em>) – Hub height above mean sea level (m).</p></li>
+<li><p><strong>rated_windspeed</strong> (<em>int | float</em>) – Rated windspeed of turbine (m/s).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><strong>monopile</strong> – Dictionary of monopile sizing and costs.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">diameter</span></code> - Pile diameter (m)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thickness</span></code> - Pile wall thickness (m)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moment</span></code> - Pile bending moment of inertia (m4)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">embedment_length</span></code> - Pile embedment length (m)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">length</span></code> - Total pile length (m)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mass</span></code> - Pile mass (t)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> - <cite>‘Monopile’</cite></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>This class was adapted from <a class="footnote-reference brackets" href="#arany2017" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="arany2017" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Laszlo Arany, S. Bhattacharya, John Macdonald,
+S.J. Hogan, Design of monopiles for offshore wind turbines in 10
+steps, Soil Dynamics and Earthquake Engineering,
+Volume 92, 2017, Pages 126-152, ISSN 0267-7261,</p>
+</aside>
+</aside>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.design_transition_piece">
+<span class="sig-name descname"><span class="pre">design_transition_piece</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">D_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_p</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.design_transition_piece" title="Link to this definition"></a></dt>
+<dd><p>Designs transition piece given the results of the monopile design.</p>
+<p>Based on Arany 2016, sections 2.2.7 - 2.2.8.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>monopile_diameter</strong> (<em>int | float</em>) – Diameter of the designed monopile.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>tp_design</strong> – Transition piece design parameters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.design_result">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">design_result</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.design_result" title="Link to this definition"></a></dt>
+<dd><p>Returns the results of <a class="reference internal" href="#ORBIT.phases.design.MonopileDesign.design_monopile" title="ORBIT.phases.design.MonopileDesign.design_monopile"><code class="xref py py-meth docutils literal notranslate"><span class="pre">design_monopile()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.total_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.total_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns total cost of the substructures and transition pieces.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Returns detailed phase information.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.material_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">material_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.material_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns the material cost of the monopile and transition piece.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.total_monopile_mass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_monopile_mass</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.total_monopile_mass" title="Link to this definition"></a></dt>
+<dd><p>Returns total mass of all monopiles.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.total_tp_mass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_tp_mass</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.total_tp_mass" title="Link to this definition"></a></dt>
+<dd><p>Returns total mass of all transition pieces.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.monopile_steel_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">monopile_steel_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.monopile_steel_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns the cost of monopile steel (USD/t) fully fabricated.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.tp_steel_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tp_steel_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.tp_steel_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns the cost of fabricated transition piece steel (USD/t).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.pile_mass">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pile_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lt</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.pile_mass" title="Link to this definition"></a></dt>
+<dd><p>Calculates the total monopile mass in tonnes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Dp</strong> (<em>int | float</em>) – Pile diameter (m).</p></li>
+<li><p><strong>tp</strong> (<em>int | float</em>) – Pile wall thickness (m).</p></li>
+<li><p><strong>Lt</strong> (<em>int | float</em>) – Total pile length (m).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mt</strong> – Total pile mass (t).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.pile_embedment_length">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pile_embedment_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ip</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.pile_embedment_length" title="Link to this definition"></a></dt>
+<dd><p>Calculates required pile embedment length.</p>
+<p>Source: Arany &amp; Bhattacharya (2016)
+- Equation 7 (Enforces a rigid/lower aspect ratio monopile)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Ip</strong> (<em>int | float</em>) – Pile moment of inertia (m4)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Lp</strong> – Required pile embedment length (m).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.pile_thickness">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pile_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.pile_thickness" title="Link to this definition"></a></dt>
+<dd><p>Calculates pile wall thickness.</p>
+<p>Source: Arany &amp; Bhattacharya (2016)
+- Equation 1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Dp</strong> (<em>int | float</em>) – Pile diameter (m).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>tp</strong> – Pile Wall Thickness (m)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.pile_moment">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pile_moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.pile_moment" title="Link to this definition"></a></dt>
+<dd><p>Equation to calculate the pile bending moment of inertia.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Dp</strong> (<em>int | float</em>) – Pile diameter (m).</p></li>
+<li><p><strong>tp</strong> (<em>int | float</em>) – Pile wall thickness (m).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Ip</strong> – Pile bending moment of inertia</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.pile_diam_equation">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pile_diam_equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Dp</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.pile_diam_equation" title="Link to this definition"></a></dt>
+<dd><p>Equation to be solved for Pile Diameter.</p>
+<p>Combination of equations 99 &amp; 101 in this paper:
+Source: Arany &amp; Bhattacharya (2016)
+- Equations 99 &amp; 101</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Dp</strong> (<em>int | float</em>) – Pile diameter (m).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>res</strong> – Reduced equation result.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.calculate_50year_wind_moment">
+<span class="sig-name descname"><span class="pre">calculate_50year_wind_moment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_windspeed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotor_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hub_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_windspeed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.calculate_50year_wind_moment" title="Link to this definition"></a></dt>
+<dd><p>Calculates the 50 year extreme wind moment using methodology from
+DNV-GL.</p>
+<p>Source: Arany &amp; Bhattacharya (2016)
+- Equation 30</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_windspeed</strong> (<em>int | float</em>) – Mean wind speed at site (m/s).</p></li>
+<li><p><strong>site_depth</strong> (<em>int | float</em>) – Water depth at site (m).</p></li>
+<li><p><strong>rotor_diameter</strong> (<em>int | float</em>) – Rotor diameter (m).</p></li>
+<li><p><strong>hub_height</strong> (<em>int | float</em>) – Hub height above mean sea level (m).</p></li>
+<li><p><strong>rated_windspeed</strong> (<em>int | float</em>) – Rated windspeed of turbine (m/s).</p></li>
+<li><p><strong>load_factor</strong> (<em>float</em>) – Added safety factor on the extreme wind moment.
+Default: 1.3 (approximately matches DNV standard)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>M_50y</strong> – 50 year extreme wind moment (N-m).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.calculate_50year_wind_load">
+<span class="sig-name descname"><span class="pre">calculate_50year_wind_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_windspeed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotor_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_windspeed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.calculate_50year_wind_load" title="Link to this definition"></a></dt>
+<dd><p>Calculates the 50 year extreme wind load using methodology from DNV-GL.</p>
+<p>Source: Arany &amp; Bhattacharya (2016)
+- Equation 29</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_windspeed</strong> (<em>int | float</em>) – Mean wind speed at site (m/s).</p></li>
+<li><p><strong>rotor_diam</strong> (<em>int | float</em>) – Rotor diameter (m).</p></li>
+<li><p><strong>rated_windspeed</strong> (<em>int | float</em>) – Rated windspeed of turbine (m/s).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>F_50y</strong> – 50 year extreme wind load (N).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.calculate_thrust_coefficient">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_thrust_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rated_windspeed</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.calculate_thrust_coefficient" title="Link to this definition"></a></dt>
+<dd><p>Calculates the thrust coefficient using rated windspeed.</p>
+<p>Source: Frohboese &amp; Schmuck (2010)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rated_windspeed</strong> (<em>int | float</em>) – Rated windspeed of turbine (m/s).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ct</strong> – Coefficient of thrust.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.calculate_50year_extreme_ws">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_50year_extreme_ws</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_windspeed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.calculate_50year_extreme_ws" title="Link to this definition"></a></dt>
+<dd><p>Calculates the 50 year extreme wind speed using methodology
+from DNV-GL.</p>
+<p>Source: Arany &amp; Bhattacharya (2016)
+- Equation 27</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_windspeed</strong> (<em>int | float</em>) – Mean wind speed (m/s).</p></li>
+<li><p><strong>shape_factor</strong> (<em>int | float</em>) – Shape factor of the Weibull distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>U_50y</strong> – 50 year extreme wind speed (m/s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.MonopileDesign.calculate_50year_extreme_gust">
+<span class="sig-name descname"><span class="pre">calculate_50year_extreme_gust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_windspeed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotor_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rated_windspeed</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.MonopileDesign.calculate_50year_extreme_gust" title="Link to this definition"></a></dt>
+<dd><p>Calculates the 50 year extreme wind gust using methodology from DNV-GL.</p>
+<p>Source: Arany &amp; Bhattacharya (2016)
+- Equation 28</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_windspeed</strong> (<em>int | float</em>) – Mean wind speed at site (m/s).</p></li>
+<li><p><strong>rotor_diameter</strong> (<em>int | float</em>) – Rotor diameter (m).</p></li>
+<li><p><strong>rated_windspeed</strong> (<em>int | float</em>) – Rated windspeed of turbine (m/s).</p></li>
+<li><p><strong>turb_length_scale</strong> (<em>int | float</em>) – Turbulence integral length scale (m).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>U_eog</strong> – Extreme operating gust speed (m/s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../api_DesignPhase.html" class="btn btn-neutral float-left" title="Design Phases - ORBIT.phases.design" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_ScourProtectionDesign.html" class="btn btn-neutral float-right" title="Scour Protection Design API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

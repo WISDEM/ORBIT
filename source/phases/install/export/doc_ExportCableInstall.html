@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Export Cabling System Installation Methodology &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Offshore Substation Installation Methodology" href="../oss/doc_OffshoreSubstationInstall.html" />
+    <link rel="prev" title="Array Cabling System Installation Methodology" href="../array/doc_ArrayCableInstall.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ProjectManager.html">Project Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_DesignPhase.html">Design Phases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../doc_InstallPhase.html">Install Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/doc_MonopileInstall.html">Monopile Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scour/doc_ScourProtectionInstall.html">Scour Protection Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/doc_TurbineInstall.html">Turbine Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array/doc_ArrayCableInstall.html">Array Cabling System Installation Methodology</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Export Cabling System Installation Methodology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#input-structure">Input Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#processes">Processes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#process-diagrams">Process Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/doc_OffshoreSubstationInstall.html">Offshore Substation Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/doc_MooredSubInstallation.html">Moored Substructure Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/doc_MooringSystemInstallation.html">Mooring System Installation Methodology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../methods.html">Methodology</a></li>
+          <li class="breadcrumb-item"><a href="../../../doc_InstallPhase.html">Install Phases</a></li>
+      <li class="breadcrumb-item active">Export Cabling System Installation Methodology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/source/phases/install/export/doc_ExportCableInstall.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="export-cabling-system-installation-methodology">
+<h1>Export Cabling System Installation Methodology<a class="headerlink" href="#export-cabling-system-installation-methodology" title="Link to this heading"></a></h1>
+<p>For details of the code implementation, please see
+<a class="reference internal" href="api_ExportCableInstall.html"><span class="doc">Export Cable Installation API</span></a>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ExportCableInstallation</span></code> module simulates the installation of the cables
+between the offshore substation and the grid connection. Many processes in this
+installation phase are similar to those in the array cable installation module,
+however the cable distances and process times are often much greater.</p>
+</section>
+<section id="input-structure">
+<h2>Input Structure<a class="headerlink" href="#input-structure" title="Link to this heading"></a></h2>
+<p>The design of the input data structure for this module is the same as the array
+cable installation module. An example export system can be seen in the code
+block below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;export_system&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;cables&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;XLPE_500mm_33kV&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;cable_sections&#39;</span><span class="p">:</span> <span class="p">[</span>
+                 <span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>  <span class="c1"># There are two 35km export cables to install</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;linear_density&#39;</span><span class="p">:</span> <span class="mi">35</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above data structure can be input directly by the user, or can be a
+result of running the <code class="docutils literal notranslate"><span class="pre">ExportSystemDesign</span></code> module.</p>
+</div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>ORBIT considers the same possible installation strategies for array and export
+cable systems. Please see this <a class="reference internal" href="../array/doc_ArrayCableInstall.html#cable-strategies"><span class="std std-ref">section</span></a> for the
+different installation methods available.</p>
+</section>
+<section id="processes">
+<h2>Processes<a class="headerlink" href="#processes" title="Link to this heading"></a></h2>
+<section id="onshore-processes">
+<h3>Onshore Processes<a class="headerlink" href="#onshore-processes" title="Link to this heading"></a></h3>
+<p>At landfall, the cable must be pulled up onto shore, tested and terminated at
+the grid connection point and buried. These processes utilize the following
+inputs.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Process</p></th>
+<th class="head"><p>Key</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dig Trench</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">trench_dig_speed</span></code></p></td>
+<td><p>0.1 km/hr</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tow Plow</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tow_plow_speed</span></code></p></td>
+<td><p>5 km/hr</p></td>
+</tr>
+<tr class="row-even"><td><p>Pull in Winch</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pull_winch_speed</span></code></p></td>
+<td><p>5 km/hr</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pull in Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_pull_in_time</span></code></p></td>
+<td><p>5.5h</p></td>
+</tr>
+<tr class="row-even"><td><p>Test Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_termination_time</span></code></p></td>
+<td><p>5.5h</p></td>
+</tr>
+</tbody>
+</table>
+<p>A detailed description of these processes is provided in the ORBIT technical
+documentation.</p>
+</section>
+<section id="offshore-processes">
+<h3>Offshore Processes<a class="headerlink" href="#offshore-processes" title="Link to this heading"></a></h3>
+<p>The offshore installation process utilize the same configurable speeds as the
+array system installation:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Strategy</p></th>
+<th class="head"><p>Key</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Lay/Bury Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_lay_bury_speed</span></code></p></td>
+<td><p>0.3 km/hr</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lay Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_lay_speed</span></code></p></td>
+<td><p>1 km/hr</p></td>
+</tr>
+<tr class="row-even"><td><p>Bury Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_bury_speed</span></code></p></td>
+<td><p>0.5 km/hr</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The cable lengths for an export system are typically much longer than the
+array system and thhere is the possibility that a cable splice will be
+needed. The time for splicing a cable can be configured by the user using
+the <code class="docutils literal notranslate"><span class="pre">cable_splice_time</span></code> key, which defaults to 48h.</p>
+</div>
+</section>
+<section id="configuration-examples">
+<h3>Configuration Examples<a class="headerlink" href="#configuration-examples" title="Link to this heading"></a></h3>
+<p>Coming soon!</p>
+</section>
+</section>
+<section id="process-diagrams">
+<h2>Process Diagrams<a class="headerlink" href="#process-diagrams" title="Link to this heading"></a></h2>
+<img alt="../../../../_images/ExportCableInstall.png" src="../../../../_images/ExportCableInstall.png" />
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../array/doc_ArrayCableInstall.html" class="btn btn-neutral float-left" title="Array Cabling System Installation Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../oss/doc_OffshoreSubstationInstall.html" class="btn btn-neutral float-right" title="Offshore Substation Installation Methodology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

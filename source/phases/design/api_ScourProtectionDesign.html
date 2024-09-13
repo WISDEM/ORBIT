@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scour Protection Design API &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Array System Design API" href="api_ArraySystemDesign.html" />
+    <link rel="prev" title="Monopile Design API" href="api_MonopileDesign.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="api_MonopileDesign.html">Monopile Design API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Scour Protection Design API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.design.ScourProtectionDesign"><code class="docutils literal notranslate"><span class="pre">ScourProtectionDesign</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api_ArraySystemDesign.html">Array System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ExportSystemDesign.html">Export System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ElectricalDesign.html">Electrical System Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_OffshoreSubstationDesign.html">Offshore Substation Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SemiSubmersibleDesign.html">Semi-Submersible Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_SparDesign.html">Spar Design API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_MooringSystemDesign.html">Mooring System Design API</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+      <li class="breadcrumb-item active">Scour Protection Design API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/api_ScourProtectionDesign.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scour-protection-design-api">
+<h1>Scour Protection Design API<a class="headerlink" href="#scour-protection-design-api" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_ScourProtectionDesign.html"><span class="doc">Scour Protection Design</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ScourProtectionDesign">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.design.</span></span><span class="sig-name descname"><span class="pre">ScourProtectionDesign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ScourProtectionDesign" title="Link to this definition"></a></dt>
+<dd><p>Calculates the necessary scour protection material for a fixed
+substructure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary with scour protection design inputs. See
+<cite>expected_config</cite> for expected data.</p>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>phi</strong> (<em>float</em><em>, </em><em>default: 33.5</em>) – Soil friction angle. Default is for medium density sand.</p></li>
+<li><p><strong>equilibrium</strong> (<em>float</em><em>, </em><em>default: 1.3</em>) – Scour depth equilibrium, (S/D).</p></li>
+<li><p><strong>rock_density</strong> (<em>float</em><em>, </em><em>default: 2600</em>) – Density of rocks used for scour protection in kg/(m^3).</p></li>
+<li><p><strong>scour_depth</strong> (<em>float</em>) – Depth of the scour pit.</p></li>
+<li><p><strong>protection_depth</strong> (<em>float</em><em>, </em><em>default: 1m</em>) – Depth of the scour protection.</p></li>
+<li><p><strong>Attributes</strong> (<em>Other</em>)</p></li>
+<li><p><strong>----------------</strong></p></li>
+<li><p><strong>_design</strong> (<em>dict</em>) – Dictionary of specific scouring protection design parameters.</p></li>
+<li><p><strong>num_turbines</strong> (<em>int</em>) – Number of turbines that need scouring protection.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Det Norske Veritas AS. (2014, May). Design of Offshore Wind Turbine
+Structures. Retrieved from
+<a class="reference external" href="https://rules.dnvgl.com/docs/pdf/DNV/codes/docs/2014-05/Os-J101.pdf">https://rules.dnvgl.com/docs/pdf/DNV/codes/docs/2014-05/Os-J101.pdf</a></p>
+</aside>
+</aside>
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ScourProtectionDesign.compute_scour_protection_tonnes_to_install">
+<span class="sig-name descname"><span class="pre">compute_scour_protection_tonnes_to_install</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ScourProtectionDesign.compute_scour_protection_tonnes_to_install" title="Link to this definition"></a></dt>
+<dd><p>Computes the amount of scour protection material that needs to be
+installed around a fixed substructure.</p>
+<dl class="simple">
+<dt>Terms:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(S =\)</span> Scour depth</p></li>
+<li><p><span class="math notranslate nohighlight">\(D =\)</span> Monopile diameter</p></li>
+<li><p><span class="math notranslate nohighlight">\(r =\)</span> Radius of scour protection from the center of the monopile</p></li>
+<li><p><span class="math notranslate nohighlight">\(\\phi =\)</span> Soil friction angle</p></li>
+</ul>
+</dd>
+<dt>Assumptions:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(r = \\frac{D}{2} + \\frac{S}{\\tan(\\phi)}\)</span></p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Det Norske Veritas AS. (2014, May). Design of Offshore Wind</p>
+</aside>
+</aside>
+<p>Turbine Structures. Retrieved from
+<a class="reference external" href="https://rules.dnvgl.com/docs/pdf/DNV/codes/docs/2014-05/Os-J101.pdf">https://rules.dnvgl.com/docs/pdf/DNV/codes/docs/2014-05/Os-J101.pdf</a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ScourProtectionDesign.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.design.ScourProtectionDesign.run" title="Link to this definition"></a></dt>
+<dd><p>Runs the design model.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ScourProtectionDesign.total_cost">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_cost</span></span><a class="headerlink" href="#ORBIT.phases.design.ScourProtectionDesign.total_cost" title="Link to this definition"></a></dt>
+<dd><p>Returns the total cost of the phase in $USD.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ScourProtectionDesign.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.design.ScourProtectionDesign.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Returns detailed outputs of the design.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.design.ScourProtectionDesign.design_result">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">design_result</span></span><a class="headerlink" href="#ORBIT.phases.design.ScourProtectionDesign.design_result" title="Link to this definition"></a></dt>
+<dd><p>A dictionary of design results to passed to the scour protection
+installation simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p><strong>output</strong> –</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">scour_protection</span></code> :<cite>dict</cite></dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">tonnes_per_substructure</span></code> : <cite>int</cite></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_MonopileDesign.html" class="btn btn-neutral float-left" title="Monopile Design API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_ArraySystemDesign.html" class="btn btn-neutral float-right" title="Array System Design API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

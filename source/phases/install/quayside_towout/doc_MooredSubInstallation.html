@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moored Substructure Installation Methodology &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Mooring System Installation Methodology" href="../mooring/doc_MooringSystemInstallation.html" />
+    <link rel="prev" title="Offshore Substation Installation Methodology" href="../oss/doc_OffshoreSubstationInstall.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ProjectManager.html">Project Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_DesignPhase.html">Design Phases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../doc_InstallPhase.html">Install Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/doc_MonopileInstall.html">Monopile Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scour/doc_ScourProtectionInstall.html">Scour Protection Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/doc_TurbineInstall.html">Turbine Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array/doc_ArrayCableInstall.html">Array Cabling System Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../export/doc_ExportCableInstall.html">Export Cabling System Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/doc_OffshoreSubstationInstall.html">Offshore Substation Installation Methodology</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Moored Substructure Installation Methodology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#processes">Processes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/doc_MooringSystemInstallation.html">Mooring System Installation Methodology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../methods.html">Methodology</a></li>
+          <li class="breadcrumb-item"><a href="../../../doc_InstallPhase.html">Install Phases</a></li>
+      <li class="breadcrumb-item active">Moored Substructure Installation Methodology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/source/phases/install/quayside_towout/doc_MooredSubInstallation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="moored-substructure-installation-methodology">
+<h1>Moored Substructure Installation Methodology<a class="headerlink" href="#moored-substructure-installation-methodology" title="Link to this heading"></a></h1>
+<p>For details of the code implementation, please see
+<a class="reference internal" href="api_MooredSubInstallation.html"><span class="doc">Moored Substructure Installation API</span></a>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">MooredSubInstallation</span></code> module simulates the manufacture and installation
+of moored substuctures for a floating offshore wind project. The installation
+procedures include the time required to manufacture a substructure at quayside,
+assemble a turbine on the substructure, ballast the completed assembly, tow
+the completed assembly to site and hook up the pre-installed moooring lines.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>The primary configuration parameters available for this module are related to
+the quayside assembly process and the vessels used to tow the completed
+assemblies to site and complete the installation. The code block highlights
+the key parameters available.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="o">...</span>
+
+    <span class="s2">&quot;support_vessel&quot;</span><span class="p">:</span> <span class="s2">&quot;example_support_vessel&quot;</span><span class="p">,</span>  <span class="c1"># Will perform onsite installation procedures.</span>
+    <span class="s2">&quot;ahts_vessel&quot;</span><span class="p">:</span> <span class="s2">&quot;example_ahts_vessel&quot;</span><span class="p">,</span>    <span class="c1"># Anchor handling tug supply vessel associated with each tow group.</span>
+    <span class="s2">&quot;towing_vessel&quot;</span><span class="p">:</span> <span class="s2">&quot;example_towing_vessel&quot;</span><span class="p">,</span>    <span class="c1"># Towing groups will contain multiple of this vessel.</span>
+    <span class="s2">&quot;towing_groups&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;towing_vessel&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Vessels used to tow the substructure to site.</span>
+        <span class="s2">&quot;station_keeping_vessels&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>  <span class="c1"># Vessels used for station keeping during mooring line hookups.</span>
+        <span class="s2">&quot;num_groups&quot;</span><span class="p">:</span> <span class="mi">1</span>  <span class="c1"># Number of independent groups. Optional, defualt: 1.</span>
+    <span class="p">},</span>
+
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;sub_assembly_lines&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># Independent substructure assembly lines.</span>
+        <span class="s2">&quot;sub_storage&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>         <span class="c1"># Available storage berths at port for completed substructures.</span>
+        <span class="s2">&quot;turbine_assembly_cranes&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># Independent turbine assembly cranes.</span>
+        <span class="s2">&quot;assembly_storage&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>    <span class="c1"># Available storage berths at port for completed turbine/substructure assemblies.</span>
+    <span class="p">},</span>
+
+    <span class="s2">&quot;substructure&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;takt_time&quot;</span><span class="p">:</span> <span class="mi">168</span><span class="p">,</span>   <span class="c1"># h, time to manufacture one substructure.</span>
+        <span class="s2">&quot;towing_speed&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>  <span class="c1"># km/h.</span>
+    <span class="p">},</span>
+
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="processes">
+<h2>Processes<a class="headerlink" href="#processes" title="Link to this heading"></a></h2>
+<section id="quayside-assembly">
+<h3>Quayside Assembly<a class="headerlink" href="#quayside-assembly" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Process</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Substructure Assembly</p></td>
+<td><p>168h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Prepare Substructure for Turbine Assembly</p></td>
+<td><p>12h</p></td>
+</tr>
+<tr class="row-even"><td><p>Lift and Fasten Tower Section
+(repeated if necessary)</p></td>
+<td><p>12h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lift and Fasten Nacelle</p></td>
+<td><p>7h</p></td>
+</tr>
+<tr class="row-even"><td><p>Lift and Fasten Blade (repeated)</p></td>
+<td><p>3.5h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mechanical Completion and Verification</p></td>
+<td><p>24h</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="substructure-tow-out-and-assembly">
+<h3>Substructure Tow-out and Assembly<a class="headerlink" href="#substructure-tow-out-and-assembly" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Process</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Ballast to Towing Draft</p></td>
+<td><p>6h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tow-out</p></td>
+<td><p>calculated</p></td>
+</tr>
+<tr class="row-even"><td><p>Ballast to Operational Draft</p></td>
+<td><p>6h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Connect Mooring Lines</p></td>
+<td><p>22h</p></td>
+</tr>
+<tr class="row-even"><td><p>Check Mooring Lines and Connections</p></td>
+<td><p>12h</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../oss/doc_OffshoreSubstationInstall.html" class="btn btn-neutral float-left" title="Offshore Substation Installation Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mooring/doc_MooringSystemInstallation.html" class="btn btn-neutral float-right" title="Mooring System Installation Methodology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

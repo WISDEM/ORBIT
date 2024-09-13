@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phase Start Dates &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Vessels and Cable Definitions" href="define_vessels.html" />
+    <link rel="prev" title="Available Outputs" href="available_outputs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/index.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="load_config.html">Working with ORBIT Modules and Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project_manager.html">ProjectManager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="design_phases.html">Design Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_specific.html">Phase Specific Configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="available_outputs.html">Available Outputs</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Phase Start Dates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-configuration">Default Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#defining-start-dates">Defining Start Dates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#phase-dependencies">Phase Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="define_vessels.html">Vessels and Cable Definitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parametric_manager.html">ParametricManager</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorial</a></li>
+      <li class="breadcrumb-item active">Phase Start Dates</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/source/tutorial/start_dates.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="phase-start-dates">
+<h1>Phase Start Dates<a class="headerlink" href="#phase-start-dates" title="Link to this heading"></a></h1>
+<section id="default-configuration">
+<h2>Default Configuration<a class="headerlink" href="#default-configuration" title="Link to this heading"></a></h2>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> will run phases in the order that they are
+defined in the lists <code class="docutils literal notranslate"><span class="pre">'design_phases'</span></code>, then <code class="docutils literal notranslate"><span class="pre">'install_phases'</span></code> located in
+the project configuration. This order also determines the sequence of phases in
+the outputs, including the project level action log <code class="docutils literal notranslate"><span class="pre">.actions</span></code>. If
+the project is configured with a weather file, any installation phases will
+start at the beginning of the weather profile.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">...</span>
+
+    <span class="s1">&#39;design_phases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MonopileDesign&#39;</span><span class="p">,</span> <span class="s1">&#39;ArraySystemDesign&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;install_phases&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;MonopileInstallation&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;TurbineInstallation&#39;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="o">&gt;&gt;&gt;</span>
+
+<span class="c1"># ProjectManager will run the above phases in this order:</span>
+<span class="c1"># - MonopileDesign</span>
+<span class="c1"># - ArraySystemDesign</span>
+<span class="c1"># - MonopileInstallation</span>
+<span class="c1"># - TurbineInstallation</span>
+</pre></div>
+</div>
+</section>
+<section id="defining-start-dates">
+<h2>Defining Start Dates<a class="headerlink" href="#defining-start-dates" title="Link to this heading"></a></h2>
+<p>Installation phases can also be defined with optional start dates that will
+determine which portion of the weather file to use and will affect the sequence
+of outputs. This feature also allows phases to overlap if required.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="o">...</span>
+
+   <span class="s1">&#39;design_phases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MonopileDesign&#39;</span><span class="p">,</span> <span class="s1">&#39;ArraySystemDesign&#39;</span><span class="p">],</span>
+   <span class="s1">&#39;install_phases&#39;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s1">&#39;MonopileInstallation&#39;</span><span class="p">:</span> <span class="s1">&#39;03/01/2019&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;TurbineInstallation&#39;</span><span class="p">:</span> <span class="s1">&#39;05/01/2019&#39;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In the example above, the turbine installation will start two months after
+the monopile installation and use the weather profile starting on May 1st, 2019.
+If any defined start dates fall outside of the bounds of a configured weather
+profile, <code class="docutils literal notranslate"><span class="pre">WeatherProfileError</span></code> will be raised. If a simulation reaches the
+end of a weather profile before it completes, <code class="docutils literal notranslate"><span class="pre">WeatherProfileExhuasted</span></code> will
+be raised.</p>
+<p>The starting point of the phases can also be indexed by the location in the
+weather time series:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="o">...</span>
+
+   <span class="s1">&#39;design_phases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MonopileDesign&#39;</span><span class="p">,</span> <span class="s1">&#39;ArraySystemDesign&#39;</span><span class="p">],</span>
+   <span class="s1">&#39;install_phases&#39;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s1">&#39;MonopileInstallation&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># &lt;-- Will start at the first weather data point</span>
+      <span class="s1">&#39;TurbineInstallation&#39;</span><span class="p">:</span> <span class="mi">2000</span> <span class="c1"># &lt;-- Starts 2000 data points later</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>At this time, ORBIT does not have any constraints on overlapping phases, so
+it is possible to configure an unrealistic project (eg. turbine installation
+completes before substructure installation).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It should also be noted that overlapping phases do not affect one another.
+Port constraints (eg. number of cranes available for loading) are applied per
+installation phase.</p>
+</div>
+</section>
+<section id="phase-dependencies">
+<h2>Phase Dependencies<a class="headerlink" href="#phase-dependencies" title="Link to this heading"></a></h2>
+<p>Phases can also be defined to start at a percentage completed for a different
+phase. For example, the following config could be used to have the installation
+of the turbines start when the monopiles are 50% installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="o">...</span>
+
+   <span class="s1">&#39;design_phases&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MonopileDesign&#39;</span><span class="p">,</span> <span class="s1">&#39;ArraySystemDesign&#39;</span><span class="p">],</span>
+   <span class="s1">&#39;install_phases&#39;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s1">&#39;MonopileInstallation&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s1">&#39;TurbineInstallation&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;TurbineInstallation&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="available_outputs.html" class="btn btn-neutral float-left" title="Available Outputs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="define_vessels.html" class="btn btn-neutral float-right" title="Vessels and Cable Definitions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

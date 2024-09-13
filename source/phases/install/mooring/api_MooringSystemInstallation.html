@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mooring System Installation API &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Methodology" href="../../../methods.html" />
+    <link rel="prev" title="Moored Substructure Installation API" href="../quayside_towout/api_MooredSubInstallation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/api_MonopileInstallation.html">Monopile Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scour/api_ScourProtectionInstall.html">Scour Protection Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/api_TurbineInstallation.html">Turbine Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array/api_ArrayCableInstall.html">Array Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../export/api_ExportCableInstall.html">Export Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/api_OffshoreSubstationInstall.html">Offshore Substation Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/api_MooredSubInstallation.html">Moored Substructure Installation API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Mooring System Installation API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.install.MooringSystemInstallation"><code class="docutils literal notranslate"><span class="pre">MooringSystemInstallation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+      <li class="breadcrumb-item active">Mooring System Installation API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/source/phases/install/mooring/api_MooringSystemInstallation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mooring-system-installation-api">
+<h1>Mooring System Installation API<a class="headerlink" href="#mooring-system-installation-api" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_MooringSystemInstallation.html"><span class="doc">Mooring System Installation Methodology</span></a>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.install.</span></span><span class="sig-name descname"><span class="pre">MooringSystemInstallation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weather</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation" title="Link to this definition"></a></dt>
+<dd><p>Module to model the installation of mooring systems at sea.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation.expected_config">
+<span class="sig-name descname"><span class="pre">expected_config</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'mooring_install_vessel':</span> <span class="pre">'dict</span> <span class="pre">|</span> <span class="pre">str',</span> <span class="pre">'mooring_system':</span> <span class="pre">{'anchor_cost':</span> <span class="pre">'USD',</span> <span class="pre">'anchor_mass':</span> <span class="pre">'t',</span> <span class="pre">'anchor_type':</span> <span class="pre">&quot;str</span> <span class="pre">(optional,</span> <span class="pre">default:</span> <span class="pre">'Suction</span> <span class="pre">Pile')&quot;,</span> <span class="pre">'line_cost':</span> <span class="pre">'USD',</span> <span class="pre">'line_mass':</span> <span class="pre">'t',</span> <span class="pre">'num_lines':</span> <span class="pre">'int'},</span> <span class="pre">'plant':</span> <span class="pre">{'num_turbines':</span> <span class="pre">'int'},</span> <span class="pre">'site':</span> <span class="pre">{'depth':</span> <span class="pre">'m',</span> <span class="pre">'distance':</span> <span class="pre">'km'}}</span></em><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation.expected_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation.setup_simulation">
+<span class="sig-name descname"><span class="pre">setup_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation.setup_simulation" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Sets up the required simulation infrastructure:</dt><dd><ul class="simple">
+<li><p>initializes port</p></li>
+<li><p>initializes installation vessel</p></li>
+<li><p>initializes mooring systems at port.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation.system_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">system_capex</span></span><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation.system_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns total procurement cost of all mooring systems.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation.initialize_installation_vessel">
+<span class="sig-name descname"><span class="pre">initialize_installation_vessel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation.initialize_installation_vessel" title="Link to this definition"></a></dt>
+<dd><p>Initializes the mooring system installation vessel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation.initialize_components">
+<span class="sig-name descname"><span class="pre">initialize_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation.initialize_components" title="Link to this definition"></a></dt>
+<dd><p>Initializes the Cargo components at port.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.install.MooringSystemInstallation.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.install.MooringSystemInstallation.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Detailed outputs of the scour protection installation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../quayside_towout/api_MooredSubInstallation.html" class="btn btn-neutral float-left" title="Moored Substructure Installation API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../methods.html" class="btn btn-neutral float-right" title="Methodology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

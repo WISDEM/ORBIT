@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Array Cabling System Design Methodology &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Export System Design Methodology" href="doc_ExportSystemDesign.html" />
+    <link rel="prev" title="Scour Protection Design Methodology" href="doc_ScourProtectionDesign.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../doc_ProjectManager.html">Project Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../doc_DesignPhase.html">Design Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="doc_MonopileDesign.html">Monopile Design Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc_ScourProtectionDesign.html">Scour Protection Design Methodology</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Array Cabling System Design Methodology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#number-of-strings">Number of Strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#layouts">Layouts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#section-lengths">Section Lengths</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#process-diagrams">Process Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="doc_ExportSystemDesign.html">Export System Design Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc_ElectricalDesign.html">Electrical System Design Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc_OffshoreSubstationDesign.html">Offshore Substation Design Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc_SemiSubmersibleDesign.html">Semi-Submersible Design Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc_SparDesign.html">Spar Design Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="doc_MooringSystemDesign.html">Mooring System Design Methodology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../doc_InstallPhase.html">Install Phases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../methods.html">Methodology</a></li>
+          <li class="breadcrumb-item"><a href="../../doc_DesignPhase.html">Design Phases</a></li>
+      <li class="breadcrumb-item active">Array Cabling System Design Methodology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/source/phases/design/doc_ArraySystemDesign.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="array-cabling-system-design-methodology">
+<h1>Array Cabling System Design Methodology<a class="headerlink" href="#array-cabling-system-design-methodology" title="Link to this heading"></a></h1>
+<p>For details of the code implementation, please see
+<a class="reference internal" href="api_ArraySystemDesign.html"><span class="doc">Array System Design API</span></a>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Below is an overview of the process used to design an array cable system in ORBIT.
+For more details on the helper classes used to support this design please see
+<a class="reference internal" href="doc_CableHelpers.html"><span class="doc">Cabling Helper Classes</span></a>.</p>
+<p>As of the current version of the code there are three array cabling layouts
+that can be configured in ORBIT: grid, ring and custom. Figure 1 is an example
+of a grid layout featuring 7 “full-strings” and configured distances between
+turbines on a string and each row. Figure 2 is an example of a ring layout
+where the there is a predetermined distance between the first turbines on a
+string and the substation. This figure is also an example of a
+“partial string” that is needed to complete the layout. The next sections will
+go into more detail of the key steps in building out the array cabling system.</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><img alt="../../../_images/full_grid_example.png" src="../../../_images/full_grid_example.png" />
+</td>
+<td><img alt="../../../_images/partial_ring_example.png" src="../../../_images/partial_ring_example.png" />
+</td>
+</tr>
+<tr class="row-even"><td><p>Fig 1. Grid layout with no partial strings</p></td>
+<td><p>Fig 2. Ring layout with 1 partial string</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="number-of-strings">
+<h2>Number of Strings<a class="headerlink" href="#number-of-strings" title="Link to this heading"></a></h2>
+<p>In order to create the minimum number of strings required to complete a
+“standardized” array cable layout we must first determine how many turbines
+can fit on a given set of cable types without overloading them.</p>
+<section id="maximum-turbines-per-cable">
+<h3>Maximum Turbines per Cable<a class="headerlink" href="#maximum-turbines-per-cable" title="Link to this heading"></a></h3>
+<p>The maximum number of turbines that can fit on each cable is determined by
+dividing each cable type’s power rating by the rated capacity of the turbine
+and rounding down to the nearest integer.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">Cable.max_turbines</span></code> = <span class="math notranslate nohighlight">\(\lfloor\frac{P}{turbine\_rating}\rfloor\)</span>,
+where</p>
+<div class="line-block">
+<div class="line"><span class="math notranslate nohighlight">\(P\)</span> = <code class="xref py py-attr docutils literal notranslate"><span class="pre">Cable.power</span></code></div>
+<div class="line"><code class="xref py py-attr docutils literal notranslate"><span class="pre">turbine_rating</span></code> = rated capacity of turbine</div>
+</div>
+</section>
+<section id="calculating-a-complete-string">
+<h3>Calculating a Complete String<a class="headerlink" href="#calculating-a-complete-string" title="Link to this heading"></a></h3>
+<p>The number of turbines that can fit on a string is determined by the user
+configured cable types of the system. Starting from the smallest capacity cable
+available, turbines are added to the string until that cable’s maximum power
+capacity is reached. This process is repeated for each of the next largest
+capacity cables until all cable types have reached their maximum capacity. The
+number of cable sections added to the string in this process represents the
+maximum number of cables that can be added to each string.</p>
+<div class="highlight-py notranslate" id="string-computation"><div class="highlight"><pre><span></span><span class="c1"># Assume that we are using the Fig 1. example so there can only be 6</span>
+<span class="c1"># turbines contained in a single string of cables</span>
+<span class="n">max_turbines_per_string</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="c1"># Keeping with the Fig 1. example, assume cable1 is a Cable object that</span>
+<span class="c1"># represents the &quot;XLPE_400mm_36kV&quot; cable from and cable2 represents the</span>
+<span class="c1"># &quot;XLPE_630mm_36kV&quot; cable. Note that this is sorted from smallest to largest.</span>
+<span class="n">cable_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cable1</span><span class="p">,</span> <span class="n">cable2</span><span class="p">]</span>
+
+<span class="c1"># Start with an empty string</span>
+<span class="n">cable_layout</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cable_layout</span><span class="p">)</span>
+
+<span class="c1"># Loop through the cables as long as we haven&#39;t reached the string maximum</span>
+<span class="c1"># and there are cables in cable_list</span>
+<span class="k">while</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">max_turbines_per_string</span> <span class="ow">and</span> <span class="n">cables</span><span class="p">:</span>
+    <span class="n">cable</span> <span class="o">=</span> <span class="n">cable_list</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># remove the first cable in the list</span>
+
+    <span class="c1"># Ensure that the most turbines in a string is is lower than the</span>
+    <span class="c1"># string maximum and the maximum the individual cable can support,</span>
+    <span class="c1"># then add another cable.</span>
+    <span class="k">while</span> <span class="n">max_turbines_per_string</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">cable</span><span class="o">.</span><span class="n">max_turbines</span><span class="p">:</span>
+        <span class="n">cable_layout</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cable</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cable_layout</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After the above calculation is performed, <code class="xref py py-func docutils literal notranslate"><span class="pre">cable_layout()</span></code> will contain
+a list of cable sections starting from the offshore substation and ending at
+the last turbine on a string and will look like the following:</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">full_string</span></code> = <code class="docutils literal notranslate"><span class="pre">[&quot;XLPE_630mm_36kV&quot;,</span> <span class="pre">&quot;XLPE_630mm_36kV&quot;,</span> <span class="pre">&quot;XLPE_400mm_36kV&quot;,</span></code>
+<code class="docutils literal notranslate"><span class="pre">&quot;XLPE_400mm_36kV&quot;,</span> <span class="pre">&quot;XLPE_400mm_36kV&quot;,</span> <span class="pre">&quot;XLPE_400mm_36kV&quot;]</span></code></p>
+<p>In Figure 1, there are 7 of full strings. In the Figure 2 there are 7 full
+strings and 1 partial string:</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">partial_string</span></code> = <code class="docutils literal notranslate"><span class="pre">[&quot;XLPE_400mm_36kV&quot;,</span> <span class="pre">&quot;XLPE_400mm_36kV&quot;,</span> <span class="pre">&quot;XLPE_400mm_36kV&quot;]</span></code></p>
+</section>
+<section id="id1">
+<h3>Number of Strings<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>The number of full strings is calculated using the equation below,</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">num_full_strings</span></code> = <span class="math notranslate nohighlight">\(\lfloor \frac{Plant.num\_turbines}{num\_turbines\_full\_string} \rfloor\)</span></p>
+<p>and the number of partial strings (containing any remaining turbines) is
+calculated with the following equation.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">num_partial_strings</span></code> = <span class="math notranslate nohighlight">\(Plant.num\_turbines \ \% \ num\_turbines\_full\_string\)</span></p>
+</section>
+</section>
+<section id="layouts">
+<h2>Layouts<a class="headerlink" href="#layouts" title="Link to this heading"></a></h2>
+<section id="ring">
+<h3>Ring<a class="headerlink" href="#ring" title="Link to this heading"></a></h3>
+<p>For a ring layout, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">substation_distance</span></code> is used as the radius of
+the first row of turbines, spaced evenly around the ring. Subsequent turbines
+on a string are spaced using the <code class="xref py py-attr docutils literal notranslate"><span class="pre">turbine_distance</span></code> attribute. An
+example of this layout can be seen above in Figure 2.</p>
+</section>
+<section id="grid">
+<h3>Grid<a class="headerlink" href="#grid" title="Link to this heading"></a></h3>
+<p>For the grid layout, an evenly spaced grid of (x, y) coordinates for each
+turbine is calculated based off the <code class="xref py py-attr docutils literal notranslate"><span class="pre">turbine_distance</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">row_distance</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">substation_distance</span></code> with the offshore
+substation being located at (0, (<code class="xref py py-attr docutils literal notranslate"><span class="pre">num_strings</span></code> - 1) * <code class="xref py py-attr docutils literal notranslate"><span class="pre">row_distance</span></code> / <code class="xref py py-attr docutils literal notranslate"><span class="pre">num_strings</span></code>)</p>
+</section>
+<section id="custom">
+<h3>Custom<a class="headerlink" href="#custom" title="Link to this heading"></a></h3>
+<p>Coming soon!</p>
+</section>
+</section>
+<section id="section-lengths">
+<h2>Section Lengths<a class="headerlink" href="#section-lengths" title="Link to this heading"></a></h2>
+<p>The distance between a turbine and it’s subsequent connection determines the
+cable length that is required for the array system. These lengths are summed up
+and stored in the <code class="xref py py-attr docutils literal notranslate"><span class="pre">design_result</span></code>, which can be utilized by the
+<span class="xref std std-doc">array cable installation module</span>.</p>
+</section>
+<section id="process-diagrams">
+<h2>Process Diagrams<a class="headerlink" href="#process-diagrams" title="Link to this heading"></a></h2>
+<img alt="../../../_images/ArraySystemDesign.png" src="../../../_images/ArraySystemDesign.png" />
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="doc_ScourProtectionDesign.html" class="btn btn-neutral float-left" title="Scour Protection Design Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="doc_ExportSystemDesign.html" class="btn btn-neutral float-right" title="Export System Design Methodology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turbine Installation API &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Array Cabling System Installation API" href="../array/api_ArrayCableInstall.html" />
+    <link rel="prev" title="Scour Protection Installation API" href="../scour/api_ScourProtectionInstall.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ProjectManager.html">Project Configuration and Management - <code class="docutils literal notranslate"><span class="pre">ORBIT.manager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_ParametricManager.html">Parametric Configurations - <code class="docutils literal notranslate"><span class="pre">ORBIT.ParametricManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api_DesignPhase.html">Design Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.design</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/api_MonopileInstallation.html">Monopile Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scour/api_ScourProtectionInstall.html">Scour Protection Installation API</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Turbine Installation API</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation"><code class="docutils literal notranslate"><span class="pre">TurbineInstallation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.install.turbine_install.standard.solo_install_turbines"><code class="docutils literal notranslate"><span class="pre">solo_install_turbines()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ORBIT.phases.install.turbine_install.standard.install_turbine_components_from_queue"><code class="docutils literal notranslate"><span class="pre">install_turbine_components_from_queue()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../array/api_ArrayCableInstall.html">Array Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../export/api_ExportCableInstall.html">Export Cabling System Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/api_OffshoreSubstationInstall.html">Offshore Substation Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/api_MooredSubInstallation.html">Moored Substructure Installation API</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/api_MooringSystemInstallation.html">Mooring System Installation API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../methods.html">Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../api.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../../api_InstallPhase.html">Install Phases - <code class="docutils literal notranslate"><span class="pre">ORBIT.phases.install</span></code></a></li>
+      <li class="breadcrumb-item active">Turbine Installation API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/source/phases/install/turbine/api_TurbineInstallation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="turbine-installation-api">
+<h1>Turbine Installation API<a class="headerlink" href="#turbine-installation-api" title="Link to this heading"></a></h1>
+<p>For detailed methodology, please see
+<a class="reference internal" href="doc_TurbineInstall.html"><span class="doc">Turbine Installation Methodology</span></a>.</p>
+<p id="module-ORBIT.phases.install.turbine_install.standard"><cite>TurbineInstallation</cite> class and related processes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ORBIT.phases.install.turbine_install.standard.</span></span><span class="sig-name descname"><span class="pre">TurbineInstallation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weather</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation" title="Link to this definition"></a></dt>
+<dd><p>Standard turbine installation module using a Wind Turbine Installation
+Vessel (WTIV). If input <cite>feeder</cite> and <cite>num_feeders</cite> are not supplied, the
+WTIV will perform all transport and installation tasks. If the above inputs
+are defined, feeder barges will transport turbine components from port to
+site.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.expected_config">
+<span class="sig-name descname"><span class="pre">expected_config</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'feeder':</span> <span class="pre">'dict</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">(optional)',</span> <span class="pre">'num_feeders':</span> <span class="pre">'int</span> <span class="pre">(optional)',</span> <span class="pre">'plant':</span> <span class="pre">{'num_turbines':</span> <span class="pre">'int'},</span> <span class="pre">'port':</span> <span class="pre">{'monthly_rate':</span> <span class="pre">'USD/mo</span> <span class="pre">(optional)',</span> <span class="pre">'name':</span> <span class="pre">'str</span> <span class="pre">(optional)',</span> <span class="pre">'num_cranes':</span> <span class="pre">'int</span> <span class="pre">(optional,</span> <span class="pre">default:</span> <span class="pre">1)'},</span> <span class="pre">'site':</span> <span class="pre">{'depth':</span> <span class="pre">'m',</span> <span class="pre">'distance':</span> <span class="pre">'km'},</span> <span class="pre">'turbine':</span> <span class="pre">{'blade':</span> <span class="pre">{'deck_space':</span> <span class="pre">'m2',</span> <span class="pre">'mass':</span> <span class="pre">'t'},</span> <span class="pre">'hub_height':</span> <span class="pre">'m',</span> <span class="pre">'nacelle':</span> <span class="pre">{'deck_space':</span> <span class="pre">'m2',</span> <span class="pre">'mass':</span> <span class="pre">'t'},</span> <span class="pre">'tower':</span> <span class="pre">{'deck_space':</span> <span class="pre">'m2',</span> <span class="pre">'length':</span> <span class="pre">'m',</span> <span class="pre">'mass':</span> <span class="pre">'t',</span> <span class="pre">'sections':</span> <span class="pre">'int</span> <span class="pre">(optional)'}},</span> <span class="pre">'wtiv':</span> <span class="pre">'dict</span> <span class="pre">|</span> <span class="pre">str'}</span></em><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.expected_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.system_capex">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">system_capex</span></span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.system_capex" title="Link to this definition"></a></dt>
+<dd><p>Returns 0 as turbine capex is handled at in ProjectManager.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.setup_simulation">
+<span class="sig-name descname"><span class="pre">setup_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.setup_simulation" title="Link to this definition"></a></dt>
+<dd><p>Sets up simulation infrastructure, routing to specific methods
+dependent on number of feeders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.setup_simulation_without_feeders">
+<span class="sig-name descname"><span class="pre">setup_simulation_without_feeders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.setup_simulation_without_feeders" title="Link to this definition"></a></dt>
+<dd><p>Creates the infrastructure for turbine installation without feeder
+barges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.setup_simulation_with_feeders">
+<span class="sig-name descname"><span class="pre">setup_simulation_with_feeders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.setup_simulation_with_feeders" title="Link to this definition"></a></dt>
+<dd><p>Creates the infrastructure for turbine installation using feeder
+barges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_wtiv">
+<span class="sig-name descname"><span class="pre">initialize_wtiv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_wtiv" title="Link to this definition"></a></dt>
+<dd><p>Initializes the WTIV simulation object and its onboard storage.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_feeders">
+<span class="sig-name descname"><span class="pre">initialize_feeders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_feeders" title="Link to this definition"></a></dt>
+<dd><p>Initializes feeder barge objects.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_turbines">
+<span class="sig-name descname"><span class="pre">initialize_turbines</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_turbines" title="Link to this definition"></a></dt>
+<dd><p>Initializes turbine components at port.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_queue">
+<span class="sig-name descname"><span class="pre">initialize_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.initialize_queue" title="Link to this definition"></a></dt>
+<dd><p>Initializes the queue, modeled as a <code class="docutils literal notranslate"><span class="pre">SimPy.Resource</span></code> that feeders
+join at site. This limits the simulation to one active feeder at a
+time.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.TurbineInstallation.detailed_output">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detailed_output</span></span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.TurbineInstallation.detailed_output" title="Link to this definition"></a></dt>
+<dd><p>Returns detailed outputs of the turbine installation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.solo_install_turbines">
+<span class="sig-prename descclassname"><span class="pre">ORBIT.phases.install.turbine_install.standard.</span></span><span class="sig-name descname"><span class="pre">solo_install_turbines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vessel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tower_sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_blades</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.solo_install_turbines" title="Link to this definition"></a></dt>
+<dd><p>Logic that a Wind Turbine Installation Vessel (WTIV) uses during a single
+turbine installation process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vessel</strong> (<em>vessels.Vessel</em>) – Vessel object that represents the WTIV.</p></li>
+<li><p><strong>distance</strong> (<em>int | float</em>) – Distance between port and site (km).</p></li>
+<li><p><strong>component_list</strong> (<em>dict</em>) – Turbine components to retrieve and install.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Total turbine component sets to install.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ORBIT.phases.install.turbine_install.standard.install_turbine_components_from_queue">
+<span class="sig-prename descclassname"><span class="pre">ORBIT.phases.install.turbine_install.standard.</span></span><span class="sig-name descname"><span class="pre">install_turbine_components_from_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wtiv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turbines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tower_sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_blades</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ORBIT.phases.install.turbine_install.standard.install_turbine_components_from_queue" title="Link to this definition"></a></dt>
+<dd><p>Logic that a Wind Turbine Installation Vessel (WTIV) uses to install
+turbine componenets from a queue of feeder barges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>simulation.Environment</em>) – SimPy environment that the simulation runs in.</p></li>
+<li><p><strong>wtiv</strong> (<em>vessels.Vessel</em>) – Vessel object that represents the WTIV.</p></li>
+<li><p><strong>queue</strong> (<em>simpy.Resource</em>) – Queue object to interact with active feeder barge.</p></li>
+<li><p><strong>component_list</strong> (<em>dict</em>) – Turbine components to retrieve and install.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Total turbine component sets to install.</p></li>
+<li><p><strong>distance</strong> (<em>int | float</em>) – Distance from site to port (km).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../scour/api_ScourProtectionInstall.html" class="btn btn-neutral float-left" title="Scour Protection Installation API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../array/api_ArrayCableInstall.html" class="btn btn-neutral float-right" title="Array Cabling System Installation API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

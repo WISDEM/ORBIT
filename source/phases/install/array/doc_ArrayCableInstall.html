@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Array Cabling System Installation Methodology &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Export Cabling System Installation Methodology" href="../export/doc_ExportCableInstall.html" />
+    <link rel="prev" title="Turbine Installation Methodology" href="../turbine/doc_TurbineInstall.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ProjectManager.html">Project Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_DesignPhase.html">Design Phases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../doc_InstallPhase.html">Install Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/doc_MonopileInstall.html">Monopile Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../scour/doc_ScourProtectionInstall.html">Scour Protection Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/doc_TurbineInstall.html">Turbine Installation Methodology</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Array Cabling System Installation Methodology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#input-structure">Input Structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#processes">Processes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#process-diagrams">Process Diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../export/doc_ExportCableInstall.html">Export Cabling System Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/doc_OffshoreSubstationInstall.html">Offshore Substation Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/doc_MooredSubInstallation.html">Moored Substructure Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/doc_MooringSystemInstallation.html">Mooring System Installation Methodology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../methods.html">Methodology</a></li>
+          <li class="breadcrumb-item"><a href="../../../doc_InstallPhase.html">Install Phases</a></li>
+      <li class="breadcrumb-item active">Array Cabling System Installation Methodology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/source/phases/install/array/doc_ArrayCableInstall.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="array-cabling-system-installation-methodology">
+<h1>Array Cabling System Installation Methodology<a class="headerlink" href="#array-cabling-system-installation-methodology" title="Link to this heading"></a></h1>
+<p>For details of the code implementation, please see
+<a class="reference internal" href="api_ArrayCableInstall.html"><span class="doc">Array Cable Installation API</span></a>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ArrayCableInstallation</span></code> module simulates the installation of array cable
+sections between turbines and the offshore substation at site. This process is
+one of the critical installation phases in the construction of a wind farm as
+testing and final commissioning of the turbines can’t occur until it is
+complete.</p>
+<p>The installation of cables offshore is a complex process that depends on the
+geotechnical parameters of the seabed along the cable route. Detailed
+geotechnical data is typically not publicly available for all potential
+offshore wind sites in the U.S., and as such, ORBIT was designed to allow a
+user to investigate the impact of seabed conditions indirectly without
+requiring detailed descriptions of the seabed. This is primarily done by
+adjusting the cable burial speed, with harder or rockier soils requiring a
+slower (and ultimately more expensive) burial speed.</p>
+</section>
+<section id="input-structure">
+<h2>Input Structure<a class="headerlink" href="#input-structure" title="Link to this heading"></a></h2>
+<p>The design of the input data structure for this module allows the user to
+define site specific array cable configurations. For each cable type, a list
+of cable sections can be defined. The installation vessel will install each
+section individually and the time to complete this operation is dynamic based
+on the length and the linear density of the cable, site depth, etc. A user can
+also define multiple cable types that comprise an individual string of
+turbines.</p>
+<p>For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;array_system&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;cables&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;XLPE_400mm_33kV&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;cable_sections&#39;</span><span class="p">:</span> <span class="p">[</span>
+                 <span class="p">(</span><span class="mf">1.7958701547</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>  <span class="c1"># There are two 1.79km sections,</span>
+                 <span class="p">(</span><span class="mf">1.118</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>        <span class="c1"># 16 1.118km sections</span>
+                 <span class="p">(</span><span class="mf">1.2128290583</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># and two 1.213km sections</span>
+            <span class="p">],</span>
+            <span class="s1">&#39;linear_density&#39;</span><span class="p">:</span> <span class="mi">35</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The installation of each section above will be modeled seperately. In the above
+example, only one cable was used, though there could be additional defined
+cables (with their own <cite>cable_sections</cite> key).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above data structure can be input directly by the user, or can be a
+result of running the <code class="docutils literal notranslate"><span class="pre">ArraySystemDesign</span></code> module.</p>
+</div>
+</section>
+<section id="configuration">
+<span id="cable-strategies"></span><h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>ORBIT considers two installation strategies: a simultaneous lay/bury operation
+using modern cable installation vessels and a seperated operation where one
+vessel lays the cable and another follows behind to bury it. A detailed
+description of the applicability of each strategy is covered in the ORBIT
+technical <a class="reference external" href="https://www.nrel.gov/docs/fy20osti/77081.pdf">report</a>.</p>
+<p>If the config contains the key <code class="docutils literal notranslate"><span class="pre">'array_cable_bury_vessel'</span></code> the separate
+strategy will be used. If this key is not present, the
+<code class="docutils literal notranslate"><span class="pre">'array_cable_install_vessel'</span></code> will perform a simultaneous lay/bury of the
+cable.</p>
+<p>The key <code class="docutils literal notranslate"><span class="pre">'array_cable_trench_vessel'</span></code> is an optional configuration that will
+simulate a separate trenching operation along all cable routes completed by
+the above vessel. If this key is not present, this operation will not be
+modeled.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;array_cable_install_vessel&#39;</span><span class="p">:</span> <span class="s1">&#39;example_vessel&#39;</span>
+    <span class="c1"># &#39;array_cable_bury_vessel&#39;: &#39;example_vessel&#39;,</span>
+    <span class="c1"># &#39;array_cable_trench_vessel&#39;: &#39;example_vessel&#39;,</span>
+    <span class="s1">&#39;array_system&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;cables&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;XLPE_400mm_33kV&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="o">...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="processes">
+<h2>Processes<a class="headerlink" href="#processes" title="Link to this heading"></a></h2>
+<p>The speed at which a vessel can perform the operations of each installation
+strategy is determined by the vessel properties, passed kwargs or the
+default speed for the process. This is the primary mechanism that a user can
+adjust cable installation times for different seabed conditions.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Strategy</p></th>
+<th class="head"><p>Key</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Lay/Bury Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_lay_bury_speed</span></code></p></td>
+<td><p>0.3 km/hr</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lay Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_lay_speed</span></code></p></td>
+<td><p>1 km/hr</p></td>
+</tr>
+<tr class="row-even"><td><p>Bury Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_bury_speed</span></code></p></td>
+<td><p>0.5 km/hr</p></td>
+</tr>
+</tbody>
+</table>
+<p>Other operations in the installation process are determined by default values:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Process</p></th>
+<th class="head"><p>Key</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Position Onsite</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">site_position_time</span></code></p></td>
+<td><p>2h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Prepare Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_prep_time</span></code></p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-even"><td><p>Lower Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_lower_time</span></code></p></td>
+<td><p>1h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pull in Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_pull_in_time</span></code></p></td>
+<td><p>5.5h</p></td>
+</tr>
+<tr class="row-even"><td><p>Test Cable</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cable_termination_time</span></code></p></td>
+<td><p>5.5h</p></td>
+</tr>
+</tbody>
+</table>
+<section id="configuration-examples">
+<h3>Configuration Examples<a class="headerlink" href="#configuration-examples" title="Link to this heading"></a></h3>
+<p>Coming soon!</p>
+</section>
+</section>
+<section id="process-diagrams">
+<h2>Process Diagrams<a class="headerlink" href="#process-diagrams" title="Link to this heading"></a></h2>
+<img alt="../../../../_images/ArrayCableInstall.png" src="../../../../_images/ArrayCableInstall.png" />
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../turbine/doc_TurbineInstall.html" class="btn btn-neutral float-left" title="Turbine Installation Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../export/doc_ExportCableInstall.html" class="btn btn-neutral float-right" title="Export Cabling System Installation Methodology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

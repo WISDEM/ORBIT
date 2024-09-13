@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scour Protection Installation Methodology &mdash; ORBIT 1.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=56dcb7b8"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Turbine Installation Methodology" href="../turbine/doc_TurbineInstall.html" />
+    <link rel="prev" title="Monopile Installation Methodology" href="../monopile/doc_MonopileInstall.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ProjectManager.html">Project Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../doc_DesignPhase.html">Design Phases</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../doc_InstallPhase.html">Install Phases</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../monopile/doc_MonopileInstall.html">Monopile Installation Methodology</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Scour Protection Installation Methodology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#processes">Processes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../turbine/doc_TurbineInstall.html">Turbine Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array/doc_ArrayCableInstall.html">Array Cabling System Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../export/doc_ExportCableInstall.html">Export Cabling System Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oss/doc_OffshoreSubstationInstall.html">Offshore Substation Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../quayside_towout/doc_MooredSubInstallation.html">Moored Substructure Installation Methodology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mooring/doc_MooringSystemInstallation.html">Mooring System Installation Methodology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../methods.html">Methodology</a></li>
+          <li class="breadcrumb-item"><a href="../../../doc_InstallPhase.html">Install Phases</a></li>
+      <li class="breadcrumb-item active">Scour Protection Installation Methodology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/source/phases/install/scour/doc_ScourProtectionInstall.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scour-protection-installation-methodology">
+<h1>Scour Protection Installation Methodology<a class="headerlink" href="#scour-protection-installation-methodology" title="Link to this heading"></a></h1>
+<p>For details of the code implementation, please see
+<a class="reference internal" href="api_ScourProtectionInstall.html"><span class="doc">Scour Protection Installation API</span></a>.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ScourProtectionInstallation</span></code> modules simulates the installation of scour
+protection around the base of a offshore substructure. In many offshore site
+conditions, scour protection is a necessary step to reduce the effects of
+hydrodynamic scour development around the substructure. ORBIT models the
+installation of a rock layer installed at a diameter surrounding the
+substructure base. This process is not typically a significant cost driver for
+the project, but the installation time and associated costs are significant
+enough that they should not be ignored when computing BOS costs.</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>This module is simple to configure, as the main parameter considered is the
+<code class="docutils literal notranslate"><span class="pre">tons_per_substructure</span></code> to install. Currently ORBIT models the simplest
+installation method, involving “Side Stone Installation Vessels” that dump
+loads of rocks next to the substructure without much ability to ensure that
+their payload is distributed evenly. A future version of ORBIT may expand this
+module to include more modern installation approaches using a “Fall Pipe
+Vessel” that allow for an even distrubution of scour protection material.</p>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;scour_protection_install_vessel&#39;</span><span class="p">:</span> <span class="s1">&#39;example_vessel&#39;</span>
+    <span class="s1">&#39;site&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;distance&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span>
+
+    <span class="o">...</span>
+
+    <span class="s1">&#39;scour_protection&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;tons_per_substructure&#39;</span><span class="p">:</span> <span class="mi">1200</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="processes">
+<h2>Processes<a class="headerlink" href="#processes" title="Link to this heading"></a></h2>
+<p>The scour protection installation vessel loads rock at port, transits to site
+and installs the required amount at each substructure until empty. At this
+point, it will return to port to load additional rock and repeat the above
+steps until all substructures have had scour protection installed. The process
+times for this operation are outlined below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Process</p></th>
+<th class="head"><p>Inputs</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Load Rocks</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_rocks_time</span></code></p></td>
+<td><p>4h</p></td>
+</tr>
+<tr class="row-odd"><td><p>Transit to Site</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">site_distance</span></code>, <code class="docutils literal notranslate"><span class="pre">transit_speed</span></code></p></td>
+<td><p>calculated</p></td>
+</tr>
+<tr class="row-even"><td><p>Drop Rocks</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">drop_rocks_time</span></code></p></td>
+<td><p>10h</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../monopile/doc_MonopileInstall.html" class="btn btn-neutral float-left" title="Monopile Installation Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../turbine/doc_TurbineInstall.html" class="btn btn-neutral float-right" title="Turbine Installation Methodology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
