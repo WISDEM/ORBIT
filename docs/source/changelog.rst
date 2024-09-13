@@ -33,7 +33,7 @@ New features
         - The offshore substation cost is calculated based on the cable type
           and number of cables, rather than scaling function based on plant capacity.
         - The mass of an HVDC and HVAC substation are assumed to be the same.
-          Therefore the substructure mass and cost functions did not change.
+          Therefore, the substructure mass and cost functions did not change.
         - An experimental onshore cost function was also added to account for
           the duplicated interconnection components. Costs will vary depending
           on the cable type.
