@@ -27,7 +27,7 @@ ORBIT expects a library outside of the repo to have the following structure:
 __author__ = "Rob Hammond"
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Rob Hammond"
-__email__ = "robert.hammond@nrel.gov"
+__email__ = "rob.hammond@nrel.gov"
 
 
 import os

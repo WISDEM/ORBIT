@@ -8,7 +8,7 @@ __author__ = [
 ]
 __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Nick Riccobono"
-__email__ = ["nicholas.riccobono@nrel.gov", "robert.hammond@nrel.gov"]
+__email__ = ["nicholas.riccobono@nrel.gov", "rob.hammond@nrel.gov"]
 __status__ = "Development"
 
 
