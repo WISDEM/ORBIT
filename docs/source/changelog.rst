@@ -5,6 +5,18 @@ ORBIT Changelog
 
 Unreleased (TBD)
 ----------------
+Custom Semi-Submersible Design
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- The ``CustomSemiSubmersibleDesign`` class was added to semi_submersible_design.py.
+- Based on VolturnUS-S by U-Maine. `https://www.nrel.gov/docs/fy20osti/76773.pdf`
+- All design defaults are set to be consistent with 15MW IEA turbine
+- Scaling logic added based on U-Mass paper. `https://wes.copernicus.org/preprints/wes-2023-18/wes-2023-18.pdf`
+- Added tests to confirm that volumns and masses are calculated appropriately
+- Added Example - Custom Semisubmersible notebook and yaml config file.
+- Updated docs with citations.
+
+Relocate-get-costs
+~~~~~~~~~~~~~~~~~~
 - Relocated all the get design costs in each design class to `common_cost.yaml`. Spar, Semisub, monopile, electrical, offshore substation, and mooring designs all recieved this update.
 
 Merged SemiTaut Moorings

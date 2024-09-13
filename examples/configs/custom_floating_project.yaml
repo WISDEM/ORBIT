@@ -1,0 +1,72 @@
+# Site + Plant Parameters
+site:
+  depth: 900
+  distance: 100
+  distance_to_landfall: 100
+plant:
+  layout: ring
+  num_turbines: 50
+  row_spacing: 7
+  substation_distance: 1
+  turbine_spacing: 7
+port:
+  monthly_rate: 2000000.0
+  sub_assembly_lines: 1
+  turbine_assembly_cranes: 1
+# Vessels
+array_cable_install_vessel: example_cable_lay_vessel
+export_cable_install_vessel: example_cable_lay_vessel
+mooring_install_vessel: example_support_vessel
+oss_install_vessel: floating_heavy_lift_vessel
+support_vessel: example_support_vessel
+ahts_vessel: example_ahts_vessel
+towing_vessel: example_towing_vessel
+towing_vessel_groups:
+  station_keeping_vessels: 2
+  towing_vessels: 3
+wtiv: floating_heavy_lift_vessel
+# Module Specific
+substructure:
+  takt_time: 168
+substation_design:
+  oss_substructure_type: Floating
+mooring_system_design:
+  anchor_type: Drag Embedment
+  mooring_type: SemiTaut
+array_system:
+  free_cable_length: 0.5
+array_system_design:
+  cables:
+  - XLPE_630mm_66kV
+export_system_design:
+  cables: XLPE_500mm_132kV
+  percent_added_length: 0.0
+# Based on U-Maine/U-Mass references IEA-15MW 4.5cm for IEA scale, 3.2cm to match Umaine
+semisubmersible_design:
+  column_diameter: 12.5
+  wall_thickness: 0.045
+  column_height: 35
+  pontoon_length: 51.75
+  pontoon_width: 12.5
+  pontoon_height: 7
+  strut_diameter: 0.9
+  ballast_mass: 2540
+  tower_interface_mass : 100
+  steel_CR: 4500
+  ballast_material_CR: 150
+# Configured Phases
+design_phases:
+- ArraySystemDesign
+- ElectricalDesign
+- MooringSystemDesign
+- OffshoreSubstationDesign
+- CustomSemiSubmersibleDesign
+install_phases:
+  ArrayCableInstallation: 0
+  ExportCableInstallation: 0
+  MooredSubInstallation: 0
+  MooringSystemInstallation: 0
+  FloatingSubstationInstallation: 0
+  TurbineInstallation: 0
+# Project Inputs
+turbine: 12MW_generic

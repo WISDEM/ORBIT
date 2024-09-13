@@ -5,6 +5,8 @@ __copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
 __maintainer__ = "Jake Nunemaker"
 __email__ = "jake.nunemaker@nrel.gov"
 
+import numpy as np
+
 from ORBIT.phases.design import DesignPhase
 
 """
@@ -217,6 +219,275 @@ class SemiSubmersibleDesign(DesignPhase):
             "heave_plate_cost": self.heave_plate_cost,
             "secondary_steel_mass": self.secondary_steel_mass,
             "secondary_steel_cost": self.secondary_steel_cost,
+        }
+
+        return _outputs
+
+
+"""Provides the `CustomSemiSubmersibleDesign` class."""
+
+__author__ = "Matt Shields"
+__copyright__ = "Copyright 2020, National Renewable Energy Laboratory"
+__maintainer__ = "Nick Riccobono"
+__email__ = "nicholas.riccobono@nrel.gov"
+
+"""
+Based on semisub design from 15 MW RWT
+
+[1]	C. Allen et al., “Definition of the UMaine VolturnUS-S Reference Platform
+ Developed for the IEA Wind 15-Megawatt Offshore Reference Wind Turbine,”
+ NREL/TP--5000-76773, 1660012, MainId:9434, Jul. 2020. doi: 10.2172/1660012.
+[2]	K. L. Roach, M. A. Lackner, and J. F. Manwell, “A New Methodology for
+ Upscaling Semi-submersible Platforms for Floating Offshore Wind Turbines,”
+ Wind Energy Science Discussions, pp. 1–33, Feb. 2023,
+ doi: 10.5194/wes-2023-18.
+"""
+
+
+class CustomSemiSubmersibleDesign(DesignPhase):
+    """Customized Semi-Submersible Substructure Design."""
+
+    expected_config = {
+        "site": {"depth": "m"},
+        "plant": {"num_turbines": "int"},
+        "turbine": {"turbine_rating": "MW"},
+        "semisubmersible_design": {
+            "towing_speed": "km/h (optional, default: 6)",
+            "column_diameter": "m (optional, default: 12.5)",
+            "wall_thickness": "m (optional, default: 0.045)",
+            "column_height": "m (optional, default: 35)",
+            "pontoon_length": "m (optional, default: 51.75)",
+            "pontoon_width": "m (optional, default: 12.5)",
+            "pontoon_height": "m (optional, default: 7)",
+            "strut_diameter": "m (optional, 0.9)",
+            "steel_density": "kg/m^3 (optional, default: 7980)",
+            "ballast_mass": "tonnes (optional, default 2540)",
+            "tower_interface_mass": "tonnes (optional, default 100)",
+            "steel_CR": "$/tonne (optional, default: 4500)",
+            "ballast_material_CR": "$/tonne (optional, default: 150)",
+        },
+    }
+
+    output_config = {
+        "substructure": {
+            "mass": "t",
+            "unit_cost": "USD",
+            "towing_speed": "km/h",
+        }
+    }
+
+    def __init__(self, config, **kwargs):
+        """
+        Creates an instance of `CustomSemiSubmersibleDesign`.
+
+        Parameters
+        ----------
+        config : dict
+        """
+
+        config = self.initialize_library(config, **kwargs)
+        self.config = self.validate_config(config)
+        self._design = self.config.get("semisubmersible_design", {})
+
+        self.num_columns = kwargs.get("number_columns", 3)
+
+        self._outputs = {}
+
+    def run(self):
+        """Main run function."""
+
+        self.calc_geometric_scale_factor()
+
+        substructure = {
+            "mass": self.substructure_mass,
+            "unit_cost": self.substructure_unit_cost,
+            "towing_speed": self._design.get("towing_speed", 6),
+        }
+
+        self._outputs["substructure"] = substructure
+
+    def calc_geometric_scale_factor(self, **kwargs):
+        """Calculates the geometric factor to scale the size of the semi-
+        submersible. Upscaling methodology and parameters used are found on
+        Lines 335-340 [2].
+        """
+
+        turbine_diameter = self.config["turbine"].get("rotor_diameter")
+
+        if turbine_diameter is None:
+            raise KeyError("Turbine rotor diameter not specified.")
+
+        # IEA-15MW 120m radius
+        ref_radius = kwargs.get("ref_radius", 120.0)
+
+        # power-law parameter
+        alpha = kwargs.get("alpha", 0.72)
+
+        self.geom_scale_factor = (
+            float(turbine_diameter) / 2 / ref_radius
+        ) ** alpha
+
+    @property
+    def bouyant_column_volume(self):
+        """
+        Returns the volume of a capped, hollow, cylindrical column,
+        assuming the wall-thickness remains constant [2].
+        """
+
+        dc = self._design.get("column_diameter", 12.5) * self.geom_scale_factor
+        hc = self._design.get("column_height", 35) * self.geom_scale_factor
+        tc = self._design.get("wall_thickness", 0.045)
+
+        return (np.pi / 4) * (hc * dc**2 - (hc - 2 * tc) * (dc - 2 * tc) ** 2)
+
+    @property
+    def center_column_volume(self):
+        """
+        Returns the volume of a hollow cylindrical column between turbine and
+        pontoons, assuming wall-thickness remains constant [2].
+        """
+
+        dc = 10.0  # fixed tower diameter
+        hc = self._design.get("column_height", 35) * self.geom_scale_factor
+        hp = self._design.get("pontoon_height", 7) * self.geom_scale_factor
+        tc = self._design.get("wall_thickness", 0.045)
+
+        return (np.pi / 4) * (
+            (hc - hp) * dc**2 - (hc - hp) * (dc - 2 * tc) ** 2
+        )
+
+    @property
+    def pontoon_volume(self):
+        """
+        Returns the volume of a single hollow rectangular pontoon that connects
+        the central column to the outer columns, assuming wall-thickness
+        reamins constant [2].
+        """
+        # TODO: Subtract semi-circular area from fairlead column?
+
+        lp = self._design.get("pontoon_length", 51.75) * self.geom_scale_factor
+        wp = self._design.get("pontoon_width", 12.5) * self.geom_scale_factor
+        hp = self._design.get("pontoon_height", 7) * self.geom_scale_factor
+        tp = self._design.get("wall_thickness", 0.045)
+
+        return (hp * wp - (hp - 2 * tp) * (wp - 2 * tp)) * lp
+
+    @property
+    def strut_volume(self):
+        """
+        Returns the volume of a single solid strut that connects
+        the central column to the outer columns.
+        """
+
+        lp = self._design.get("pontoon_length", 51.75) * self.geom_scale_factor
+        ds = self._design.get("strut_diameter", 0.9) * self.geom_scale_factor
+
+        return (np.pi / 4) * (ds**2) * lp
+
+    @property
+    def substructure_steel_mass(self):
+        """Returns the total mass of structural steel in the substructure."""
+
+        # TODO: Separate out different steels for each component
+
+        density = self._design.get("steel_density", 7980)
+
+        return (density / 1000) * (
+            self.num_columns * self.bouyant_column_volume
+            + self.center_column_volume
+            + self.num_columns * self.pontoon_volume
+            + self.num_columns * self.strut_volume
+        )
+
+    @property
+    def ballast_mass(self):
+        """Returns the mass of fixed ballast. Default value from [1]."""
+        # TODO: Scale ballast mass with some factor?
+        # Fixed/Fluid needs to be addressed because 11,300t of seawater is used
+        # to submerge the platform.
+
+        return self._design.get("ballast_mass", 2540)
+
+    @property
+    def tower_interface_mass(self):
+        """Returns the mass of tower interface. Default value from [1]."""
+
+        # TODO: Find a model to estimate the mass for a tower interface
+
+        return self._design.get("tower_interface_mass", 100)
+
+    @property
+    def substructure_steel_cost(self):
+        """Returns the total cost of structural steel of the substructure
+        in $USD.
+        """
+
+        _key = "steel_CR"
+        self.steel_cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
+        return self.steel_cr * self.substructure_steel_mass
+
+    @property
+    def substructure_mass(self):
+        """
+        Returns the total mass of structural steel and iron ore ballast
+        in the substructure.
+        """
+
+        return sum(
+            [
+                self.substructure_steel_mass,
+                self.ballast_mass,
+                self.tower_interface_mass,
+            ]
+        )
+
+    @property
+    def substructure_unit_cost(self):
+        """
+        Returns the total material cost of a single substructure.
+        Does not include final assembly or transportation costs.
+        """
+
+        _key = "ballast_material_CR"
+        ballast_cr = self._design.get(
+            _key, self.get_default_cost("semisubmersible_design", _key)
+        )
+
+        return (
+            self.substructure_steel_cost
+            + ballast_cr * self.ballast_mass
+            + self.steel_cr * self.tower_interface_mass
+        )
+
+    @property
+    def design_result(self):
+        """Returns the result of `self.run()`."""
+
+        if not self._outputs:
+            raise Exception("Has `CustomSemiSubmersibleDesign` been ran yet?")
+
+        return self._outputs
+
+    @property
+    def total_cost(self):
+        """Returns total phase cost in $USD."""
+
+        num = self.config["plant"]["num_turbines"]
+        return num * self.substructure_unit_cost
+
+    @property
+    def detailed_output(self):
+        """Returns detailed phase information."""
+
+        _outputs = {
+            "substructure_steel_mass": self.substructure_steel_mass,
+            "substructure_steel_cost": self.substructure_steel_cost,
+            "substructure_mass": self.substructure_mass,
+            "substructure_cost": self.substructure_unit_cost,
+            "ballast_mass": self.ballast_mass,
+            "tower_interface_mass": self.tower_interface_mass,
         }
 
         return _outputs

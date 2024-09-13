@@ -66,6 +66,8 @@ semisubmersible_design:
   truss_CR: 6250                                # USD/t
   heave_plate_CR: 6250                          # USD/t
   secondary_steel_CR: 7250                      # USD/t
+  steel_CR: 4500                                # USD/t *CustomSemiSub*
+  ballast_material_CR: 150
 
 # Mooring system component cost rates
 mooring_system_design:                          # USD/m
