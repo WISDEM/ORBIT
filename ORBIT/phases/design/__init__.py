@@ -17,4 +17,3 @@ from .export_system_design import ExportSystemDesign
 from .mooring_system_design import MooringSystemDesign
 from .scour_protection_design import ScourProtectionDesign
 from .semi_submersible_design import SemiSubmersibleDesign
-from .SemiTaut_mooring_system_design import SemiTautMooringSystemDesign
