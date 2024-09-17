@@ -1,72 +1,76 @@
+# The following default costs are updated to represent the costs of a project with COD in 2023 and in 2023 dollar-year values.
+# The costs are adjusted using a steel price index and a commodity price index to account for variations in commodity prices and inflation.
+# For a project with COD in 2023, we assume procurement occurs 2 years prior, in 2021.
+
 # Material costs
 monopile_design:
-  monopile_steel_cost: 3000                     # USD/t
-  tp_steel_cost: 3000                           # USD/t
+  monopile_steel_cost: 4288                     # USD/t
+  tp_steel_cost: 4288                           # USD/t
 
 # Port properties
-port_cost_per_month: 2e6                      # USD/month
+port_cost_per_month: 2426868                      # USD/month
 
 # Export system component cost rates
 export_system_design:
   cable_crossings:
-    crossing_unit_cost: 500000
+    crossing_unit_cost: 606717
 
 # Spar component cost rates
 spar_design:
-  stiffened_column_CR: 3120                     # USD/t
-  tapered_column_CR: 4220                       # USD/t
-  ballast_material_CR: 100                      # USD/t
-  secondary_steel_CR: 7250                      # USD/t
+  stiffened_column_CR: 4460                     # USD/t
+  tapered_column_CR: 6032                       # USD/t
+  ballast_material_CR: 143                      # USD/t
+  secondary_steel_CR: 10363                      # USD/t
 
 # Offshore substation component cost rates
 substation_design:
-  mpt_cost_rate: 12500                          # USD/MW
-  topside_fab_cost_rate: 14500                  # USD/t
+  mpt_cost_rate: 15168                          # USD/MW
+  topside_fab_cost_rate: 16898                  # USD/t
   topside_design_cost:                          # USD
     #oldHVAC: 4.5e6
-    HVAC: 107.3e6
-    HVDC-monopole: 294e6
-    HVDC-bipole: 476e6
-  shunt_cost_rate: 35000                        # USD/MW
-  mpt_unit_cost: 2.87e6                         # USD/mpt
-  shunt_unit_cost: 10000                        # USD/cable
-  switchgear_cost: 4e6                          # USD/cable
-  dc_breaker_cost: 10.5e6                       # USD/cable
-  backup_gen_cost: 1e6                          # USD
-  workspace_cost: 2e6                           # USD
-  other_ancillary_cost: 3e6                     # USD
+    HVAC: 126325615
+    HVDC-monopole: 346129832
+    HVDC-bipole: 560400680
+  shunt_cost_rate: 42470                       # USD/MW
+  mpt_unit_cost: 3378886                         # USD/mpt
+  shunt_unit_cost: 11773                        # USD/cable
+  switchgear_cost: 4709249                          # USD/cable
+  dc_breaker_cost: 12361780                       # USD/cable
+  backup_gen_cost: 1213434                          # USD
+  workspace_cost: 2426868                           # USD
+  other_ancillary_cost: 3640302                    # USD
   topside_assembly_factor: 0.075                # %
   converter_cost:                               # USD
     HVAC: 0
-    HVDC-monopole: 127e6
-    HVDC-bipole: 296e6
-  oss_substructure_cost_rate: 3000              # USD/t
+    HVDC-monopole: 149518669
+    HVDC-bipole: 338484456
+  oss_substructure_cost_rate: 4288              # USD/t
   oss_pile_cost_rate: 0                         # USD/t
 
 # Onshore substation component cost rates
 onshore_substation_design:
   onshore_converter_cost:                       # USD
     HVAC: 0
-    HVDC-monopole: 157e6
-    HVDC-bipole: 350e6
-  shunt_unit_cost: 13000                        # USD/cable
-  switchgear_cost: 9.33e6                       # USD/cable
+    HVDC-monopole: 184838039
+    HVDC-bipole: 412059323
+  shunt_unit_cost: 14700                        # USD/cable
+  switchgear_cost: 10984324                       # USD/cable
   compensation_rate:                            # USD/cable
-    HVAC: 31.3e6
+    HVAC: 36849877
     HVDC-monopole: 0
     HVDC-bipole: 0
   onshore_construction_rate:                    # USD
-    HVAC: 5e6
-    HVDC-monopole: 87.3e6
-    HVDC-bipole: 100e6
+    HVAC: 5886562
+    HVDC-monopole: 102779368
+    HVDC-bipole: 117731235
 
 # Semisubmersible component cost rates
 semisubmersible_design:
-  stiffened_column_CR: 3120                     # USD/t
-  truss_CR: 6250                                # USD/t
-  heave_plate_CR: 6250                          # USD/t
-  secondary_steel_CR: 7250                      # USD/t
+  stiffened_column_CR: 4460                     # USD/t
+  truss_CR: 8934                                # USD/t
+  heave_plate_CR: 8934                          # USD/t
+  secondary_steel_CR: 10363                      # USD/t
 
 # Mooring system component cost rates
 mooring_system_design:                          # USD/m
-  mooring_line_cost_rate: [399.0, 721.0, 1088.0]
+  mooring_line_cost_rate: [570, 1031, 1555]
