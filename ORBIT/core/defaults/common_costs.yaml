@@ -19,15 +19,13 @@ spar_design:
   secondary_steel_CR: 7250                      # USD/t
 
 # Offshore substation component cost rates
-substation_design:
-  mpt_cost_rate: 12500                          # USD/MW
+substation_design_275kV:
   topside_fab_cost_rate: 14500                  # USD/t
   topside_design_cost:                          # USD
     #oldHVAC: 4.5e6
     HVAC: 107.3e6
     HVDC-monopole: 294e6
     HVDC-bipole: 476e6
-  shunt_cost_rate: 35000                        # USD/MW
   mpt_unit_cost: 2.87e6                         # USD/mpt
   shunt_unit_cost: 10000                        # USD/cable
   switchgear_cost: 4e6                          # USD/cable
@@ -43,13 +41,57 @@ substation_design:
   oss_substructure_cost_rate: 3000              # USD/t
   oss_pile_cost_rate: 0                         # USD/t
 
+substation_design_420kV:
+  topside_fab_cost_rate: 16240                  # USD/t
+  topside_design_cost:                          # USD
+    #oldHVAC: 4.5e6
+    HVAC: 120.1766e6
+    HVDC-monopole: 329.28e6
+    HVDC-bipole: 533.12e6
+  mpt_unit_cost: 3.2144e6                         # USD/mpt
+  shunt_unit_cost: 3.8e3                          # USD/cable
+  switchgear_cost: 4.48e6                          # USD/cable
+  dc_breaker_cost: 11.76e6                       # USD/cable
+  backup_gen_cost: 1.12e6                          # USD
+  workspace_cost: 2.24e6                           # USD
+  other_ancillary_cost: 3.36e6                     # USD
+  topside_assembly_factor: 0.075                # %
+  converter_cost:                               # USD
+    HVAC: 0
+    HVDC-monopole: 142.24e6
+    HVDC-bipole: 331.52.2e6
+  oss_substructure_cost_rate: 3360              # USD/t
+  oss_pile_cost_rate: 0                         # USD/t
+
+substation_design_525kV:
+  topside_fab_cost_rate: 17980                  # USD/t
+  topside_design_cost:                          # USD
+    #oldHVAC: 4.5e6
+    HVAC: 133.1e6
+    HVDC-monopole: 364.6e6
+    HVDC-bipole: 590.2e6                       
+  mpt_unit_cost: 3.56e6                         # USD/mpt
+  shunt_unit_cost: 10000                        # USD/cable
+  switchgear_cost: 4.96e6                          # USD/cable
+  dc_breaker_cost: 13.02e6                       # USD/cable
+  backup_gen_cost: 1.24e6                          # USD
+  workspace_cost: 2.48e6                           # USD
+  other_ancillary_cost: 3.72e6                     # USD
+  topside_assembly_factor: 0.075                # %
+  converter_cost:                               # USD
+    HVAC: 0
+    HVDC-monopole: 157.5e6
+    HVDC-bipole: 367e6
+  oss_substructure_cost_rate: 3720              # USD/t
+  oss_pile_cost_rate: 0                         # USD/t
+
 # Onshore substation component cost rates
-onshore_substation_design:
+onshore_substation_design_275kV:
   onshore_converter_cost:                       # USD
     HVAC: 0
     HVDC-monopole: 157e6
     HVDC-bipole: 350e6
-  shunt_unit_cost: 13000                        # USD/cable
+  shunt_unit_cost: 3.8e3                          # USD/cable
   switchgear_cost: 9.33e6                       # USD/cable
   compensation_rate:                            # USD/cable
     HVAC: 31.3e6
@@ -59,6 +101,38 @@ onshore_substation_design:
     HVAC: 5e6
     HVDC-monopole: 87.3e6
     HVDC-bipole: 100e6
+
+onshore_substation_design_420kV:
+  onshore_converter_cost:                       # USD
+    HVAC: 0
+    HVDC-monopole: 175.84e6
+    HVDC-bipole: 392e6
+  shunt_unit_cost: 3.8e3                          # USD/cable
+  switchgear_cost: 10.4496e6                       # USD/cable
+  compensation_rate:                            # USD/cable
+    HVAC: 35.056e6
+    HVDC-monopole: 0
+    HVDC-bipole: 0
+  onshore_construction_rate:                    # USD
+    HVAC: 5.6e6
+    HVDC-monopole: 97.776e6
+    HVDC-bipole: 112e6
+
+onshore_substation_design_525kV:
+  onshore_converter_cost:                       # USD
+    HVAC: 0
+    HVDC-monopole: 194.7e6
+    HVDC-bipole: 434e6
+  shunt_unit_cost: 4.71e3                          # USD/cable
+  switchgear_cost: 11.57e6                       # USD/cable
+  compensation_rate:                            # USD/cable
+    HVAC: 31.3e6
+    HVDC-monopole: 0
+    HVDC-bipole: 0
+  onshore_construction_rate:                    # USD
+    HVAC: 6.2e6
+    HVDC-monopole: 108.3e6
+    HVDC-bipole: 124e6
 
 # Semisubmersible component cost rates
 semisubmersible_design:

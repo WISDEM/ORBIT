@@ -1,0 +1,11 @@
+# from TFKabel
+ac_resistance: 0.014    # ohm/km
+capacitance: 225        # nF/km
+conductor_size: 2500    # mm^2
+cost_per_km: 2450000    # $/km Based on the 220kV costs that are in ORBIT/electrical-refactor right now and the Xiang et al. (2016) 
+current_capacity: 688  # A # trefoil config in earth, 90C
+inductance: 0.115       # mH/km  
+linear_density: 156     # t/km # ESTIMATE
+cable_type: HVAC        # HVDC vs HVAC
+name: XLPE_2500mm_420kV_dynamic
+rated_voltage: 420
