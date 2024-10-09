@@ -327,7 +327,7 @@ class ProjectManager:
             "construction_financing": "$/kW (optional, default: value calculated using construction_financing_factor))",
             "procurement_contingency": "$/kW (optional, default: value calculated using procurement_contingency_factor)",
             "installation_contingency": "$/kW (optional, default: value calculated using installation_contingency_factor)",
-             "decommissioning": "$/kW (optional, default: value calculated using decommissioning_factor)",
+            "decommissioning": "$/kW (optional, default: value calculated using decommissioning_factor)",
             "project_completion": "$/kW (optional, default: value calculated using project_completion_factor)",
             "construction_insurance_factor": "float (optional, default: 0.0115)",
             "construction_financing_factor": "$/kW (optional, default: value calculated using spend_schedule, tax_rate and interest_during_construction))",

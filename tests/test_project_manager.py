@@ -852,32 +852,93 @@ def test_soft_costs():
     config = deepcopy(complete_project)
     config["project_parameters"] = {"construction_insurance": 50}
     project = ProjectManager(config)
+    project.run()
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"construction_financing": 190}
     project = ProjectManager(config)
+    project.run()
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"contingency": 320}
+    config["project_parameters"] = {"procurement_contingency": 320}
     project = ProjectManager(config)
+    project.run()
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"contingency": 320}
+    config["project_parameters"] = {"installation_contingency": 320}
     project = ProjectManager(config)
-    assert project.soft_capex != baseline
-
-    config = deepcopy(complete_project)
-    config["project_parameters"] = {"commissioning": 50}
-    project = ProjectManager(config)
+    project.run()
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
     config["project_parameters"] = {"decommissioning": 50}
     project = ProjectManager(config)
+    project.run()
     assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"project_completion": 50}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"construction_insurance_factor": 0.02}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"construction_financing_factor": 1.2}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"spend_schedule": {0: 0, 1: 0, 2: 0, 3: 0, 4: 0.5, 5: 0.5}}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"tax_rate": 0.35}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"interest_during_construction": 0.06}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"procurement_contingency_factor": 0.1}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"project_completion_factor": 0.3}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"installation_contingency_factor": 0.7}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {"decommissioning_factor": 0.7}
+    project = ProjectManager(config)
+    project.run()
+    assert project.soft_capex != baseline
+    
 
 
 def test_project_costs():
@@ -932,9 +993,9 @@ def test_total_capex():
     fix_project = ProjectManager(complete_project)
     fix_project.run()
 
-    assert fix_project.total_capex == pytest.approx(1207278397.56, abs=1e-1)
+    assert fix_project.total_capex == pytest.approx(1216449001.7410436, abs=1e-1)
 
     flt_project = ProjectManager(complete_floating_project)
     flt_project.run()
 
-    assert flt_project.total_capex == pytest.approx(3284781912.73, abs=1e-1)
+    assert flt_project.total_capex == pytest.approx(3540761314.148985, abs=1e-1)
