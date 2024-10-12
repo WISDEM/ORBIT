@@ -244,12 +244,12 @@ def install_mooring_anchor(vessel, depth, _type, **kwargs):
 
     if _type == "Suction Pile":
         key = "suction_pile_install_time"
-        task = "Install Suction Pile Anchor"
+        task = "Install Suction Pile Anchor (IEA 49)"
         fixed = kwargs.get(key, pt[key])
 
     elif _type == "Drag Embedment":
         key = "drag_embed_install_time"
-        task = "Install Drag Embedment Anchor"
+        task = "Install Drag Embedment Anchor (IEA 49)"
         fixed = kwargs.get(key, pt[key])
 
     else:
