@@ -1,0 +1,98 @@
+# Site + Plant Parameters
+site:
+  depth: 900
+  distance: 100
+  distance_to_landfall: 100
+plant:
+  layout: grid
+  num_turbines: 3 # 40
+  row_spacing: 7
+  substation_distance: 1
+  turbine_spacing: 7
+port:
+  monthly_rate: 2000000.0
+  sub_assembly_lines: 1
+  turbine_assembly_cranes: 1
+  laydown_area: 40500 # 10 acres to m**2
+  assembly_start: 0.00
+  laydown_cost: 1
+
+# Vessels
+mooring_install_vessel: example_support_vessel
+support_vessel: example_support_vessel
+ahts_vessel: example_ahts_vessel
+towing_vessel: example_towing_vessel
+towing_vessel_groups:
+  station_keeping_vessels: 2
+  towing_vessels: 3
+transport_vessel:
+  transport_specs:
+    max_waveheight: 3       # m
+    max_windspeed: 25       # m/s
+    transit_speed: 10       # km/h
+  vessel_specs:
+    day_rate: 30000        # USD/day
+    overall_length: 150     # m
+    mobilization_days: 7    # days
+    mobilization_mult: 0   # Mobilization multiplier applied to 'day_rate'
+  storage_specs:
+    max_cargo: 2000          # t
+    max_deck_load: 8          # t/m^2
+    max_deck_space: 1000      # m^2
+    capacity: 6           # units
+transport_railcar:
+  transport_specs:
+    max_waveheight: 100       # m
+    max_windspeed: 100       # m/s
+    transit_speed: 10       # km/h
+  vessel_specs:
+    day_rate: 2001        # USD/day
+    overall_length: 150     # m 10 x 15m
+    mobilization_days: 7    # days
+    mobilization_mult: 1   # Mobilization multiplier applied to 'day_rate'
+  storage_specs:
+    max_cargo: 1000          # t
+    max_deck_load: 8          # t/m^2
+    max_deck_space: 37      # m^2
+# Module Specific
+substructure_delivery:
+  space_required: 3500
+turbine_delivery:
+  space_required: 1838
+substructure:
+  takt_time: 168
+mooring_system_design:
+  num_lines: 6
+  anchor_type: Suction Pile
+  mooring_type: Catenary
+# Supply Chain Specific
+chain_supply:
+  laydown_area: 200 # m**2
+  takt_time: 0.175 # hours per m (50,000 m/year)
+  assembly_lines: 1 #
+  space_required: 7.5 # m**2
+  transit_time: 168 # (168 hours = 1 week) hours
+rope_supply:
+  laydown_area: 200 # m**2
+  takt_time: 0.187 # hours per m (46,800 m/year)
+  assembly_lines: 1 #
+  space_required: 7.5 # m**2
+  transit_time: 168 # (168 hours = 1 week) hours
+anchor_supply:
+  laydown_area: 800 # m**2
+  takt_time: 182.5 # hr (48 units per year)
+  assembly_lines: 1 #
+  space_required: 300 # m**2
+  transit_time: 336
+# Configured Phases
+design_phases:
+#- MooringSystemDesign
+- CustomMooringSystemDesign
+#- SemiSubmersibleDesign
+install_phases:
+- MooringSystemSupplyChain
+#- MooringSystemInstallation
+#- MooredSubInstallation
+# Project Inputs
+turbine: 15MW_generic
+#custom_filename: custom_mooring_MorroBay.csv

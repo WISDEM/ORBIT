@@ -317,3 +317,153 @@ class MooringSystemDesign(DesignPhase):
         """Returns the results of the design phase."""
 
         return {"mooring_system": self.detailed_output}
+
+""" Provides the 'CustomMooringSystemDesign' class."""
+
+
+import os
+import warnings
+import pandas as pd
+
+class CustomMooringSystemDesign(MooringSystemDesign):
+    """ Custom mooring system design phase.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    """
+
+    expected_config = {
+        "plant": {"layout": "str", "num_turbines": "int"},
+        "mooring_system_design": {
+            "num_lines": "int | float (optional, default: 4)",
+            "anchor_type": "str (optional, default: 'Suction Pile')",
+            "mooring_type": "str (optional, default: 'Catenary')",
+            "mooring_line_cost_rate": "int | float (optional)",
+        },
+        "custom_filename" : "str",
+    }
+
+    output_config = {
+        "mooring_system" :{
+            "num_lines" : "int",
+            "line_cost" : "USD",
+        }
+    }
+
+    COLUMNS = [
+        "turbine_id",
+        "line_id",
+        "section_id",
+        "diameter",
+        "length",
+        "mass",
+        "thickness",
+        "cost_rate",
+    ]
+
+    def __init__(self, config, **kwargs):
+        """ Creates an Instance of 'CustomMooringSystemDesign'."""
+
+        self._design = config.get("mooring_system_design", {})
+
+        self.num_turbines = config["plant"]["num_turbines"]
+
+        self.num_lines = self._design.get("num_lines", 1)
+
+        self.filename = "inputs/" + config.get("custom_filename", None)
+
+
+    def initialize_custom_data(self):
+
+        self.filepath = os.path.abspath(self.filename)
+
+        self.df = pd.read_csv(self.filepath)
+
+        #self.df.head())
+
+        #except FileExistsError:
+        #    print("File not found.")
+
+    def _check_number_lines(self):
+        """ """
+
+        _lines = self.df["line_id"].unique()
+
+        if len(_lines) != self.num_lines:
+            warnings.warn("\tnum_lines in config file does not match unique"
+                          f" line_id in {self.filename}\n"
+            )
+
+    def _check_number_turbines(self):
+
+        _turbs = self.df["turbine_id"].unique()
+
+        if len(_turbs) != self.num_turbines:
+            warnings.warn("\tnum_turbines in config file does not match unique"
+                          f" turbine_id in {self.filename}\n"
+            )
+
+    def df_by_section_id(self,pattern):
+
+        return self.df[
+            self.df["section_id"].str.contains(pattern.lower())
+            ].reset_index(drop=True)
+
+    def run(self):
+
+        self.initialize_custom_data()
+
+        self._check_number_lines()
+        self._check_number_turbines()
+
+        self.chain = self.df_by_section_id("chain_")
+        print(self.chain.head())
+        self.rope = self.df_by_section_id("polyester")
+        self.anchors = self.df_by_section_id("_anchor")
+
+    @property
+    def line_cost(self):
+        """Returns cost of one line mooring line."""
+
+        return (
+            sum([
+                (self.chain["length"] *
+                 self.chain["cost_rate"]).sum(),
+                (self.rope["length"] *
+                 self.rope["cost_rate"]).sum(),
+                ]
+                )
+        )
+
+    @property
+    def total_cost(self):
+        """Returns the total cost of the mooring system."""
+
+        return (
+            sum([self.line_cost,
+                (self.anchors["cost_rate"]).sum(),
+                 ]
+            )
+        )
+
+    @property
+    def detailed_output(self):
+        """Returns detailed phase information."""
+
+        return {"chains" : self.chain,
+                "ropes" : self.rope,
+                "anchors" : self.anchors,
+                "num_lines": self.num_lines,
+                "line_cost" : self.line_cost,
+                "total_cost" : self.total_cost,
+        }
+
+    @property
+    def design_result(self):
+        """Returns the results of the design phase."""
+
+        return {"mooring_system": self.detailed_output}

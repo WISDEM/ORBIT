@@ -7,3 +7,4 @@ __email__ = "jake.nunemaker@nrel.gov"
 
 
 from .mooring import MooringSystemInstallation
+from .supplychain import MooringSystemSupplyChain

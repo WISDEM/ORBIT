@@ -12,7 +12,9 @@ from .oss_install import (
 )
 from .cable_install import ArrayCableInstallation, ExportCableInstallation
 from .jacket_install import JacketInstallation
-from .mooring_install import MooringSystemInstallation
+from .mooring_install import (MooringSystemInstallation,
+    MooringSystemSupplyChain
+)
 from .turbine_install import TurbineInstallation
 from .monopile_install import MonopileInstallation
 from .quayside_assembly_tow import (
