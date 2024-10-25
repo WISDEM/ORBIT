@@ -73,14 +73,14 @@ class MooringSystemSupplyChain(InstallPhase):
         self.initialize_chain_transport()
 
         # Initialize Anchor storage, production, and delivery
-        #self.initialize_anchor_storage()
-        #self.initialize_anchor_production()
-        #self.initialize_anchor_transport()
+        self.initialize_anchor_storage()
+        self.initialize_anchor_production()
+        self.initialize_anchor_transport()
 
         # Initialize Rope storage, production, and delivery
-        #self.initialize_rope_storage()
-        #self.initialize_rope_production()
-        #self.initialize_rope_transport()
+        self.initialize_rope_storage()
+        self.initialize_rope_production()
+        self.initialize_rope_transport()
 
         # At marshalling port
         # self.initialize_chain_assembly()
@@ -88,7 +88,7 @@ class MooringSystemSupplyChain(InstallPhase):
         # self.start_assembly_lines()
 
     def initialize_laydown_area(self):
-        """ Initialize the laydown area at port. """
+        """Initialize the laydown area at port."""
 
         area = self.config["port"]["laydown_area"]
         perc = self.config["port"]["assembly_start"]
@@ -110,7 +110,7 @@ class MooringSystemSupplyChain(InstallPhase):
         # print(vars(self.laydown))
         self.laydown.start_assembly = simpy.Event(self.env)
 
-        #print("Laydown Vars:", vars(self.laydown))
+        # print("Laydown Vars:", vars(self.laydown))
 
     def initialize_chain_storage(self):
         """Chain Storage near Production line."""
@@ -152,7 +152,7 @@ class MooringSystemSupplyChain(InstallPhase):
         """Initialize the chain transport agent using vessel logic."""
 
         transport_specs = self.config.get("transport_vessel", None)
-        #print(transport_specs)
+        # print(transport_specs)
 
         name = transport_specs.get("name", "Chain Transport Vessel")
 
@@ -162,7 +162,7 @@ class MooringSystemSupplyChain(InstallPhase):
         self.env.register(transport)
         transport.initialize()
 
-        #print("Transport vars: ", vars(transport))
+        # print("Transport vars: ", vars(transport))
         self.chain_transport = transport
 
         transport_component_to_port(
@@ -209,8 +209,8 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in chains_df.iterrows()
         ]
 
-        #print(f"Number of chains: {len(self.chains)}")
-        #print(vars(self.chains[1]))
+        # print(f"Number of chains: {len(self.chains)}")
+        # print(vars(self.chains[1]))
 
         for n in range(chain_makers):
             chain_manufacturer = ComponentManufacturing(
@@ -495,7 +495,7 @@ class MooringSystemSupplyChain(InstallPhase):
 
     @property
     def detailed_output(self):
-        """ Return detailed outputs. """
+        """Return detailed outputs."""
 
         return {
             "operational_delays": 0,
@@ -519,5 +519,5 @@ class MooringSystemSupplyChain(InstallPhase):
 
     @property
     def total_cost(self):
-        """ Return total cost. """
+        """Return total cost."""
         return 0
