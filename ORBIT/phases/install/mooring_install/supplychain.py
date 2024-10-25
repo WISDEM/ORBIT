@@ -73,14 +73,14 @@ class MooringSystemSupplyChain(InstallPhase):
         self.initialize_chain_transport()
 
         # Initialize Anchor storage, production, and delivery
-        self.initialize_anchor_storage()
-        self.initialize_anchor_production()
-        self.initialize_anchor_transport()
+        #self.initialize_anchor_storage()
+        #self.initialize_anchor_production()
+        #self.initialize_anchor_transport()
 
         # Initialize Rope storage, production, and delivery
-        self.initialize_rope_storage()
-        self.initialize_rope_production()
-        self.initialize_rope_transport()
+        #self.initialize_rope_storage()
+        #self.initialize_rope_production()
+        #self.initialize_rope_transport()
 
         # At marshalling port
         # self.initialize_chain_assembly()
@@ -110,7 +110,7 @@ class MooringSystemSupplyChain(InstallPhase):
         # print(vars(self.laydown))
         self.laydown.start_assembly = simpy.Event(self.env)
 
-        print("Laydown Vars:", vars(self.laydown))
+        #print("Laydown Vars:", vars(self.laydown))
 
     def initialize_chain_storage(self):
         """Chain Storage near Production line."""
@@ -162,7 +162,7 @@ class MooringSystemSupplyChain(InstallPhase):
         self.env.register(transport)
         transport.initialize()
 
-        print("Transport vars: ", vars(transport))
+        #print("Transport vars: ", vars(transport))
         self.chain_transport = transport
 
         transport_component_to_port(
@@ -209,8 +209,8 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in chains_df.iterrows()
         ]
 
-        print(f"Number of chains: {len(self.chains)}")
-        print(vars(self.chains[1]))
+        #print(f"Number of chains: {len(self.chains)}")
+        #print(vars(self.chains[1]))
 
         for n in range(chain_makers):
             chain_manufacturer = ComponentManufacturing(
@@ -387,7 +387,7 @@ class MooringSystemSupplyChain(InstallPhase):
         else:
             anchor_set = self.anchors
 
-        print("Anchor sets: ", anchor_set)
+        print("Anchor sets: ", type(anchor_set))
 
         self.anchor_sets = []
 

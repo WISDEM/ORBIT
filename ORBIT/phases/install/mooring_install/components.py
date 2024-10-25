@@ -45,6 +45,7 @@ class Component:
         self.type = section + "_d" + str(diameter)
         self.area = area
         self.length = length
+        self.diameter = diameter
         self.mass = mass
         self.turb_id = turbine
         self.line_id = line
@@ -285,12 +286,14 @@ class ComponentManufacturing(Agent):
     @process
     def start(self):
 
+        cprev = self.sets[0]
         for i, c in enumerate(self.sets):
 
             # components = ComponentSet(self.type, self.area, self.env.now)
             # print("Component vars:", vars(components))
             components = c
-
+            #if abs(c.diameter - cprev.diameter):
+                #print("Mutare Machina")
             # Manufacture and store component
             # Assume this is a takt rate as hours per meter
             if self.takt < 10.0:
@@ -312,8 +315,10 @@ class ComponentManufacturing(Agent):
 
             if delay > 0:
                 self.submit_action_log(
-                    f"Delay: No {self.type} storage Available", delay
+                    f"Delay: No {c.type} storage Available", delay
                 )
+
+        #self.submit_action_log(f"Manufacturing Complete", 0)
 
 
 @process
@@ -328,7 +333,8 @@ def transport_component_to_port(
 ):
     storage = transport._storage
     # print("Port vars: ", vars(target))
-
+    _trigger = storage.capacity - 1
+    print(_trigger)
     """
     if the transport is at the site use feed.get() to get items while the
      storage is not full. When full, begin transit.
@@ -340,8 +346,12 @@ def transport_component_to_port(
     n = 1
     transport.at_site = True
     transport.at_port = False
-    while len(target.items) <= sets:
-
+    load = 0
+    delivered = 0
+    #while True:
+    while delivered <= sets:
+        _counter = count(0)
+        print(sets)
         if transit_time == 0:
             print(f"No transit time specified, {component} made at port")
             item = yield storage.get()
@@ -349,66 +359,82 @@ def transport_component_to_port(
             item.arrived = transport.env.now
             target.pending.append(item)
             target.update_pending()
+            delivered+=1
 
             yield transport.task(
-                "Put cargo at Port Laydown.",
+                f"Move {component} at Port Laydown.",
                 0,
                 cost=0,
                 transport_storage=len(storage.items),
-                port_storage=target.available_area,
-                port_capacity=len(target.items)
+                port_storage=len(target.items),
+                port_area=target.available_area
             )
 
         else:
-            # TODO: Fix the get() event that subtracts from storage while transport arrives at port.
-
             if transport.at_site:
+
                 start = transport.env.now
                 item = yield feed.get()
                 delay = transport.env.now - start
 
                 if delay > 0:
-                    if n == 1:
+                    if len(feed.items) == _trigger:
                         transport.mobilize()
                     else:
                         transport.submit_action_log(
-                            f"Waiting for {component} to load.",
-                            delay,
-                            cost_multiplier=0
-                    )
+                        f"Waiting for {component} to load.",
+                        delay,
+                        )
 
-                # Put item on ship
+
+                # Put item on transport if its at the site.
                 yield storage.put(item)
+                load+=1
                 yield transport.task(
-                    f"Loading {component}",
-                    0,
-                    cost=0,
-                    supply_storage=len(feed.items),
-                    transport_storage=len(storage.items),
-                )
-
-                if len(storage.items) == storage.capacity:
-                    yield transport.task(
-                        f"Transport {component}s",
-                        transit_time,
-                        constraints={},
-                        suspendable=True,
-                        supply_storage=len(feed.items),
+                        f"Loading {component}, {load}",
+                        0,
+                        cost=0,
                         transport_storage=len(storage.items),
                     )
+
+                # When the transport is full, deliver items
+                if len(storage.items) == storage.capacity:
+                    yield transport.task(
+                            f"Full: Transport {component}s",
+                            transit_time,
+                            constraints={},
+                            supply_storage=len(feed.items),
+                            transport_storage=len(storage.items),
+                        )
                     transport.at_site = False
                     transport.at_port = True
+
+                # Final trip when storage is empty and transport may not be full.
+                '''elif len(storage.items) < storage.capacity:
+                    yield transport.task(
+                            f"Transport {component}s",
+                            transit_time,
+                            constraints={},
+                            supply_storage=len(feed.items),
+                            transport_storage=len(storage.items),
+                        )
+                    transport.at_site = False
+                    transport.at_port = True'''
+
             # Delivered to port
-            else:
+            elif transport.at_port:
+                # Avoid getting items when no transport is available
+                #yield feed.put(item)
+
                 yield transport.task(
-                    f"{component} arrives at Port.",
-                    0,
-                    cost=0,
-                    supply_storage=len(feed.items),
-                    transport_storage=len(storage.items),
-                    port_storage=target.available_area,
-                    port_capacity=len(target.items)
-                )
+                        f"{component} arrives at Port.",
+                        0,
+                        cost=0,
+                        transport_storage=len(storage.items),
+                        delivered=delivered,
+                        port_storage=len(target.items),
+                        port_area=target.available_area
+                    )
 
                 # unload all the items
                 while len(storage.items) > 0:
@@ -419,23 +445,24 @@ def transport_component_to_port(
                     target.update_pending()
 
                     yield transport.task(
-                        "Put cargo at Port Laydown.",
+                        f"Unload {component} at Port Laydown.",
                         0,
                         cost=0,
-                        supply_storage=len(feed.items),
                         transport_storage=len(storage.items),
-                        port_storage=target.available_area,
-                        port_capacity=len(target.items)
+                        port_storage=len(target.items),
+                        port_area=target.available_area
                     )
+                    delivered+=1
 
                 yield transport.task(
-                    "Return to supplier.",
+                    "Empty: Return to supplier.",
                     transit_time / 2,
                     constraints={},
-                    suspendable=True,
                     supply_storage=len(feed.items),
                     transport_storage=len(storage.items),
-                    port_storage=target.available_area,
+                    delivered=delivered,
+                    port_storage=len(target.items),
+                    port_area=target.available_area
                 )
                 transport.at_site = True
                 transport.at_port = False
@@ -463,4 +490,9 @@ def transport_component_to_port(
         # X = Transport(self.env, )
         # storage = transport.extract_storage_specs()
         # print(storage)
+        print(f"n {n}, store: {len(feed.items)}, transport: {len(storage.items)}, delivered: {delivered} ")
         n += 1
+
+    transport.task("All done.", 0, 0)
+
+
