@@ -421,7 +421,7 @@ class CustomMooringSystemDesign(MooringSystemDesign):
         self._check_number_turbines()
 
         self.chain = self.df_by_section_id("chain_")
-        print(self.chain.head())
+        print("From Mooring System Design: ", self.chain.head())
         self.rope = self.df_by_section_id("polyester")
         self.anchors = self.df_by_section_id("_anchor")
 

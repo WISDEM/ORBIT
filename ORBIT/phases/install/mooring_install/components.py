@@ -323,6 +323,7 @@ def transport_component_to_port(
     feed,
     target,
     transit_time,
+    component
     # transit_constraints
 ):
     storage = transport._storage
@@ -339,11 +340,10 @@ def transport_component_to_port(
     n = 1
     transport.at_site = True
     transport.at_port = False
-
     while len(target.items) <= sets:
-        print(n)
+
         if transit_time == 0:
-            print("No transit time specified, COMPONENT made at port")
+            print(f"No transit time specified, {component} made at port")
             item = yield storage.get()
 
             item.arrived = transport.env.now
@@ -372,13 +372,15 @@ def transport_component_to_port(
                         transport.mobilize()
                     else:
                         transport.submit_action_log(
-                            "Waiting for chain to load.", delay, cost_multiplier=0
+                            f"Waiting for {component} to load.",
+                            delay,
+                            cost_multiplier=0
                     )
 
                 # Put item on ship
                 yield storage.put(item)
                 yield transport.task(
-                    "Loading cargo",
+                    f"Loading {component}",
                     0,
                     cost=0,
                     supply_storage=len(feed.items),
@@ -387,7 +389,7 @@ def transport_component_to_port(
 
                 if len(storage.items) == storage.capacity:
                     yield transport.task(
-                        "Transport Components",
+                        f"Transport {component}s",
                         transit_time,
                         constraints={},
                         suspendable=True,
@@ -399,13 +401,13 @@ def transport_component_to_port(
             # Delivered to port
             else:
                 yield transport.task(
-                    "Arrive at Port.",
+                    f"{component} arrives at Port.",
                     0,
                     cost=0,
                     supply_storage=len(feed.items),
                     transport_storage=len(storage.items),
                     port_storage=target.available_area,
-                    port_capacity=len(target.items)+1
+                    port_capacity=len(target.items)
                 )
 
                 # unload all the items
@@ -423,11 +425,11 @@ def transport_component_to_port(
                         supply_storage=len(feed.items),
                         transport_storage=len(storage.items),
                         port_storage=target.available_area,
-                        port_capacity=len(target.items)+1
+                        port_capacity=len(target.items)
                     )
 
                 yield transport.task(
-                    "Return to site",
+                    "Return to supplier.",
                     transit_time / 2,
                     constraints={},
                     suspendable=True,

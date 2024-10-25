@@ -152,7 +152,7 @@ class MooringSystemSupplyChain(InstallPhase):
         """Initialize the chain transport agent using vessel logic."""
 
         transport_specs = self.config.get("transport_vessel", None)
-        print(transport_specs)
+        #print(transport_specs)
 
         name = transport_specs.get("name", "Chain Transport Vessel")
 
@@ -171,6 +171,7 @@ class MooringSystemSupplyChain(InstallPhase):
             feed=self.chain_storage,
             target=self.laydown,
             transit_time=transit_time,
+            component="Chain",
             #    transit_constraints={},
         )
 
@@ -317,6 +318,7 @@ class MooringSystemSupplyChain(InstallPhase):
             feed=self.rope_storage,
             target=self.laydown,
             transit_time=transit_time,
+            component="Rope",
             #    transit_constraints={},
         )
 
@@ -340,7 +342,7 @@ class MooringSystemSupplyChain(InstallPhase):
 
         takt = self.anchor_supply.get("takt_time", 182.5)
         takt_day_rate = self.anchor_supply.get("takt_day_rate", 0)
-        anchor_makers = int(
+        anchor_bays = int(
             # self.config["substructure_delivery"].get("num_lines", 1)
             self.anchor_supply["assembly_lines"]  # simplifying asumption
         )
@@ -376,27 +378,21 @@ class MooringSystemSupplyChain(InstallPhase):
         print(vars(self.anchors[5]))
 
         # TODO: Finish the split logic
-        if anchor_makers > 1:
-            k, m = divmod(len(self.anchors), anchor_makers)
+        if anchor_bays > 1:
+            k, m = divmod(len(self.anchors), anchor_bays)
             anchor_set = [
                 self.anchors[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)]
-                for i in range(anchor_makers)
+                for i in range(anchor_bays)
             ]
         else:
             anchor_set = self.anchors
 
-        print(anchor_set)
-
-        temp = [
-            len(self.anchors) // anchor_makers
-            + (1 if x < len(self.anchors) % anchor_makers else 0)
-            for x in range(anchor_makers)
-        ]
+        print("Anchor sets: ", anchor_set)
 
         self.anchor_sets = []
 
         # Loop through number of assembly lines. 1 anchor line won't cut it.
-        for n in range(anchor_makers):
+        for n in range(anchor_bays):
             anchor_manufacturer = ComponentManufacturing(
                 component="Anchors",
                 num=n + 1,
@@ -433,6 +429,7 @@ class MooringSystemSupplyChain(InstallPhase):
             feed=self.anchor_storage,
             target=self.laydown,
             transit_time=transit_time,
+            component="Anchor",
             #    transit_constraints={},
         )
 
