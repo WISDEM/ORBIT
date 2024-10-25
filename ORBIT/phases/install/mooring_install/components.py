@@ -337,8 +337,11 @@ def transport_component_to_port(
 
     # print("Storage vars:", vars(storage))
     n = 1
-    while n <= sets:
+    transport.at_site = True
+    transport.at_port = False
 
+    while len(target.items) <= sets:
+        print(n)
         if transit_time == 0:
             print("No transit time specified, COMPONENT made at port")
             item = yield storage.get()
@@ -353,26 +356,27 @@ def transport_component_to_port(
                 cost=0,
                 transport_storage=len(storage.items),
                 port_storage=target.available_area,
+                port_capacity=len(target.items)
             )
 
         else:
-
             # TODO: Fix the get() event that subtracts from storage while transport arrives at port.
-            start = transport.env.now
-            item = yield feed.get()
-            delay = transport.env.now - start
-
-            if delay > 0:
-                if n == 1:
-                    transport.mobilize()
-                else:
-                    transport.submit_action_log(
-                        "Waiting for chain to load.", delay, cost_multiplier=0
-                    )
 
             if transport.at_site:
-                yield storage.put(item)
+                start = transport.env.now
+                item = yield feed.get()
+                delay = transport.env.now - start
 
+                if delay > 0:
+                    if n == 1:
+                        transport.mobilize()
+                    else:
+                        transport.submit_action_log(
+                            "Waiting for chain to load.", delay, cost_multiplier=0
+                    )
+
+                # Put item on ship
+                yield storage.put(item)
                 yield transport.task(
                     "Loading cargo",
                     0,
@@ -380,7 +384,6 @@ def transport_component_to_port(
                     supply_storage=len(feed.items),
                     transport_storage=len(storage.items),
                 )
-                # print("Trans Storage: ", storage.items)
 
                 if len(storage.items) == storage.capacity:
                     yield transport.task(
@@ -402,6 +405,7 @@ def transport_component_to_port(
                     supply_storage=len(feed.items),
                     transport_storage=len(storage.items),
                     port_storage=target.available_area,
+                    port_capacity=len(target.items)+1
                 )
 
                 # unload all the items
@@ -416,8 +420,10 @@ def transport_component_to_port(
                         "Put cargo at Port Laydown.",
                         0,
                         cost=0,
+                        supply_storage=len(feed.items),
                         transport_storage=len(storage.items),
                         port_storage=target.available_area,
+                        port_capacity=len(target.items)+1
                     )
 
                 yield transport.task(
@@ -425,6 +431,7 @@ def transport_component_to_port(
                     transit_time / 2,
                     constraints={},
                     suspendable=True,
+                    supply_storage=len(feed.items),
                     transport_storage=len(storage.items),
                     port_storage=target.available_area,
                 )

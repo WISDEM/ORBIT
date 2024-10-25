@@ -70,17 +70,17 @@ class MooringSystemSupplyChain(InstallPhase):
         # Initialize Chain storage, production, and delivery
         self.initialize_chain_storage()
         self.initialize_chain_production()
-        # self.initialize_chain_transport()
+        self.initialize_chain_transport()
 
         # Initialize Anchor storage, production, and delivery
         self.initialize_anchor_storage()
         self.initialize_anchor_production()
-        # self.initialize_anchor_transport()
+        self.initialize_anchor_transport()
 
         # Initialize Rope storage, production, and delivery
         self.initialize_rope_storage()
         self.initialize_rope_production()
-        # self.initialize_rope_transport()
+        self.initialize_rope_transport()
 
         # At marshalling port
         # self.initialize_chain_assembly()
@@ -109,6 +109,8 @@ class MooringSystemSupplyChain(InstallPhase):
         self.laydown = LaydownArea(self.env, area, start, starting_buffer)
         # print(vars(self.laydown))
         self.laydown.start_assembly = simpy.Event(self.env)
+
+        print("Laydown Vars:", vars(self.laydown))
 
     def initialize_chain_storage(self):
         """Chain Storage near Production line."""

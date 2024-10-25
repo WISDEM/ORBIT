@@ -89,6 +89,7 @@ class LaydownArea(simpy.FilterStore):
 
     def update_pending(self):
         """ Update pending status. """
+        print("Updating pending self vars:", len(self.items)+1)
         items = [c.type for c in self.items]
         pending = [c.type for c in self.pending]
         self.buffer = max([self.buffer, *[p.area for p in self.pending]])
