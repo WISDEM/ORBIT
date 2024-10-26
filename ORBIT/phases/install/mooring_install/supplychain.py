@@ -74,8 +74,8 @@ class MooringSystemSupplyChain(InstallPhase):
 
         # Initialize Anchor storage, production, and delivery
         self.initialize_anchor_storage()
-        self.initialize_anchor_production()
-        self.initialize_anchor_transport()
+        #self.initialize_anchor_production()
+        #self.initialize_anchor_transport()
 
         # Initialize Rope storage, production, and delivery
         self.initialize_rope_storage()
@@ -252,15 +252,13 @@ class MooringSystemSupplyChain(InstallPhase):
         )
 
         # Get a dataframe of components and make a list of objects w/ attrs
-        anchors_df = self.mooring_system["ropes"]
+        ropes_df = self.mooring_system["ropes"]
 
         try:
-            _area = anchors_df["area"]
+            _area = ropes_df["area"]
 
         except KeyError:
-            anchors_df["area"] = (10 + anchors_df["diameter"] / 1e3) * (
-                10 + anchors_df["length"]
-            )
+            _area = self.rope_supply["space_required"]
 
         self.ropes = [
             Component(
@@ -272,9 +270,9 @@ class MooringSystemSupplyChain(InstallPhase):
                 row["mass"],
                 row["thickness"],
                 row["cost_rate"],
-                row["area"],
+                _area,
             )
-            for _, row, in anchors_df.iterrows()
+            for _, row, in ropes_df.iterrows()
         ]
 
         print(f"Number of ropes: {len(self.ropes)}")

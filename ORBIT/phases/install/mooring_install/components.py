@@ -261,8 +261,7 @@ class ComponentManufacturingDelivery(Agent):
 class ComponentManufacturing(Agent):
 
     def __init__(
-        self, component, num, area, sets, takt_time, takt_day_rate, target
-    ):
+        self, component, num, area, sets, takt_time, takt_day_rate, target):
         """
         Creates an instance of `ComponentManufacturing`.
 
@@ -282,6 +281,7 @@ class ComponentManufacturing(Agent):
 
         # set up local storage for completed items.
         self.storage = target
+        self.storage.status = "start"
 
     @process
     def start(self):
@@ -318,6 +318,7 @@ class ComponentManufacturing(Agent):
                     f"Delay: No {c.type} storage Available", delay
                 )
 
+        self.storage.status = "done"
         #self.submit_action_log(f"Manufacturing Complete", 0)
 
 
@@ -334,7 +335,6 @@ def transport_component_to_port(
     storage = transport._storage
     # print("Port vars: ", vars(target))
     _trigger = storage.capacity - 1
-    print(_trigger)
     """
     if the transport is at the site use feed.get() to get items while the
      storage is not full. When full, begin transit.
@@ -351,7 +351,7 @@ def transport_component_to_port(
     #while True:
     while delivered <= sets:
         _counter = count(0)
-        print(sets)
+
         if transit_time == 0:
             print(f"No transit time specified, {component} made at port")
             item = yield storage.get()
@@ -410,7 +410,7 @@ def transport_component_to_port(
                     transport.at_port = True
 
                 # Final trip when storage is empty and transport may not be full.
-                '''elif len(storage.items) < storage.capacity:
+                elif len(storage.items) < storage.capacity and feed.status == "done":
                     yield transport.task(
                             f"Transport {component}s",
                             transit_time,
@@ -419,7 +419,7 @@ def transport_component_to_port(
                             transport_storage=len(storage.items),
                         )
                     transport.at_site = False
-                    transport.at_port = True'''
+                    transport.at_port = True
 
             # Delivered to port
             elif transport.at_port:
@@ -454,6 +454,7 @@ def transport_component_to_port(
                     )
                     delivered+=1
 
+                #if delivered != sets:
                 yield transport.task(
                     "Empty: Return to supplier.",
                     transit_time / 2,
@@ -467,32 +468,6 @@ def transport_component_to_port(
                 transport.at_site = True
                 transport.at_port = False
 
-        # yield storage.put(1)
-
-        # yield transport.submit_action_log(
-        #            f"Load cargo Components", 0 )
-
-        # yield transport.submit_action_log("Fully loaded")
-
-        # while used <= self.vessel['capacity']:
-        #    yield self.task(f"Loading Cargo: {self.type} on ", 0,cost=0)
-
-        #    print(used)
-        #    used+=1
-        #    pass
-
-        # print(transport.storage)
-        # transport.transport_items(transit_time, target, transit_constraints
-        # Return to facility
-        # transport.return_to_facility(self.type, self.transit)
-
-        # print(f"{n} load up ")
-        # X = Transport(self.env, )
-        # storage = transport.extract_storage_specs()
-        # print(storage)
-        print(f"n {n}, store: {len(feed.items)}, transport: {len(storage.items)}, delivered: {delivered} ")
         n += 1
-
-    transport.task("All done.", 0, 0)
 
 

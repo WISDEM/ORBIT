@@ -54,6 +54,7 @@ transport_railcar:
     max_cargo: 1000          # t
     max_deck_load: 8          # t/m^2
     max_deck_space: 37      # m^2
+    capacity: 10
 # Module Specific
 substructure_delivery:
   space_required: 3500
@@ -70,13 +71,13 @@ chain_supply:
   laydown_area: 200 # m**2
   takt_time: 0.175 # hours per m (50,000 m/year)
   assembly_lines: 1 #
-  space_required: 7.5 # m**2
+  space_required: 7.5 # m**2 pile of 90m chain
   transit_time: 168 # (168 hours = 1 week) hours
 rope_supply:
   laydown_area: 200 # m**2
   takt_time: 0.187 # hours per m (46,800 m/year)
   assembly_lines: 1 #
-  space_required: 7.5 # m**2
+  space_required: 6.75 # m**2 spool for 450m
   transit_time: 168 # (168 hours = 1 week) hours
 anchor_supply:
   laydown_area: 800 # m**2
