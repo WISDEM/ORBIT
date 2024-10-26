@@ -74,8 +74,8 @@ class MooringSystemSupplyChain(InstallPhase):
 
         # Initialize Anchor storage, production, and delivery
         self.initialize_anchor_storage()
-        #self.initialize_anchor_production()
-        #self.initialize_anchor_transport()
+        self.initialize_anchor_production()
+        self.initialize_anchor_transport()
 
         # Initialize Rope storage, production, and delivery
         self.initialize_rope_storage()
@@ -275,8 +275,8 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in ropes_df.iterrows()
         ]
 
-        print(f"Number of ropes: {len(self.ropes)}")
-        print(vars(self.ropes[3]))
+        # print(f"Number of ropes: {len(self.ropes)}")
+        # print(vars(self.ropes[3]))
 
         # Loop through number of assembly lines. 1 anchor line won't cut it.
         for n in range(rope_makers):
@@ -297,7 +297,6 @@ class MooringSystemSupplyChain(InstallPhase):
         """Initialize the rope transport agent using vessel logic."""
 
         transport_specs = self.config.get("transport_railcar", None)
-        print(transport_specs)
 
         name = transport_specs.get("name", "Rope Transport Railcar")
 
@@ -307,7 +306,7 @@ class MooringSystemSupplyChain(InstallPhase):
         self.env.register(transport)
         transport.initialize()
 
-        print("Rope Transport vars: ", vars(transport))
+        # print("Rope Transport vars: ", vars(transport))
         self.rope_transport = transport
 
         transport_component_to_port(
@@ -372,8 +371,8 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in anchors_df.iterrows()
         ]
 
-        print(f"Number of anchors: {len(self.anchors)}")
-        print(vars(self.anchors[5]))
+        # print(f"Number of anchors: {len(self.anchors)}")
+        # print(vars(self.anchors[5]))
 
         # TODO: Finish the split logic
         if anchor_bays > 1:
