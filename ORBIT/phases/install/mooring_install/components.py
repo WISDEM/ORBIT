@@ -382,6 +382,10 @@ def transport_component_to_port(
             )
 
         else:
+            #if n == storage.capacity:
+            #    transport.mobilize()
+            #    continue
+
             if transport.at_site:
 
                 start = transport.env.now
@@ -393,7 +397,7 @@ def transport_component_to_port(
                         transport.mobilize()
                     else:
                         transport.submit_action_log(
-                        f"Waiting for {component} to load.",
+                        f"Delay: Waiting for {component} to load.",
                         delay,
                         )
 
@@ -421,7 +425,7 @@ def transport_component_to_port(
                     transport.at_port = True
 
                 # Final trip when storage is empty and transport may not be full.
-                elif len(storage.items) < storage.capacity and feed.status == "done":
+                elif (len(storage.items) + delivered) == sets:
                     yield transport.task(
                             f"Transport {component}s",
                             transit_time,

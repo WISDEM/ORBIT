@@ -184,6 +184,8 @@ class MooringSystemSupplyChain(InstallPhase):
         reset_trigger = self.chain_supply.get("reset_trigger", 0.0254)
         reset_time = self.chain_supply.get("reset_time", 0.5)
 
+        import_size = self.chain_supply.get("import_size", 0.127 ) #
+
         chain_makers = int(
             self.chain_supply["assembly_lines"]  # simplifying asumption
         )
@@ -197,6 +199,9 @@ class MooringSystemSupplyChain(InstallPhase):
         except KeyError:
             _area = self.chain_supply["space_required"]
 
+        domestic_chain = chains_df[chains_df['diameter'] < import_size]
+        international_chain = chains_df[chains_df['diameter'] >= import_size]
+
         self.chains = [
             Component(
                 row["turbine_id"],
@@ -209,7 +214,21 @@ class MooringSystemSupplyChain(InstallPhase):
                 row["cost_rate"],
                 _area,
             )
-            for _, row, in chains_df.iterrows()
+            for _, row, in domestic_chain.iterrows()
+        ]
+
+        self.itl_chains = [Component(
+                row["turbine_id"],
+                row["line_id"],
+                row["section_id"],
+                row["diameter"],
+                row["length"],
+                row["mass"],
+                row["thickness"],
+                row["cost_rate"],
+                _area,
+            )
+            for _, row, in international_chain.iterrows()
         ]
 
         # print(f"Number of chains: {len(self.chains)}")
@@ -220,7 +239,7 @@ class MooringSystemSupplyChain(InstallPhase):
                 component="Chain",
                 num=n + 1,
                 area=self.config["chain_supply"]["space_required"],
-                sets=self.chains,
+                sets=self.dom_chains,
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.chain_storage,
