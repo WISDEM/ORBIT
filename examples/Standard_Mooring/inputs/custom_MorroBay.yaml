@@ -5,7 +5,7 @@ site:
   distance_to_landfall: 100
 plant:
   layout: grid
-  num_turbines: 3 # 40
+  num_turbines: 40 # 40
   row_spacing: 7
   substation_distance: 1
   turbine_spacing: 7
@@ -65,7 +65,7 @@ substructure:
 mooring_system_design:
   num_lines: 6
   anchor_type: Suction Pile
-  mooring_type: Catenary
+  mooring_type: Semi Taut
 # Supply Chain Specific
 chain_supply:
   laydown_area: 200 # m**2
@@ -73,18 +73,25 @@ chain_supply:
   assembly_lines: 1 #
   space_required: 7.5 # m**2 pile of 90m chain
   transit_time: 168 # (168 hours = 1 week) hours
+  reset_trigger: 0.0254 # m (1 in)
+  reset_time: 0.5   # h
 rope_supply:
   laydown_area: 200 # m**2
   takt_time: 0.187 # hours per m (46,800 m/year)
   assembly_lines: 1 #
   space_required: 6.75 # m**2 spool for 450m
   transit_time: 168 # (168 hours = 1 week) hours
+  reset_trigger: 0.0254 # m (1 in)
+  reset_time: 0.5   # h
 anchor_supply:
   laydown_area: 800 # m**2
   takt_time: 182.5 # hr (48 units per year)
   assembly_lines: 1 #
   space_required: 300 # m**2
   transit_time: 336
+  reset_trigger: 0.3048 # m (1 ft)
+  reset_time: 0.5   # h
+
 # Configured Phases
 design_phases:
 #- MooringSystemDesign

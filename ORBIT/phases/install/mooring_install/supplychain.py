@@ -151,10 +151,10 @@ class MooringSystemSupplyChain(InstallPhase):
     def initialize_chain_transport(self):
         """Initialize the chain transport agent using vessel logic."""
 
-        transport_specs = self.config.get("transport_vessel", None)
+        transport_specs = self.config.get("transport_railcar", None)
         # print(transport_specs)
 
-        name = transport_specs.get("name", "Chain Transport Vessel")
+        name = transport_specs.get("name", "Chain Transport Railcar")
 
         transit_time = self.chain_supply.get("transit_time", 0)
 
@@ -180,6 +180,9 @@ class MooringSystemSupplyChain(InstallPhase):
 
         takt = self.chain_supply.get("takt_time", 5.6)
         takt_day_rate = self.chain_supply.get("takt_day_rate", 0)
+
+        reset_trigger = self.chain_supply.get("reset_trigger", 0.0254)
+        reset_time = self.chain_supply.get("reset_time", 0.5)
 
         chain_makers = int(
             self.chain_supply["assembly_lines"]  # simplifying asumption
@@ -221,6 +224,8 @@ class MooringSystemSupplyChain(InstallPhase):
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.chain_storage,
+                reset=reset_trigger,
+                reset_time=reset_time
             )
 
             self.env.register(chain_manufacturer)
@@ -246,6 +251,10 @@ class MooringSystemSupplyChain(InstallPhase):
 
         takt = self.rope_supply.get("takt_time", 182.5)
         takt_day_rate = self.rope_supply.get("takt_day_rate", 0)
+
+        reset_trigger = self.rope_supply.get("reset_trigger", 0.0254)
+        reset_time = self.rope_supply.get("reset_time", 0.5)
+
         rope_makers = int(
             # self.config["substructure_delivery"].get("num_lines", 1)
             self.rope_supply["assembly_lines"]  # simplifying asumption
@@ -288,6 +297,8 @@ class MooringSystemSupplyChain(InstallPhase):
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.rope_storage,
+                reset=reset_trigger,
+                reset_time=reset_time
             )
 
             self.env.register(rope_manufacturer)
@@ -339,6 +350,10 @@ class MooringSystemSupplyChain(InstallPhase):
 
         takt = self.anchor_supply.get("takt_time", 182.5)
         takt_day_rate = self.anchor_supply.get("takt_day_rate", 0)
+
+        reset_trigger = self.anchor_supply.get("reset_trigger", 0.3048)
+        reset_time = self.anchor_supply.get("reset_time", 0.5)
+
         anchor_bays = int(
             # self.config["substructure_delivery"].get("num_lines", 1)
             self.anchor_supply["assembly_lines"]  # simplifying asumption
@@ -398,6 +413,8 @@ class MooringSystemSupplyChain(InstallPhase):
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.anchor_storage,
+                reset=reset_trigger,
+                reset_time=reset_time
             )
 
             self.env.register(anchor_manufacturer)

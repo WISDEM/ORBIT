@@ -261,7 +261,7 @@ class ComponentManufacturingDelivery(Agent):
 class ComponentManufacturing(Agent):
 
     def __init__(
-        self, component, num, area, sets, takt_time, takt_day_rate, target):
+        self, component, num, area, sets, takt_time, takt_day_rate, target, reset, reset_time):
         """
         Creates an instance of `ComponentManufacturing`.
 
@@ -283,6 +283,10 @@ class ComponentManufacturing(Agent):
         self.storage = target
         self.storage.status = "start"
 
+        # simple reset machine logic
+        self.reset = reset
+        self.reset_time = reset_time
+
     @process
     def start(self):
 
@@ -292,8 +296,15 @@ class ComponentManufacturing(Agent):
             # components = ComponentSet(self.type, self.area, self.env.now)
             # print("Component vars:", vars(components))
             components = c
-            #if abs(c.diameter - cprev.diameter):
-                #print("Mutare Machina")
+            if abs(c.diameter - cprev.diameter) >= self.reset:
+                print("Mutare Machina")
+
+                yield self.task(
+                    f"Reset Machine.",
+                    self.reset_time,
+                    cost=self.reset_time * self.takt_day_rate / 24,
+                )
+
             # Manufacture and store component
             # Assume this is a takt rate as hours per meter
             if self.takt < 10.0:
