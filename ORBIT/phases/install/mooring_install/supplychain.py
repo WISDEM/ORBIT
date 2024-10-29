@@ -231,6 +231,7 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in international_chain.iterrows()
         ]
 
+        print("Internationally sourced chains: ", self.itl_chains)
         # print(f"Number of chains: {len(self.chains)}")
         # print(vars(self.chains[1]))
 
@@ -239,7 +240,7 @@ class MooringSystemSupplyChain(InstallPhase):
                 component="Chain",
                 num=n + 1,
                 area=self.config["chain_supply"]["space_required"],
-                sets=self.dom_chains,
+                sets=self.chains,
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.chain_storage,
@@ -381,7 +382,7 @@ class MooringSystemSupplyChain(InstallPhase):
         # Get a dataframe of components and make a list of objects w/ attrs
         anchors_df = self.mooring_system["anchors"]
 
-        print(anchors_df)
+        #print(anchors_df)
         try:
             _area = anchors_df["area"]
 
@@ -418,7 +419,7 @@ class MooringSystemSupplyChain(InstallPhase):
         else:
             anchor_set = self.anchors
 
-        print("Anchor sets: ", type(anchor_set))
+        #print("Anchor sets: ", type(anchor_set))
 
         self.anchor_sets = []
 
@@ -443,7 +444,7 @@ class MooringSystemSupplyChain(InstallPhase):
         """Initialize the anchor transport agent using vessel logic."""
 
         transport_specs = self.config.get("transport_vessel", None)
-        print(transport_specs)
+        #print(transport_specs)
 
         name = transport_specs.get("name", "Anchor Transport Vessel")
 
@@ -453,7 +454,7 @@ class MooringSystemSupplyChain(InstallPhase):
         self.env.register(transport)
         transport.initialize()
 
-        print("Anchor Transport vars: ", vars(transport))
+        #print("Anchor Transport vars: ", vars(transport))
         self.anchor_transport = transport
 
         transport_component_to_port(

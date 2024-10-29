@@ -297,7 +297,7 @@ class ComponentManufacturing(Agent):
             # print("Component vars:", vars(components))
             components = c
             if abs(c.diameter - cprev.diameter) >= self.reset:
-                print("Mutare Machina")
+                #print("Mutare Machina")
 
                 yield self.task(
                     f"Reset Machine.",
