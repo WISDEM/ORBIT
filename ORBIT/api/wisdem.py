@@ -581,7 +581,7 @@ class OrbitWisdem(om.ExplicitComponent):
                 "num_feeders": int(discrete_inputs["num_feeders"]),
             },
             # Project development costs
-            "project_development": {
+            "project_parameters": {
                 "site_auction_price": float(
                     inputs["site_auction_price"]
                 ),  # 100e6,
@@ -598,11 +598,10 @@ class OrbitWisdem(om.ExplicitComponent):
                 "design_install_plan_cost": float(
                     inputs["design_install_plan_cost"]
                 ),  # 2.5e6
+                "commissioning": float(inputs["commissioning_pct"]),
+                "decomissioning": float(inputs["decommissioning_pct"]),
+                "turbine_capex": float(inputs["turbine_capex"]),
             },
-            # Other
-            "commissioning": float(inputs["commissioning_pct"]),
-            "decomissioning": float(inputs["decommissioning_pct"]),
-            "turbine_capex": float(inputs["turbine_capex"]),
             # Phases
             # Putting monopile or semisub here would override the inputs
             # we assume to get from WISDEM
