@@ -898,7 +898,9 @@ def test_soft_costs():
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"spend_schedule": {0: 0, 1: 0, 2: 0, 3: 0, 4: 0.5, 5: 0.5}}
+    config["project_parameters"] = {
+        "spend_schedule": {0: 0, 1: 0, 2: 0, 3: 0, 4: 0.5, 5: 0.5}
+    }
     project = ProjectManager(config)
     project.run()
     assert project.soft_capex != baseline
@@ -938,7 +940,6 @@ def test_soft_costs():
     project = ProjectManager(config)
     project.run()
     assert project.soft_capex != baseline
-    
 
 
 def test_project_costs():
@@ -993,9 +994,27 @@ def test_total_capex():
     fix_project = ProjectManager(complete_project)
     fix_project.run()
 
-    assert fix_project.total_capex == pytest.approx(1216449001.7410436, abs=1e-1)
+    assert fix_project.total_capex == pytest.approx(
+        1216449001.7410436, abs=1e-1
+    )
 
     flt_project = ProjectManager(complete_floating_project)
     flt_project.run()
 
-    assert flt_project.total_capex == pytest.approx(3540761314.148985, abs=1e-1)
+    assert flt_project.total_capex == pytest.approx(
+        3540761314.148985, abs=1e-1
+    )
+
+
+def test_construction_financing_factor_exception():
+    """Test the construction financing factor method for soft capex."""
+
+    config = deepcopy(complete_project)
+    config["project_parameters"] = {
+        "spend_schedule": {0: 0.15, 1: 0.25, 2: 0.3, 3: 0.1, 4: 0.1, 5: 0.0}
+    }  # does not sum to 1.0
+
+    with pytest.raises(ValueError):
+
+        project = ProjectManager(config)
+        project.construction_financing_factor()

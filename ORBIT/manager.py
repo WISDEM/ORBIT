@@ -976,8 +976,12 @@ class ProjectManager:
             # Costs
             "capex_breakdown": self.capex_breakdown,
             "capex_breakdown_per_kw": self.capex_breakdown_per_kw,
-            "capex_detailed_soft_capex_breakdown": self.capex_detailed_soft_capex_breakdown,
-            "capex_detailed_soft_capex_breakdown_per_kw": self.capex_detailed_soft_capex_breakdown_per_kw,
+            "capex_detailed_soft_capex_breakdown": (
+                self.capex_detailed_soft_capex_breakdown
+            ),
+            "capex_detailed_soft_capex_breakdown_per_kw": (
+                self.capex_detailed_soft_capex_breakdown_per_kw
+            ),
             "turbine_capex": self.turbine_capex,
             "turbine_capex_per_kw": self.turbine_capex_per_kw,
             "installation_capex": self.installation_capex,
@@ -1404,7 +1408,9 @@ class ProjectManager:
 
     @property
     def capex_detailed_soft_capex_breakdown(self):
-        """Returns CapEx breakdown by category with a detailed soft capex breakdown."""
+        """Returns CapEx breakdown by category with a detailed soft capex
+        breakdown.
+        """
 
         outputs = self.capex_breakdown
 
@@ -1416,7 +1422,9 @@ class ProjectManager:
 
     @property
     def capex_detailed_soft_capex_breakdown_per_kw(self):
-        """Returns CapEx per kW breakdown by category with a detailed soft capex breakdown."""
+        """Returns CapEx per kW breakdown by category with a detailed soft
+        capex breakdown.
+        """
 
         return {
             k: v / (self.capacity * 1000)
@@ -1512,7 +1520,8 @@ class ProjectManager:
     def construction_insurance_capex(self):
         """
         Returns the construction insurance capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
         try:
@@ -1523,7 +1532,7 @@ class ProjectManager:
                 construction_insurance_per_kW * self.capacity * 1000
             )
 
-        except:
+        except KeyError:
             contruction_insurance_factor = self.project_params.get(
                 "construction_insurance_factor", 0.0115
             )
@@ -1536,7 +1545,8 @@ class ProjectManager:
     def decommissioning_capex(self):
         """
         Returns the decommissioning capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
         try:
@@ -1545,7 +1555,7 @@ class ProjectManager:
             ]
             decommissioning = decommissioning_per_kW * self.capacity * 1000
 
-        except:
+        except KeyError:
             decommissioning_factor = self.project_params.get(
                 "decommissioning_factor", 0.175
             )
@@ -1556,7 +1566,8 @@ class ProjectManager:
     def project_completion_capex(self):
         """
         Returns the project completion capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
         try:
@@ -1567,7 +1578,7 @@ class ProjectManager:
                 project_completion_per_kW * self.capacity * 1000
             )
 
-        except:
+        except KeyError:
             project_completion_factor = self.project_params.get(
                 "project_completion_factor", 0.0115
             )
@@ -1580,7 +1591,8 @@ class ProjectManager:
     def procurement_contingency_capex(self):
         """
         Returns the procurement contingency capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
         try:
@@ -1591,7 +1603,7 @@ class ProjectManager:
                 procurement_contingency_per_kW * self.capacity * 1000
             )
 
-        except:
+        except KeyError:
             procurement_contingency_factor = self.project_params.get(
                 "procurement_contingency_factor", 0.0575
             )
@@ -1607,7 +1619,8 @@ class ProjectManager:
     def installation_contingency_capex(self):
         """
         Returns the installation contingency capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
         try:
@@ -1618,7 +1631,7 @@ class ProjectManager:
                 installation_contingency_per_kW * self.capacity * 1000
             )
 
-        except:
+        except KeyError:
             installation_contingency_factor = self.project_params.get(
                 "installation_contingency_factor", 0.345
             )
@@ -1631,8 +1644,9 @@ class ProjectManager:
     def construction_financing_factor(self):
         """
         Returns the construction finaning factor of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review,
-        except the spend schedule, which is sourced from collaborations with industry.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review, except the spend schedule, which is sourced from
+        collaborations with industry.
         """
 
         spend_schedule = self.project_params.get(
@@ -1656,14 +1670,15 @@ class ProjectManager:
                 * ((1 + interest_during_construction) ** (key + 0.5) - 1)
             )
         if _check != 1.0:
-            raise Exception("Values in spend_schedule must sum to 1.0")
+            raise ValueError("Values in spend_schedule must sum to 1.0")
 
         return _construction_financing_factor
 
     def construction_financing_capex(self):
         """
         Returns the construction financing capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
         try:
@@ -1674,7 +1689,7 @@ class ProjectManager:
                 construction_financing_per_kW * self.capacity * 1000
             )
 
-        except:
+        except KeyError:
             construction_financing_factor = self.project_params.get(
                 "construction_financing_factor",
                 self.construction_financing_factor(),
