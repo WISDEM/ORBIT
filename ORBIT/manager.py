@@ -17,6 +17,7 @@ from math import ceil
 from numbers import Number
 from pathlib import Path
 from itertools import product
+from warnings import warn
 
 import numpy as np
 import pandas as pd
@@ -1569,6 +1570,15 @@ class ProjectManager:
         Methodology from ORCA model, default values used in 2022 Cost of Wind
         Energy Review.
         """
+        if "commissioning" in self.config["project_parameters"]:
+            warn(
+                "The commissioning project parameter will be deprecated"
+                " and now is called project_completion. Specific the"
+                " project_completion in $/kW or use project_completion_factor"
+                " in '%' of turbine + bos + project capex.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         try:
             project_completion_per_kW = self.config["project_parameters"][
