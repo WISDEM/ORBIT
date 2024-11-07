@@ -976,6 +976,8 @@ class ProjectManager:
             # Costs
             "capex_breakdown": self.capex_breakdown,
             "capex_breakdown_per_kw": self.capex_breakdown_per_kw,
+            "capex_detailed_soft_capex_breakdown": self.capex_detailed_soft_capex_breakdown,
+            "capex_detailed_soft_capex_breakdown_per_kw": self.capex_detailed_soft_capex_breakdown_per_kw,
             "turbine_capex": self.turbine_capex,
             "turbine_capex_per_kw": self.turbine_capex_per_kw,
             "installation_capex": self.installation_capex,
@@ -984,6 +986,8 @@ class ProjectManager:
             "system_capex_per_kw": self.system_capex_per_kw,
             "overnight_capex": self.overnight_capex,
             "overnight_capex_per_kw": self.overnight_capex_per_kw,
+            "soft_capex_breakdown": self.soft_capex_breakdown,
+            "soft_capex_breakdown_per_kw": self.soft_capex_breakdown_per_kw,
             "soft_capex": self.soft_capex,
             "soft_capex_per_kw": self.soft_capex_per_kw,
             "bos_capex": self.bos_capex,
@@ -1382,9 +1386,9 @@ class ProjectManager:
                 outputs[name] = cost
 
         outputs["Turbine"] = self.turbine_capex
-        
+
         outputs["Soft"] = self.soft_capex
-        
+
         outputs["Project"] = self.project_capex
 
         return outputs
@@ -1402,49 +1406,11 @@ class ProjectManager:
     def capex_detailed_soft_capex_breakdown(self):
         """Returns CapEx breakdown by category with a detailed soft capex breakdown."""
 
-        unique = np.unique(
-            [*self.system_costs.keys(), *self.installation_costs.keys()]
-        )
-        categories = {}
+        outputs = self.capex_breakdown
 
-        for phase in unique:
-            for base, cat in self._capex_categories.items():
-                if base in phase:
-                    categories[phase] = cat
-                    break
+        outputs.pop("Soft")
 
-        missing = list(set(unique).difference([*categories]))
-        if missing:
-            print(
-                f"Warning: CapEx category not found for {missing}. "
-                f"Added to 'Misc.'"
-            )
-
-            for phase in missing:
-                categories[phase] = "Misc."
-
-        outputs = {}
-        for phase, cost in self.system_costs.items():
-            name = categories[phase]
-            if name in outputs:
-                outputs[name] += cost
-
-            else:
-                outputs[name] = cost
-
-        for phase, cost in self.installation_costs.items():
-            name = categories[phase] + " Installation"
-            if name in outputs:
-                outputs[name] += cost
-
-            else:
-                outputs[name] = cost
-
-        outputs["Turbine"] = self.turbine_capex
-        
         outputs = {**outputs, **self.soft_capex_breakdown}
-        
-        outputs["Project"] = self.project_capex
 
         return outputs
 
@@ -1456,7 +1422,7 @@ class ProjectManager:
             k: v / (self.capacity * 1000)
             for k, v in self.capex_detailed_soft_capex_breakdown.items()
         }
-    
+
     @property
     def bos_capex(self):
         """Returns total balance of system CapEx."""
@@ -1517,31 +1483,32 @@ class ProjectManager:
     def soft_capex_per_kw(self):
         """Returns Total Soft CapEx per kW."""
 
-        try:
-            capex = sum(self.soft_capex_breakdown.values()) / (self.capacity * 1000)
-
-        except TypeError:
-            capex = None
-
-        return capex
+        return self.soft_capex / (self.capacity * 1000)
 
     @property
     def soft_capex_breakdown(self):
         """Returns soft cost breakdown."""
 
-        soft_capex = {"Construction Insurance": self.construction_insurance_capex,
-                      "Decommissioning": self.decommissioning_capex,
-                      "Project Completion": self.project_completion_capex,
-                      "Procurement Contingency": self.procurement_contingency_capex,
-                      "Installation Contingency": self.installation_contingency_capex,
-                      "Construction Financing": self.construction_financing_capex
-                     }
+        soft_capex = {
+            "Construction Insurance": self.construction_insurance_capex(),
+            "Decommissioning": self.decommissioning_capex(),
+            "Project Completion": self.project_completion_capex(),
+            "Procurement Contingency": self.procurement_contingency_capex(),
+            "Installation Contingency": self.installation_contingency_capex(),
+            "Construction Financing": self.construction_financing_capex(),
+        }
 
         return soft_capex
 
-    
-
     @property
+    def soft_capex_breakdown_per_kw(self):
+        """Returns soft cost breakdown per kw."""
+
+        return {
+            k: v / (self.capacity * 1000)
+            for k, v in self.soft_capex_breakdown.items()
+        }
+
     def construction_insurance_capex(self):
         """
         Returns the construction insurance capital cost of the project.
@@ -1549,19 +1516,23 @@ class ProjectManager:
         """
 
         try:
-            construction_insurance_per_kW = self.config["project_parameters"]["construction_insurance"]
-            num_turbines = self.config["plant"]["num_turbines"]
-            rating = self.config["turbine"]["turbine_rating"]
-            construction_insurance = construction_insurance_per_kW * num_turbines * rating * 1000
-            
+            construction_insurance_per_kW = self.config["project_parameters"][
+                "construction_insurance"
+            ]
+            construction_insurance = (
+                construction_insurance_per_kW * self.capacity * 1000
+            )
+
         except:
-            contruction_insurance_factor =  self.project_params.get("construction_insurance_factor", 0.0115)
-            construction_insurance = (self.turbine_capex + self.bos_capex + self.project_capex) *\
-                                    contruction_insurance_factor
+            contruction_insurance_factor = self.project_params.get(
+                "construction_insurance_factor", 0.0115
+            )
+            construction_insurance = (
+                self.turbine_capex + self.bos_capex + self.project_capex
+            ) * contruction_insurance_factor
 
         return construction_insurance
 
-    @property
     def decommissioning_capex(self):
         """
         Returns the decommissioning capital cost of the project.
@@ -1569,18 +1540,19 @@ class ProjectManager:
         """
 
         try:
-            decommissioning_per_kW = self.config["project_parameters"]["decommissioning"]
-            num_turbines = self.config["plant"]["num_turbines"]
-            rating = self.config["turbine"]["turbine_rating"]
-            decommissioning = decommissioning_per_kW * num_turbines * rating * 1000
-            
+            decommissioning_per_kW = self.config["project_parameters"][
+                "decommissioning"
+            ]
+            decommissioning = decommissioning_per_kW * self.capacity * 1000
+
         except:
-            decommissioning_factor =  self.project_params.get("decommissioning_factor", 0.175)
+            decommissioning_factor = self.project_params.get(
+                "decommissioning_factor", 0.175
+            )
             decommissioning = self.installation_capex * decommissioning_factor
 
         return decommissioning
 
-    @property
     def project_completion_capex(self):
         """
         Returns the project completion capital cost of the project.
@@ -1588,19 +1560,23 @@ class ProjectManager:
         """
 
         try:
-            project_completion_per_kW = self.config["project_parameters"]["project_completion"]
-            num_turbines = self.config["plant"]["num_turbines"]
-            rating = self.config["turbine"]["turbine_rating"]
-            project_completion = project_completion_per_kW * num_turbines * rating * 1000
-            
+            project_completion_per_kW = self.config["project_parameters"][
+                "project_completion"
+            ]
+            project_completion = (
+                project_completion_per_kW * self.capacity * 1000
+            )
+
         except:
-            project_completion_factor =  self.project_params.get("project_completion_factor", 0.0115)
-            project_completion = (self.turbine_capex + self.bos_capex + self.project_capex) *\
-                                    project_completion_factor
+            project_completion_factor = self.project_params.get(
+                "project_completion_factor", 0.0115
+            )
+            project_completion = (
+                self.turbine_capex + self.bos_capex + self.project_capex
+            ) * project_completion_factor
 
         return project_completion
 
-    @property
     def procurement_contingency_capex(self):
         """
         Returns the procurement contingency capital cost of the project.
@@ -1608,19 +1584,26 @@ class ProjectManager:
         """
 
         try:
-            procurement_contingency_per_kW = self.config["project_parameters"]["procurement_contingency"]
-            num_turbines = self.config["plant"]["num_turbines"]
-            rating = self.config["turbine"]["turbine_rating"]
-            procurement_contingency = procurement_contingency_per_kW * num_turbines * rating * 1000
-            
+            procurement_contingency_per_kW = self.config["project_parameters"][
+                "procurement_contingency"
+            ]
+            procurement_contingency = (
+                procurement_contingency_per_kW * self.capacity * 1000
+            )
+
         except:
-            procurement_contingency_factor =  self.project_params.get("procurement_contingency_factor", 0.0575)
-            procurement_contingency = (self.turbine_capex + self.bos_capex + self.project_capex - self.installation_capex) *\
-                                    procurement_contingency_factor
+            procurement_contingency_factor = self.project_params.get(
+                "procurement_contingency_factor", 0.0575
+            )
+            procurement_contingency = (
+                self.turbine_capex
+                + self.bos_capex
+                + self.project_capex
+                - self.installation_capex
+            ) * procurement_contingency_factor
 
         return procurement_contingency
 
-    @property
     def installation_contingency_capex(self):
         """
         Returns the installation contingency capital cost of the project.
@@ -1628,18 +1611,23 @@ class ProjectManager:
         """
 
         try:
-            installation_contingency_per_kW = self.config["project_parameters"]["installation_contingency"]
-            num_turbines = self.config["plant"]["num_turbines"]
-            rating = self.config["turbine"]["turbine_rating"]
-            installation_contingency = installation_contingency_per_kW * num_turbines * rating * 1000
-            
+            installation_contingency_per_kW = self.config[
+                "project_parameters"
+            ]["installation_contingency"]
+            installation_contingency = (
+                installation_contingency_per_kW * self.capacity * 1000
+            )
+
         except:
-            installation_contingency_factor =  self.project_params.get("installation_contingency_factor", 0.345)
-            installation_contingency = self.installation_capex * installation_contingency_factor
+            installation_contingency_factor = self.project_params.get(
+                "installation_contingency_factor", 0.345
+            )
+            installation_contingency = (
+                self.installation_capex * installation_contingency_factor
+            )
 
         return installation_contingency
 
-    @property
     def construction_financing_factor(self):
         """
         Returns the construction finaning factor of the project.
@@ -1647,27 +1635,14 @@ class ProjectManager:
         except the spend schedule, which is sourced from collaborations with industry.
         """
 
-        try:
-            spend_schedule = self.config["project_parameters"]["spend_schedule"]
-        except:
-            spend_schedule =  self.project_params.get("spend_schedule", {0: 0.25,
-                                                                         1: 0.25,
-                                                                         2: 0.3,
-                                                                         3: 0.1,
-                                                                         4: 0.1,
-                                                                         5: 0.0
-                                                                         })
-            
-        try:
-            tax_rate = self.config["project_parameters"]["tax_rate"]
-        except:
-            tax_rate =  self.project_params.get("tax_rate", 0.26)
-
-        try:
-            interest_during_construction = self.config["project_parameters"]["interest_during_construction"]
-        except:
-            interest_during_construction =  self.project_params.get("interest_during_construction", 0.044)
-        
+        spend_schedule = self.project_params.get(
+            "spend_schedule",
+            {0: 0.25, 1: 0.25, 2: 0.3, 3: 0.1, 4: 0.1, 5: 0.0},
+        )
+        tax_rate = self.project_params.get("tax_rate", 0.26)
+        interest_during_construction = self.project_params.get(
+            "interest_during_construction", 0.044
+        )
 
         _check = 0
         _construction_financing_factor = 0
@@ -1675,15 +1650,16 @@ class ProjectManager:
         for key, val in spend_schedule.items():
             _check += val
 
-            _construction_financing_factor += val *\
-                                              (1 + (1 - tax_rate) * ((1 + interest_during_construction) **\
-                                                                     (key + 0.5) - 1))
+            _construction_financing_factor += val * (
+                1
+                + (1 - tax_rate)
+                * ((1 + interest_during_construction) ** (key + 0.5) - 1)
+            )
         if _check != 1.0:
             raise Exception("Values in spend_schedule must sum to 1.0")
 
         return _construction_financing_factor
 
-    @property
     def construction_financing_capex(self):
         """
         Returns the construction financing capital cost of the project.
@@ -1691,24 +1667,29 @@ class ProjectManager:
         """
 
         try:
-            construction_financing_per_kW = self.config["project_parameters"]["construction_financing"]
-            num_turbines = self.config["plant"]["num_turbines"]
-            rating = self.config["turbine"]["turbine_rating"]
-            construction_financing = construction_financing_per_kW * num_turbines * rating * 1000
-            
+            construction_financing_per_kW = self.config["project_parameters"][
+                "construction_financing"
+            ]
+            construction_financing = (
+                construction_financing_per_kW * self.capacity * 1000
+            )
+
         except:
-            construction_financing_factor =  self.project_params.get("construction_financing_factor", self.construction_financing_factor)
-            construction_financing = (self.construction_insurance_capex +\
-                                    self.decommissioning_capex +\
-                                    self.project_completion_capex +\
-                                    self.procurement_contingency_capex +\
-                                    self.installation_contingency_capex +\
-                                    self.bos_capex + self.turbine_capex) * (construction_financing_factor - 1)
-                                    
+            construction_financing_factor = self.project_params.get(
+                "construction_financing_factor",
+                self.construction_financing_factor(),
+            )
+            construction_financing = (
+                self.construction_insurance_capex()
+                + self.decommissioning_capex()
+                + self.project_completion_capex()
+                + self.procurement_contingency_capex()
+                + self.installation_contingency_capex()
+                + self.bos_capex
+                + self.turbine_capex
+            ) * (construction_financing_factor - 1)
 
         return construction_financing
-
-
 
     @property
     def project_capex(self):
