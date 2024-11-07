@@ -11,13 +11,16 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 
 import re
 import datetime as dt
+import warnings
 import collections.abc as collections
 from copy import deepcopy
 from math import ceil
 from numbers import Number
 from pathlib import Path
-from itertools import product
 from warnings import warn
+from itertools import product
+
+warnings.filterwarnings("default")
 
 import numpy as np
 import pandas as pd
@@ -193,6 +196,30 @@ class ProjectManager:
         self._print_warnings()
 
     def _print_warnings(self):
+
+        if "commissioning" in self.config["project_parameters"]:
+            warn(
+                "The 'commissioning' project parameter will be deprecated"
+                " and now is called 'project_completion'. Specify the"
+                " project_completion in $/kW or use project_completion_factor"
+                " in '%' of turbine + bos + project capex.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        if "contingency" in self.config["project_parameters"]:
+            warn(
+                "The 'contingency' project parameter will be deprecated"
+                " and replaced with two separate parameters:"
+                "'installation_contingency' and 'procurement_contingency'."
+                " Specify the 'installation_contingency' and "
+                "'procurement_contingency' in $/kW, or alternatively, use"
+                " 'procurement_contingency_factor' in '%' of the turbine "
+                "+ system + project capex, and 'installation_contingency_factor'"
+                "in '%' of the installation capex",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         try:
             df = pd.DataFrame(self.logs)
@@ -1409,7 +1436,7 @@ class ProjectManager:
 
     @property
     def capex_detailed_soft_capex_breakdown(self):
-        """Returns CapEx breakdown by category with a detailed soft capex
+        """Returns CapEx breakdown by category with a detailed soft capex 
         breakdown.
         """
 
@@ -1423,7 +1450,7 @@ class ProjectManager:
 
     @property
     def capex_detailed_soft_capex_breakdown_per_kw(self):
-        """Returns CapEx per kW breakdown by category with a detailed soft
+        """Returns CapEx per kW breakdown by category with a detailed soft 
         capex breakdown.
         """
 
@@ -1521,8 +1548,7 @@ class ProjectManager:
     def construction_insurance_capex(self):
         """
         Returns the construction insurance capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
-        Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
         """
 
         try:
@@ -1546,7 +1572,7 @@ class ProjectManager:
     def decommissioning_capex(self):
         """
         Returns the decommissioning capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Methodology from ORCA model, default values used in 2022 Cost of Wind 
         Energy Review.
         """
 
@@ -1567,18 +1593,8 @@ class ProjectManager:
     def project_completion_capex(self):
         """
         Returns the project completion capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
-        Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
         """
-        if "commissioning" in self.config["project_parameters"]:
-            warn(
-                "The commissioning project parameter will be deprecated"
-                " and now is called project_completion. Specific the"
-                " project_completion in $/kW or use project_completion_factor"
-                " in '%' of turbine + bos + project capex.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
 
         try:
             project_completion_per_kW = self.config["project_parameters"][
@@ -1601,7 +1617,7 @@ class ProjectManager:
     def procurement_contingency_capex(self):
         """
         Returns the procurement contingency capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Methodology from ORCA model, default values used in 2022 Cost of Wind 
         Energy Review.
         """
 
@@ -1629,7 +1645,7 @@ class ProjectManager:
     def installation_contingency_capex(self):
         """
         Returns the installation contingency capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Methodology from ORCA model, default values used in 2022 Cost of Wind 
         Energy Review.
         """
 
@@ -1654,8 +1670,8 @@ class ProjectManager:
     def construction_financing_factor(self):
         """
         Returns the construction finaning factor of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
-        Energy Review, except the spend schedule, which is sourced from
+        Methodology from ORCA model, default values used in 2022 Cost of Wind 
+        Energy Review, except the spend schedule, which is sourced from 
         collaborations with industry.
         """
 
@@ -1680,14 +1696,14 @@ class ProjectManager:
                 * ((1 + interest_during_construction) ** (key + 0.5) - 1)
             )
         if _check != 1.0:
-            raise ValueError("Values in spend_schedule must sum to 1.0")
+            raise Exception("Values in spend_schedule must sum to 1.0")
 
         return _construction_financing_factor
 
     def construction_financing_capex(self):
         """
         Returns the construction financing capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Methodology from ORCA model, default values used in 2022 Cost of Wind 
         Energy Review.
         """
 
