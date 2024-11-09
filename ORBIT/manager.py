@@ -211,12 +211,13 @@ class ProjectManager:
             warn(
                 "The 'contingency' project parameter will be deprecated"
                 " and replaced with two separate parameters:"
-                "'installation_contingency' and 'procurement_contingency'."
+                " 'installation_contingency' and 'procurement_contingency'."
                 " Specify the 'installation_contingency' and "
-                "'procurement_contingency' in $/kW, or alternatively, use"
+                " 'procurement_contingency' in $/kW, or alternatively, use"
                 " 'procurement_contingency_factor' in '%' of the turbine "
-                "+ system + project capex, and 'installation_contingency_factor'"
-                "in '%' of the installation capex",
+                " + system + project capex, and"
+                " 'installation_contingency_factor' in '%' of the"
+                " installation capex",
                 DeprecationWarning,
                 stacklevel=2,
             )
@@ -351,20 +352,54 @@ class ProjectManager:
             "project_lifetime": "yrs (optional, default: 25)",
             "discount_rate": "yearly (optional, default: .025)",
             "opex_rate": "$/kW/year (optional, default: 150)",
-            "construction_insurance": "$/kW (optional, default: value calculated using construction_insurance_factor)",
-            "construction_financing": "$/kW (optional, default: value calculated using construction_financing_factor))",
-            "procurement_contingency": "$/kW (optional, default: value calculated using procurement_contingency_factor)",
-            "installation_contingency": "$/kW (optional, default: value calculated using installation_contingency_factor)",
-            "decommissioning": "$/kW (optional, default: value calculated using decommissioning_factor)",
-            "project_completion": "$/kW (optional, default: value calculated using project_completion_factor)",
-            "construction_insurance_factor": "float (optional, default: 0.0115)",
-            "construction_financing_factor": "$/kW (optional, default: value calculated using spend_schedule, tax_rate and interest_during_construction))",
-            "spend_schedule": "dict (optional, default: {0: 0.25, 1: 0.25, 2: 0.3, 3: 0.1, 4: 0.1, 5: 0.0}",
+            "construction_insurance": (
+                "$/kW (optional, default: value calculated using"
+                " construction_insurance_factor)"
+            ),
+            "construction_financing": (
+                "$/kW (optional, default: value calculated using"
+                " construction_financing_factor))"
+            ),
+            "procurement_contingency": (
+                "$/kW (optional, default: value calculated using"
+                " procurement_contingency_factor)"
+            ),
+            "installation_contingency": (
+                "$/kW (optional, default: value calculated using"
+                " installation_contingency_factor)"
+            ),
+            "decommissioning": (
+                "$/kW (optional, default: value calculated using"
+                " decommissioning_factor)"
+            ),
+            "project_completion": (
+                "$/kW (optional, default: value calculated using"
+                " project_completion_factor)"
+            ),
+            "construction_insurance_factor": (
+                "float (optional, default: 0.0115)"
+            ),
+            "construction_financing_factor": (
+                "$/kW (optional, default: value calculated using"
+                " spend_schedule, tax_rate, and"
+                " interest_during_construction))",
+            ),
+            "spend_schedule": (
+                "dict (optional,"
+                " default: {0: 0.25, 1: 0.25, 2: 0.3, 3: 0.1,"
+                " 4: 0.1, 5: 0.0}"
+            ),
             "tax_rate": "float (optional, default: 0.26",
-            "interest_during_construction": "float (optional, default: 0.044",
-            "procurement_contingency_factor": "float (optional, default: 0.0575)",
-            "installation_contingency_factor": "float (optional, default: 0.345)",
-            "decommissioning_factor": "float (optional, default: 0.1725)",
+            "interest_during_construction": (
+                "float (optional, default: 0.044"
+            ),
+            "procurement_contingency_factor": (
+                "float (optional, default: 0.0575)"
+            ),
+            "installation_contingency_factor": (
+                "float (optional, default: 0.345)"
+            ),
+            "decommissioning_factor": ("float (optional, default: 0.1725)"),
             "project_completion_factor": "float (optional, default: 0.0115)",
             "site_auction_price": "$ (optional, default: 100e6)",
             "site_assessment_cost": "$ (optional, default: 50e6)",
@@ -1548,21 +1583,23 @@ class ProjectManager:
     def construction_insurance_capex(self):
         """
         Returns the construction insurance capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
-        try:
-            construction_insurance_per_kW = self.config["project_parameters"][
-                "construction_insurance"
-            ]
+        construction_insurance_per_kW = self.project_params.get(
+            "construction_insurance", None
+        )
+
+        contruction_insurance_factor = self.project_params.get(
+            "construction_insurance_factor", 0.0115
+        )
+
+        if construction_insurance_per_kW is not None:
             construction_insurance = (
                 construction_insurance_per_kW * self.capacity * 1000
             )
-
-        except:
-            contruction_insurance_factor = self.project_params.get(
-                "construction_insurance_factor", 0.0115
-            )
+        else:
             construction_insurance = (
                 self.turbine_capex + self.bos_capex + self.project_capex
             ) * contruction_insurance_factor
@@ -1576,16 +1613,18 @@ class ProjectManager:
         Energy Review.
         """
 
-        try:
-            decommissioning_per_kW = self.config["project_parameters"][
-                "decommissioning"
-            ]
+        decommissioning_per_kW = self.project_params.get(
+            "decommissioning", None
+        )
+
+        decommissioning_factor = self.project_params.get(
+            "decommissioning_factor", 0.175
+        )
+
+        if decommissioning_per_kW is not None:
             decommissioning = decommissioning_per_kW * self.capacity * 1000
 
-        except:
-            decommissioning_factor = self.project_params.get(
-                "decommissioning_factor", 0.175
-            )
+        else:
             decommissioning = self.installation_capex * decommissioning_factor
 
         return decommissioning
@@ -1593,21 +1632,24 @@ class ProjectManager:
     def project_completion_capex(self):
         """
         Returns the project completion capital cost of the project.
-        Methodology from ORCA model, default values used in 2022 Cost of Wind Energy Review.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
-        try:
-            project_completion_per_kW = self.config["project_parameters"][
-                "project_completion"
-            ]
+        project_completion_per_kW = self.project_params.get(
+            "project_completion", None
+        )
+
+        project_completion_factor = self.project_params.get(
+            "project_completion_factor", 0.0115
+        )
+
+        if project_completion_per_kW is not None:
             project_completion = (
                 project_completion_per_kW * self.capacity * 1000
             )
 
-        except:
-            project_completion_factor = self.project_params.get(
-                "project_completion_factor", 0.0115
-            )
+        else:
             project_completion = (
                 self.turbine_capex + self.bos_capex + self.project_capex
             ) * project_completion_factor
@@ -1621,18 +1663,20 @@ class ProjectManager:
         Energy Review.
         """
 
-        try:
-            procurement_contingency_per_kW = self.config["project_parameters"][
-                "procurement_contingency"
-            ]
+        procurement_contingency_per_kW = self.project_params.get(
+            "procurement_contingency", None
+        )
+
+        procurement_contingency_factor = self.project_params.get(
+            "procurement_contingency_factor", 0.0575
+        )
+
+        if procurement_contingency_per_kW is not None:
             procurement_contingency = (
                 procurement_contingency_per_kW * self.capacity * 1000
             )
 
-        except:
-            procurement_contingency_factor = self.project_params.get(
-                "procurement_contingency_factor", 0.0575
-            )
+        else:
             procurement_contingency = (
                 self.turbine_capex
                 + self.bos_capex
@@ -1649,18 +1693,20 @@ class ProjectManager:
         Energy Review.
         """
 
-        try:
-            installation_contingency_per_kW = self.config[
-                "project_parameters"
-            ]["installation_contingency"]
+        installation_contingency_per_kW = self.project_params.get(
+            "installation_contingency", None
+        )
+
+        installation_contingency_factor = self.project_params.get(
+            "installation_contingency_factor", 0.345
+        )
+
+        if installation_contingency_per_kW is not None:
             installation_contingency = (
                 installation_contingency_per_kW * self.capacity * 1000
             )
 
-        except:
-            installation_contingency_factor = self.project_params.get(
-                "installation_contingency_factor", 0.345
-            )
+        else:
             installation_contingency = (
                 self.installation_capex * installation_contingency_factor
             )
@@ -1707,19 +1753,21 @@ class ProjectManager:
         Energy Review.
         """
 
-        try:
-            construction_financing_per_kW = self.config["project_parameters"][
-                "construction_financing"
-            ]
+        construction_financing_per_kW = self.project_params.get(
+            "construction_financing", None
+        )
+
+        construction_financing_factor = self.project_params.get(
+            "construction_financing_factor",
+            self.construction_financing_factor(),
+        )
+
+        if construction_financing_per_kW is not None:
             construction_financing = (
                 construction_financing_per_kW * self.capacity * 1000
             )
 
-        except:
-            construction_financing_factor = self.project_params.get(
-                "construction_financing_factor",
-                self.construction_financing_factor(),
-            )
+        else:
             construction_financing = (
                 self.construction_insurance_capex()
                 + self.decommissioning_capex()
