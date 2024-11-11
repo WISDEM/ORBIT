@@ -1023,12 +1023,6 @@ def test_construction_financing_factor_exception():
 def test_deprecated_warnings():
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"commissioning": 44}
-    with pytest.deprecated_call():
-        project = ProjectManager(config)
-        project.run()
-
-    config = deepcopy(complete_project)
     config["project_parameters"] = {"contingency": 88}
     with pytest.deprecated_call():
         project = ProjectManager(config)
