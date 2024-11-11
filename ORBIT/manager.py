@@ -197,16 +197,6 @@ class ProjectManager:
 
     def _print_warnings(self):
 
-        if "commissioning" in self.project_params:
-            warn(
-                "The 'commissioning' project parameter will be deprecated"
-                " and now is called 'project_completion'. Specify the"
-                " project_completion in $/kW or use project_completion_factor"
-                " in '%' of turbine + bos + project capex.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
         if "contingency" in self.project_params:
             warn(
                 "The 'contingency' project parameter will be deprecated"
@@ -372,9 +362,9 @@ class ProjectManager:
                 "$/kW (optional, default: value calculated using"
                 " decommissioning_factor)"
             ),
-            "project_completion": (
+            "commissioning": (
                 "$/kW (optional, default: value calculated using"
-                " project_completion_factor)"
+                " commissioning_factor)"
             ),
             "construction_insurance_factor": (
                 "float (optional, default: 0.0115)"
@@ -400,7 +390,7 @@ class ProjectManager:
                 "float (optional, default: 0.345)"
             ),
             "decommissioning_factor": ("float (optional, default: 0.1725)"),
-            "project_completion_factor": "float (optional, default: 0.0115)",
+            "commissioning_factor": "float (optional, default: 0.0115)",
             "site_auction_price": "$ (optional, default: 100e6)",
             "site_assessment_cost": "$ (optional, default: 50e6)",
             "construction_plan_cost": "$ (optional, default: 1e6)",
@@ -1563,7 +1553,7 @@ class ProjectManager:
         soft_capex = {
             "Construction Insurance": self.construction_insurance_capex(),
             "Decommissioning": self.decommissioning_capex(),
-            "Project Completion": self.project_completion_capex(),
+            "Commissioning": self.commissioning_capex(),
             "Procurement Contingency": self.procurement_contingency_capex(),
             "Installation Contingency": self.installation_contingency_capex(),
             "Construction Financing": self.construction_financing_capex(),
@@ -1629,32 +1619,32 @@ class ProjectManager:
 
         return decommissioning
 
-    def project_completion_capex(self):
+    def commissioning_capex(self):
         """
-        Returns the project completion capital cost of the project.
+        Returns the commissioning capital cost of the project.
         Methodology from ORCA model, default values used in 2022 Cost of Wind
         Energy Review.
         """
 
-        project_completion_per_kW = self.project_params.get(
-            "project_completion", None
+        commissioning_per_kW = self.project_params.get(
+            "commissioning", None
         )
 
-        project_completion_factor = self.project_params.get(
-            "project_completion_factor", 0.0115
+        commissioning_factor = self.project_params.get(
+            "commissioning_factor", 0.0115
         )
 
-        if project_completion_per_kW is not None:
-            project_completion = (
-                project_completion_per_kW * self.capacity * 1000
+        if commissioning_per_kW is not None:
+            commissioning = (
+                commissioning_per_kW * self.capacity * 1000
             )
 
         else:
-            project_completion = (
+            commissioning = (
                 self.turbine_capex + self.bos_capex + self.project_capex
-            ) * project_completion_factor
+            ) * commissioning_factor
 
-        return project_completion
+        return commissioning
 
     def procurement_contingency_capex(self):
         """
@@ -1771,7 +1761,7 @@ class ProjectManager:
             construction_financing = (
                 self.construction_insurance_capex()
                 + self.decommissioning_capex()
-                + self.project_completion_capex()
+                + self.commissioning_capex()
                 + self.procurement_contingency_capex()
                 + self.installation_contingency_capex()
                 + self.bos_capex

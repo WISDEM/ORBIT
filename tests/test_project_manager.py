@@ -880,7 +880,7 @@ def test_soft_costs():
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"project_completion": 50}
+    config["project_parameters"] = {"commissioning": 50}
     project = ProjectManager(config)
     project.run()
     assert project.soft_capex != baseline
@@ -924,7 +924,7 @@ def test_soft_costs():
     assert project.soft_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"project_completion_factor": 0.3}
+    config["project_parameters"] = {"commissioning_factor": 0.3}
     project = ProjectManager(config)
     project.run()
     assert project.soft_capex != baseline
