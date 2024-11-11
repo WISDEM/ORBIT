@@ -2,6 +2,18 @@
 
 ORBIT Changelog
 ===============
+dev
+---
+- Enhanced ``ProjectManager``:
+    - Improvements made to `soft_capex` calculations because previous versions
+     used default `$/kW` values from the 2018 Cost of Wind Energy Review unless provided by
+     the user. Those default values are out of date and do not scale with the size of the
+     project which is not entirely accurate.
+    - `soft_capex` is now calculated as sum of `construction_insurance_capex`, `decommissioning_capex`,
+      `commissioning_capex`, `procurement_contingency_capex`, `installation_contingency_capex`,
+      `construction_financing_capex`. NOTE: user can still specify the same `$/kW` values if they choose.
+    - New factors were implemented to calculated updated project_parameters if the user does not specify
+    any inputs.
 
 1.1
 ---
