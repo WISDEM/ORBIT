@@ -1,17 +1,18 @@
 # This workflow will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: Deploy to PyPI
+name: Deploy to Test PyPI
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  release-pypi:
+  release-test-pypi:
+    # Upload to Test PyPI on every pushed tag.
     environment: release
-    # Upload to PyPI on every published release
-    if: github.event.action == 'published'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -31,7 +32,8 @@ jobs:
           python -m build
           twine check --strict dist/*
 
-      - name: Publish package to PyPI
+      - name: Publish package to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           verbose: True
+          repository-url: https://test.pypi.org/legacy/
