@@ -43,27 +43,27 @@ class Orbit(om.Group):
         self.set_input_defaults("takt_time", 170.0, units="h")
         self.set_input_defaults("port_cost_per_month", 2e6, units="USD/mo")
         self.set_input_defaults(
-            "construction_insurance_per_kW",
+            "construction_insurance",
             34.6,
             units="USD/kW"
         )
         self.set_input_defaults(
-            "construction_financing_per_kW",
+            "construction_financing",
             218.8,
             units="USD/kW"
         )
         self.set_input_defaults(
-            "procurement_contingency_per_kW",
+            "procurement_contingency",
             154.5,
             units="USD/kW"
         )
         self.set_input_defaults(
-            "installation_contingency_per_kW",
+            "installation_contingency",
             111.8,
             units="USD/kW"
         )
-        self.set_input_defaults("commissioning_per_kW", 34.6, units="USD/kW")
-        self.set_input_defaults("decommissioning_per_kW", 56.7, units="USD/kW")
+        self.set_input_defaults("commissioning", 34.6, units="USD/kW")
+        self.set_input_defaults("decommissioning", 56.7, units="USD/kW")
         self.set_input_defaults("site_auction_price", 100e6, units="USD")
         self.set_input_defaults("site_assessment_cost", 50e6, units="USD")
         self.set_input_defaults("construction_plan_cost", 1e6, units="USD")
@@ -419,37 +419,37 @@ class OrbitWisdem(om.ExplicitComponent):
 
         # Project (based on 600GW fixed bottom farm)
         self.add_input(
-            "construction_insurance_per_kW",
+            "construction_insurance",
             34.6,
             units="USD/kW",
             desc="Cost for construction insurance",
         )
         self.add_input(
-            "construction_financing_per_kW",
+            "construction_financing",
             218.9,
             units="USD/kW",
             desc="Cost for construction financing",
         )
         self.add_input(
-            "procurement_contingency_per_kW",
+            "procurement_contingency",
             154.5,
             units="USD/kW",
             desc="Cost of procurement contingency",
         )
         self.add_input(
-            "installation_contingency_per_kW",
+            "installation_contingency",
             111.8,
             units="USD/kW",
             desc="Cost of installation contingency",
         )
         self.add_input(
-            "commissioning_per_kW",
+            "commissioning",
             34.6,
             units="USD/kW",
             desc="Commissioning cost."
         )
         self.add_input(
-            "decommissioning_per_kW",
+            "decommissioning",
             56.7, units="USD/kW",
             desc="Decommissioning cost."
         )
@@ -619,15 +619,15 @@ class OrbitWisdem(om.ExplicitComponent):
             # Project development costs
             "project_parameters": {
                 "construction_insurance":
-                    float(inputs["construction_insurance_per_kW"][0]),
+                    float(inputs["construction_insurance"][0]),
                 "construction_financing":
-                    float(inputs["construction_financing_per_kW"][0]),
+                    float(inputs["construction_financing"][0]),
                 "procurement_contigency":
-                    float(inputs["procurement_contingency_per_kW"][0]),
+                    float(inputs["procurement_contingency"][0]),
                 "installation_contigency":
-                    float(inputs["installation_contingency_per_kW"][0]),
-                "commissioning": float(inputs["commissioning_per_kW"][0]),
-                "decommissioning": float(inputs["decommissioning_per_kW"][0]),
+                    float(inputs["installation_contingency"][0]),
+                "commissioning": float(inputs["commissioning"][0]),
+                "decommissioning": float(inputs["decommissioning"][0]),
                 "site_auction_price": float(inputs["site_auction_price"][0]),
                 "site_assessment_cost":
                     float(inputs["site_assessment_cost"][0]),
