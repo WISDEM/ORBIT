@@ -42,11 +42,28 @@ class Orbit(om.Group):
         self.set_input_defaults("num_assembly_lines", 1)
         self.set_input_defaults("takt_time", 170.0, units="h")
         self.set_input_defaults("port_cost_per_month", 2e6, units="USD/mo")
-        self.set_input_defaults("construction_insurance", 44.0, units="USD/kW")
-        self.set_input_defaults("construction_financing", 183.0, units="USD/kW")
-        self.set_input_defaults("contingency", 316.0, units="USD/kW")
-        self.set_input_defaults("commissioning_cost_kW", 44.0, units="USD/kW")
-        self.set_input_defaults("decommissioning_cost_kW", 58.0, units="USD/kW")
+        self.set_input_defaults(
+            "construction_insurance_per_kW",
+            34.6,
+            units="USD/kW"
+        )
+        self.set_input_defaults(
+            "construction_financing_per_kW",
+            218.8,
+            units="USD/kW"
+        )
+        self.set_input_defaults(
+            "procurement_contingency_per_kW",
+            154.5,
+            units="USD/kW"
+        )
+        self.set_input_defaults(
+            "installation_contingency_per_kW",
+            111.8,
+            units="USD/kW"
+        )
+        self.set_input_defaults("commissioning_per_kW", 34.6, units="USD/kW")
+        self.set_input_defaults("decommissioning_per_kW", 56.7, units="USD/kW")
         self.set_input_defaults("site_auction_price", 100e6, units="USD")
         self.set_input_defaults("site_assessment_cost", 50e6, units="USD")
         self.set_input_defaults("construction_plan_cost", 1e6, units="USD")
@@ -116,14 +133,15 @@ class OrbitWisdem(om.ExplicitComponent):
             "num_station_keeping",
             3,
             desc=(
-                "Number of station keeping or AHTS vessels that attach to floating"
-                " platforms under tow-out."
+                "Number of station keeping or AHTS vessels that attach to"
+                " floating platforms under tow-out."
             ),
         )
         self.add_discrete_input(
             "oss_install_vessel",
             "example_heavy_lift_vessel",
-            desc="Vessel configuration to use for installation of offshore substations.",  # noqa: E501
+            desc="Vessel configuration to use for installation"
+             " of offshore substations.",
         )
 
         # Site
@@ -305,12 +323,14 @@ class OrbitWisdem(om.ExplicitComponent):
             "takt_time",
             170.0,
             units="h",
-            desc="Substructure assembly cycle time when doing assembly at the port.",  # noqa: E501
+            desc="Substructure assembly cycle time when doing assembly at the"
+                " port.",
         )
         self.add_discrete_input(
             "num_assembly_lines",
             1,
-            desc="Number of assembly lines used when assembly occurs at the port.",  # noqa: E501
+            desc="Number of assembly lines used when assembly occurs at the"
+                " port.",
         )
         self.add_discrete_input(
             "num_port_cranes",
@@ -397,24 +417,41 @@ class OrbitWisdem(om.ExplicitComponent):
             desc="Transition piece unit cost.",
         )
 
-        # Project
+        # Project (based on 600GW fixed bottom farm)
         self.add_input(
-            "construction_insurance",
-            44.0,
+            "construction_insurance_per_kW",
+            34.6,
             units="USD/kW",
             desc="Cost for construction insurance",
         )
         self.add_input(
-            "construction_financing",
-            183.0,
+            "construction_financing_per_kW",
+            218.9,
             units="USD/kW",
             desc="Cost for construction financing",
         )
         self.add_input(
-            "contingency",
-            316.0,
+            "procurement_contingency_per_kW",
+            154.5,
             units="USD/kW",
-            desc="Cost in case of contingency",
+            desc="Cost of procurement contingency",
+        )
+        self.add_input(
+            "installation_contingency_per_kW",
+            111.8,
+            units="USD/kW",
+            desc="Cost of installation contingency",
+        )
+        self.add_input(
+            "commissioning_per_kW",
+            34.6,
+            units="USD/kW",
+            desc="Commissioning cost."
+        )
+        self.add_input(
+            "decommissioning_per_kW",
+            56.7, units="USD/kW",
+            desc="Decommissioning cost."
         )
         self.add_input(
             "site_auction_price",
@@ -449,8 +486,6 @@ class OrbitWisdem(om.ExplicitComponent):
                 " of Ocean Energy Management (BOEM)"
             ),
         )
-        self.add_input("commissioning_cost_kW", 44.0, units="USD/kW", desc="Commissioning cost.")
-        self.add_input("decommissioning_cost_kW", 58.0, units="USD/kW", desc="Decommissioning cost.")
 
         # Outputs
         # Totals
@@ -458,19 +493,22 @@ class OrbitWisdem(om.ExplicitComponent):
             "bos_capex",
             0.0,
             units="USD",
-            desc="Total BOS CAPEX not including commissioning or decommissioning.",  # noqa: E501
+            desc="Total BOS CAPEX not including commissioning or"
+             " decommissioning.",
         )
         self.add_output(
             "total_capex",
             0.0,
             units="USD",
-            desc="Total BOS CAPEX including commissioning and decommissioning.",  # noqa: E501
+            desc="Total BOS CAPEX including commissioning and"
+            " decommissioning.",
         )
         self.add_output(
             "total_capex_kW",
             0.0,
             units="USD/kW",
-            desc="Total BOS CAPEX including commissioning and decommissioning.",  # noqa: E501
+            desc="Total BOS CAPEX including commissioning and"
+            " decommissioning.",
         )
         self.add_output(
             "installation_time",
@@ -580,16 +618,24 @@ class OrbitWisdem(om.ExplicitComponent):
             },
             # Project development costs
             "project_parameters": {
-                "construction_insurance": float(inputs["construction_insurance"][0]),
-                "construction_financing": float(inputs["construction_financing"][0]),
-                "contingency": float(inputs["contingency"][0]),
+                "construction_insurance":
+                    float(inputs["construction_insurance_per_kW"][0]),
+                "construction_financing":
+                    float(inputs["construction_financing_per_kW"][0]),
+                "procurement_contigency":
+                    float(inputs["procurement_contingency_per_kW"][0]),
+                "installation_contigency":
+                    float(inputs["installation_contingency_per_kW"][0]),
+                "commissioning": float(inputs["commissioning_per_kW"][0]),
+                "decommissioning": float(inputs["decommissioning_per_kW"][0]),
                 "site_auction_price": float(inputs["site_auction_price"][0]),
-                "site_assessment_cost": float(inputs["site_assessment_cost"][0]),
-                "construction_plan_cost": float(inputs["construction_plan_cost"][0]),
-                "installation_plan_cost": float(inputs["installation_plan_cost"][0]),
+                "site_assessment_cost":
+                    float(inputs["site_assessment_cost"][0]),
+                "construction_plan_cost":
+                    float(inputs["construction_plan_cost"][0]),
+                "installation_plan_cost":
+                    float(inputs["installation_plan_cost"][0]),
                 "boem_review_cost": float(inputs["boem_review_cost"][0]),
-                "commissioning": float(inputs["commissioning_cost_kW"][0]),
-                "decommissioning": float(inputs["decommissioning_cost_kW"][0]),
                 "turbine_capex": float(inputs["turbine_capex"][0]),
             },
             # Phases
@@ -606,7 +652,9 @@ class OrbitWisdem(om.ExplicitComponent):
             ],
         }
 
-        if "landfall" in config and "interconnection_distance" in config["landfall"]:
+        if "landfall" in config and ("interconnection_distance"
+                in config["landfall"]
+        ):
             warn(
                 "landfall dictionary will be deprecated and moved"
                 " into [export_system_design][landfall].",
@@ -614,7 +662,9 @@ class OrbitWisdem(om.ExplicitComponent):
                 stacklevel=2,
             )
 
-        if "export_system_design" in config and "interconnection_distance" in config["export_system_design"]:
+        if "export_system_design" in config and ("interconnection_distance"
+                in config["export_system_design"]
+        ):
             warn(
                 "[export_system][interconnection_distance] will be deprecated"
                 " and moved to"
