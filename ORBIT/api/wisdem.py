@@ -42,28 +42,14 @@ class Orbit(om.Group):
         self.set_input_defaults("num_assembly_lines", 1)
         self.set_input_defaults("takt_time", 170.0, units="h")
         self.set_input_defaults("port_cost_per_month", 2e6, units="USD/mo")
-        self.set_input_defaults(
-            "construction_insurance",
-            34.6,
-            units="USD/kW"
-        )
-        self.set_input_defaults(
-            "construction_financing",
-            218.8,
-            units="USD/kW"
-        )
-        self.set_input_defaults(
-            "procurement_contingency",
-            154.5,
-            units="USD/kW"
-        )
-        self.set_input_defaults(
-            "installation_contingency",
-            111.8,
-            units="USD/kW"
-        )
-        self.set_input_defaults("commissioning", 34.6, units="USD/kW")
-        self.set_input_defaults("decommissioning", 56.7, units="USD/kW")
+        self.set_input_defaults("construction_insurance_factor", 0.0115)
+        self.set_input_defaults("construction_financing_factor", 1.0695)
+        self.set_input_defaults("procurement_contingency_factor", 0.0575)
+        self.set_input_defaults("installation_contingency_factor", 0.345)
+        self.set_input_defaults("commissioning_factor", 0.0115)
+        self.set_input_defaults("decommissioning_factor", 0.1725)
+        self.set_input_defaults("tax_rate", 0.26)
+        self.set_input_defaults("interest_during_construction",0.044)
         self.set_input_defaults("site_auction_price", 100e6, units="USD")
         self.set_input_defaults("site_assessment_cost", 50e6, units="USD")
         self.set_input_defaults("construction_plan_cost", 1e6, units="USD")
@@ -419,39 +405,44 @@ class OrbitWisdem(om.ExplicitComponent):
 
         # Project (based on 600GW fixed bottom farm)
         self.add_input(
-            "construction_insurance",
-            34.6,
-            units="USD/kW",
-            desc="Cost for construction insurance",
+            "construction_insurance_factor",
+            0.0115,
+            desc="Factor for construction insurance. (0.0-0.1)",
         )
         self.add_input(
-            "construction_financing",
-            218.9,
-            units="USD/kW",
-            desc="Cost for construction financing",
+            "construction_financing_factor",
+            1.0695,
+            desc="Financing factor applied during construction phase.(0.0-inf)"
         )
         self.add_input(
-            "procurement_contingency",
-            154.5,
-            units="USD/kW",
-            desc="Cost of procurement contingency",
+            "procurement_contingency_factor",
+            0.0575,
+            desc="Factor for procurement contingency. (0.0-1.0)",
         )
         self.add_input(
-            "installation_contingency",
-            111.8,
-            units="USD/kW",
-            desc="Cost of installation contingency",
+            "installation_contingency_factor",
+            0.345,
+            desc="Factor for installation contingency. (0.0-0.1)",
         )
         self.add_input(
-            "commissioning",
-            34.6,
-            units="USD/kW",
-            desc="Commissioning cost."
+            "commissioning_factor",
+            0.0115,
+            desc="Factor for commissioning cost. (0.0-inf)"
         )
         self.add_input(
-            "decommissioning",
-            56.7, units="USD/kW",
-            desc="Decommissioning cost."
+            "decommissioning_factor",
+            0.1725,
+            desc="Factor for decommissioning cost. (0.0-inf)"
+        )
+        self.add_input(
+            "tax_rate",
+            0.26,
+            desc="Tax rate. (0.0-1.0)",
+        )
+        self.add_input(
+            "interest_during_construction",
+            0.044,
+            desc="Interest rate for financing. (0.0-1.0)"
         )
         self.add_input(
             "site_auction_price",
@@ -618,16 +609,21 @@ class OrbitWisdem(om.ExplicitComponent):
             },
             # Project development costs
             "project_parameters": {
-                "construction_insurance":
-                    float(inputs["construction_insurance"][0]),
-                "construction_financing":
-                    float(inputs["construction_financing"][0]),
-                "procurement_contigency":
-                    float(inputs["procurement_contingency"][0]),
-                "installation_contigency":
-                    float(inputs["installation_contingency"][0]),
-                "commissioning": float(inputs["commissioning"][0]),
-                "decommissioning": float(inputs["decommissioning"][0]),
+                "construction_insurance_factor":
+                    float(inputs["construction_insurance_factor"][0]),
+                "construction_financing_factor":
+                    float(inputs["construction_financing_factor"][0]),
+                "procurement_contigency_factor":
+                    float(inputs["procurement_contingency_factor"][0]),
+                "installation_contigency_factor":
+                    float(inputs["installation_contingency_factor"][0]),
+                "commissioning_factor":
+                    float(inputs["commissioning_factor"][0]),
+                "decommissioning_factor":
+                    float(inputs["decommissioning_factor"][0]),
+                "tax_rate": float(inputs["tax_rate"][0]),
+                "interest_during_construction":
+                    float(inputs["interest_during_construction"][0]),
                 "site_auction_price": float(inputs["site_auction_price"][0]),
                 "site_assessment_cost":
                     float(inputs["site_assessment_cost"][0]),
