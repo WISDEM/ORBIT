@@ -1,3 +1,5 @@
+# costs are representative of procurement in 2023 in 2023 USD
+# costs for other years of procurement at ORBIT/core/defaults
 crane_specs:
   max_lift: 500
 jacksys_specs:
@@ -15,4 +17,4 @@ transport_specs:
   max_windspeed: 20
   transit_speed: 6
 vessel_specs:
-  day_rate: 100000
+  day_rate: 126639

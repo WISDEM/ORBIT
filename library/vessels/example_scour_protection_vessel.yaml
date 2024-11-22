@@ -1,3 +1,5 @@
+# costs are representative of procurement in 2023 in 2023 USD
+# costs for other years of procurement at ORBIT/core/defaults
 storage_specs:
   max_cargo: 10000       # t
   max_deck_load: 8      # t/m^2
@@ -7,4 +9,4 @@ transport_specs:
   max_windspeed: 20     # m/s
   transit_speed: 6      # km/hr
 vessel_specs:
-  day_rate: 120000      # USD/day
+  day_rate: 151337      # USD/day
