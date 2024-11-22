@@ -1,3 +1,6 @@
+# costs are representative of procurement in 2023 in 2023 USD
+# costs for other years of procurement at ORBIT/core/defaults
+
 # Data from this cable type was adjusted to 
 # meet cable capacity of 400 MW seen in the 
 # industry. Data does not come from a data
@@ -5,7 +8,7 @@
 ac_resistance: 0.16        # ohm/km
 capacitance: 190           # nF/km
 conductor_size: 1000       # mm^2
-cost_per_km: 1420000       # $
+cost_per_km: 1408570       # $
 current_capacity: 1050      # A
 inductance: 0.38           # mH/km
 linear_density: 115        # t/km

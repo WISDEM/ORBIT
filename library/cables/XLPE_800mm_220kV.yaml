@@ -1,7 +1,9 @@
+# costs are representative of procurement in 2023 in 2023 USD
+# costs for other years of procurement at ORBIT/core/defaults
 ac_resistance: 0.20        # ohm/km
 capacitance: 170           # nF/km
 conductor_size: 800        # mm^2
-cost_per_km: 776000        # $
+cost_per_km: 987778        # $
 current_capacity: 775      # A
 inductance: 0.40           # mH/km
 linear_density: 105        # t/km
