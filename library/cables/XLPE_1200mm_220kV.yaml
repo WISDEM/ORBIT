@@ -1,0 +1,14 @@
+# Data from this cable type was adjusted to 
+# meet cable capacity of 400 MW seen in the 
+# industry. Data does not come from a data
+# sheet from a cable manufacturer
+ac_resistance: 0.16        # ohm/km
+capacitance: 190           # nF/km
+conductor_size: 1000       # mm^2
+cost_per_km: 1420000       # $
+current_capacity: 1050      # A
+inductance: 0.38           # mH/km
+linear_density: 115        # t/km
+rated_voltage: 220         # kV
+cable_type: HVAC           # HVDC vs HVAC
+name: XLPE_1000m_220kV
