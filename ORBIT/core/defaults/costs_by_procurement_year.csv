@@ -1,0 +1,79 @@
+﻿Class,Attribute Name,Units (in 2023 USD),2019,2020,2021,2022,2023
+MonopileDesign,monopile_steel_cost,USD/t,3183,2959,4187,4238,3655
+MonopileDesign,tp_steel_cost,USD/t,8553,7952,11251,11388,9821
+SemiSubmersibleDesign,stiffened_column_CR,USD/t,3624,3343,4919,5009,4280
+SemiSubmersibleDesign,truss_CR,USD/t,7260,6697,9854,10034,8573
+SemiSubmersibleDesign,heave_plate_CR,USD/t,7260,6697,9854,10034,8573
+SemiSubmersibleDesign,secondary_steel_CR,USD/t,8421,7768,11430,11640,9944
+SemiSubmersibleDesign,steel_CR,USD/t,3609,3379,4639,4685,4084
+MooringSystemDesign,mooring_line_cost_rate (low),USD/m,463,428,629,641,547
+MooringSystemDesign,mooring_line_cost_rate (mid),USD/m,837,773,1137,1158,989
+MooringSystemDesign,mooring_line_cost_rate (high),USD/m,1264,1166,1715,1747,1492
+ExportSystemDesign,crossing_unit_cost,USD,571328,577659,719474,654810,622755
+calc_onshore_cost,shunt_unit_cost,USD/cable,16700,15305,23104,23566,19960
+calc_onshore_cost,switchgear_cost,USD/cable,11985785,10984324,16581812,16913007,14325045
+calc_onshore_cost,compensation_rate,USD/cable,40209548,36849877,55628158,56739241,48057225
+calc_onshore_cost,onshore_converter_cost (HVAC),USD,0,0,0,0,0
+calc_onshore_cost,onshore_converter_cost (HVDC-monopole),USD,201690066,184838039,279029417,284602584,241053812
+calc_onshore_cost,onshore_converter_cost (HVDC-bipole),USD,449627536,412059323,622040101,634464359,537381110
+calc_onshore_cost,onshore_construction_rate (HVAC),USD,6423251,5886562,8886287,9063777,7676873
+calc_onshore_cost,onshore_construction_rate (HVDC-monopole),USD,112149954,102779368,155154574,158253539,134038203
+calc_onshore_cost,onshore_construction_rate (HVDC-bipole),USD,128465010,117731235,177725743,181275531,153537460
+SubstationDesign,mpt_cost_rate,USD/MW,14519,13393,19707,20069,17145
+SubstationDesign,topside_fab_cost_rate,USD/t,16842,15536,22861,23280,19889
+SubstationDesign,topside_design_cost (HVAC),USD,137842956,126325615,190699723,194508645,164745695
+SubstationDesign,topside_design_cost (HVDC-monopole),USD,377687130,346129831,522513685,532950062,451400132
+SubstationDesign,topside_design_cost (HVDC-bipole),USD,611493448,560400680,845974538,862871528,730838310
+SubstationDesign,shunt_cost_rate,USD/MW,40654,37501,55181,56192,48007
+SubstationDesign,mpt_unit_cost,USD/mpt,3686946,3378886,5100729,5202608,4406525
+SubstationDesign,shunt_unit_cost,USD/cable,12847,11773,17773,18128,15354
+SubstationDesign,switchgear_cost,USD/cable,5138600,4709249,7109030,7251021,6141498
+SubstationDesign,dc_breaker_cost,USD/cable,13488826,12361780,18661203,19033931,16121433
+SubstationDesign,backup_gen_cost,USD,1161544,1071455,1576589,1605487,1371635
+SubstationDesign,workspace_cost,USD,2323088,2142909,3153178,3210975,2743270
+SubstationDesign,other_ancillary_cost,USD,3484632,3214364,4729767,4816462,4114905
+SubstationDesign,converter_cost (HVAC),USD,0,0,0,0,0
+SubstationDesign,converter_cost (HVDC-monopole),USD,163150563,149518669,225711694,230219925,194992574
+SubstationDesign,converter_cost (HVDC-bipole),USD,380256430,348484456,526068200,536575572,454470882
+SubstationDesign,oss_substructure_cost_rate,USD/t,3485,3214,4730,4816,4115
+SubstationDesign,oss_pile_cost_rate,USD/t,0,0,0,0,0
+Cables,HVDC_2000mm_320kV.yaml,USD/km,838059,846067,1040115,946500,900000
+Cables,HVDC_2000mm_320kV_dynamic.yaml,USD/km,919473,928370,1133958,1034500,985602
+Cables,HVDC_2000mm_400kV.yaml,USD/km,721980,729934,916314,831636,789204
+Cables,HVDC_2500mm_525kV.yaml,USD/km,1314062,1326776,1620592,1478452,1408570
+Cables,XLPE_1000m_220kV_dynamic.yaml,USD/km,1407307,1423895,1815796,1642898,1555413
+Cables,XLPE_1000mm_220kV.yaml,USD/km,1314062,1326776,1620592,1478452,1408570
+Cables,XLPE_1200mm_220kV.yaml,USD/km,1314062,1326776,1620592,1478452,1408570
+Cables,XLPE_1000mm_220kV_dynamic.yaml,USD/km,1573172,1588394,1940146,1769978,1686316
+Cables,XLPE_1200mm_275kV.yaml,USD/km,1203014,1214654,1483641,1353512,1289536
+Cables,XLPE_1600mm_275kV.yaml,USD/km,1388093,1401524,1711893,1561745,1487926
+Cables,XLPE_185mm_66kV.yaml,USD/km,238367,241031,302857,274909,260914
+Cables,XLPE_185mm_66kV_dynamic.yaml,USD/km,286041,289237,363428,329891,313097
+Cables,XLPE_1900mm_275kV.yaml,USD/km,1184506,1195967,1460816,1332689,1269697
+Cables,XLPE_400mm_33kV.yaml,USD/km,342797,346595,431685,392886,373653
+Cables,XLPE_500mm_132kV.yaml,USD/km,462698,467175,570631,520582,495975
+Cables,XLPE_500mm_132kV_dynamic.yaml,USD/km,555237,560610,684757,624698,595170
+Cables,XLPE_500mm_220kV.yaml,USD/km,774382,782913,982821,891997,846485
+Cables,XLPE_630mm_220kV.yaml,USD/km,826784,835892,1049327,952357,903766
+Cables,XLPE_630mm_33kV.yaml,USD/km,514195,519893,647527,589329,560479
+Cables,XLPE_630mm_66kV.yaml,USD/km,476734,482061,605714,549818,521828
+Cables,XLPE_630mm_66kV_dynamic.yaml,USD/km,572081,578474,726856,659781,626194
+Cables,XLPE_800mm_220kV.yaml,USD/km,903640,913594,1146870,1040886,987778
+Vessels,example_ahts_vessel.yaml,USD/day,94718,89991,94538,104116,98016
+Vessels,example_cable_lay_vessel.yaml,USD/day,213115,202480,212711,234262,220537
+Vessels,example_feeder.yaml,USD/day,89254,82657,89391,102845,94586
+Vessels,example_heavy_feeder.yaml,USD/day,143020,131404,143203,166504,151966
+Vessels,example_heavy_lift_vessel.yaml,USD/day,595026,551047,595941,685632,630573
+Vessels,example_scour_protection_vessel.yaml,USD/day,142806,132251,143026,164552,151337
+Vessels,example_support_vessel.yaml,USD/day,119184,109503,119336,138754,126639
+Vessels,example_towing_vessel.yaml,USD/day,33151,31497,33088,36441,34306
+Vessels,example_wtiv.yaml,USD/day,214209,198377,214539,246828,227006
+Vessels,floating_barge.yaml,USD/day,143020,131404,143203,166504,151966
+Vessels,floating_heavy_lift_vessel.yaml,USD/day,595918,547516,596679,693768,633193
+Vessels,future_feeder.yaml,USD/day,119184,109503,119336,138754,126639
+Ports,port_cost_per_month,USD/month,2386861,2304938,2569631,2699981,2545872
+Turbine,turbine_capex,,1629,1595,1720,1770,1697
+Project Parameters,site_auction_price,USD,119183549,114641204,128822542,135847863,127433730
+Project Parameters,site_assessment_cost,USD,59591775,57320602,64411271,67923932,63716865
+Project Parameters,construction_plan_cost,USD,1191835,1146412,1288225,1358479,1274337
+Project Parameters,installation_plan_cost,USD,297959,286603,322056,339620,318584
