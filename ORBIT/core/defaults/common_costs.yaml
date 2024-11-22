@@ -1,17 +1,19 @@
 # Material costs
+# costs are representative of procurement in 2023 in 2023 USD
+# costs for other years of procurement at ORBIT/core/defaults
 monopile_design:
-  monopile_steel_cost: 3000                     # USD/t
-  tp_steel_cost: 3000                           # USD/t
+  monopile_steel_cost: 3655                     # USD/t
+  tp_steel_cost: 9821                           # USD/t
 
 # Port properties
-port_cost_per_month: 2e6                      # USD/month
+port_cost_per_month: 2545872                    # USD/month
 
 # Export system component cost rates
 export_system_design:
   cable_crossings:
-    crossing_unit_cost: 500000
+    crossing_unit_cost: 622755   
 
-# Spar component cost rates
+# Spar component cost rates (to be deprecated)
 spar_design:
   stiffened_column_CR: 3120                     # USD/t
   tapered_column_CR: 4220                       # USD/t
@@ -20,53 +22,53 @@ spar_design:
 
 # Offshore substation component cost rates
 substation_design:
-  mpt_cost_rate: 12500                          # USD/MW
-  topside_fab_cost_rate: 14500                  # USD/t
+  mpt_cost_rate: 17145                          # USD/MW
+  topside_fab_cost_rate: 19889                  # USD/t
   topside_design_cost:                          # USD
     #oldHVAC: 4.5e6
-    HVAC: 107.3e6
-    HVDC-monopole: 294e6
-    HVDC-bipole: 476e6
-  shunt_cost_rate: 35000                        # USD/MW
-  mpt_unit_cost: 2.87e6                         # USD/mpt
-  shunt_unit_cost: 10000                        # USD/cable
-  switchgear_cost: 4e6                          # USD/cable
-  dc_breaker_cost: 10.5e6                       # USD/cable
-  backup_gen_cost: 1e6                          # USD
-  workspace_cost: 2e6                           # USD
-  other_ancillary_cost: 3e6                     # USD
+    HVAC: 164745695   
+    HVDC-monopole: 451400132   
+    HVDC-bipole: 730838310   
+  shunt_cost_rate: 48007                        # USD/MW
+  mpt_unit_cost: 4406525                        # USD/mpt
+  shunt_unit_cost: 15354                        # USD/cable
+  switchgear_cost: 6141498                      # USD/cable
+  dc_breaker_cost: 16121433                     # USD/cable
+  backup_gen_cost: 1371635                      # USD
+  workspace_cost: 2743270                       # USD
+  other_ancillary_cost: 4114905                 # USD
   topside_assembly_factor: 0.075                # %
   converter_cost:                               # USD
-    HVAC: 0
-    HVDC-monopole: 127e6
-    HVDC-bipole: 296e6
-  oss_substructure_cost_rate: 3000              # USD/t
+    HVAC: 0   
+    HVDC-monopole: 194992574   
+    HVDC-bipole: 454470882   
+  oss_substructure_cost_rate: 4115              # USD/t
   oss_pile_cost_rate: 0                         # USD/t
 
 # Onshore substation component cost rates
 onshore_substation_design:
   onshore_converter_cost:                       # USD
     HVAC: 0
-    HVDC-monopole: 157e6
-    HVDC-bipole: 350e6
-  shunt_unit_cost: 13000                        # USD/cable
-  switchgear_cost: 9.33e6                       # USD/cable
+    HVDC-monopole: 241053812   
+    HVDC-bipole: 537381110   
+  shunt_unit_cost: 19960                        # USD/cable
+  switchgear_cost: 14325045                     # USD/cable
   compensation_rate:                            # USD/cable
-    HVAC: 31.3e6
-    HVDC-monopole: 0
-    HVDC-bipole: 0
+    HVAC: 48057225  
+    HVDC-monopole: 0   
+    HVDC-bipole: 0  
   onshore_construction_rate:                    # USD
-    HVAC: 5e6
-    HVDC-monopole: 87.3e6
-    HVDC-bipole: 100e6
+    HVAC: 7676873  
+    HVDC-monopole: 134038203  
+    HVDC-bipole: 153537460  
 
 # Semisubmersible component cost rates
 semisubmersible_design:
-  stiffened_column_CR: 3120                     # USD/t
-  truss_CR: 6250                                # USD/t
-  heave_plate_CR: 6250                          # USD/t
-  secondary_steel_CR: 7250                      # USD/t
+  stiffened_column_CR: 4280                     # USD/t
+  truss_CR: 8573                                # USD/t
+  heave_plate_CR: 8573                          # USD/t
+  secondary_steel_CR: 9944                      # USD/t
 
 # Mooring system component cost rates
 mooring_system_design:                          # USD/m
-  mooring_line_cost_rate: [399.0, 721.0, 1088.0]
+  mooring_line_cost_rate: [547.0, 989.0, 1492.0]
