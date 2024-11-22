@@ -1775,13 +1775,13 @@ class ProjectManager:
         the keys below should be passed to the 'project_parameters' subdict.
         """
 
-        site_auction = self.project_params.get("site_auction_price", 100e6)
-        site_assessment = self.project_params.get("site_assessment_cost", 50e6)
+        site_auction = self.project_params.get("site_auction_price", 127433730)
+        site_assessment = self.project_params.get("site_assessment_cost", 63716865)
         construction_plan = self.project_params.get(
-            "construction_plan_cost", 1e6
+            "construction_plan_cost", 1274337
         )
         installation_plan = self.project_params.get(
-            "installation_plan_cost", 0.25e6
+            "installation_plan_cost", 318584
         )
 
         return sum(
