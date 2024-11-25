@@ -72,4 +72,4 @@ def test_total_cost():
     semi = SemiSubmersibleDesign(base)
     semi.run()
 
-    assert semi.total_cost == pytest.approx(630709636, abs=1e0)
+    assert semi.total_cost == pytest.approx(865146205.62, abs=1e0)

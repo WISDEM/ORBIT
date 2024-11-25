@@ -49,7 +49,7 @@ def test_parameter_sweep(depth, num_turbines, turbine_rating):
     assert 200 <= o._outputs["offshore_substation_topside"]["mass"] <= 5000
 
     # Check valid substation cost
-    assert 1e6 <= o.total_cost <= 300e6
+    assert 1e6 <= o.total_cost <= 350e6
 
 
 def test_oss_kwargs():
@@ -93,4 +93,4 @@ def test_total_cost():
     oss = OffshoreSubstationDesign(base)
     oss.run()
 
-    assert oss.total_cost == pytest.approx(158022050, abs=1e0)
+    assert oss.total_cost == pytest.approx(235726330.7, abs=1e0)

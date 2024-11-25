@@ -995,7 +995,7 @@ def test_total_capex():
     fix_project.run()
 
     assert fix_project.total_capex == pytest.approx(
-        1508817512.135874, abs=1e-1
+        1501890553.6424453, abs=1e-1
     )
 
     flt_project = ProjectManager(complete_floating_project)

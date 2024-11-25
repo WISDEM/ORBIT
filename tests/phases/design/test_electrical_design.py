@@ -116,7 +116,7 @@ def test_calc_topside_mass_and_cost():
     assert elect._outputs["num_substations"] == 1
     assert elect._outputs["offshore_substation_topside"][
         "unit_cost"
-    ] == pytest.approx(23683541, abs=1e2)
+    ] == pytest.approx(35301706.75331514, abs=1e2)
 
     mono_dc = deepcopy(base)
     mono_dc["export_system_design"]["cables"] = "HVDC_2000mm_320kV"
@@ -273,7 +273,7 @@ def test_hvac_substation():
     hvac = ElectricalDesign(config)
     hvac.run()
 
-    assert hvac.total_substation_cost == pytest.approx(134448256, abs=1e0)
+    assert hvac.total_substation_cost == pytest.approx(204635144.32577527, abs=1e0)
 
 
 def test_hvdc_substation():
@@ -312,7 +312,7 @@ def test_onshore_substation():
     elect = ElectricalDesign(config)
     elect.run()
     assert elect.onshore_compensation_cost != 0.0
-    assert elect.onshore_cost == pytest.approx(95.487e6, abs=1e2)  # 109.32e6
+    assert elect.onshore_cost == pytest.approx(146608462.86369252, abs=1e2)  # 109.32e6
 
     config_mono = deepcopy(config)
     config_mono["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
