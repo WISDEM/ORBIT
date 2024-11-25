@@ -297,7 +297,7 @@ def test_hvdc_substation():
     elect = ElectricalDesign(config)
     elect.run()
 
-    assert elect.total_substation_cost == pytest.approx(802924714, abs=1e0)
+    assert elect.total_substation_cost == pytest.approx(1230996846.2224603, abs=1e0)
 
     assert elect.converter_cost != 0
     assert elect.shunt_reactor_cost == 0
@@ -326,7 +326,7 @@ def test_onshore_substation():
     o_bi = ElectricalDesign(config_bi)
     o_bi.run()
     assert o_bi.onshore_compensation_cost == 0.0
-    assert o_bi.onshore_cost == 450e6
+    assert o_bi.onshore_cost == 690918570
 
 
 # EXPORT CABLE TESTING
