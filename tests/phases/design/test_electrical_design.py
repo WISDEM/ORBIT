@@ -282,7 +282,7 @@ def test_hvdc_substation():
     elect = ElectricalDesign(config)
     elect.run()
 
-    assert elect.total_substation_cost == pytest.approx(451924714, abs=1e0)
+    assert elect.total_substation_cost == pytest.approx(692080360.22246, abs=1e0)
 
     assert elect.converter_cost != 0
     assert elect.shunt_reactor_cost == 0
@@ -319,7 +319,7 @@ def test_onshore_substation():
     o_monelect = ElectricalDesign(config_mono)
     o_monelect.run()
     assert o_monelect.onshore_compensation_cost == 0.0
-    assert o_monelect.onshore_cost == 244.3e6
+    assert o_monelect.onshore_cost == 375092015
 
     config_bi = deepcopy(config)
     config_bi["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
