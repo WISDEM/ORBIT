@@ -54,6 +54,8 @@ class Component:
 
 
 class Transport(Agent):
+    """Transport class."""
+
     _counter = count(1)
 
     # TODO: Clean up extra specs in Transport Object
@@ -261,7 +263,17 @@ class ComponentManufacturingDelivery(Agent):
 class ComponentManufacturing(Agent):
 
     def __init__(
-        self, component, num, area, sets, takt_time, takt_day_rate, target, reset, reset_time):
+        self,
+        component,
+        num,
+        area,
+        sets,
+        takt_time,
+        takt_day_rate,
+        target,
+        reset,
+        reset_time,
+    ):
         """
         Creates an instance of `ComponentManufacturing`.
 
@@ -289,21 +301,25 @@ class ComponentManufacturing(Agent):
 
     @process
     def start(self):
-
-        cprev = self.sets[0]
+        """Start manufacturing process."""
+        diam_prev = self.sets[0].diameter
         for i, c in enumerate(self.sets):
 
             # components = ComponentSet(self.type, self.area, self.env.now)
             # print("Component vars:", vars(components))
             components = c
-            if abs(c.diameter - cprev.diameter) >= self.reset:
-                #print("Mutare Machina")
+            if abs(c.diameter - diam_prev) >= self.reset:
+                # print("Mutare Machina")
 
                 yield self.task(
-                    f"Reset Machine.",
+                    "Reset Machine.",
                     self.reset_time,
                     cost=self.reset_time * self.takt_day_rate / 24,
                 )
+                diam_prev = c.diameter
+
+            else:
+                diam_prev = min(c.diameter, diam_prev)
 
             # Manufacture and store component
             # Assume this is a takt rate as hours per meter
@@ -330,7 +346,7 @@ class ComponentManufacturing(Agent):
                 )
 
         self.storage.status = "done"
-        #self.submit_action_log(f"Manufacturing Complete", 0)
+        # self.submit_action_log(f"Manufacturing Complete", 0)
 
 
 @process
@@ -340,9 +356,10 @@ def transport_component_to_port(
     feed,
     target,
     transit_time,
-    component
+    component,
     # transit_constraints
 ):
+    """Process for transporting components."""
     storage = transport._storage
     # print("Port vars: ", vars(target))
     _trigger = storage.capacity - 1
@@ -359,7 +376,7 @@ def transport_component_to_port(
     transport.at_port = False
     load = 0
     delivered = 0
-    #while True:
+    # while True:
     while delivered <= sets:
         _counter = count(0)
 
@@ -370,7 +387,7 @@ def transport_component_to_port(
             item.arrived = transport.env.now
             target.pending.append(item)
             target.update_pending()
-            delivered+=1
+            delivered += 1
 
             yield transport.task(
                 f"Move {component} at Port Laydown.",
@@ -378,11 +395,11 @@ def transport_component_to_port(
                 cost=0,
                 transport_storage=len(storage.items),
                 port_storage=len(target.items),
-                port_area=target.available_area
+                port_area=target.available_area,
             )
 
         else:
-            #if n == storage.capacity:
+            # if n == storage.capacity:
             #    transport.mobilize()
             #    continue
 
@@ -397,59 +414,59 @@ def transport_component_to_port(
                         transport.mobilize()
                     else:
                         transport.submit_action_log(
-                        f"Delay: Waiting for {component} to load.",
-                        delay,
+                            f"Delay: Waiting for {component} to load.",
+                            delay,
                         )
-
 
                 # Put item on transport if its at the site.
                 yield storage.put(item)
-                load+=1
+                load += 1
                 yield transport.task(
-                        f"Loading {component}, {load}",
-                        0,
-                        cost=0,
-                        transport_storage=len(storage.items),
-                    )
+                    f"Loading {component}",
+                    0,
+                    cost=0,
+                    transport_storage=len(storage.items),
+                )
 
                 # When the transport is full, deliver items
                 if len(storage.items) == storage.capacity:
                     yield transport.task(
-                            f"Full: Transport {component}s",
-                            transit_time,
-                            constraints={},
-                            supply_storage=len(feed.items),
-                            transport_storage=len(storage.items),
-                        )
+                        f"Full: Transport {component}s",
+                        transit_time,
+                        constraints={},
+                        supply_storage=len(feed.items),
+                        transport_storage=len(storage.items),
+                    )
                     transport.at_site = False
                     transport.at_port = True
 
-                # Final trip when storage is empty and transport may not be full.
+                # Final trip when storage is empty and transport may not be
+                # full.
                 elif (len(storage.items) + delivered) == sets:
                     yield transport.task(
-                            f"Transport {component}s",
-                            transit_time,
-                            constraints={},
-                            supply_storage=len(feed.items),
-                            transport_storage=len(storage.items),
-                        )
+                        f"Transport {component}s",
+                        transit_time,
+                        constraints={},
+                        supply_storage=len(feed.items),
+                        transport_storage=len(storage.items),
+                    )
                     transport.at_site = False
                     transport.at_port = True
 
             # Delivered to port
             elif transport.at_port:
                 # Avoid getting items when no transport is available
-                #yield feed.put(item)
+                # yield feed.put(item)
 
                 yield transport.task(
-                        f"{component} arrives at Port.",
-                        0,
-                        cost=0,
-                        transport_storage=len(storage.items),
-                        delivered=delivered,
-                        port_storage=len(target.items),
-                        port_area=target.available_area
-                    )
+                    f"{component} arrives at Port.",
+                    0,
+                    cost=0,
+                    transport_storage=len(storage.items),
+                    delivered=delivered,
+                    port_storage=len(target.items),
+                    port_area=target.available_area,
+                )
 
                 # unload all the items
                 while len(storage.items) > 0:
@@ -465,11 +482,11 @@ def transport_component_to_port(
                         cost=0,
                         transport_storage=len(storage.items),
                         port_storage=len(target.items),
-                        port_area=target.available_area
+                        port_area=target.available_area,
                     )
-                    delivered+=1
+                    delivered += 1
 
-                #if delivered != sets:
+                # if delivered != sets:
                 yield transport.task(
                     "Empty: Return to supplier.",
                     transit_time / 2,
@@ -478,11 +495,9 @@ def transport_component_to_port(
                     transport_storage=len(storage.items),
                     delivered=delivered,
                     port_storage=len(target.items),
-                    port_area=target.available_area
+                    port_area=target.available_area,
                 )
                 transport.at_site = True
                 transport.at_port = False
 
         n += 1
-
-

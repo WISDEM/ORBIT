@@ -73,8 +73,8 @@ chain_supply:
   assembly_lines: 1 #
   space_required: 7.5 # m**2 pile of 90m chain
   transit_time: 168 # (168 hours = 1 week) hours
-  reset_trigger: 0.0254 # m (1 in)
-  reset_time: 0.5   # h
+  reset_trigger: 0.0127 # m (1/2 in placeholder)
+  reset_time: 168   # h (1 week per Delmar)
 rope_supply:
   laydown_area: 200 # m**2
   takt_time: 0.187 # hours per m (46,800 m/year)
