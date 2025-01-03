@@ -67,8 +67,9 @@ scale in proportion to the other costs calculated within ORBIT. Soft Capex is
 calculated using the default multipliers and parameters from Stehly et al. (2024).
 Users can specify any of the :py:attr:`soft_capex_factors` below if they prefer to
 override the default values. Additionally, users can assign $/kW values for
-any calculated :math:`_capex` parameters for simplicity. The soft CapEx
-component's definitions and their calculations are provided below.
+any calculated Soft CapEx component, ending with :math:`\_capex`, for
+simplicity. The soft CapEx component's definitions and their calculations
+are provided below.
 
 Construction Insurance
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -151,9 +152,9 @@ The spend schedule is based on industry data from a U.S. project.
 
 .. math::
 
-    \sum_{k=0}^{n} spend\_schedule_k \times (1 + (1 - tax\_rate) \times ((1+ interest\_during\_construction)^{k+0.5} - 1)
+    \sum_{k=0}^{n-1} spend\_schedule_k \times (1 + (1 - tax\_rate) \times ((1+ interest\_during\_construction)^{k+0.5} - 1)
 
-where *k* is the current year and *n* is the total years.
+where *k* is the current year and *n* is the total number of years in :py:attr:`spend_schedule`.
 
 :math:`construction\_financing\_capex = (construction\_financing\_factor - 1) \quad \times`
 :math:`\hspace{10em} (construction\_insurance\_capex + commissioning\_capex \quad +`
