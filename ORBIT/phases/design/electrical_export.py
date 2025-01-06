@@ -350,6 +350,29 @@ class ElectricalDesign(CableSystem):
         )
 
         """SUBSTATION"""
+    def get_substation_design(self):   
+        voltage = self.cable.rated_voltage
+        substation_design = f"substation_design_{voltage}kV"
+
+        #default to using the 275 kV substation costs if there is no corresponding section in common_costs
+        try:
+            self.get_default_cost(substation_design, "mpt_unit_cost")
+        except KeyError:
+            voltage = "275kV"
+            substation_design = f"substation_design_{voltage}"
+        return substation_design
+    
+    def get_onshore_substation_design(self):   
+        voltage = self.cable.rated_voltage
+        onshore_substation_design = f"onshore_substation_design_{voltage}kV"
+
+        #default to using the 275 kV onshore substation costs if there is no corresponding section in common_costs
+        try:
+            self.get_default_cost(onshore_substation_design, "shunt_unit_cost")
+        except KeyError:
+            voltage = "275kV"
+            onshore_substation_design = f"onshore_substation_design_{voltage}"
+        return onshore_substation_design
 
     @property
     def total_substation_cost(self):
@@ -397,10 +420,10 @@ class ElectricalDesign(CableSystem):
         """Computes HVAC main power transformer (MPT). MPT cost is 0 for
         HVDC.
         """
-
+        substation_design =self.get_substation_design()
         _key = "mpt_unit_cost"
         _mpt_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         self.num_mpt = self.num_cables
@@ -417,13 +440,13 @@ class ElectricalDesign(CableSystem):
         """Computes HVAC shunt reactor cost. Shunt reactor cost is 0 for
         HVDC.
         """
-
+        substation_design =self.get_substation_design()
         touchdown = self.config["site"]["distance_to_landfall"]
 
         _key = "shunt_unit_cost"
 
         shunt_unit_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         if "HVDC" in self.cable.cable_type:
@@ -438,10 +461,10 @@ class ElectricalDesign(CableSystem):
 
     def calc_switchgear_costs(self):
         """Computes HVAC switchgear cost. Switchgear cost is 0 for HVDC."""
-
+        substation_design =self.get_substation_design()
         _key = "switchgear_cost"
         switchgear_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         self.num_switchgear = (
@@ -452,10 +475,10 @@ class ElectricalDesign(CableSystem):
 
     def calc_dc_breaker_cost(self):
         """Computes HVDC circuit breaker cost. Breaker cost is 0 for HVAC."""
-
+        substation_design =self.get_substation_design()
         _key = "dc_breaker_cost"
         dc_breaker_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         num_dc_breakers = (
@@ -467,19 +490,20 @@ class ElectricalDesign(CableSystem):
     def calc_ancillary_system_cost(self):
         """Calculates cost of ancillary systems."""
 
+        substation_design =self.get_substation_design()
         _key = "backup_gen_cost"
         backup_gen_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         _key = "workspace_cost"
         workspace_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         _key = "other_ancillary_cost"
         other_ancillary_cost = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         self.ancillary_system_costs = (
@@ -489,9 +513,10 @@ class ElectricalDesign(CableSystem):
     def calc_assembly_cost(self):
         """Calculates the cost of assembly on land."""
 
+        substation_design =self.get_substation_design()
         _key = "topside_assembly_factor"
         topside_assembly_factor = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         if topside_assembly_factor > 1.0:
@@ -506,11 +531,12 @@ class ElectricalDesign(CableSystem):
     def calc_converter_cost(self):
         """Computes converter cost."""
 
+        substation_design =self.get_substation_design()
         _key = "converter_cost"
         converter_cost = self._oss_design.get(
             _key,
             self.get_default_cost(
-                "substation_design", _key, subkey=self.cable.cable_type
+                substation_design, _key, subkey=self.cable.cable_type
             ),
         )
 
@@ -521,15 +547,15 @@ class ElectricalDesign(CableSystem):
         Calculates the mass and associated cost of the substation substructure
         based on equations 81-84 [1].
         """
-
+        substation_design =self.get_substation_design()
         _key = "oss_substructure_cost_rate"
         oss_substructure_cost_rate = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         _key = "oss_pile_cost_rate"
         oss_pile_cost_rate = self._oss_design.get(
-            _key, self.get_default_cost("substation_design", _key)
+            _key, self.get_default_cost(substation_design, _key)
         )
 
         # Substructure mass components
@@ -580,6 +606,8 @@ class ElectricalDesign(CableSystem):
     def calc_topside_mass_and_cost(self):
         """Calculates the mass and cost of the substation topsides."""
 
+        substation_design =self.get_substation_design()
+
         self.topside_mass = (
             3.85 * (self.mpt_rating * self.num_mpt) / self.num_substations
             + 285
@@ -589,7 +617,7 @@ class ElectricalDesign(CableSystem):
         topside_design_cost = self._oss_design.get(
             _key,
             self.get_default_cost(
-                "substation_design", _key, subkey=self.cable.cable_type
+                substation_design, _key, subkey=self.cable.cable_type
             ),
         )
 
@@ -599,12 +627,13 @@ class ElectricalDesign(CableSystem):
         """Minimum Cost of Onshore Substation Connection."""
 
         _design = self.config.get("onshore_substation_design", {})
+        onshore_substation_design = self.get_onshore_substation_design()
 
         _key = "onshore_converter_cost"
         _converter_cost = _design.get(
             _key,
             self.get_default_cost(
-                "onshore_substation_design", _key, subkey=self.cable.cable_type
+                onshore_substation_design, _key, subkey=self.cable.cable_type
             ),
         )
 
@@ -612,7 +641,7 @@ class ElectricalDesign(CableSystem):
 
         _key = "switchgear_cost"
         _switchgear_cost = _design.get(
-            _key, self.get_default_cost("onshore_substation_design", _key)
+            _key, self.get_default_cost(onshore_substation_design, _key)
         )
 
         self.onshore_switchgear_cost = self.num_switchgear * _switchgear_cost
@@ -621,7 +650,7 @@ class ElectricalDesign(CableSystem):
         _construction_rate = _design.get(
             _key,
             self.get_default_cost(
-                "onshore_substation_design", _key, subkey=self.cable.cable_type
+                onshore_substation_design, _key, subkey=self.cable.cable_type
             ),
         )
 
@@ -629,7 +658,7 @@ class ElectricalDesign(CableSystem):
 
         _key = "shunt_unit_cost"
         _shunt_unit_cost = _design.get(
-            _key, self.get_default_cost("onshore_substation_design", _key)
+            _key, self.get_default_cost(onshore_substation_design, _key)
         )
 
         self.onshore_shunt_reactor_cost = (
@@ -640,7 +669,7 @@ class ElectricalDesign(CableSystem):
         _compensation_rate = _design.get(
             _key,
             self.get_default_cost(
-                "onshore_substation_design", _key, subkey=self.cable.cable_type
+                onshore_substation_design, _key, subkey=self.cable.cable_type
             ),
         )
 
