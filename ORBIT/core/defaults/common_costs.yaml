@@ -69,4 +69,4 @@ semisubmersible_design:
 
 # Mooring system component cost rates
 mooring_system_design:                          # USD/m
-  mooring_line_cost_rate: [399.0, 721.0, 1088.0]
+  mooring_line_cost_rate: [507.0, 915.0, 1381.0]
