@@ -4,7 +4,7 @@ monopile_design:
   tp_steel_cost: 9926                           # USD/t
 
 # Port properties
-port_cost_per_month: 2e6                      # USD/month
+port_cost_per_month:  2498449                   # USD/month
 
 # Export system component cost rates
 export_system_design:
