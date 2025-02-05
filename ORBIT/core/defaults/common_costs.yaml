@@ -9,7 +9,7 @@ port_cost_per_month:  2498449                   # USD/month
 # Export system component cost rates
 export_system_design:
   cable_crossings:
-    crossing_unit_cost: 500000
+    crossing_unit_cost: 607253
 
 # Spar component cost rates
 spar_design:
