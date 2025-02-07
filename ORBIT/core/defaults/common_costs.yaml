@@ -24,9 +24,9 @@ substation_design:
   topside_fab_cost_rate: 14500                  # USD/t
   topside_design_cost:                          # USD
     #oldHVAC: 4.5e6
-    HVAC: 111895820  
+    HVAC:  193140000  
     HVDC-monopole: 529200000  
-    HVDC-bipole: 496387794  
+    HVDC-bipole:  856800000  
   shunt_cost_rate: 44163                        # USD/MW
   mpt_unit_cost: 2992926                        # USD/mpt
   shunt_unit_cost: 10428                        # USD/cable
@@ -39,7 +39,7 @@ substation_design:
   converter_cost:                               # USD
     HVAC: 0
     HVDC-monopole: 228600000   
-    HVDC-bipole: 308678124   
+    HVDC-bipole:  532800000  
   oss_substructure_cost_rate: 3785              # USD/t
   oss_pile_cost_rate: 0                         # USD/t
 
