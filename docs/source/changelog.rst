@@ -4,6 +4,11 @@ ORBIT Changelog
 ===============
 dev
 ---
+- Updated ``defaults/common_costs.yaml`` to 2024 USD. Cost rates for different models were determined
+  by commodity price index, inflation, and labor adjustments.
+- Added ``defaults/costs_by_procurement_year.csv`` which provides the default costs for a specific procurement year,
+  but in 2024 USD. User must manually update the values in ``common_cost.yaml`` if they want to assume a
+  procurement year other than 2023.
 - Enhanced ``ProjectManager``:
     - Improvements made to `soft_capex` calculations because previous versions
      used default `$/kW` values from the 2018 Cost of Wind Energy Review unless provided by
