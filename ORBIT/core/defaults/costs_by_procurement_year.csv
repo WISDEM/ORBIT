@@ -1,4 +1,4 @@
-﻿Class,Attribute Name,Units (in 2024 USD),2019,2020,2021,2022,2023,2024,Note that values in 2024 are inflated from the procurement year USD to 2024 USD using CPI
+﻿Class,Attribute Name,Units (in 2024 USD),2019,2020,2021,2022,2023,2024,Note that values are inflated from the procurement year USD to 2024 USD using CPI
 MonopileDesign,monopile_steel_cost,USD/t,3531,3427,3980,4019,3758,3636,
 MonopileDesign,tp_steel_cost,USD/t,9744,9575,10516,10559,10110,9926,
 SemiSubmersibleDesign,stiffened_column_CR,USD/t,3869,3787,4238,4268,4053,3961,
