@@ -50,7 +50,7 @@ onshore_substation_design:
     HVDC-monopole: 163724546   
     HVDC-bipole: 364991025   
   shunt_unit_cost: 13557                        # USD/cable
-  switchgear_cost: 972961                       # USD/cable
+  switchgear_cost: 9729618                      # USD/cable
   compensation_rate:                            # USD/cable
     HVAC: 32640626   
     HVDC-monopole: 0  
