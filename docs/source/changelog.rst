@@ -4,6 +4,10 @@ ORBIT Changelog
 ===============
 dev
 ---
+- Updated WISDEM API (`wisdem_api.py`)
+    - Match some variable names and inputs that have diverged over time.
+    - Caught turbine_capex double count in WISDEM when using `total_capex` from ORBIT.
+    - Updated some tests.
 - Enhanced ``ProjectManager``:
     - Improvements made to `soft_capex` calculations because previous versions
      used default `$/kW` values from the 2018 Cost of Wind Energy Review unless provided by
