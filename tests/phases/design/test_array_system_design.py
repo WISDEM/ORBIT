@@ -102,7 +102,7 @@ def test_string_creation(
 
 @pytest.mark.parametrize(
     "turbine_rating,expected",
-    ((1, 40), (2, 20), (4.5, 8), (6, 6), (8.5, 4), (12, 3)),
+    ((1, 32), (2, 16), (4.5, 7), (6, 5), (8.5, 3), (12, 2), (15, 2), (22, 1)),
 )
 def test_max_turbines_per_cable(turbine_rating, expected):
     config = deepcopy(config_full_grid)
