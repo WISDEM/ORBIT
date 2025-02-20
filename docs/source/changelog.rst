@@ -4,6 +4,9 @@ ORBIT Changelog
 ===============
 dev
 ---
+- Bug Fix: Characteristic Impedance calculation correction.
+    - There were some documentation typos and a units error in the calculation, where mH (milli) was divided by nF (nano)
+    - Updated several tests with new values that correlate to the latest cable power capacity
 - Updated WISDEM API (`wisdem_api.py`)
     - Match some variable names and inputs that have diverged over time.
     - Caught turbine_capex double count in WISDEM when using `total_capex` from ORBIT.
