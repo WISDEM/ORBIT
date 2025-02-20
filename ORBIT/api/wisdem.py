@@ -26,9 +26,9 @@ class Orbit(om.Group):
         """Define all input variables from all models."""
         self.set_input_defaults("wtiv", "example_wtiv")
         self.set_input_defaults("feeder", "example_feeder")
-        self.set_input_defaults("num_feeders", 1)
-        self.set_input_defaults("num_towing", 1)
-        self.set_input_defaults("num_station_keeping", 3)
+        #self.set_input_defaults("num_feeders", 1)
+        #self.set_input_defaults("num_towing", 1)
+        #self.set_input_defaults("num_station_keeping", 3)
         self.set_input_defaults(
             "oss_install_vessel", "example_heavy_lift_vessel",
         )
@@ -38,8 +38,8 @@ class Orbit(om.Group):
         self.set_input_defaults("plant_turbine_spacing", 7)
         self.set_input_defaults("plant_row_spacing", 7)
         self.set_input_defaults("plant_substation_distance", 1, units="km")
-        self.set_input_defaults("num_port_cranes", 1)
-        self.set_input_defaults("num_assembly_lines", 1)
+        #self.set_input_defaults("num_port_cranes", 1)
+        #self.set_input_defaults("num_assembly_lines", 1)
         self.set_input_defaults("takt_time", 170.0, units="h")
         self.set_input_defaults("port_cost_per_month", 2e6, units="USD/mo")
         self.set_input_defaults("construction_insurance_factor", 0.0115)
