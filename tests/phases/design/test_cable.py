@@ -28,6 +28,18 @@ cables = {
         "name": "passes",
         "cable_type": "HVAC",
     },
+    "hvdc": {
+        "ac_resistance": 0,  # ohm/km
+        "capacitance": 295000,  # nF/km
+        "conductor_size": 2000,  # mm^2
+        "cost_per_km": 828000,  # $
+        "current_capacity": 1900,  # A # ESTIMATE
+        "inductance": 0.127,  # mH/km
+        "linear_density": 53,  # t/km
+        "rated_voltage": 320,  # kV
+        "cable_type": "HVDC-monopole",  # HVDC vs HVAC
+        "name": "HVDC_2000mm_320kV",
+    },
 }
 
 plant_config_calculate_all_ring = {
@@ -102,6 +114,19 @@ def test_cable_required_inputs():
         Cable(cables["empty"])
 
 
+def test_calc_char_impedance():
+
+    cable_hvac = Cable(cables["passes"])
+
+    assert cable_hvac.char_impedance == pytest.approx(
+        complex(0.08 + 0.0529j), abs=1e-4
+    )
+
+    cable_hvdc = Cable(cables["hvdc"])
+
+    assert cable_hvdc.char_impedance == 0
+
+
 def test_power_factor():
     c = copy.deepcopy(cables["passes"])
 
@@ -124,16 +149,20 @@ def test_power_factor():
     if any((a < 0) | (a > 1) for a in results):
         raise Exception("Invalid Power Factor.")
 
+    cable_hvdc = Cable(cables["hvdc"])
+
+    assert cable_hvdc.power_factor == 0
+
 
 def test_cable_power():
     cable = Cable(cables["passes"])
-    assert cable.cable_power == pytest.approx(34.1341, abs=2e-1)
+    assert cable.cable_power == pytest.approx(28.5973, abs=2e-1)
 
-    c = copy.deepcopy(cables["passes"])
-    c["cable_type"] = "HVDC-monopole"
+    c = copy.deepcopy(cables["hvdc"])
+
     cable = Cable(c)
     print(c)
-    assert cable.cable_power == pytest.approx(39.6, abs=2e-1)
+    assert cable.cable_power == pytest.approx(1216.0, abs=1e0)
 
 
 @pytest.mark.parametrize(
