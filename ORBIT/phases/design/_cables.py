@@ -101,15 +101,16 @@ class Cable:
         if self.cable_type == "HVAC":
             self.calc_compensation_factor()
 
-        self.calc_char_impedance(**kwargs)
+        self.calc_char_impedance()
         self.calc_power_factor()
         self.calc_cable_power()
 
     def calc_char_impedance(self):
         """Calculate characteristic impedance of an HVAC cable. HVDC cables
-        have no impedance. Note that the units for inductance and capacitance
-        are normalized in the following formulae because the industry standards
-        report inductance as mH (10^-3) and capacitance as nF (10^-9).
+        are assumed to have no impedance. Note that the units for inductance
+        and capacitance per unit length are normalized in the following
+        formulae because the industry standards report inductance in
+        mH/km (10^-3) and capacitance in nF/km (10^-9).
 
         source: https://en.wikipedia.org/wiki/Characteristic_impedance
 
