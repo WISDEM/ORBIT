@@ -31,7 +31,7 @@ class Cable:
     ac_resistance : float
         Cable resistance for AC current, (ohms/km).
     inductance : float
-        Cable inductance, :math:`\\frac{MHz}{km}`.
+        Cable inductance, :math:`\\frac{mH}{km}`.
     capacitance : float
         Cable capacitance, :math:`\\frac{nF}{km}`.
     linear_density : float
@@ -101,12 +101,20 @@ class Cable:
         if self.cable_type == "HVAC":
             self.calc_compensation_factor()
 
-        self.calc_char_impedance(**kwargs)
+        self.calc_char_impedance()
         self.calc_power_factor()
         self.calc_cable_power()
 
     def calc_char_impedance(self):
-        """Calculate characteristic impedance of cable."""
+        """Calculate characteristic impedance of an HVAC cable. HVDC cables
+        are assumed to have no impedance. Note that the units for inductance
+        and capacitance per unit length are normalized in the following
+        formulae because the industry standards report inductance in
+        mH/km (10^-3) and capacitance in nF/km (10^-9).
+
+        source: https://en.wikipedia.org/wiki/Characteristic_impedance
+
+        """
         if self.cable_type in ["HVDC-monopole", "HVDC-bipole"]:
             self.char_impedance = 0
         else:
@@ -114,11 +122,11 @@ class Cable:
 
             num = complex(
                 self.ac_resistance,
-                2 * math.pi * self.line_frequency * self.inductance,
+                2 * math.pi * self.line_frequency * self.inductance * 1e-3,
             )
             den = complex(
                 conductance,
-                2 * math.pi * self.line_frequency * self.capacitance,
+                2 * math.pi * self.line_frequency * self.capacitance * 1e-9,
             )
             self.char_impedance = np.sqrt(num / den)
 
