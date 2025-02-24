@@ -75,6 +75,9 @@ class ParametricManager:
         """Run an individual config."""
 
         config = deepcopy(self.base)
+
+        run = benedict(run, keypath_separator=None).unflatten(separator=".")
+
         config.merge(run)
 
         if self.module is not None:
@@ -87,7 +90,7 @@ class ParametricManager:
 
         results = self.map_funcs(project, self.funcs)
         kept = self._get_kept_inputs(project.config)
-        data = {**run, **kept, **results}
+        data = {**run.flatten(separator="."), **kept, **results}
 
         return data
 
