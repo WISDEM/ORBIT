@@ -71,10 +71,10 @@ def test_cable_not_found():
 @pytest.mark.parametrize(
     "config,num_full_strings,num_partial_strings,num_turbines_full_string,num_turbines_partial_string",  # noqa: E501
     (
-        (config_full_ring, 10, 0, 4, 0),
-        (config_partial_ring, 12, 1, 4, 1),
-        (config_full_grid, 10, 0, 4, 0),
-        (config_partial_grid, 12, 1, 4, 1),
+        (config_full_ring, 13, 1, 3, 1),
+        (config_partial_ring, 16, 1, 3, 1),
+        (config_full_grid, 13, 1, 3, 1),
+        (config_partial_grid, 16, 1, 3, 1),
     ),
     ids=["full_ring", "partial_ring", "full_grid", "partial_grid"],
 )
@@ -102,7 +102,7 @@ def test_string_creation(
 
 @pytest.mark.parametrize(
     "turbine_rating,expected",
-    ((1, 40), (2, 20), (4.5, 8), (6, 6), (8.5, 4), (12, 3)),
+    ((1, 32), (2, 16), (4.5, 7), (6, 5), (8.5, 3), (12, 2), (15, 2), (22, 1)),
 )
 def test_max_turbines_per_cable(turbine_rating, expected):
     config = deepcopy(config_full_grid)
@@ -116,10 +116,10 @@ def test_max_turbines_per_cable(turbine_rating, expected):
 @pytest.mark.parametrize(
     "config,shape,num_null",
     (
-        (config_full_ring, (10, 4), 0),
-        (config_partial_ring, (13, 4), 3),
-        (config_full_grid, (10, 4), 0),
-        (config_partial_grid, (13, 4), 3),
+        (config_full_ring, (14, 3), 2),
+        (config_partial_ring, (17, 3), 2),
+        (config_full_grid, (14, 3), 2),
+        (config_partial_grid, (17, 3), 2),
     ),
     ids=["full_ring", "partial_ring", "full_grid", "partial_grid"],
 )
@@ -143,10 +143,10 @@ def test_grid_creation(config, shape, num_null):
 @pytest.mark.parametrize(
     "config,total_length",
     (
-        (config_full_ring, 34.7),
-        (config_partial_ring, 42.68),
-        (config_full_grid, 53.29),
-        (config_partial_grid, 77.0),
+        (config_full_ring, 35.62),
+        (config_partial_ring, 43.6),
+        (config_full_grid, 76.27),
+        (config_partial_grid, 106.41),
     ),
     ids=["full_ring", "partial_ring", "full_grid", "partial_grid"],
 )
@@ -246,4 +246,4 @@ def test_total_cable_cost():
     array = ArraySystemDesign(config_full_ring)
     array.run()
 
-    assert array.total_cable_cost == pytest.approx(11969999, abs=1e0)
+    assert array.total_cable_cost == pytest.approx(12713999, abs=1e0)
