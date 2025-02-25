@@ -17,4 +17,4 @@ transport_specs:
   max_windspeed: 20         # m/s
   transit_speed: 7          # km/h
 vessel_specs:
-  day_rate: 500000          # USD/day
+  day_rate: 624612          # USD/day

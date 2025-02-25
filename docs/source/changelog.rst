@@ -4,6 +4,14 @@ ORBIT Changelog
 ===============
 dev
 ---
+<<<<<<< HEAD
+- Updated ``defaults/common_costs.yaml`` to 2024 USD. Cost rates for different models were determined
+  by benchmarking the costs through industry outreach, along with adjustments
+  based on commodity prices, inflation, and labor indices.
+- Added ``defaults/costs_by_procurement_year.csv`` which provides the default costs for a specific procurement year,
+  but in 2024 USD. User must manually update the values in ``common_cost.yaml`` if they want to assume a
+  procurement year other than 2023.
+=======
 - Bug Fix: Characteristic Impedance calculation correction.
     - There were some documentation typos and a units error in the calculation, where mH (milli) was divided by nF (nano)
     - Updated several tests with new values that correlate to the latest cable power capacity
@@ -12,6 +20,7 @@ dev
     - Match some variable names and inputs that have diverged over time.
     - Caught turbine_capex double count in WISDEM when using `total_capex` from ORBIT.
     - Updated some tests.
+>>>>>>> origin/dev
 - Enhanced ``ProjectManager``:
     - Improvements made to `soft_capex` calculations because previous versions
      used default `$/kW` values from the 2018 Cost of Wind Energy Review unless provided by

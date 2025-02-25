@@ -17,6 +17,6 @@ transport_specs:
   max_windspeed: 20       # m/s
   transit_speed: 10       # km/h
 vessel_specs:
-  day_rate: 400000        # USD/day
+  day_rate: 250000        # USD/day
   mobilization_days: 7    # days
   mobilization_mult: 1  # Mobilization multiplier applied to 'day_rate'
