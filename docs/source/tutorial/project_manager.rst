@@ -27,21 +27,32 @@ required configuration parameters.
 
    {
        'site': {
-           'depth': 'float',
-           'mean_windspeed': 'float'
+           'depth': 'm',
+           'mean_windspeed': 'm/s'
        },
 
        'turbine': {
-           'rotor_diameter': 'float',
-           'hub_height': 'float',
-           'rated_windspeed': 'float'
+           'rotor_diameter': 'm',
+           'hub_height': 'm',
+           'rated_windspeed': 'm/s'
        },
 
-       'monopile_design': {
-           'design_time': 'float (optional)',
-           ...
-       },
-
+       'monopile_design': {'air_density': 'kg/m3 (optional)',
+                     'load_factor': 'float (optional)',
+                     'material_factor': 'float (optional)',
+                     'monopile_density': 'kg/m3 (optional)',
+                     'monopile_modulus': 'Pa (optional)',
+                     'monopile_steel_cost': 'USD/t (optional)',
+                     'monopile_tp_connection_thickness': 'm (optional)',
+                     'soil_coefficient': 'N/m3 (optional)',
+                     'tp_steel_cost': 'USD/t (optional)',
+                     'transition_piece_density': 'kg/m3 (optional)',
+                     'transition_piece_length': 'm (optional)',
+                     'transition_piece_thickness': 'm (optional)',
+                     'turb_length_scale': 'm (optional)',
+                     'weibull_scale_factor': 'float (optional)',
+                     'weibull_shape_factor': 'float (optional)',
+                     'yield_stress': 'Pa (optional)'},
        ...
 
        'design_phases': ['MonopileDesign'],

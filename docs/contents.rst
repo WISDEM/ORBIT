@@ -12,6 +12,7 @@ Contents:
 
    index
    source/intro/index
+   source/installation/index
    source/tutorial/index
    source/examples
    source/api

@@ -20,6 +20,7 @@ GitHub.
    design_phases
    phase_specific
    available_outputs
+   common_costs
    start_dates
    define_vessels
    parametric_manager
