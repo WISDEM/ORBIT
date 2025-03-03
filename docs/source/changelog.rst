@@ -2,26 +2,25 @@
 
 ORBIT Changelog
 ===============
-dev
+1.2
 ---
-<<<<<<< HEAD
-- Updated ``defaults/common_costs.yaml`` to 2024 USD. Cost rates for different models were determined
-  by benchmarking the costs through industry outreach, along with adjustments
-  based on commodity prices, inflation, and labor indices.
-- Added ``defaults/costs_by_procurement_year.csv`` which provides the default costs for a specific procurement year,
-  but in 2024 USD. User must manually update the values in ``common_cost.yaml`` if they want to assume a
-  procurement year other than 2023.
-=======
-- Bug Fix: Characteristic Impedance calculation correction.
-    - There were some documentation typos and a units error in the calculation, where mH (milli) was divided by nF (nano)
+- New cable `XLPE_1200mm_220kV.yaml` Is a 220kV cable that can carry ~400MW of HVAC power.
+- Fixed frozen python-benedict version
+    - ``ParametricManager`` can still use '.' as a keypath separator (no change to user inputs) and is compatible with latest python-benedict
+- Updated ``defaults/common_costs.yaml`` to 2024 USD. `PR #187 <https://github.com/WISDEM/ORBIT/pull/187>`_
+    - Cost rates for different models were determined by benchmarking the costs through industry outreach,
+      along with adjustments based on commodity prices, inflation, and labor indices.
+    - Added ``defaults/costs_by_procurement_year.csv`` which provides the default costs for a specific procurement year,
+      but in 2024 USD. User must manually update the values in ``common_cost.yaml`` if they want to assume a
+      procurement year other than 2023.
+- Bug Fix: Characteristic Impedance calculation correction. `Issue #186 <https://github.com/WISDEM/ORBIT/issues/186>`_
+    - There were some documentation typos and a units error in the calculation, where mH (10^-3) was divided by nF (10^-9)
     - Updated several tests with new values that correlate to the latest cable power capacity
-    - See issue: https://github.com/WISDEM/ORBIT/issues/186
 - Updated WISDEM API (`wisdem_api.py`)
     - Match some variable names and inputs that have diverged over time.
     - Caught turbine_capex double count in WISDEM when using `total_capex` from ORBIT.
     - Updated some tests.
->>>>>>> origin/dev
-- Enhanced ``ProjectManager``:
+- Enhanced ``ProjectManager``: `PR #177 <https://github.com/WISDEM/ORBIT/pull/177>`_
     - Improvements made to `soft_capex` calculations because previous versions
      used default `$/kW` values from the 2018 Cost of Wind Energy Review unless provided by
      the user. Those default values are out of date and do not scale with the size of the
