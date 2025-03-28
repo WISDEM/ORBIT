@@ -13,7 +13,7 @@ Overview
 --------
 The ``ProjectManager`` is the primary system for interacting with ORBIT to simulate
 a wind project. Users can customize their project by specifying a a wide variety of
-parameters as a dictionary (see tutorial: :ref:`Project Manager Tutorial <project_manager>`).
+parameters as a dictionary (see :doc:`ProjectManager tutorial <tutorial/project_manager>`).
 For more details of the code implementation, please see :doc:`Project Manager API <api_ProjectManager>`.
 
 It instantiates a class aggregates project parameters, specifies a start date, and interprets a weather
@@ -27,7 +27,7 @@ Run
 This method checks to see if a design or install phase is instatiated prior to running them. Depending on
 which design phases are specified, each phase is run in no particular order and the results are added to
 `.design_results` dictionary. Conversely, the install phases can be run sequentially or as overlapped
-processes (see example: :ref:`Overlapping install <project_manager>`). It is worth noting, that ORBIT
+processes (see example: :doc:`Overlapping install <examples>`). It is worth noting, that ORBIT
 has built in logic to determine any dependency between install phases.
 
 Properties
@@ -57,7 +57,7 @@ The `@classmethod` decorator allows the ``ProjectManager`` to access and modify 
 - register_design_phase: Add a custom design phase to the ``ProjectManager`` class.
 - register_install_phase: Add a custom install phase to the ``ProjectManager`` class.
 
-Soft CapEx Methodology:
+Soft CapEx Methodology
 -----------------------
 The methodology outlined in Beiter et al. (2016) applies multipliers
 (or assumed factors) to the magnitude of capital expenditure (CapEx)
