@@ -4,15 +4,19 @@ ORBIT Changelog
 ===============
 1.2
 ---
-- New cable `XLPE_1200mm_220kV.yaml` Is a 220kV cable that can carry ~400MW of HVAC power.
+- New cable ``library/cables/XLPE_1200mm_220kV.yaml`` Is a 220kV cable that can carry ~400MW of HVAC power.
 - Fixed frozen python-benedict version
     - ``ParametricManager`` can still use '.' as a keypath separator (no change to user inputs) and is compatible with latest python-benedict
-- Updated ``defaults/common_costs.yaml`` to 2024 USD. `PR #187 <https://github.com/WISDEM/ORBIT/pull/187>`_
+- Updated various default costs to 2024 USD. `PR #187 <https://github.com/WISDEM/ORBIT/pull/187>`_
     - Cost rates for different models were determined by benchmarking the costs through industry outreach,
       along with adjustments based on commodity prices, inflation, and labor indices.
-    - Added ``defaults/costs_by_procurement_year.csv`` which provides the default costs for a specific procurement year,
-      but in 2024 USD. User must manually update the values in ``common_cost.yaml`` if they want to assume a
-      procurement year other than 2023.
+    - ORBIT assumes a procurement year of 2024 in the files:
+        - ``defaults/common_costs.yaml`` represents all the design related costs.
+        - ``ORBIT/manager.py`` includes project related costs
+        - ``library/cables/*`` shows all the cables with updated `cost_per_km`
+        - ``library/vessels/*`` shows all the vessels with updated `day_rate`
+    - Added ``defaults/costs_by_procurement_year.csv`` which provides the default costs for other procurement year,
+      but in 2024 USD.
 - Bug Fix: Characteristic Impedance calculation correction. `Issue #186 <https://github.com/WISDEM/ORBIT/issues/186>`_
     - There were some documentation typos and a units error in the calculation, where mH (10^-3) was divided by nF (10^-9)
     - Updated several tests with new values that correlate to the latest cable power capacity
