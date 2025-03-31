@@ -2,6 +2,7 @@
 
 ORBIT Changelog
 ===============
+
 1.2
 ---
 - New cable ``library/cables/XLPE_1200mm_220kV.yaml`` Is a 220kV cable that can carry ~400MW of HVAC power.
