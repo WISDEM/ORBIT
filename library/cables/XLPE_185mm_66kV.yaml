@@ -1,7 +1,7 @@
 ac_resistance: 0.128    #
 capacitance: 163        #
 conductor_size: 185     #
-cost_per_km: 200000     #
+cost_per_km: 241542     #
 current_capacity: 445   # At 2m burial depth
 inductance: 0.443       #
 linear_density: 26.1    #

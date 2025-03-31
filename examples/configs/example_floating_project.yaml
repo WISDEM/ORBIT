@@ -57,3 +57,5 @@ install_phases:
   TurbineInstallation: 0
 # Project Inputs
 turbine: 12MW_generic
+project_parameters:
+  turbine_capex: 1500

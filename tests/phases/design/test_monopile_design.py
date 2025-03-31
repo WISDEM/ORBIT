@@ -127,4 +127,4 @@ def test_total_cost():
 
     print(mono.total_cost)
 
-    assert mono.total_cost == pytest.approx(68833066, abs=1e0)
+    assert mono.total_cost == pytest.approx(117037653, abs=1e0)

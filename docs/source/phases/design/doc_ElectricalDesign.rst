@@ -131,5 +131,5 @@ a list of cable sections and their lengths and masses that represent the export
 cable system, as well as the offshore substation substructure and topside mass
 and cost, and number of substations. This result can then be passed to the
 :doc:`export cable installation module <../install/export/doc_ExportCableInstall>` and
-:doc:`offshore substation installation module <../install/export/doc_OffshoreSubstationInstall>`
+:doc:`offshore substation installation module <../install/oss/doc_OffshoreSubstationInstall>`
 to simulate the installation of the export system.

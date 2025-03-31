@@ -77,7 +77,7 @@ def test_catenary_mooring_system_kwargs():
 
     base_cost = moor.detailed_output["system_cost"]
 
-    assert base_cost == pytest.approx(76173891, abs=1e0)
+    assert base_cost == pytest.approx(88146639, abs=1e0)
 
     for k, v in test_kwargs.items():
         config = deepcopy(base)
@@ -137,7 +137,7 @@ def test_tlp_mooring_system_kwargs():
 
     base_cost = moor.detailed_output["system_cost"]
 
-    assert base_cost == pytest.approx(57633231, abs=1e0)
+    assert base_cost == pytest.approx(64617231, abs=1e0)
 
     for k, v in test_kwargs.items():
         config = deepcopy(tlp_base)

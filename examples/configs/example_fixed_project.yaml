@@ -13,7 +13,7 @@ plant:
 landfall:
   interconnection_distance: 3
   trench_length: 2
-turbine: SWT_6MW_154m_110m
+turbine: 12MW_generic
 # Vessels
 array_cable_install_vessel: example_cable_lay_vessel
 export_cable_install_vessel: example_cable_lay_vessel
@@ -52,5 +52,3 @@ install_phases:
 # Project Inputs
 project_parameters:
   turbine_capex: 1500
-  commissioning: 0.01
-  decommissioning: 0.15

@@ -33,7 +33,7 @@ def test_number_cables():
     print(export.config)
     export.run()
 
-    assert export.num_cables == 9
+    assert export.num_cables == 11
 
 
 def test_cable_length():
@@ -60,8 +60,9 @@ def test_total_cable():
     length = 0.02 + 3 + 30
     length += length * 0.01
     mass = length * export.cable.linear_density
-    assert export.total_mass == pytest.approx(mass * 9, abs=1e-10)
-    assert export.total_length == pytest.approx(length * 9, abs=1e-10)
+    # 11 = number of cables
+    assert export.total_mass == pytest.approx(mass * 11, abs=1e-10)
+    assert export.total_length == pytest.approx(length * 11, abs=1e-10)
 
 
 def test_cables_property():
@@ -103,7 +104,7 @@ def test_design_result():
     # landfall = export.design_results["export_system"]["landfall"]
 
     assert cables["sections"] == [export.length]
-    assert cables["number"] == 9
+    assert cables["number"] == 11
     assert cables["linear_density"] == export.cable.linear_density
     # assert landfall["interconnection_distance"] == 3
 
