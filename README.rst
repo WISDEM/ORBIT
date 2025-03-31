@@ -7,7 +7,7 @@ Offshore Renewables Balance of system and Installation Tool
 
 |Binder| |Pre-commit| |Black| |isort| |Ruff|
 
-:Authors: `Jake Nunemaker <https://www.linkedin.com/in/jake-nunemaker/>`_, `Matt Shields <https://www.linkedin.com/in/matt-shields-834a6b66/>`_, `Rob Hammond <https://www.linkedin.com/in/rob-hammond-33583756/>`_
+:Authors: `Jake Nunemaker <https://www.linkedin.com/in/jake-nunemaker/>`_, `Matt Shields <https://www.linkedin.com/in/matt-shields-834a6b66/>`_, `Rob Hammond <https://www.linkedin.com/in/rob-hammond-33583756/>`_, `Nick Riccobono <https://www.linkedin.com/in/nicholas-riccobono-674a3b43/>`
 :Documentation: `ORBIT Docs <https://wisdem.github.io/ORBIT/>`_
 
 Installation
