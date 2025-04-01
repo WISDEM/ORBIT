@@ -11,7 +11,10 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except:
+    pass
 
 from ORBIT.core.library import export_library_specs, extract_library_specs
 from ORBIT.core.exceptions import LibraryItemNotFoundError
