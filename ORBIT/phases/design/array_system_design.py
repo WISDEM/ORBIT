@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 try:
     import matplotlib.pyplot as plt
-except:
+except ModuleNotFoundError:
     pass
 
 from ORBIT.core.library import export_library_specs, extract_library_specs
