@@ -3,6 +3,12 @@
 ORBIT Changelog
 ===============
 
+1.2.1
+-----
+- Removed `wisdem_api.py` because WISDEM now uses orbit as a pip installed package.
+- Added Python 3.12 and 3.13 to the workflow files.
+- Moved matplotlib as an optional dependency
+
 1.2
 ---
 - New cable ``library/cables/XLPE_1200mm_220kV.yaml`` Is a 220kV cable that can carry ~400MW of HVAC power.

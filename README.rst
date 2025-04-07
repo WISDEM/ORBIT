@@ -77,7 +77,7 @@ Instructions
 Dependencies
 ~~~~~~~~~~~~
 
-- Python 3.9, 3.10, 3.11
+- Python >=3.9, <=3.13
 - marmot-agents
 - SimPy
 - NumPy
