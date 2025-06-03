@@ -421,7 +421,7 @@ class CustomMooringSystemDesign(MooringSystemDesign):
 
         self.initialize_custom_data()
 
-        self._check_number_lines()
+        #self._check_number_lines()
         self._check_number_turbines()
 
         self.chain = self.df_by_section_id("chain_")

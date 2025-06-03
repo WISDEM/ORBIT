@@ -199,8 +199,9 @@ class MooringSystemSupplyChain(InstallPhase):
         except KeyError:
             _area = self.chain_supply["space_required"]
 
-        domestic_chain = chains_df[chains_df['diameter'] < import_size]
-        international_chain = chains_df[chains_df['diameter'] >= import_size]
+        domestic_chain = chains_df[chains_df['diameter'] <= import_size]
+        #domestic_chain = domestic_chain.sort_values(by='diameter')
+        international_chain = chains_df[chains_df['diameter'] > import_size]
 
         self.chains = [
             Component(
@@ -231,7 +232,7 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in international_chain.iterrows()
         ]
 
-        print("Internationally sourced chains: ", self.itl_chains)
+        #print("Internationally sourced chains: ", self.itl_chains)
         # print(f"Number of chains: {len(self.chains)}")
         # print(vars(self.chains[1]))
 
