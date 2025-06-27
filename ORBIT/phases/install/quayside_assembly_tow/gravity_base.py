@@ -85,9 +85,7 @@ class GravityBasedInstallation(InstallPhase):
         
         if "wtiv" not in self.config:
             self.initialize_turbine_assembly()
-        else:
-            self.env.process(self.forward_substructures_to_assembly_storage())
-    
+        
         self.initialize_queue()
         self.initialize_towing_groups()
         self.initialize_support_vessel()
@@ -144,6 +142,10 @@ class GravityBasedInstallation(InstallPhase):
 
             self.env.register(a)
             a.start()
+            
+            if "wtiv" in self.config:
+                self.env.process(self.forward_substructures_to_assembly_storage(a))
+                
             self.sub_assembly_lines.append(a)
 
         try:
@@ -314,8 +316,8 @@ class GravityBasedInstallation(InstallPhase):
         delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
 
         return delay
-    
-    def forward_substructures_to_assembly_storage(self):
+
+    def forward_substructures_to_assembly_storage(self, SubstructureAssemblyLine):
         while True:
             # Wait until there is both:
             # - an item in wet_storage
@@ -323,6 +325,10 @@ class GravityBasedInstallation(InstallPhase):
             if len(self.assembly_storage.items) < self.assembly_storage.capacity:
                 item = yield self.wet_storage.get()
                 yield self.assembly_storage.put(item)
+                # submit action log item saying what happened "moved from wet to sub assembly storage"
+                SubstructureAssemblyLine.submit_action_log(
+                "Move GBF from Wet Storage to Assembly Storage", 0
+                )
             else:
                 # Wait a short amount of time before trying again
                 yield self.env.timeout(0.001)
