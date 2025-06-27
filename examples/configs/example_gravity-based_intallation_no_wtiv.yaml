@@ -29,19 +29,16 @@ ahts_vessel: example_ahts_vessel
 #wtiv: example_wtiv # GBF installation without WTIV
 # Substructure
 substructure: 
-    unit_cost: 10000000
-    takt_time: 0
+    unit_cost: 5700000   
+    takt_time: 0   
+    #towing_speed: 6.5, considered on towing vessel file.
 port:
-    sub_assembly_lines: 1  
-    turbine_assembly_cranes: 1 
-    sub_storage: 1   
+    monthly_rate: 520700 # This is the turbine assembly crane monthly rate. The port rental costs are put in as line items in the LCOE calc (where CapEx breakdown is updated) to include the summed port & quayside cost assumed at 8 months. This 8 months includeds 6 months takt time and 2 months storage (why takt is set to 0).
+    sub_assembly_lines: 2 # how many you can produce in parallel
+    turbine_assembly_cranes: 2  
+    sub_storage: 1  
     assembly_storage: 1   
 # Module Specific
-scour_protection_design: 
-  cost_per_tonne: 40
-  scaling_factor: 1.5
-  scour_protection_diameter: 60   
-  scour_protection_depth: 0.8  
 OffshoreSubstationInstallation:
   feeder: example_heavy_feeder
   num_feeders: 1
@@ -51,11 +48,11 @@ array_system_design:
   - XLPE_630mm_66kV
 export_system_design:
   cables: XLPE_1000mm_220kV
-  percent_added_length: 5.0
+  percent_added_length: 0.5
 # Configured Phases
 design_phases:
-- MonopileDesign # Do not have a design phase for GBFs
-- ScourProtectionDesign
+# Do not have a design phase for GBFs, we input unit_cost
+#- ScourProtectionDesign, not modeled
 - ArraySystemDesign
 - ExportSystemDesign
 - OffshoreSubstationDesign
@@ -65,7 +62,7 @@ install_phases:
   GravityBasedInstallation: 0
   #TurbineInstallation: 0 # GBF installation without WTIV
   OffshoreSubstationInstallation: 0
-  ScourProtectionInstallation: 0
+#  ScourProtectionInstallation: 0, not modeled
 # Project Inputs
 project_parameters:
   turbine_capex: 1700
