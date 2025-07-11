@@ -1,8 +1,8 @@
 ,cost_multiplier,agent,action,duration,cost,level,time,phase,site_depth,hub_height,phase_name,per_trip,location,max_waveheight,max_windspeed,transit_speed
-2,1.0,WTIV,Mobilize,168.0,2800000.0,ACTION,0.0,TurbineInstallation,,,,,,,,
+4,1.0,WTIV,Mobilize,168.0,2800000.0,ACTION,0.0,TurbineInstallation,,,,,,,,
 6,,WTIV,Fasten Tower Section,4.0,66666.66666666667,ACTION,4.0,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,
 9,,WTIV,Fasten Tower Section,4.0,66666.66666666667,ACTION,8.0,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,
-11,,WTIV,Fasten Nacelle,4.0,66666.66666666667,ACTION,12.0,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,
+12,,WTIV,Fasten Nacelle,4.0,66666.66666666667,ACTION,12.0,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,
 13,,WTIV,Fasten Blade,1.5,25000.0,ACTION,13.5,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,
 14,,WTIV,Fasten Blade,1.5,25000.0,ACTION,15.0,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,
 16,,WTIV,Fasten Blade,1.5,25000.0,ACTION,16.5,TurbineInstallation,40.0,150.0,TurbineInstallation,,,,,

@@ -1,6 +1,6 @@
 ,cost_multiplier,agent,action,duration,cost,level,time,phase,site_depth,hub_height,phase_name,per_trip,location,max_waveheight,max_windspeed,transit_speed
-1,1.0,WTIV,Mobilize,168.0,2800000.0,ACTION,0.0,MonopileInstallation,,,,,,,,
-10,,WTIV,Fasten Monopile,12.0,200000.0,ACTION,12.0,MonopileInstallation,40.0,150.0,MonopileInstallation,3.0,,,,
+3,1.0,WTIV,Mobilize,168.0,2800000.0,ACTION,0.0,MonopileInstallation,,,,,,,,
+11,,WTIV,Fasten Monopile,12.0,200000.0,ACTION,12.0,MonopileInstallation,40.0,150.0,MonopileInstallation,3.0,,,,
 20,,WTIV,Fasten Transition Piece,8.0,133333.33333333334,ACTION,20.0,MonopileInstallation,40.0,150.0,MonopileInstallation,3.0,,,,
 31,,WTIV,Fasten Monopile,12.0,200000.0,ACTION,32.0,MonopileInstallation,40.0,150.0,MonopileInstallation,3.0,,,,
 35,,WTIV,Fasten Transition Piece,8.0,133333.33333333334,ACTION,40.0,MonopileInstallation,40.0,150.0,MonopileInstallation,3.0,,,,
