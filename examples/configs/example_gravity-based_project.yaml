@@ -1,0 +1,68 @@
+# Site + Plant Parameters
+site:
+  depth: 40 # 34 COE
+  distance: 120
+  distance_to_landfall: 50
+  mean_windspeed: 9
+plant:
+  layout: grid
+  num_turbines: 50 # 40 COE
+  row_spacing: 7
+  substation_distance: 1
+  turbine_spacing: 7
+landfall:
+  interconnection_distance: 3
+  trench_length: 2
+turbine: 15MW_generic
+# Vessels
+support_vessel: example_support_vessel
+towing_vessel: example_towing_vessel
+towing_vessel_groups:
+    towing_vessels: 3
+    station_keeping_vessels: 2
+array_cable_install_vessel: example_cable_lay_vessel
+export_cable_install_vessel: example_cable_lay_vessel
+export_cable_bury_vessel: example_cable_lay_vessel
+oss_install_vessel: example_heavy_lift_vessel
+spi_vessel: example_scour_protection_vessel
+ahts_vessel: example_ahts_vessel
+#wtiv: example_wtiv # GBF installation without WTIV
+# Substructure
+substructure: 
+    unit_cost: 5700000   
+    takt_time: 0   
+    #towing_speed: 6.5, considered on towing vessel file.
+port:
+    monthly_rate: 520700 # This is the turbine assembly crane monthly rate. The port rental costs are put in as line items in the LCOE calc (where CapEx breakdown is updated) to include the summed port & quayside cost assumed at 8 months. This 8 months includeds 6 months takt time and 2 months storage (why takt is set to 0).
+    sub_assembly_lines: 2 # how many you can produce in parallel
+    turbine_assembly_cranes: 2  
+    sub_storage: 1  
+    assembly_storage: 1   
+# Module Specific
+OffshoreSubstationInstallation:
+  feeder: example_heavy_feeder
+  num_feeders: 1
+array_system_design:
+  cables:
+  - XLPE_185mm_66kV
+  - XLPE_630mm_66kV
+export_system_design:
+  cables: XLPE_1000mm_220kV
+  percent_added_length: 0.5
+# Configured Phases
+design_phases:
+# Do not have a design phase for GBFs, we input unit_cost
+#- ScourProtectionDesign, not modeled
+- ArraySystemDesign
+- ExportSystemDesign
+- OffshoreSubstationDesign
+install_phases:
+  ArrayCableInstallation: 0
+  ExportCableInstallation: 2000
+  GravityBasedInstallation: 0
+  #TurbineInstallation: 0 # GBF installation without WTIV
+  OffshoreSubstationInstallation: 0
+#  ScourProtectionInstallation: 0, not modeled
+# Project Inputs
+project_parameters:
+  turbine_capex: 1700
