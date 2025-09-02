@@ -11,12 +11,16 @@ __email__ = ["jake.nunemaker@nrel.gov"]
 
 import re
 import datetime as dt
+import warnings
 import collections.abc as collections
 from copy import deepcopy
 from math import ceil
 from numbers import Number
 from pathlib import Path
+from warnings import warn
 from itertools import product
+
+warnings.filterwarnings("default")
 
 import numpy as np
 import pandas as pd
@@ -191,6 +195,21 @@ class ProjectManager:
 
     def _print_warnings(self):
 
+        if "contingency" in self.project_params:
+            warn(
+                "The 'contingency' project parameter will be deprecated"
+                " and replaced with two separate parameters:"
+                " 'installation_contingency' and 'procurement_contingency'."
+                " Specify the 'installation_contingency' and "
+                " 'procurement_contingency' in $/kW, or alternatively, use"
+                " 'procurement_contingency_factor' in '%' of the turbine "
+                " + system + project capex, and"
+                " 'installation_contingency_factor' in '%' of the"
+                " installation capex",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         try:
             df = pd.DataFrame(self.logs)
             df = df.loc[~df["message"].isna()]
@@ -202,7 +221,7 @@ class ProjectManager:
                 phase = df.loc[idx, "phase"]
                 print(f"{phase}:\n\t {msg}")
 
-        except KeyError:
+        except:
             pass
 
     @property
@@ -321,11 +340,55 @@ class ProjectManager:
             "project_lifetime": "yrs (optional, default: 25)",
             "discount_rate": "yearly (optional, default: .025)",
             "opex_rate": "$/kW/year (optional, default: 150)",
-            "construction_insurance": "$/kW (optional, default: 44)",
-            "construction_financing": "$/kW (optional, default: 183)",
-            "contingency": "$/kW (optional, default: 316)",
-            "commissioning": "$/kW (optional, default: 44)",
-            "decommissioning": "$/kW (optional, default: 58)",
+            "construction_insurance": (
+                "$/kW (optional, default: value calculated using"
+                " construction_insurance_factor)"
+            ),
+            "construction_financing": (
+                "$/kW (optional, default: value calculated using"
+                " construction_financing_factor))"
+            ),
+            "procurement_contingency": (
+                "$/kW (optional, default: value calculated using"
+                " procurement_contingency_factor)"
+            ),
+            "installation_contingency": (
+                "$/kW (optional, default: value calculated using"
+                " installation_contingency_factor)"
+            ),
+            "decommissioning": (
+                "$/kW (optional, default: value calculated using"
+                " decommissioning_factor)"
+            ),
+            "commissioning": (
+                "$/kW (optional, default: value calculated using"
+                " commissioning_factor)"
+            ),
+            "construction_insurance_factor": (
+                "float (optional, default: 0.0115)"
+            ),
+            "construction_financing_factor": (
+                "$/kW (optional, default: value calculated using"
+                " spend_schedule, tax_rate, and"
+                " interest_during_construction))",
+            ),
+            "spend_schedule": (
+                "dict (optional,"
+                " default: {0: 0.25, 1: 0.25, 2: 0.3, 3: 0.1,"
+                " 4: 0.1, 5: 0.0}"
+            ),
+            "tax_rate": "float (optional, default: 0.26",
+            "interest_during_construction": (
+                "float (optional, default: 0.044"
+            ),
+            "procurement_contingency_factor": (
+                "float (optional, default: 0.0575)"
+            ),
+            "installation_contingency_factor": (
+                "float (optional, default: 0.345)"
+            ),
+            "decommissioning_factor": ("float (optional, default: 0.1725)"),
+            "commissioning_factor": "float (optional, default: 0.0115)",
             "site_auction_price": "$ (optional, default: 100e6)",
             "site_assessment_cost": "$ (optional, default: 50e6)",
             "construction_plan_cost": "$ (optional, default: 1e6)",
@@ -964,6 +1027,12 @@ class ProjectManager:
             # Costs
             "capex_breakdown": self.capex_breakdown,
             "capex_breakdown_per_kw": self.capex_breakdown_per_kw,
+            "capex_detailed_soft_capex_breakdown": (
+                self.capex_detailed_soft_capex_breakdown
+            ),
+            "capex_detailed_soft_capex_breakdown_per_kw": (
+                self.capex_detailed_soft_capex_breakdown_per_kw
+            ),
             "turbine_capex": self.turbine_capex,
             "turbine_capex_per_kw": self.turbine_capex_per_kw,
             "installation_capex": self.installation_capex,
@@ -972,6 +1041,8 @@ class ProjectManager:
             "system_capex_per_kw": self.system_capex_per_kw,
             "overnight_capex": self.overnight_capex,
             "overnight_capex_per_kw": self.overnight_capex_per_kw,
+            "soft_capex_breakdown": self.soft_capex_breakdown,
+            "soft_capex_breakdown_per_kw": self.soft_capex_breakdown_per_kw,
             "soft_capex": self.soft_capex,
             "soft_capex_per_kw": self.soft_capex_per_kw,
             "bos_capex": self.bos_capex,
@@ -1370,7 +1441,9 @@ class ProjectManager:
                 outputs[name] = cost
 
         outputs["Turbine"] = self.turbine_capex
+
         outputs["Soft"] = self.soft_capex
+
         outputs["Project"] = self.project_capex
 
         return outputs
@@ -1382,6 +1455,31 @@ class ProjectManager:
         return {
             k: v / (self.capacity * 1000)
             for k, v in self.capex_breakdown.items()
+        }
+
+    @property
+    def capex_detailed_soft_capex_breakdown(self):
+        """Returns CapEx breakdown by category with a detailed soft capex
+        breakdown.
+        """
+
+        outputs = self.capex_breakdown
+
+        outputs.pop("Soft")
+
+        outputs = {**outputs, **self.soft_capex_breakdown}
+
+        return outputs
+
+    @property
+    def capex_detailed_soft_capex_breakdown_per_kw(self):
+        """Returns CapEx per kW breakdown by category with a detailed soft
+        capex breakdown.
+        """
+
+        return {
+            k: v / (self.capacity * 1000)
+            for k, v in self.capex_detailed_soft_capex_breakdown.items()
         }
 
     @property
@@ -1436,38 +1534,239 @@ class ProjectManager:
 
     @property
     def soft_capex(self):
-        """Returns total project cost costs."""
+        """Returns Total Soft CapEx."""
 
-        try:
-            capex = self.soft_capex_per_kw * self.capacity * 1000
-
-        except TypeError:
-            capex = None
-
-        return capex
+        return sum(self.soft_capex_breakdown.values())
 
     @property
     def soft_capex_per_kw(self):
+        """Returns Total Soft CapEx per kW."""
+
+        return self.soft_capex / (self.capacity * 1000)
+
+    @property
+    def soft_capex_breakdown(self):
+        """Returns soft cost breakdown."""
+
+        soft_capex = {
+            "Construction Insurance": self.construction_insurance_capex(),
+            "Decommissioning": self.decommissioning_capex(),
+            "Commissioning": self.commissioning_capex(),
+            "Procurement Contingency": self.procurement_contingency_capex(),
+            "Installation Contingency": self.installation_contingency_capex(),
+            "Construction Financing": self.construction_financing_capex(),
+        }
+
+        return soft_capex
+
+    @property
+    def soft_capex_breakdown_per_kw(self):
+        """Returns soft cost breakdown per kw."""
+
+        return {
+            k: v / (self.capacity * 1000)
+            for k, v in self.soft_capex_breakdown.items()
+        }
+
+    def construction_insurance_capex(self):
         """
-        Returns project soft costs per kW. Default numbers are based on the
-        Cost of Energy Review (Stehly and Beiter 2018).
+        Returns the construction insurance capital cost of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
         """
 
-        insurance = self.project_params.get("construction_insurance", 44)
-        financing = self.project_params.get("construction_financing", 183)
-        contingency = self.project_params.get("contingency", 316)
-        commissioning = self.project_params.get("commissioning", 44)
-        decommissioning = self.project_params.get("decommissioning", 58)
-
-        return sum(
-            [
-                insurance,
-                financing,
-                contingency,
-                commissioning,
-                decommissioning,
-            ],
+        construction_insurance_per_kW = self.project_params.get(
+            "construction_insurance", None
         )
+
+        contruction_insurance_factor = self.project_params.get(
+            "construction_insurance_factor", 0.0115
+        )
+
+        if construction_insurance_per_kW is not None:
+            construction_insurance = (
+                construction_insurance_per_kW * self.capacity * 1000
+            )
+        else:
+            construction_insurance = (
+                self.turbine_capex + self.bos_capex + self.project_capex
+            ) * contruction_insurance_factor
+
+        return construction_insurance
+
+    def decommissioning_capex(self):
+        """
+        Returns the decommissioning capital cost of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
+        """
+
+        decommissioning_per_kW = self.project_params.get(
+            "decommissioning", None
+        )
+
+        decommissioning_factor = self.project_params.get(
+            "decommissioning_factor", 0.175
+        )
+
+        if decommissioning_per_kW is not None:
+            decommissioning = decommissioning_per_kW * self.capacity * 1000
+
+        else:
+            decommissioning = self.installation_capex * decommissioning_factor
+
+        return decommissioning
+
+    def commissioning_capex(self):
+        """
+        Returns the commissioning capital cost of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
+        """
+
+        commissioning_per_kW = self.project_params.get(
+            "commissioning", None
+        )
+
+        commissioning_factor = self.project_params.get(
+            "commissioning_factor", 0.0115
+        )
+
+        if commissioning_per_kW is not None:
+            commissioning = (
+                commissioning_per_kW * self.capacity * 1000
+            )
+
+        else:
+            commissioning = (
+                self.turbine_capex + self.bos_capex + self.project_capex
+            ) * commissioning_factor
+
+        return commissioning
+
+    def procurement_contingency_capex(self):
+        """
+        Returns the procurement contingency capital cost of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
+        """
+
+        procurement_contingency_per_kW = self.project_params.get(
+            "procurement_contingency", None
+        )
+
+        procurement_contingency_factor = self.project_params.get(
+            "procurement_contingency_factor", 0.0575
+        )
+
+        if procurement_contingency_per_kW is not None:
+            procurement_contingency = (
+                procurement_contingency_per_kW * self.capacity * 1000
+            )
+
+        else:
+            procurement_contingency = (
+                self.turbine_capex
+                + self.bos_capex
+                + self.project_capex
+                - self.installation_capex
+            ) * procurement_contingency_factor
+
+        return procurement_contingency
+
+    def installation_contingency_capex(self):
+        """
+        Returns the installation contingency capital cost of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
+        """
+
+        installation_contingency_per_kW = self.project_params.get(
+            "installation_contingency", None
+        )
+
+        installation_contingency_factor = self.project_params.get(
+            "installation_contingency_factor", 0.345
+        )
+
+        if installation_contingency_per_kW is not None:
+            installation_contingency = (
+                installation_contingency_per_kW * self.capacity * 1000
+            )
+
+        else:
+            installation_contingency = (
+                self.installation_capex * installation_contingency_factor
+            )
+
+        return installation_contingency
+
+    def construction_financing_factor(self):
+        """
+        Returns the construction finaning factor of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review, except the spend schedule, which is sourced from
+        collaborations with industry.
+        """
+
+        spend_schedule = self.project_params.get(
+            "spend_schedule",
+            {0: 0.25, 1: 0.25, 2: 0.3, 3: 0.1, 4: 0.1, 5: 0.0},
+        )
+        tax_rate = self.project_params.get("tax_rate", 0.26)
+        interest_during_construction = self.project_params.get(
+            "interest_during_construction", 0.044
+        )
+
+        _check = 0
+        _construction_financing_factor = 0
+
+        for key, val in spend_schedule.items():
+            _check += val
+
+            _construction_financing_factor += val * (
+                1
+                + (1 - tax_rate)
+                * ((1 + interest_during_construction) ** (key + 0.5) - 1)
+            )
+        if _check != 1.0:
+            raise ValueError("Values in spend_schedule must sum to 1.0")
+
+        return _construction_financing_factor
+
+    def construction_financing_capex(self):
+        """
+        Returns the construction financing capital cost of the project.
+        Methodology from ORCA model, default values used in 2022 Cost of Wind
+        Energy Review.
+        """
+
+        construction_financing_per_kW = self.project_params.get(
+            "construction_financing", None
+        )
+
+        construction_financing_factor = self.project_params.get(
+            "construction_financing_factor",
+            self.construction_financing_factor(),
+        )
+
+        if construction_financing_per_kW is not None:
+            construction_financing = (
+                construction_financing_per_kW * self.capacity * 1000
+            )
+
+        else:
+            construction_financing = (
+                self.construction_insurance_capex()
+                + self.decommissioning_capex()
+                + self.commissioning_capex()
+                + self.procurement_contingency_capex()
+                + self.installation_contingency_capex()
+                + self.bos_capex
+                + self.turbine_capex
+            ) * (construction_financing_factor - 1)
+
+        return construction_financing
 
     @property
     def project_capex(self):
@@ -1476,13 +1775,13 @@ class ProjectManager:
         the keys below should be passed to the 'project_parameters' subdict.
         """
 
-        site_auction = self.project_params.get("site_auction_price", 100e6)
-        site_assessment = self.project_params.get("site_assessment_cost", 50e6)
+        site_auction = self.project_params.get("site_auction_price", 122698898)
+        site_assessment = self.project_params.get("site_assessment_cost", 61349449)
         construction_plan = self.project_params.get(
-            "construction_plan_cost", 1e6
+            "construction_plan_cost", 1226989
         )
         installation_plan = self.project_params.get(
-            "installation_plan_cost", 0.25e6
+            "installation_plan_cost", 306747
         )
 
         return sum(

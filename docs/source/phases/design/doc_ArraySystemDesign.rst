@@ -140,7 +140,7 @@ Section Lengths
 The distance between a turbine and it's subsequent connection determines the
 cable length that is required for the array system. These lengths are summed up
 and stored in the :py:attr:`design_result`, which can be utilized by the
-:doc:`array cable installation module <../install/array/doc_ArrayCableInstallation>`.
+:doc:`array cable installation module <../install/array/doc_ArrayCableInstall>`.
 
 Process Diagrams
 ----------------

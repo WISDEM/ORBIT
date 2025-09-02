@@ -10,3 +10,4 @@ Methodology
    doc_ParametricManager
    doc_DesignPhase
    doc_InstallPhase
+   doc_CommonCost

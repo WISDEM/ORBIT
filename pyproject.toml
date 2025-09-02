@@ -12,18 +12,16 @@ authors = [
 ]
 readme = {file = "README.rst", content-type = "text/x-rst"}
 description = "Offshore Renewables Balance of system and Installation Tool"
-requires-python = ">=3.9, <3.12"
+requires-python = ">=3.9, <3.14"
 license = {file = "LICENSE"}
 dependencies = [
   "numpy",
-  "matplotlib",
   "simpy",
   "marmot-agents>=0.2.5",
   "scipy",
   "pandas",
   "pyyaml",
-  "openmdao>=3.2",
-  "python-benedict<0.33.2",
+  "python-benedict",
   "statsmodels",
 ]
 keywords = [
@@ -47,6 +45,8 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -68,6 +68,7 @@ dev = [
   "sphinx-rtd-theme",
   "ruff",
 ]
+plot = ["matplotlib"]
 
 [tool.setuptools]
 include-package-data = true

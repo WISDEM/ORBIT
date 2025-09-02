@@ -3,6 +3,9 @@
    :ref:`Introduction <intro>`
       A quick introduction to the project.
 
+   :ref: `Installation and Contribution <installation>`
+      How to install and contribute to ORBIT.
+
    :ref:`Tutorial <tutorial>`
       Basic tutorial for working with ORBIT.
 
@@ -36,7 +39,7 @@ the cost and times associated with Offshore Wind Balance of System (BOS)
 processes.
 
 ORBIT includes many different modules that can be used to model phases within
-the BOS process, split into :ref:`design <design>` and
+the BOS process, split into :ref:`design <design_phases>` and
 :ref:`installation <install>`. It is highly flexible and allows the user to
 define which phases are needed to model their project or scenario using
 :ref:`ProjectManager <manager>`.

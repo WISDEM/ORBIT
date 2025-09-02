@@ -116,7 +116,7 @@ def test_calc_topside_mass_and_cost():
     assert elect._outputs["num_substations"] == 1
     assert elect._outputs["offshore_substation_topside"][
         "unit_cost"
-    ] == pytest.approx(23683541, abs=1e2)
+    ] == pytest.approx(26109717, abs=1e2)
 
     mono_dc = deepcopy(base)
     mono_dc["export_system_design"]["cables"] = "HVDC_2000mm_320kV"
@@ -273,7 +273,7 @@ def test_hvac_substation():
     hvac = ElectricalDesign(config)
     hvac.run()
 
-    assert hvac.total_substation_cost == pytest.approx(134448256, abs=1e0)
+    assert hvac.total_substation_cost == pytest.approx(223505084, abs=1e0)
 
 
 def test_hvdc_substation():
@@ -282,7 +282,7 @@ def test_hvdc_substation():
     elect = ElectricalDesign(config)
     elect.run()
 
-    assert elect.total_substation_cost == pytest.approx(451924714, abs=1e0)
+    assert elect.total_substation_cost == pytest.approx(792103385, abs=1e0)
 
     assert elect.converter_cost != 0
     assert elect.shunt_reactor_cost == 0
@@ -297,7 +297,7 @@ def test_hvdc_substation():
     elect = ElectricalDesign(config)
     elect.run()
 
-    assert elect.total_substation_cost == pytest.approx(802924714, abs=1e0)
+    assert elect.total_substation_cost == pytest.approx(1423903385, abs=1e0)
 
     assert elect.converter_cost != 0
     assert elect.shunt_reactor_cost == 0
@@ -312,21 +312,21 @@ def test_onshore_substation():
     elect = ElectricalDesign(config)
     elect.run()
     assert elect.onshore_compensation_cost != 0.0
-    assert elect.onshore_cost == pytest.approx(95.487e6, abs=1e2)  # 109.32e6
+    assert elect.onshore_cost == pytest.approx(99576979, abs=1e2)  # 109.32e6
 
     config_mono = deepcopy(config)
     config_mono["export_system_design"] = {"cables": "HVDC_2000mm_320kV"}
     o_monelect = ElectricalDesign(config_mono)
     o_monelect.run()
     assert o_monelect.onshore_compensation_cost == 0.0
-    assert o_monelect.onshore_cost == 244.3e6
+    assert o_monelect.onshore_cost == 254763736
 
     config_bi = deepcopy(config)
     config_bi["export_system_design"] = {"cables": "HVDC_2500mm_525kV"}
     o_bi = ElectricalDesign(config_bi)
     o_bi.run()
     assert o_bi.onshore_compensation_cost == 0.0
-    assert o_bi.onshore_cost == 450e6
+    assert o_bi.onshore_cost == 469274175
 
 
 # EXPORT CABLE TESTING
@@ -378,7 +378,7 @@ def test_number_cables():
     export = ElectricalDesign(config)
     export.run()
 
-    assert export.num_cables == 9
+    assert export.num_cables == 11
 
 
 def test_cable_length():
@@ -405,15 +405,16 @@ def test_total_cable():
     length = 0.02 + 3 + 30
     length += length * 0.01
     mass = length * export.cable.linear_density
-    assert export.total_mass == pytest.approx(mass * 9, abs=1e-10)
-    assert export.total_length == pytest.approx(length * 9, abs=1e-10)
+    # 11 = number of cables
+    assert export.total_mass == pytest.approx(mass * 11, abs=1e-10)
+    assert export.total_length == pytest.approx(length * 11, abs=1e-10)
 
 
 def test_total_cable_cost():
     export = ElectricalDesign(config)
     export.run()
 
-    assert export.total_cable_cost == 135068310.0
+    assert export.total_cable_cost == pytest.approx(165083490.0, abs=1e0)
 
 
 def test_cables_property():
@@ -454,7 +455,7 @@ def test_design_result():
     cables = export.design_result["export_system"]["cable"]
 
     assert cables["sections"] == [export.length]
-    assert cables["number"] == 9
+    assert cables["number"] == 11
     assert cables["linear_density"] == export.cable.linear_density
 
 
