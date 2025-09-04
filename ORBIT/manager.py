@@ -221,7 +221,7 @@ class ProjectManager:
                 phase = df.loc[idx, "phase"]
                 print(f"{phase}:\n\t {msg}")
 
-        except:
+        except:  # noqa: E722
             pass
 
     @property
@@ -1052,6 +1052,8 @@ class ProjectManager:
             "total_capex": self.total_capex,
             "total_capex_per_kw": self.total_capex_per_kw,
             "npv": self.npv,
+            "supply_chain_capex": self.supply_chain_capex,
+            "supply_chain_capex_kw": self.supply_chain_capex_per_kw,
         }
 
         if include_logs:
@@ -1446,6 +1448,9 @@ class ProjectManager:
 
         outputs["Project"] = self.project_capex
 
+        if self.supply_chain_capex > 0:
+            outputs["Supply Chain"] = self.supply_chain_capex
+
         return outputs
 
     @property
@@ -1524,6 +1529,37 @@ class ProjectManager:
         """Returns the turbine CapEx/kW."""
 
         _capex = self.project_params.get("turbine_capex", 1300)
+        return _capex
+
+    @property
+    def supply_chain_capex(self):
+        """Returns the supply chain CapEx. This parameter includes any
+        project-level investments in supply chain development, port upgrades,
+        community benefit agreements, fisheries mitigation funds, community or
+        research initiatives, and U.S.-built vessels.
+        """
+
+        _capex = self.project_params.get("supply_chain_capex", 0)
+
+        try:
+            num_turbines = self.config["plant"]["num_turbines"]
+            rating = self.config["turbine"]["turbine_rating"]
+
+        except KeyError:
+            pass
+
+        return _capex * num_turbines * rating * 1000
+
+    @property
+    def supply_chain_capex_per_kw(self):
+        """Returns the supply chain CapEx/kW. This parameter includes any
+        project-level investments in supply chain development, port upgrades,
+        community benefit agreements, fisheries mitigation funds, community or
+        research initiatives, and U.S.-built vessels.
+        """
+
+        _capex = self.project_params.get("supply_chain_capex", 0)
+
         return _capex
 
     @property
@@ -1624,18 +1660,14 @@ class ProjectManager:
         Energy Review.
         """
 
-        commissioning_per_kW = self.project_params.get(
-            "commissioning", None
-        )
+        commissioning_per_kW = self.project_params.get("commissioning", None)
 
         commissioning_factor = self.project_params.get(
             "commissioning_factor", 0.0115
         )
 
         if commissioning_per_kW is not None:
-            commissioning = (
-                commissioning_per_kW * self.capacity * 1000
-            )
+            commissioning = commissioning_per_kW * self.capacity * 1000
 
         else:
             commissioning = (
@@ -1764,6 +1796,7 @@ class ProjectManager:
                 + self.installation_contingency_capex()
                 + self.bos_capex
                 + self.turbine_capex
+                + self.supply_chain_capex
             ) * (construction_financing_factor - 1)
 
         return construction_financing
@@ -1776,7 +1809,9 @@ class ProjectManager:
         """
 
         site_auction = self.project_params.get("site_auction_price", 122698898)
-        site_assessment = self.project_params.get("site_assessment_cost", 61349449)
+        site_assessment = self.project_params.get(
+            "site_assessment_cost", 61349449
+        )
         construction_plan = self.project_params.get(
             "construction_plan_cost", 1226989
         )
@@ -1814,6 +1849,7 @@ class ProjectManager:
             + self.turbine_capex
             + self.soft_capex
             + self.project_capex
+            + self.supply_chain_capex
         )
 
     @property
