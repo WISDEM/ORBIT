@@ -11,6 +11,7 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
+
 try:
     import matplotlib.pyplot as plt
 except ModuleNotFoundError:
@@ -940,7 +941,8 @@ class CustomArraySystemDesign(ArraySystemDesign):
         if longest_string > self.num_turbines_full_string:
             raise ValueError(
                 "Strings can't contain more than "
-                f"{self.num_turbines_full_string} turbines."
+                f"{self.num_turbines_full_string} turbines. Reduce the number"
+                " of turbines or select a cable with higher current capacity."
             )
         else:
             self.num_turbines_full_string = longest_string
