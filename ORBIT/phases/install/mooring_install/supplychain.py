@@ -1,6 +1,7 @@
 """Mooring System Supply Chain Module."""
 
 import simpy
+import pandas as pd
 from marmot import process
 
 from ORBIT.phases.install import InstallPhase
@@ -19,9 +20,11 @@ from .components import (  # RopeProduction,; AnchorProduction,
 
 
 class MooringSystemSupplyChain(InstallPhase):
-    """This class is an upstream process that is treated as an installation
-    phase. Its purpose is to evaluate and test the impact of different
-    production parameters on the full installation of the MooringSystem().
+    """
+    The MooringSystemSupplyChain class is an upstream process that is treated
+    as an installation phase. Its purpose is to evaluate and test the impact of
+    different production parameters on the full installation of the
+    MooringSystem().
 
     Adapted and informed by "Floating Study" - Jake Nunemaker and Matt Shields.
     """
@@ -63,7 +66,7 @@ class MooringSystemSupplyChain(InstallPhase):
         self.setup_simulation(**kwargs)
 
     def setup_simulation(self, **kwargs):
-        """Setup"""
+        """Setup simulation."""
         # Initialize port laydown area
         self.initialize_laydown_area()
 
@@ -184,7 +187,7 @@ class MooringSystemSupplyChain(InstallPhase):
         reset_trigger = self.chain_supply.get("reset_trigger", 0.0254)
         reset_time = self.chain_supply.get("reset_time", 0.5)
 
-        import_size = self.chain_supply.get("import_size", 0.127 ) #
+        import_size = self.chain_supply.get("import_size", 0.127)  #
 
         chain_makers = int(
             self.chain_supply["assembly_lines"]  # simplifying asumption
@@ -199,26 +202,89 @@ class MooringSystemSupplyChain(InstallPhase):
         except KeyError:
             _area = self.chain_supply["space_required"]
 
-        domestic_chain = chains_df[chains_df['diameter'] <= import_size]
-        #domestic_chain = domestic_chain.sort_values(by='diameter')
-        international_chain = chains_df[chains_df['diameter'] > import_size]
+        # Split the chains into domestic and international sources by
+        # diameter <= import_size and sort by ascending.
+        domestic_chain = chains_df[
+            chains_df["diameter"] <= import_size
+        ].sort_values(
+            by="diameter",
+            ascending=True,
+        )
 
-        self.chains = [
-            Component(
-                row["turbine_id"],
-                row["line_id"],
-                row["section_id"],
-                row["diameter"],
-                row["length"],
-                row["mass"],
-                row["thickness"],
-                row["cost_rate"],
-                _area,
-            )
-            for _, row, in domestic_chain.iterrows()
+        international_chain = chains_df[
+            chains_df["diameter"] > import_size
+        ].sort_values(
+            by="diameter",
+            ascending=True,
+        )
+
+        # find the unique diameters of the domestic chain for production.
+        unique_domestic_chain_diam = (
+            domestic_chain["diameter"].drop_duplicates().to_list()
+        )
+        print("unique diameters", unique_domestic_chain_diam)
+
+        # Divy up unique diameters among the chain_makers
+        split_idx = len(unique_domestic_chain_diam) // chain_makers
+        print(split_idx)
+
+        chain_maker_diam = []
+        for cm in range(chain_makers):
+
+            if cm < chain_makers - 1:
+                chain_maker_diam.append(
+                    unique_domestic_chain_diam[
+                        cm * split_idx : (cm + 1) * split_idx
+                    ]
+                )
+            else:
+                chain_maker_diam.append(
+                    unique_domestic_chain_diam[cm * split_idx :]
+                )
+
+        # Split up the domestic chains for each chain maker as orders.
+        chain_maker_orders = []
+        for cm in range(chain_makers):
+
+            print("\n\n DEBUGGING chain maker:", cm)
+            print("available diameters")
+            print(chain_maker_diam[cm])
+            temp = []
+            for diams in chain_maker_diam[cm]:
+                print("Diameters:", diams)
+                temp.append(
+                    domestic_chain[domestic_chain["diameter"] == diams]
+                )
+
+            chain_maker_orders.append(pd.concat(temp, axis=0).reset_index())
+
+            print("HEAD \n", chain_maker_orders[cm])
+            print("\nLength: ", len(chain_maker_orders[cm]))
+
+        print("\n\n DEBUGGING end")
+
+        self.chains = pd.concat(chain_maker_orders, axis=0).reset_index()
+
+        self.domestic_chains = [
+            [
+                Component(
+                    row["turbine_id"],
+                    row["line_id"],
+                    row["section_id"],
+                    row["diameter"],
+                    row["length"],
+                    row["mass"],
+                    row["thickness"],
+                    row["cost_rate"],
+                    _area,
+                )
+                for _, row, in chain_maker_orders[cm].iterrows()
+            ]
+            for cm in range(chain_makers)
         ]
 
-        self.itl_chains = [Component(
+        self.itl_chains = [
+            Component(
                 row["turbine_id"],
                 row["line_id"],
                 row["section_id"],
@@ -232,7 +298,7 @@ class MooringSystemSupplyChain(InstallPhase):
             for _, row, in international_chain.iterrows()
         ]
 
-        #print("Internationally sourced chains: ", self.itl_chains)
+        # print("Internationally sourced chains: ", self.itl_chains)
         # print(f"Number of chains: {len(self.chains)}")
         # print(vars(self.chains[1]))
 
@@ -241,12 +307,12 @@ class MooringSystemSupplyChain(InstallPhase):
                 component="Chain",
                 num=n + 1,
                 area=self.config["chain_supply"]["space_required"],
-                sets=self.chains,
+                sets=self.domestic_chains[n],
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.chain_storage,
                 reset=reset_trigger,
-                reset_time=reset_time
+                reset_time=reset_time,
             )
 
             self.env.register(chain_manufacturer)
@@ -319,7 +385,7 @@ class MooringSystemSupplyChain(InstallPhase):
                 takt_day_rate=takt_day_rate,
                 target=self.rope_storage,
                 reset=reset_trigger,
-                reset_time=reset_time
+                reset_time=reset_time,
             )
 
             self.env.register(rope_manufacturer)
@@ -383,7 +449,7 @@ class MooringSystemSupplyChain(InstallPhase):
         # Get a dataframe of components and make a list of objects w/ attrs
         anchors_df = self.mooring_system["anchors"]
 
-        #print(anchors_df)
+        # print(anchors_df)
         try:
             _area = anchors_df["area"]
 
@@ -418,9 +484,9 @@ class MooringSystemSupplyChain(InstallPhase):
                 for i in range(anchor_bays)
             ]
         else:
-            anchor_set = self.anchors
+            anchor_set = self.anchors  # noqa F841
 
-        #print("Anchor sets: ", type(anchor_set))
+        # print("Anchor sets: ", type(anchor_set))
 
         self.anchor_sets = []
 
@@ -435,7 +501,7 @@ class MooringSystemSupplyChain(InstallPhase):
                 takt_day_rate=takt_day_rate,
                 target=self.anchor_storage,
                 reset=reset_trigger,
-                reset_time=reset_time
+                reset_time=reset_time,
             )
 
             self.env.register(anchor_manufacturer)
@@ -445,7 +511,7 @@ class MooringSystemSupplyChain(InstallPhase):
         """Initialize the anchor transport agent using vessel logic."""
 
         transport_specs = self.config.get("transport_vessel", None)
-        #print(transport_specs)
+        # print(transport_specs)
 
         name = transport_specs.get("name", "Anchor Transport Vessel")
 
@@ -455,7 +521,7 @@ class MooringSystemSupplyChain(InstallPhase):
         self.env.register(transport)
         transport.initialize()
 
-        #print("Anchor Transport vars: ", vars(transport))
+        # print("Anchor Transport vars: ", vars(transport))
         self.anchor_transport = transport
 
         transport_component_to_port(
@@ -514,6 +580,7 @@ class MooringSystemSupplyChain(InstallPhase):
 
     @process
     def start_assembly_lines(self):
+        """Start assembly line process."""
 
         yield self.laydown.start_assembly
         self.assembly_start = self.env.now
@@ -536,13 +603,13 @@ class MooringSystemSupplyChain(InstallPhase):
             "operational_delays": 0,
         }
 
-        #    def operational_delay(self, name):
-        """"""
+        # #    def operational_delay(self, name):
+        # """"""
 
-        actions = [a for a in self.env.actions if a["agent"] == name]
-        delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
+        # actions = [a for a in self.env.actions if a["agent"] == name]
+        # delay = sum(a["duration"] for a in actions if "Delay" in a["action"])
 
-        return delay
+        # return delay
 
     @property
     def system_capex(self):
