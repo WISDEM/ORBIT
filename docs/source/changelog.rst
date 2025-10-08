@@ -6,6 +6,7 @@ ORBIT Changelog
 1.2.2
 -----
 - Replaced the deprecated `numpy.trapz` with `numpy.trapezoid`.
+- Deprecates Python 3.9 support in preparation for EOL and seamless benedict compatibility.
 
 1.2.1
 -----
