@@ -414,7 +414,7 @@ class CableSystem(DesignPhase):
             )
             return d
 
-        return np.trapz(np.sqrt(1 + np.gradient(y, x) ** 2), x)
+        return np.trapezoid(np.sqrt(1 + np.gradient(y, x) ** 2), x)
 
     @property
     def free_cable_length(self):
