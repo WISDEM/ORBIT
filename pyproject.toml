@@ -12,7 +12,7 @@ authors = [
 ]
 readme = {file = "README.rst", content-type = "text/x-rst"}
 description = "Offshore Renewables Balance of system and Installation Tool"
-requires-python = ">=3.9, <3.14"
+requires-python = ">3.9, <3.14"
 license = {file = "LICENSE"}
 dependencies = [
   "numpy",
@@ -42,7 +42,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -82,7 +81,7 @@ version = {attr = "ORBIT.__version__"}
 
 [tool.black]
 line-length = 79
-target-version = ['py39']
+target-version = ['py310']
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -120,7 +119,7 @@ length_sort = "1"
 
 [tool.ruff]
 line-length = 79
-target-version = "py39"
+target-version = "py310"
 exclude = [
   ".git",
   "__pycache__",
