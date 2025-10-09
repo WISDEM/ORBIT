@@ -2,6 +2,9 @@
 
 ORBIT Changelog
 ===============
+1.2.3
+-----
+- Adjusted the recent np.trapz fix to be compatible with numpy < 2.0
 
 1.2.2
 -----
