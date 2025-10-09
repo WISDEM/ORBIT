@@ -17,4 +17,4 @@ from ORBIT.config import load_config, save_config
 from ORBIT.parametric import ParametricManager
 from ORBIT.supply_chain import SupplyChainManager
 
-__version__ = "1.2.2"
+__version__ = "1.2.3"
