@@ -670,7 +670,7 @@ class ProjectManager:
 
         if phase.installation_capex:
             self.installation_costs[name] = phase.installation_capex
-
+        
         return time, logs
 
     def get_phase_class(self, phase):
@@ -746,6 +746,8 @@ class ProjectManager:
         self.detailed_outputs = self.merge_dicts(
             self.detailed_outputs, phase.detailed_output
         )
+
+        
 
     def run_multiple_phases_in_serial(self, phase_list, **kwargs):
         """
@@ -1054,6 +1056,8 @@ class ProjectManager:
             "npv": self.npv,
             "supply_chain_capex": self.supply_chain_capex,
             "supply_chain_capex_kw": self.supply_chain_capex_per_kw,
+            "onshore_substation_capex": self.onshore_substation_capex,
+            "onshore_substation_capex_kw": self.onshore_substation_capex_per_kw,
         }
 
         if include_logs:
@@ -1442,6 +1446,8 @@ class ProjectManager:
             else:
                 outputs[name] = cost
 
+        outputs["Onshore Substation"] = self.onshore_substation_capex
+        
         outputs["Turbine"] = self.turbine_capex
 
         outputs["Soft"] = self.soft_capex
@@ -1491,7 +1497,7 @@ class ProjectManager:
     def bos_capex(self):
         """Returns total balance of system CapEx."""
 
-        return self.system_capex + self.installation_capex
+        return self.system_capex + self.installation_capex + self.onshore_substation_capex
 
     @property
     def bos_capex_per_kw(self):
@@ -1562,6 +1568,27 @@ class ProjectManager:
 
         return _capex
 
+    @property
+    def onshore_substation_capex(self):
+        """Returns the onshore substation CapEx if available, otherwise None."""
+        if "ElectricalDesign" in self.phases:
+            try:
+                return self.phases["ElectricalDesign"].detailed_output["export_system"]["onshore_substation_costs"]
+            except KeyError:
+                return None
+        return None
+
+    @property
+    def onshore_substation_capex_per_kw(self):
+        """Returns the onshore substation CapEx/kW.
+        """
+        if "ElectricalDesign" in self.phases:
+            try:
+                return self.onshore_substation_capex / (self.capacity * 1000)
+            except KeyError:
+                return None
+        return None
+        
     @property
     def overnight_capex(self):
         """Returns the overnight capital cost of the project."""
