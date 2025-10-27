@@ -438,7 +438,13 @@ class ArraySystemDesign(CableSystem):
 
         coords = np.array(
             [[0, 0]]
-            + list(zip(self.turbines_x.flatten(), self.turbines_y.flatten()))
+            + list(
+                zip(
+                    self.turbines_x.flatten(),
+                    self.turbines_y.flatten(),
+                    strict=False,
+                )
+            )
         )
         coords = coords[: self.system.num_turbines + 1]
         layout_df[["longitude", "latitude"]] = coords
@@ -588,7 +594,7 @@ class ArraySystemDesign(CableSystem):
         string_widths = np.arange(len(max_string), 0, -1, dtype=float).tolist()
 
         for i, row in enumerate(self.sections_cables):
-            for cable, width in zip(max_string, string_widths):
+            for cable, width in zip(max_string, string_widths, strict=False):
 
                 ix_to_plot = np.where(row == cable)[0]
                 if ix_to_plot.size == 0:
@@ -662,7 +668,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
 
     expected_config = {
         "site": {"depth": "str"},
-        "plant": {"layout": "str", "num_turbines": "int"},
+        "plant": {"layout": "str | pd.DataFrame", "num_turbines": "int"},
         "turbine": {"turbine_rating": "int | float"},
         "array_system_design": {
             "cables": "list | str",
@@ -869,26 +875,32 @@ class CustomArraySystemDesign(ArraySystemDesign):
     def _initialize_custom_data(self):
         windfarm = self.config["array_system_design"]["location_data"]
 
-        try:
-            self.location_data = extract_library_specs(
-                "cables",
-                windfarm,
-                file_type="csv",
-            )
-        except LibraryItemNotFoundError:
-            self.location_data = extract_library_specs(
-                "plant",
-                windfarm,
-                file_type="csv",
-            )
-        # Make sure no data is missing
-        missing = set(self.COLUMNS).difference(self.location_data.columns)
-        if missing:
+        if isinstance(windfarm, str):
+            try:
+                self.location_data = extract_library_specs(
+                    "cables",
+                    windfarm,
+                    file_type="csv",
+                )
+            except LibraryItemNotFoundError:
+                self.location_data = extract_library_specs(
+                    "plant",
+                    windfarm,
+                    file_type="csv",
+                )
+            # Make sure no data is missing
+            missing = set(self.COLUMNS).difference(self.location_data.columns)
+            if missing:
+                raise ValueError(
+                    "The following columns must be included in the location "
+                    f"data: {missing}",
+                )
+        elif isinstance(windfarm, pd.DataFrame):
+            self.location_data = windfarm
+        else:
             raise ValueError(
-                "The following columns must be included in the location "
-                f"data: {missing}",
+                "`location_data` must be a filename or DataFrame."
             )
-
         self._format_windfarm_data()
 
         # Ensure there is no missing data in required columns
@@ -1110,6 +1122,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 zip(
                     self.sections_cable_lengths[self.sections_cables == name],
                     self.sections_bury_speeds[self.sections_cables == name],
+                    strict=False,
                 )
             )
             for name in self.cables
