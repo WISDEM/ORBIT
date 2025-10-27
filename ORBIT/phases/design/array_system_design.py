@@ -566,18 +566,6 @@ class ArraySystemDesign(CableSystem):
             zorder=2,
             label="Turbine",
         )
-        # Plot the turbine names
-        # for i in range(self.coordinates.shape[0]):
-        #     for j in range(self.coordinates.shape[1] - 1):
-        #         if not np.any(np.isnan(self.coordinates[i, j + 1])):
-        #             x, y = self.coordinates[i, j + 1]
-        #             name = self.location_data.loc[
-        #                 (self.location_data.string == i)
-        #                 & (self.location_data.order == j),
-        #                 "turbine_name"
-        #             ].to_numpy()[0]
-        #             ax.text(x, y, name)
-
         # Determine the cable section widths
         string_sets = {
             tuple(OrderedDict.fromkeys(el for el in cables if el is not None))
