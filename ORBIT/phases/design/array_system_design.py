@@ -579,14 +579,11 @@ class ArraySystemDesign(CableSystem):
         #             ax.text(x, y, name)
 
         # Determine the cable section widths
-        string_sets = np.unique(
-            [
-                list(
-                    OrderedDict.fromkeys(el for el in cables if el is not None)
-                )
-                for cables in self.sections_cables
-            ]
-        )
+        string_sets = {
+            tuple(OrderedDict.fromkeys(el for el in cables if el is not None))
+            for cables in self.sections_cables
+        }
+        string_sets = [list(el) for el in string_sets]
         if isinstance(string_sets[0], list):
             max_string = max(string_sets, key=len)
         else:
