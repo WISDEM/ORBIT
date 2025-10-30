@@ -876,18 +876,19 @@ class CustomArraySystemDesign(ArraySystemDesign):
                     windfarm,
                     file_type="csv",
                 )
-            # Make sure no data is missing
-            missing = set(self.COLUMNS).difference(self.location_data.columns)
-            if missing:
-                raise ValueError(
-                    "The following columns must be included in the location "
-                    f"data: {missing}",
-                )
         elif isinstance(windfarm, pd.DataFrame):
             self.location_data = windfarm
         else:
             raise ValueError(
                 "`location_data` must be a filename or DataFrame."
+            )
+
+        # Make sure no data is missing
+        missing = set(self.COLUMNS).difference(self.location_data.columns)
+        if missing:
+            raise ValueError(
+                "The following columns must be included in the location "
+                f"data: {missing}",
             )
         self._format_windfarm_data()
 
