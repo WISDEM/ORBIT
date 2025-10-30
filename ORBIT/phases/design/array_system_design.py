@@ -12,11 +12,6 @@ from collections import OrderedDict
 import numpy as np
 import pandas as pd
 
-try:
-    import matplotlib.pyplot as plt
-except ModuleNotFoundError:
-    pass
-
 from ORBIT.core.library import export_library_specs, extract_library_specs
 from ORBIT.core.exceptions import LibraryItemNotFoundError
 from ORBIT.phases.design._cables import Plant, CableSystem
@@ -550,6 +545,14 @@ class ArraySystemDesign(CableSystem):
             settings, and can be manipulated to add annotations, or other
             elements.
         """
+        try:
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError as err:
+            msg = (
+                "Please install ORBIT with the `plot` option or install"
+                " `matplotlib` manually."
+            )
+            raise ModuleNotFoundError(msg) from err
 
         fig, ax = plt.subplots(figsize=(10, 10))
         plt.axis("off")
