@@ -68,6 +68,10 @@ Instructions
 
        # OR if you are you going to be contributing to the code or building documentation
        pip install -e '.[dev]'
+
+       # OR if you wish to use native plotting tools
+       pip install -e '.[plot]'
+
 6. (Development only) Install the pre-commit hooks to autoformat and lint code.
 
     .. code-block:: console
@@ -83,7 +87,6 @@ Dependencies
 - NumPy
 - Pandas
 - SciPy
-- Matplotlib
 - OpenMDAO (>=3.2)
 - python-benedict
 - statsmodels
@@ -101,6 +104,9 @@ Development Specific
 - sphinx
 - sphinx-rtd-theme
 
+Optional Plotting
+~~~~~~~~~~~~~~~~~
+- matplotlib
 
 Recommended packages for easy iteration and running of code:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

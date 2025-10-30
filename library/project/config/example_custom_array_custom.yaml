@@ -2,6 +2,7 @@ array_system_design:
   cables:
   - XLPE_400mm_33kV
   - XLPE_630mm_33kV
+  - XLPE_630mm_220kV
   location_data: dudgeon_custom
 plant:
   layout: custom
