@@ -14,7 +14,8 @@ import pandas as pd
 
 try:
     import matplotlib.pyplot as plt
-except ModuleNotFoundError:
+except ModuleNotFoundError as e:
+    print(f"Warning: {e} which is needed for custom array plotting tools. ")
     pass
 
 from ORBIT.core.library import export_library_specs, extract_library_specs
