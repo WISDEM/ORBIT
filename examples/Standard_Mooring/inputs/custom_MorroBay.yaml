@@ -1,8 +1,8 @@
 # Site + Plant Parameters
 site:
-  depth: 900
-  distance: 100
-  distance_to_landfall: 100
+  depth: 775.5
+  distance: 50
+  distance_to_landfall: 40
 plant:
   layout: grid
   num_turbines: 40 # 40
@@ -16,6 +16,12 @@ port:
   laydown_area: 40500 # 10 acres to m**2
   assembly_start: 0.00
   laydown_cost: 1
+turbine: 15MW_generic
+
+substructure_delivery:
+  space_required: 3500
+turbine_delivery:
+  space_required: 1838
 
 # Vessels
 mooring_install_vessel: example_support_vessel
@@ -25,6 +31,8 @@ towing_vessel: example_towing_vessel
 towing_vessel_groups:
   station_keeping_vessels: 2
   towing_vessels: 3
+
+# For Supply Chain Transportation
 transport_vessel:
   transport_specs:
     max_waveheight: 3       # m
@@ -51,45 +59,39 @@ transport_railcar:
     mobilization_days: 7    # days
     mobilization_mult: 1   # Mobilization multiplier applied to 'day_rate'
   storage_specs:
-    max_cargo: 1000          # t
+    max_cargo: 600          # 50 ft gondala railcar can take 60 t (132,277 lb) of chain - 10 railcars per train - assume chain can lay across railcars
     max_deck_load: 8          # t/m^2
     max_deck_space: 37      # m^2
-    capacity: 10
-# Module Specific
-substructure_delivery:
-  space_required: 3500
-turbine_delivery:
-  space_required: 1838
-substructure:
-  takt_time: 168
-mooring_system_design:
-  num_lines: 6
-  anchor_type: Suction Pile
-  mooring_type: Semi Taut
-# Supply Chain Specific
+    capacity: 20    # 2 ropes per railcar - 10 railcars per train
+
+# Inputs for CustomMooringSystemDesign
+custom_filename: baseline_humboldt.csv
+
+# Inputs for MooringSystemSupplyChain
 chain_supply:
-  laydown_area: 200 # m**2
-  takt_time: 0.175 # hours per m (50,000 m/year)
+  #laydown_area: 200 # m**2
+  takt_time: 0.186 # hours per m (47,000 m/year @ 35-40% capacity)
   assembly_lines: 1 #
-  space_required: 7.5 # m**2 pile of 90m chain
+  space_required: 7.5 # m**2 pile of 90 ft chain
   transit_time: 168 # (168 hours = 1 week) hours
-  reset_trigger: 0.00635 # m (1/4" per Delmar)
+  reset_trigger: 0.00599 # m (1/4" per Delmar)
   reset_time: 168   # h (1 week per Delmar)
 rope_supply:
-  laydown_area: 200 # m**2
-  takt_time: 0.187 # hours per m (46,800 m/year)
+  #laydown_area: 200 # m**2
+  #takt_time: 0.187 # hours per m (46,800 m/year)
+  takt_time: 87.6 # hours per rope (per 2 splices)
   assembly_lines: 1 #
   space_required: 6.75 # m**2 spool for 450m
   transit_time: 168 # (168 hours = 1 week) hours
   reset_trigger: 0.0254 # m (1 in)
   reset_time: 0.5   # h
 anchor_supply:
-  laydown_area: 800 # m**2
-  takt_time: 182.5 # hr (48 units per year)
-  assembly_lines: 1 #
+  #laydown_area: 800 # m**2
+  takt_time: 182.5 # hr (48 units per year) - keep it the same regardless of the number of assembly lines
+  assembly_lines: 2 #
   space_required: 300 # m**2
   transit_time: 336
-  reset_trigger: 0.5 # m (placeholder)
+  reset_trigger: 0.199 # m rouding to 1/4 meter
   reset_time: 168   # h (1 week per Delmar)
 
 # Configured Phases
@@ -101,6 +103,4 @@ install_phases:
 - MooringSystemSupplyChain
 #- MooringSystemInstallation
 #- MooredSubInstallation
-# Project Inputs
-turbine: 15MW_generic
-#custom_filename: custom_mooring_MorroBay.csv
+
