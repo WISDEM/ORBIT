@@ -3,6 +3,26 @@
 ORBIT Changelog
 ===============
 
+Unreleased
+----------
+- Allow for a Pandas DataFrame to be passed directly to the ``CustomArraySystemDesign.layout_data``
+  configuration input.
+- Move the matplotlib import from the import section of ``/ORBIT/phases/design/array_system_design.py``
+  to the ``CustomArraySystemDesign.plot_array_system`` for missing module error handling.
+
+1.2.4
+-----
+- Support Python 3.14
+
+1.2.3
+-----
+- Adjusted the recent np.trapz fix to be compatible with numpy < 2.0
+
+1.2.2
+-----
+- Replaced the deprecated `numpy.trapz` with `numpy.trapezoid`.
+- Deprecates Python 3.9 support in preparation for EOL and seamless benedict compatibility.
+
 1.2.1
 -----
 - Removed `wisdem_api.py` because WISDEM now uses orbit as a pip installed package.

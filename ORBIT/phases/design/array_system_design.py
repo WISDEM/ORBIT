@@ -11,10 +11,6 @@ from collections import OrderedDict
 
 import numpy as np
 import pandas as pd
-try:
-    import matplotlib.pyplot as plt
-except ModuleNotFoundError:
-    pass
 
 from ORBIT.core.library import export_library_specs, extract_library_specs
 from ORBIT.core.exceptions import LibraryItemNotFoundError
@@ -437,7 +433,13 @@ class ArraySystemDesign(CableSystem):
 
         coords = np.array(
             [[0, 0]]
-            + list(zip(self.turbines_x.flatten(), self.turbines_y.flatten()))
+            + list(
+                zip(
+                    self.turbines_x.flatten(),
+                    self.turbines_y.flatten(),
+                    strict=False,
+                )
+            )
         )
         coords = coords[: self.system.num_turbines + 1]
         layout_df[["longitude", "latitude"]] = coords
@@ -543,6 +545,14 @@ class ArraySystemDesign(CableSystem):
             settings, and can be manipulated to add annotations, or other
             elements.
         """
+        try:
+            import matplotlib.pyplot as plt
+        except ModuleNotFoundError as err:
+            msg = (
+                "Please install ORBIT with the `plot` option or install"
+                " `matplotlib` manually."
+            )
+            raise ModuleNotFoundError(msg) from err
 
         fig, ax = plt.subplots(figsize=(10, 10))
         plt.axis("off")
@@ -559,27 +569,12 @@ class ArraySystemDesign(CableSystem):
             zorder=2,
             label="Turbine",
         )
-        # Plot the turbine names
-        # for i in range(self.coordinates.shape[0]):
-        #     for j in range(self.coordinates.shape[1] - 1):
-        #         if not np.any(np.isnan(self.coordinates[i, j + 1])):
-        #             x, y = self.coordinates[i, j + 1]
-        #             name = self.location_data.loc[
-        #                 (self.location_data.string == i)
-        #                 & (self.location_data.order == j),
-        #                 "turbine_name"
-        #             ].to_numpy()[0]
-        #             ax.text(x, y, name)
-
         # Determine the cable section widths
-        string_sets = np.unique(
-            [
-                list(
-                    OrderedDict.fromkeys(el for el in cables if el is not None)
-                )
-                for cables in self.sections_cables
-            ]
-        )
+        string_sets = {
+            tuple(OrderedDict.fromkeys(el for el in cables if el is not None))
+            for cables in self.sections_cables
+        }
+        string_sets = [list(el) for el in string_sets]
         if isinstance(string_sets[0], list):
             max_string = max(string_sets, key=len)
         else:
@@ -587,7 +582,7 @@ class ArraySystemDesign(CableSystem):
         string_widths = np.arange(len(max_string), 0, -1, dtype=float).tolist()
 
         for i, row in enumerate(self.sections_cables):
-            for cable, width in zip(max_string, string_widths):
+            for cable, width in zip(max_string, string_widths, strict=False):
 
                 ix_to_plot = np.where(row == cable)[0]
                 if ix_to_plot.size == 0:
@@ -661,7 +656,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
 
     expected_config = {
         "site": {"depth": "str"},
-        "plant": {"layout": "str", "num_turbines": "int"},
+        "plant": {"layout": "str | pd.DataFrame", "num_turbines": "int"},
         "turbine": {"turbine_rating": "int | float"},
         "array_system_design": {
             "cables": "list | str",
@@ -868,18 +863,26 @@ class CustomArraySystemDesign(ArraySystemDesign):
     def _initialize_custom_data(self):
         windfarm = self.config["array_system_design"]["location_data"]
 
-        try:
-            self.location_data = extract_library_specs(
-                "cables",
-                windfarm,
-                file_type="csv",
+        if isinstance(windfarm, str):
+            try:
+                self.location_data = extract_library_specs(
+                    "cables",
+                    windfarm,
+                    file_type="csv",
+                )
+            except LibraryItemNotFoundError:
+                self.location_data = extract_library_specs(
+                    "plant",
+                    windfarm,
+                    file_type="csv",
+                )
+        elif isinstance(windfarm, pd.DataFrame):
+            self.location_data = windfarm
+        else:
+            raise ValueError(
+                "`location_data` must be a filename or DataFrame."
             )
-        except LibraryItemNotFoundError:
-            self.location_data = extract_library_specs(
-                "plant",
-                windfarm,
-                file_type="csv",
-            )
+
         # Make sure no data is missing
         missing = set(self.COLUMNS).difference(self.location_data.columns)
         if missing:
@@ -887,7 +890,6 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 "The following columns must be included in the location "
                 f"data: {missing}",
             )
-
         self._format_windfarm_data()
 
         # Ensure there is no missing data in required columns
@@ -940,7 +942,8 @@ class CustomArraySystemDesign(ArraySystemDesign):
         if longest_string > self.num_turbines_full_string:
             raise ValueError(
                 "Strings can't contain more than "
-                f"{self.num_turbines_full_string} turbines."
+                f"{self.num_turbines_full_string} turbines. Reduce the number"
+                " of turbines or select a cable with higher current capacity."
             )
         else:
             self.num_turbines_full_string = longest_string
@@ -1108,6 +1111,7 @@ class CustomArraySystemDesign(ArraySystemDesign):
                 zip(
                     self.sections_cable_lengths[self.sections_cables == name],
                     self.sections_bury_speeds[self.sections_cables == name],
+                    strict=False,
                 )
             )
             for name in self.cables
