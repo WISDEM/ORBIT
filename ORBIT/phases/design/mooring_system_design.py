@@ -300,6 +300,7 @@ class MooringSystemDesign(DesignPhase):
         """Returns detailed phase information."""
 
         return {
+            "design_class": 'standard',
             "num_lines": self.num_lines,
             "line_diam": self.line_diam,
             "line_mass": self.line_mass,
@@ -377,7 +378,15 @@ class CustomMooringSystemDesign(MooringSystemDesign):
 
         self.num_lines = self._design.get("num_lines", 1)
 
-        self.filename = "inputs/" + config.get("custom_filename", None)
+        #self.filename = "inputs/" + config.get("custom_filename", None)
+        input_filename = config.get("custom_filename", None)
+        if input_filename and not os.path.isabs(input_filename):
+            if not input_filename.startswith("inputs"):
+                self.filename = "inputs/" + input_filename
+        else:
+            self.filename = input_filename
+
+        self._outputs = {}
 
     def initialize_custom_data(self):
 
@@ -428,15 +437,32 @@ class CustomMooringSystemDesign(MooringSystemDesign):
         # print("From Mooring System Design: ", self.chain.head())
         self.rope = self.df_by_section_id("polyester")
         self.anchors = self.df_by_section_id("_anchor")
-
+        
+        self.num_anchors = len(self.anchors)
+        self.num_lines = len(self.rope)
+        
+        self._outputs["mooring_system"] = {**self.design_result}
+        
     @property
     def line_cost(self):
         """Returns cost of one line mooring line."""
 
         return sum(
             [
-                (self.chain["length"] * self.chain["cost_rate"]).sum(),
-                (self.rope["length"] * self.rope["cost_rate"]).sum(),
+                #(self.chain["length"] * self.chain["cost_rate"]).sum(),
+                (self.chain["cost_rate"]).sum(),
+                #(self.rope["length"] * self.rope["cost_rate"]).sum(),
+                (self.rope["cost_rate"]).sum(),
+            ]
+        )
+    
+    @property
+    def anchor_cost(self):
+        """Returns cost of one line mooring line."""
+
+        return sum(
+            [
+                self.anchors["cost_rate"].sum()
             ]
         )
 
@@ -447,7 +473,7 @@ class CustomMooringSystemDesign(MooringSystemDesign):
         return sum(
             [
                 self.line_cost,
-                (self.anchors["cost_rate"]).sum(),
+                self.anchor_cost
             ]
         )
 
@@ -456,12 +482,15 @@ class CustomMooringSystemDesign(MooringSystemDesign):
         """Returns detailed phase information."""
 
         return {
+            "design_class": 'custom',
             "chains": self.chain,
             "ropes": self.rope,
             "anchors": self.anchors,
             "num_lines": self.num_lines,
             "line_cost": self.line_cost,
-            "total_cost": self.total_cost,
+            "num_anchors": self.num_anchors,
+            "anchor_cost": self.anchor_cost,
+            "system_cost": self.total_cost      
         }
 
     @property

@@ -67,6 +67,7 @@
 "mooring_site_survey_time": 4     # hr
 "suction_pile_install_time": 11   # hr
 "drag_embed_install_time": 12      # hr # Increased from 5h so it now includes proof loading. This time increases with depth (in mooring.py)
+"dandg_pile_install_time": 30     # hr
 
 # Misc.
 "site_position_time": 2           # hr

@@ -18,6 +18,8 @@ from .components import (  # RopeProduction,; AnchorProduction,
     transport_component_to_port,
 )
 
+import numpy as np
+
 
 class MooringSystemSupplyChain(InstallPhase):
     """
@@ -38,7 +40,7 @@ class MooringSystemSupplyChain(InstallPhase):
         "mooring_system": {
             "num_lines": "int",
             "line_cost": "int | float ",
-            "total_cost": "int | float ",
+            "system_cost": "int | float ",
         },
     }
 
@@ -170,7 +172,8 @@ class MooringSystemSupplyChain(InstallPhase):
 
         transport_component_to_port(
             self.chain_transport,
-            sets=len(self.chains),
+            #sets=len(self.chains),
+            sets=len([component for chain_set in self.chains for component in chain_set]),  # regroup after assembly lines
             feed=self.chain_storage,
             target=self.laydown,
             transit_time=transit_time,
@@ -187,7 +190,8 @@ class MooringSystemSupplyChain(InstallPhase):
         reset_trigger = self.chain_supply.get("reset_trigger", 0.0254)
         reset_time = self.chain_supply.get("reset_time", 0.5)
 
-        import_size = self.chain_supply.get("import_size", 0.127)  #
+        #import_size = self.chain_supply.get("import_size", 0.127 ) #    set to the current domestic manufacturing limit to simluate international procurement
+        import_size = self.chain_supply.get("import_size", 0.220 ) #    set to a high number to include all chain diameters
 
         chain_makers = int(
             self.chain_supply["assembly_lines"]  # simplifying asumption
@@ -201,90 +205,20 @@ class MooringSystemSupplyChain(InstallPhase):
 
         except KeyError:
             _area = self.chain_supply["space_required"]
+            chains_df["area"] = chains_df["length"] * 7.5 * (3.28/90)
+        
 
-        # Split the chains into domestic and international sources by
-        # diameter <= import_size and sort by ascending.
-        domestic_chain = chains_df[
-            chains_df["diameter"] <= import_size
-        ].sort_values(
-            by="diameter",
-            ascending=True,
-        )
+        domestic_chain = chains_df[chains_df['diameter'] <= import_size]
+        domestic_chain = domestic_chain.sort_values(by='diameter')      # automatically sort the chain diameters by size
+        
+        international_chain = chains_df[chains_df['diameter'] > import_size]
 
-        international_chain = chains_df[
-            chains_df["diameter"] > import_size
-        ].sort_values(
-            by="diameter",
-            ascending=True,
-        )
 
-        # find the unique diameters of the domestic chain for production.
-        unique_domestic_chain_diam = (
-            domestic_chain["diameter"].drop_duplicates().to_list()
-        )
-        print("unique diameters", unique_domestic_chain_diam)
+        # organize anchor components into a list of lists based on the number of lines
+        self.chains = self.split_into_assembly_lines(chains_df, n=chain_makers)
 
-        # Divy up unique diameters among the chain_makers
-        split_idx = len(unique_domestic_chain_diam) // chain_makers
-        print(split_idx)
-
-        chain_maker_diam = []
-        for cm in range(chain_makers):
-
-            if cm < chain_makers - 1:
-                chain_maker_diam.append(
-                    unique_domestic_chain_diam[
-                        cm * split_idx : (cm + 1) * split_idx
-                    ]
-                )
-            else:
-                chain_maker_diam.append(
-                    unique_domestic_chain_diam[cm * split_idx :]
-                )
-
-        # Split up the domestic chains for each chain maker as orders.
-        chain_maker_orders = []
-        for cm in range(chain_makers):
-
-            print("\n\n DEBUGGING chain maker:", cm)
-            print("available diameters")
-            print(chain_maker_diam[cm])
-            temp = []
-            for diams in chain_maker_diam[cm]:
-                print("Diameters:", diams)
-                temp.append(
-                    domestic_chain[domestic_chain["diameter"] == diams]
-                )
-
-            chain_maker_orders.append(pd.concat(temp, axis=0).reset_index())
-
-            print("HEAD \n", chain_maker_orders[cm])
-            print("\nLength: ", len(chain_maker_orders[cm]))
-
-        print("\n\n DEBUGGING end")
-
-        self.chains = pd.concat(chain_maker_orders, axis=0).reset_index()
-
-        self.domestic_chains = [
-            [
-                Component(
-                    row["turbine_id"],
-                    row["line_id"],
-                    row["section_id"],
-                    row["diameter"],
-                    row["length"],
-                    row["mass"],
-                    row["thickness"],
-                    row["cost_rate"],
-                    _area,
-                )
-                for _, row, in chain_maker_orders[cm].iterrows()
-            ]
-            for cm in range(chain_makers)
-        ]
-
-        self.itl_chains = [
-            Component(
+        '''
+        self.itl_chains = [Component(
                 row["turbine_id"],
                 row["line_id"],
                 row["section_id"],
@@ -297,6 +231,7 @@ class MooringSystemSupplyChain(InstallPhase):
             )
             for _, row, in international_chain.iterrows()
         ]
+        '''
 
         # print("Internationally sourced chains: ", self.itl_chains)
         # print(f"Number of chains: {len(self.chains)}")
@@ -307,7 +242,7 @@ class MooringSystemSupplyChain(InstallPhase):
                 component="Chain",
                 num=n + 1,
                 area=self.config["chain_supply"]["space_required"],
-                sets=self.domestic_chains[n],
+                sets=self.chains[n],    # include each sublist of components for each chain manufacturer
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.chain_storage,
@@ -457,25 +392,15 @@ class MooringSystemSupplyChain(InstallPhase):
             anchors_df["area"] = (10 + anchors_df["diameter"] / 1e3) * (
                 10 + anchors_df["length"]
             )
+    
 
-        self.anchors = [
-            Component(
-                row["turbine_id"],
-                row["line_id"],
-                row["section_id"],
-                row["diameter"],
-                row["length"],
-                row["mass"],
-                row["thickness"],
-                row["cost_rate"],
-                row["area"],
-            )
-            for _, row, in anchors_df.iterrows()
-        ]
+        # organize anchor components into a list of lists based on the number of lines
+        self.anchors = self.split_into_assembly_lines(anchors_df, n=anchor_bays)
 
+        
         # print(f"Number of anchors: {len(self.anchors)}")
         # print(vars(self.anchors[5]))
-
+        '''
         # TODO: Finish the split logic
         if anchor_bays > 1:
             k, m = divmod(len(self.anchors), anchor_bays)
@@ -484,11 +409,11 @@ class MooringSystemSupplyChain(InstallPhase):
                 for i in range(anchor_bays)
             ]
         else:
-            anchor_set = self.anchors  # noqa F841
+            anchor_set = self.anchors
+        '''
+        #print("Anchor sets: ", type(anchor_set))
 
-        # print("Anchor sets: ", type(anchor_set))
-
-        self.anchor_sets = []
+        #self.anchor_sets = []
 
         # Loop through number of assembly lines. 1 anchor line won't cut it.
         for n in range(anchor_bays):
@@ -496,7 +421,7 @@ class MooringSystemSupplyChain(InstallPhase):
                 component="Anchors",
                 num=n + 1,
                 area=self.anchor_supply["space_required"],
-                sets=self.anchors,
+                sets=self.anchors[n],    # include each sublist of components for each anchor manufacturer
                 takt_time=takt,
                 takt_day_rate=takt_day_rate,
                 target=self.anchor_storage,
@@ -526,7 +451,8 @@ class MooringSystemSupplyChain(InstallPhase):
 
         transport_component_to_port(
             self.anchor_transport,
-            sets=len(self.anchors),
+            #sets=len(self.anchors),
+            sets=len([component for anchor_set in self.anchors for component in anchor_set]),   # regroup after assembly lines
             feed=self.anchor_storage,
             target=self.laydown,
             transit_time=transit_time,
@@ -577,6 +503,99 @@ class MooringSystemSupplyChain(InstallPhase):
             )
             self.env.register(c)
             self.chain_assembly_lines.append(c)
+
+
+    def split_into_assembly_lines(self, df, n=1, strategy=1):
+        '''Function that should divide up the components contained in 'df' into different 'bins',
+        where each bin gets manufactured by a different assembly line
+        
+        Strategy 1 = the same number of components get sent to each assembly line, regardless of size
+        Strategy 2 = the components are divided up between the assembly lines in as equal sets of 
+            bin sizes as they can.
+            Ex: [2, 2, 3, 3, 3, 4, 4] -> [2, 2, 4, 4]; [3, 3, 3]
+        Strategy 3 = the components are divided up based on the midpoint (diameter value), which uses
+            the linspace function: linspace(lowest value, highest value, n_assembly_lines + 1)
+            Ex: [1, 2, 2, 2, 2, 4, 5] -> [1, 2, 2, 2, 2]; [4, 5]
+        '''
+
+        component_list = []
+
+        if strategy == 1:
+
+            total_rows = len(df)
+            rows_per_set = total_rows // n
+
+            for d in range(n):
+
+                start_idx = d * rows_per_set
+                # For the last set, include any remainder
+                if d == n - 1:
+                    end_idx = total_rows
+                else:
+                    end_idx = (d + 1) * rows_per_set
+                subset = df.iloc[start_idx:end_idx]
+
+                component_set = [
+                    Component(
+                        row["turbine_id"],
+                        row["line_id"],
+                        row["section_id"],
+                        row["diameter"],
+                        row["length"],
+                        row["mass"],
+                        row["thickness"],
+                        row["cost_rate"],
+                        row["area"],
+                    )
+                    for _, row in subset.iterrows()
+                ]
+                component_list.append(component_set)
+        
+        elif strategy == 2 or strategy == 3:
+
+            if strategy == 2:
+                #### Set up lists of bins to sort different diameters to different assembly lines ####
+                unique_diameters = np.round(anchors_df['diameter'], 3).value_counts().index.values
+                unique_bins = anchors_df['diameter'].value_counts().values
+                sorted_indices = np.argsort(unique_diameters)
+                sorted_diameters = unique_diameters[sorted_indices]
+                sorted_bins = unique_bins[sorted_indices]
+
+                # -- Strategy to split list of diameters into as equal of sets as you can get with discrete numbers to send to each chain maker
+                n = int(anchor_bays)
+                cumsum_bins = np.cumsum(sorted_bins)
+                total = cumsum_bins[-1]
+                split_points = [total * i / n for i in range(1, n)]
+                split_indices = [np.abs(cumsum_bins - sp).argmin() for sp in split_points]
+                split_diameters = sorted_diameters[split_indices]
+                split_diameters = np.insert(split_diameters, 0, 0)
+                split_diameters = np.insert(split_diameters, len(split_diameters), sorted_diameters[-1])
+            
+            # -- Strategy to split list of diameters into sets of equally spaced diameters, regardless of how many chains are contained in each set
+            if strategy == 3:
+                split_diameters = np.linspace(sorted_diameters[0], sorted_diameters[-1], n + 1)
+
+            for d in range(len(split_diameters)-1):
+                component_set = [
+                    Component(
+                        row["turbine_id"],
+                        row["line_id"],
+                        row["section_id"],
+                        row["diameter"],
+                        row["length"],
+                        row["mass"],
+                        row["thickness"],
+                        row["cost_rate"],
+                        row["area"],
+                    )
+                    for _, row in df[
+                        (df["diameter"] > split_diameters[d]) &
+                        (df["diameter"] <= split_diameters[d+1])
+                    ].iterrows()
+                ]
+                component_list.append(component_set)
+        
+        return component_list
 
     @process
     def start_assembly_lines(self):

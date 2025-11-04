@@ -417,19 +417,31 @@ def transport_component_to_port(
                             f"Delay: Waiting for {component} to load.",
                             delay,
                         )
-
-                # Put item on transport if its at the site.
-                yield storage.put(item)
-                load += 1
-                yield transport.task(
-                    f"Loading {component}",
-                    0,
-                    cost=0,
-                    transport_storage=len(storage.items),
-                )
-
-                # When the transport is full, deliver items
-                if len(storage.items) == storage.capacity:
+                
+                # Check whether the transport becomes full once this item is loaded
+                # NOTE: this assumes the same railcar specs are used for both chain and rope, but instantiates two different Transport Agents
+                if component=='Chain':
+                    check = ( storage.current_cargo_mass + item.mass > storage.max_cargo_mass )
+                    storage._capacity = 10000
+                else:
+                    check = ( len(storage.items) + 1 == storage.capacity )
+                
+                # If it is to be full (check=True) once this item is loaded, don't load chain, but load rope or anchor
+                # If adding another chain section (by weight) is to exceed its capacity, skip the loading
+                # Otherwise, load rope/anchors if check=False (if the number of items is still less than the capacity)
+                if not (check and component=='Chain'):
+                    # Put item on transport if its at the site.
+                    yield storage.put(item)
+                    load += 1
+                    yield transport.task(
+                        f"Loading {component}",
+                        0,
+                        cost=0,
+                        transport_storage=len(storage.items),
+                    )
+                
+                # Regardless of whether items were loaded, run the transit task if the the vessel is at capacity
+                if check:
                     yield transport.task(
                         f"Full: Transport {component}s",
                         transit_time,
@@ -499,5 +511,18 @@ def transport_component_to_port(
                 )
                 transport.at_site = True
                 transport.at_port = False
+                
+                # load the chain component that was skipped over before the transport left to port
+                if (check and component=='Chain'):
+                    # Put item on transport if its at the site.
+                    yield storage.put(item)
+                    load += 1
+                    yield transport.task(
+                        f"Loading {component}",
+                        0,
+                        cost=0,
+                        transport_storage=len(storage.items),
+                    )
+                
 
         n += 1
