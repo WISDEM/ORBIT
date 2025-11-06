@@ -9,6 +9,9 @@ Unreleased
   configuration input.
 - Move the matplotlib import from the import section of ``/ORBIT/phases/design/array_system_design.py``
   to the ``CustomArraySystemDesign.plot_array_system`` for missing module error handling.
+- Adds a general layout ``DataFrame`` creation method as ``ArraySystemDesign.create_layout_df()`` that
+  is called by the ``save_layout`` method to maintain backwards compatibility, but opens up the ability
+  gather the layout without saving it to a file.
 
 1.2.4
 -----
