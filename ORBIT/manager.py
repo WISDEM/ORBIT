@@ -1570,13 +1570,13 @@ class ProjectManager:
 
     @property
     def onshore_substation_capex(self):
-        """Returns the onshore substation CapEx if available, otherwise None."""
+        """Returns the onshore substation CapEx if available in 'ElectricalDesign', otherwise 0."""
         if "ElectricalDesign" in self.phases:
             try:
                 return self.phases["ElectricalDesign"].detailed_output["export_system"]["onshore_substation_costs"]
             except KeyError:
-                return None
-        return None
+                return 0
+        return 0
 
     @property
     def onshore_substation_capex_per_kw(self):
