@@ -9,19 +9,19 @@ Unreleased
   configuration input.
 - Move the matplotlib import from the import section of ``/ORBIT/phases/design/array_system_design.py``
   to the ``CustomArraySystemDesign.plot_array_system`` for missing module error handling.
-- Updated default `soft_capex` factors. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`
+- Updated default `soft_capex` factors. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`_
     - `construction_insurance_factor` updated from 0.115 to 0.0207 based on industry benchmarking, resulting in higher construction insurance costs.  
     - `interest_during_construction` updated from 4.4% to 6.5% based on financial assumptions from the 2025 Annual Technology Baseline (ATB), increasing construction financing costs.  
     - `decommissioning_factor` updated from 0.175 to 0.2 based on industry benchmarking, leading to higher decommissioning costs than in previous versions.  
-- Updated default `project_capex` values. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`
+- Updated default `project_capex` values. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`_
     - `site_auction_price` increased from 100M to 105M USD to account for rent fees before operation.  
     - `site_assessment_cost`, `construction_plan_cost`, and `installation_plan_cost` increased from 50M, 1M, and 0.25M USD to 200M, 25M, and 25M USD, respectively.  
     - Total `project_capex` excluding `site_auction_price` now sums to 250M USD, aligning with DevEx recommendations based on industry benchmarking.  
     - These updates lead to higher default total project costs than in previous versions.  
-- Included onshore substation costs in BOS CapEx and project breakdown. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`
+- Included onshore substation costs in BOS CapEx and project breakdown. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`_
     - The `ElectricalDesign` module previously calculated onshore substation costs but did not include them in `capex_breakdown` or `bos_capex`.  
     - These costs are now incorporated when `ElectricalDesign` is used, resulting in higher `bos_capex`, `soft_capex`, and `total_capex` than in prior versions.  
-- Cable configuration file updates. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`
+- Cable configuration file updates. `PR #201 <https://github.com/WISDEM/ORBIT/pull/201>`_
     - Added a new dynamic cable configuration file for floating cases: `library/cables/XLPE_1200mm_220kV_dynamic.yaml`.  
     - Updated cost values for `library/cables/XLPE_630mm_66kV.yaml` and `library/cables/XLPE_630mm_66kV_dynamic.yaml` based on industry benchmarking.  
     - All cable cost updates are expressed in 2024 USD for consistency with other library configuration files.  
