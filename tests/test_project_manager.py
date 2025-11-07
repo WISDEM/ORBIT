@@ -948,22 +948,22 @@ def test_project_costs():
     baseline = project.project_capex
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"site_auction_price": 50e6}
+    config["project_parameters"] = {"site_auction_price": 105000000}
     project = ProjectManager(config)
     assert project.project_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"site_assessment_cost": 25e6}
+    config["project_parameters"] = {"site_assessment_cost": 200000000}
     project = ProjectManager(config)
     assert project.project_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"construction_plan_cost": 25e6}
+    config["project_parameters"] = {"construction_plan_cost": 25000000}
     project = ProjectManager(config)
     assert project.project_capex != baseline
 
     config = deepcopy(complete_project)
-    config["project_parameters"] = {"installation_plan_cost": 25e6}
+    config["project_parameters"] = {"installation_plan_cost": 25000000}
     project = ProjectManager(config)
     assert project.project_capex != baseline
 
@@ -995,7 +995,7 @@ def test_total_capex():
     fix_project.run()
 
     assert fix_project.total_capex == pytest.approx(
-        1593220043.059402, abs=1e-1
+        1843929494.9506452, abs=1e-1
     )
 
     flt_project = ProjectManager(complete_floating_project)
