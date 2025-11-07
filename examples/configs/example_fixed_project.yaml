@@ -40,8 +40,7 @@ design_phases:
 - MonopileDesign
 - ScourProtectionDesign
 - ArraySystemDesign
-- ExportSystemDesign
-- OffshoreSubstationDesign
+- ElectricalDesign
 install_phases:
   ArrayCableInstallation: 0
   ExportCableInstallation: 2000
