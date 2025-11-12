@@ -1,0 +1,13 @@
+# Caveat: cable specs not from a spec sheet
+# Assumed to have a cable with these costs
+# and a capacity of 400 MW (seen on industry)
+ac_resistance: 0.16        # ohm/km
+capacitance: 190           # nF/km
+conductor_size: 1200       # mm^2
+cost_per_km:  1801082      # $
+current_capacity: 1125     # A
+inductance: 0.38           # mH/km
+linear_density: 115        # t/km
+rated_voltage: 220         # kV
+cable_type: HVAC           # HVDC vs HVAC
+name: XLPE_1200mm_220kV_dynamic

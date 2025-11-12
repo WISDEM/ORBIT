@@ -1,7 +1,7 @@
 ac_resistance: 0.04
 capacitance: 300
 conductor_size: 630
-cost_per_km: 483084
+cost_per_km: 650000
 current_capacity: 775
 inductance: 0.35
 linear_density: 42.5
