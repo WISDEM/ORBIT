@@ -365,7 +365,7 @@ class ProjectManager:
                 " commissioning_factor)"
             ),
             "construction_insurance_factor": (
-                "float (optional, default: 0.0115)"
+                "float (optional, default: 0.0207)"
             ),
             "construction_financing_factor": (
                 "$/kW (optional, default: value calculated using"
@@ -379,7 +379,7 @@ class ProjectManager:
             ),
             "tax_rate": "float (optional, default: 0.26",
             "interest_during_construction": (
-                "float (optional, default: 0.044"
+                "float (optional, default: 0.065"
             ),
             "procurement_contingency_factor": (
                 "float (optional, default: 0.0575)"
@@ -387,12 +387,12 @@ class ProjectManager:
             "installation_contingency_factor": (
                 "float (optional, default: 0.345)"
             ),
-            "decommissioning_factor": ("float (optional, default: 0.1725)"),
+            "decommissioning_factor": ("float (optional, default: 0.2)"),
             "commissioning_factor": "float (optional, default: 0.0115)",
-            "site_auction_price": "$ (optional, default: 100e6)",
-            "site_assessment_cost": "$ (optional, default: 50e6)",
-            "construction_plan_cost": "$ (optional, default: 1e6)",
-            "installation_plan_cost": "$ (optional, default: 0.25e6)",
+            "site_auction_price": "$ (optional, default: 105e6)",
+            "site_assessment_cost": "$ (optional, default: 200e6)",
+            "construction_plan_cost": "$ (optional, default: 25e6)",
+            "installation_plan_cost": "$ (optional, default: 25e6)",
         }
 
         config["design_phases"] = [*design_phases.keys()]
@@ -670,7 +670,7 @@ class ProjectManager:
 
         if phase.installation_capex:
             self.installation_costs[name] = phase.installation_capex
-
+        
         return time, logs
 
     def get_phase_class(self, phase):
@@ -746,6 +746,8 @@ class ProjectManager:
         self.detailed_outputs = self.merge_dicts(
             self.detailed_outputs, phase.detailed_output
         )
+
+        
 
     def run_multiple_phases_in_serial(self, phase_list, **kwargs):
         """
@@ -1054,6 +1056,8 @@ class ProjectManager:
             "npv": self.npv,
             "supply_chain_capex": self.supply_chain_capex,
             "supply_chain_capex_kw": self.supply_chain_capex_per_kw,
+            "onshore_substation_capex": self.onshore_substation_capex,
+            "onshore_substation_capex_kw": self.onshore_substation_capex_per_kw,
         }
 
         if include_logs:
@@ -1442,6 +1446,8 @@ class ProjectManager:
             else:
                 outputs[name] = cost
 
+        outputs["Onshore Substation"] = self.onshore_substation_capex
+        
         outputs["Turbine"] = self.turbine_capex
 
         outputs["Soft"] = self.soft_capex
@@ -1491,7 +1497,7 @@ class ProjectManager:
     def bos_capex(self):
         """Returns total balance of system CapEx."""
 
-        return self.system_capex + self.installation_capex
+        return self.system_capex + self.installation_capex + self.onshore_substation_capex
 
     @property
     def bos_capex_per_kw(self):
@@ -1563,6 +1569,27 @@ class ProjectManager:
         return _capex
 
     @property
+    def onshore_substation_capex(self):
+        """Returns the onshore substation CapEx if available in 'ElectricalDesign', otherwise 0."""
+        if "ElectricalDesign" in self.phases:
+            try:
+                return self.phases["ElectricalDesign"].detailed_output["export_system"]["onshore_substation_costs"]
+            except KeyError:
+                return 0
+        return 0
+
+    @property
+    def onshore_substation_capex_per_kw(self):
+        """Returns the onshore substation CapEx/kW.
+        """
+        if "ElectricalDesign" in self.phases:
+            try:
+                return self.onshore_substation_capex / (self.capacity * 1000)
+            except KeyError:
+                return None
+        return None
+        
+    @property
     def overnight_capex(self):
         """Returns the overnight capital cost of the project."""
 
@@ -1616,7 +1643,7 @@ class ProjectManager:
         )
 
         contruction_insurance_factor = self.project_params.get(
-            "construction_insurance_factor", 0.0115
+            "construction_insurance_factor", 0.0207
         )
 
         if construction_insurance_per_kW is not None:
@@ -1642,7 +1669,7 @@ class ProjectManager:
         )
 
         decommissioning_factor = self.project_params.get(
-            "decommissioning_factor", 0.175
+            "decommissioning_factor", 0.2
         )
 
         if decommissioning_per_kW is not None:
@@ -1747,7 +1774,7 @@ class ProjectManager:
         )
         tax_rate = self.project_params.get("tax_rate", 0.26)
         interest_during_construction = self.project_params.get(
-            "interest_during_construction", 0.044
+            "interest_during_construction", 0.065
         )
 
         _check = 0
@@ -1808,15 +1835,15 @@ class ProjectManager:
         the keys below should be passed to the 'project_parameters' subdict.
         """
 
-        site_auction = self.project_params.get("site_auction_price", 122698898)
+        site_auction = self.project_params.get("site_auction_price", 105000000)
         site_assessment = self.project_params.get(
-            "site_assessment_cost", 61349449
+            "site_assessment_cost", 200000000
         )
         construction_plan = self.project_params.get(
-            "construction_plan_cost", 1226989
+            "construction_plan_cost", 25000000
         )
         installation_plan = self.project_params.get(
-            "installation_plan_cost", 306747
+            "installation_plan_cost", 25000000
         )
 
         return sum(
