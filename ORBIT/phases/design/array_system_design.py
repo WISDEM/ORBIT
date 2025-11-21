@@ -474,7 +474,7 @@ class ArraySystemDesign(CableSystem):
         layout_df = self.create_layout_df()
         data = [layout_df.columns] + layout_df.to_numpy().tolist()
         print(
-            f"Saving custom array CSV to: <library_path>/cables/{save_name}.csv"  # noqa: E501
+            f"Saving custom array CSV to: <library_path>/{folder}/{save_name}.csv"  # noqa: E501
         )
         export_library_specs(folder, save_name, data, file_ext="csv")
         if return_df:
