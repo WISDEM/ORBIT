@@ -361,36 +361,15 @@ class ArraySystemDesign(CableSystem):
         self._create_wind_farm_layout()
         self._create_cable_section_lengths()
 
-    def save_layout(self, save_name, return_df=False, folder="cables"):
-        """Outputs a csv of the substation and turbine positional and cable
-        related components.
-
-        Parameters
-        ----------
-        save_name : str
-            The name of the file without an extension to be saved to
-            <library_path>/cables/<save_name>.csv.
-        return_df : bool, optional
-            If true, returns layout_df, a pandas.DataFrame of the cabling
-            layout, by default False.
-        folder : str, optional
-            If "cables", then the layout will saved to the "cables" folder, and
-            if "plant", then the layout will be saved to the "project/plant"
-            folder.
+    def create_layout_df(self) -> pd.DataFrame:
+        """Creates a Pandas DataFrame layout.
 
         Returns
         -------
         pd.DataFrame
-            The DataFrame with the layout data.
-
-        Raises
-        ------
-        ValueError
-            Raised if ``folder`` is not one of "cables" or "plant".
+            Wind farm layout compatible with the ``CustomArrayDesignLayout`` or
+            for use with external models.
         """
-        if folder not in ("cables", "plant"):
-            raise ValueError("`folder` must be one of: 'cables' or plant'.")
-
         num_turbines = self.system.num_turbines
         columns = [
             "id",
@@ -460,9 +439,42 @@ class ArraySystemDesign(CableSystem):
         layout_df.cable_length = [""] + self.sections_cable_lengths.flatten()[
             :num_turbines
         ].tolist()
-        data = [columns] + layout_df.to_numpy().tolist()
+        return layout_df
+
+    def save_layout(self, save_name, return_df=False, folder="cables"):
+        """Outputs a csv of the substation and turbine positional and cable
+        related components.
+
+        Parameters
+        ----------
+        save_name : str
+            The name of the file without an extension to be saved to
+            <library_path>/cables/<save_name>.csv.
+        return_df : bool, optional
+            If true, returns layout_df, a pandas.DataFrame of the cabling
+            layout, by default False.
+        folder : str, optional
+            If "cables", then the layout will saved to the "cables" folder, and
+            if "plant", then the layout will be saved to the "project/plant"
+            folder.
+
+        Returns
+        -------
+        pd.DataFrame
+            The DataFrame with the layout data.
+
+        Raises
+        ------
+        ValueError
+            Raised if ``folder`` is not one of "cables" or "plant".
+        """
+        if folder not in ("cables", "plant"):
+            raise ValueError("`folder` must be one of: 'cables' or plant'.")
+
+        layout_df = self.create_layout_df()
+        data = [layout_df.columns] + layout_df.to_numpy().tolist()
         print(
-            f"Saving custom array CSV to: <library_path>/cables/{save_name}.csv"  # noqa: E501
+            f"Saving custom array CSV to: <library_path>/{folder}/{save_name}.csv"  # noqa: E501
         )
         export_library_specs(folder, save_name, data, file_ext="csv")
         if return_df:
