@@ -633,7 +633,9 @@ class ProjectManager:
         _class = self.get_phase_class(name)
         _config = self.create_config_for_phase(name)
         processes = _config.pop("processes", {})
-        kwargs = {**kwargs, **processes}
+
+        config_process_times = self.config.get("process_times", {})     # Extract new process times from config
+        kwargs = {**kwargs, **processes, **config_process_times}        # add them to the main kwargs dict
 
         if _catch:
             try:

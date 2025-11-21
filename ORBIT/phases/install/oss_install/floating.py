@@ -93,13 +93,28 @@ class FloatingSubstationInstallation(InstallPhase):
         substructure = self.config["offshore_substation_substructure"][
             "unit_cost"
         ]
-        # mooring system
-        num_mooring_lines = self.config["mooring_system"]["num_lines"]
-        line_cost = self.config["mooring_system"]["line_cost"]
-        anchor_cost = self.config["mooring_system"]["anchor_cost"]
-        mooring_system_for_each_oss = num_mooring_lines * (
-            line_cost + anchor_cost
-        )
+        
+        # mooring system - handle both standard and custom design classes
+        design_class = self.config["mooring_system"].get("design_class", "standard")
+        
+        if design_class == "standard":
+            # Standard design: values are per-platform
+            num_mooring_lines = self.config["mooring_system"]["num_lines"]
+            line_cost = self.config["mooring_system"]["line_cost"]
+            anchor_cost = self.config["mooring_system"]["anchor_cost"]
+            mooring_system_for_each_oss = num_mooring_lines * (line_cost + anchor_cost)
+            
+        elif design_class == "custom":
+            # Custom design: values are project totals, so divide by number of platforms
+            num_platforms = self.config["plant"]["num_turbines"]
+            total_line_cost = self.config["mooring_system"]["line_cost"]
+            total_anchor_cost = self.config["mooring_system"]["anchor_cost"]
+            
+            # Calculate average per-platform mooring cost
+            mooring_system_for_each_oss = (total_line_cost + total_anchor_cost) / num_platforms
+            
+        else:
+            raise ValueError(f"Unknown design_class: {design_class}")
 
         return self.num_substations * (
             topside + substructure + mooring_system_for_each_oss

@@ -372,6 +372,11 @@ class CustomMooringSystemDesign(MooringSystemDesign):
     def __init__(self, config, **kwargs):
         """Creates an Instance of 'CustomMooringSystemDesign'."""
 
+        # Check for conflicting mooring_system section in config
+        if "mooring_system" in config:
+            print("    WARNING: Config contains 'mooring_system' section. CustomMooringSystemDesign looks for "
+                  "     'mooring_system_design' as to not conflict with design results stored in 'mooring_system'")
+
         self._design = config.get("mooring_system_design", {})
 
         self.num_turbines = config["plant"]["num_turbines"]
@@ -433,8 +438,7 @@ class CustomMooringSystemDesign(MooringSystemDesign):
         #self._check_number_lines()
         self._check_number_turbines()
 
-        self.chain = self.df_by_section_id("chain_")
-        # print("From Mooring System Design: ", self.chain.head())
+        self.chain = self.df_by_section_id("chain")
         self.rope = self.df_by_section_id("polyester")
         self.anchors = self.df_by_section_id("_anchor")
         

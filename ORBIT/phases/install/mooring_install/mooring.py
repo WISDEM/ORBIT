@@ -25,7 +25,10 @@ class MooringSystemInstallation(InstallPhase):
     expected_config = {
         "mooring_install_vessel": "dict | str",
         "site": {"depth": "m", "distance": "km"},
-        "plant": {"num_turbines": "int"},            
+        "plant": {"num_turbines": "int"},
+        "mooring_system_design": {
+            "installation_method": "str (optional, default: 'standard')"
+        },
     }
 
     def __init__(self, config, weather=None, **kwargs):
@@ -65,13 +68,18 @@ class MooringSystemInstallation(InstallPhase):
         self.anchor_cost = self.config["mooring_system"]["anchor_cost"]
         self.system_cost = self.config["mooring_system"]["system_cost"]
         self.design_class = self.config["mooring_system"]["design_class"]
+        
+        # Get installation method from config, default to 'standard'
+        self.installation_method = self.config.get("mooring_system_design", {}).get(
+            "installation_method", "standard"
+        )
 
         self.initialize_port()
         self.initialize_installation_vessel()
         self.initialize_components()
 
-        if self.design_class == 'standard':
-
+        if self.installation_method == 'standard':
+            # Install complete mooring systems
             install_mooring_systems(
                 self.vessel,
                 self.port,
@@ -81,9 +89,12 @@ class MooringSystemInstallation(InstallPhase):
                 **kwargs,
             )
 
-        elif self.design_class == 'custom':
-
-            install_all_anchors_then_moorings(self.vessel, self.port, distance, depth, self.num_anchors, self.num_lines, **kwargs)
+        elif self.installation_method == 'sequential':
+            # Install all anchors first, then all mooring lines
+            install_all_anchors_then_moorings(
+                self.vessel, self.port, distance, depth, 
+                self.num_anchors, self.num_lines, **kwargs
+            )
 
     @property
     def system_capex(self):
@@ -105,28 +116,47 @@ class MooringSystemInstallation(InstallPhase):
         self.vessel = vessel
 
     def initialize_components(self):
-        """Initializes the Cargo components at port."""
+        """Initializes the Cargo components at port."""        
         
-        if self.design_class == 'standard':
-        
-            system = MooringSystem(**self.config["mooring_system"])
+        if self.installation_method == 'standard':
+            # Standard installation: load complete mooring systems
+
             self.num_systems = self.config["plant"]["num_turbines"]
 
-            for _ in range(self.num_systems):
-                self.port.put(system)
-        
-        elif self.design_class == 'custom':
+            if self.design_class == 'standard':
+                # MooringSystemDesign
+                system = MooringSystem(**self.config["mooring_system"])
+                for _ in range(self.num_systems):
+                    self.port.put(system)
 
-            for i in range(self.num_anchors):
-                anchor = Anchor(i, **self.config["mooring_system"])
-                self.port.put(anchor)
+            elif self.design_class == 'custom':
+                # CustomMooringSystemDesign
+                for i in range(self.num_systems):
+                    system = MooringSystem(i, **self.config["mooring_system"])
+                    self.port.put(system)
+        
+        elif self.installation_method == 'sequential':
+            # Sequential installation: load all anchors, then all mooring lines
+
+            if self.design_class == 'standard':
+                # MooringSystemDesign
+                raise ValueError("Sequential installation method is not compatible with the standard mooring design. ")
             
-            for i in range(self.num_lines):
-                mooring = Mooring(i, **self.config["mooring_system"])
-                self.port.put(mooring)
+            elif self.design_class == 'custom':
+                # CustomMooringSystemDesign
+                for i in range(self.num_anchors):
+                    anchor = Anchor(i, **self.config["mooring_system"])
+                    self.port.put(anchor)
+                
+                for i in range(self.num_lines):
+                    mooring = Mooring(i, **self.config["mooring_system"])
+                    self.port.put(mooring)
         
         else:
-            raise ValueError(f"Mooring System Design class: {self.design_class} not recognized")
+            raise ValueError(
+                f"Installation method '{self.installation_method}' not recognized. "
+                "Valid options: 'standard', 'sequential'"
+            )
 
 
     @property
@@ -437,6 +467,7 @@ class MooringSystem(Cargo):
 
     def __init__(
         self,
+        i=None,
         num_lines=None,
         line_mass=None,
         anchor_mass=None,
@@ -445,10 +476,38 @@ class MooringSystem(Cargo):
     ):
         """Creates an instance of MooringSystem."""
 
-        self.num_lines = num_lines
-        self.line_mass = line_mass
-        self.anchor_mass = anchor_mass
-        self.anchor_type = anchor_type
+        # Store design class for use in properties
+        self.design_class = kwargs.get('design_class', 'standard')
+
+        if self.design_class == 'standard':
+            self.num_lines = num_lines
+            self.line_mass = line_mass
+            self.anchor_mass = anchor_mass
+            self.anchor_type = anchor_type
+
+        elif self.design_class == 'custom':
+            # Filter DataFrames for this turbine
+            self.chain = kwargs['chains'][kwargs['chains']['turbine_id'] == i]
+            self.rope = kwargs['ropes'][kwargs['ropes']['turbine_id'] == i]
+            self.anchor = kwargs['anchors'][kwargs['anchors']['turbine_id'] == i]
+
+            # Calculate number of lines for this specific turbine
+            self.num_lines = len(self.rope)  # One line per rope
+            self.line_mass = self.chain['mass'].sum() + self.rope['mass'].sum()
+            self.anchor_mass = self.anchor['mass'].sum()
+            
+            # Extract anchor type from first anchor's section_id
+            first_anchor = self.anchor.iloc[0]
+            section_id = first_anchor['section_id'].lower()
+            
+            if 'suction' in section_id:
+                self.anchor_type = 'Suction Pile'
+            elif 'dea' in section_id or 'drag' in section_id:
+                self.anchor_type = 'Drag Embedment'
+            elif 'dandg' in section_id:
+                self.anchor_type = 'D&G Pile'
+            else:
+                raise ValueError(f'Anchor type listed in {section_id} is not supported yet')
 
         self.deck_space = 0
 
@@ -456,7 +515,12 @@ class MooringSystem(Cargo):
     def mass(self):
         """Returns total system mass in t."""
 
-        return self.num_lines * (self.line_mass + self.anchor_mass)
+        if self.design_class == 'standard':
+            return self.num_lines * (self.line_mass + self.anchor_mass)
+        elif self.design_class == 'custom':
+            return self.line_mass + self.anchor_mass
+        else:
+            return self.num_lines * (self.line_mass + self.anchor_mass)
 
     @staticmethod
     def fasten(**kwargs):
@@ -488,7 +552,17 @@ class Anchor(Cargo):
         anchor_length = anchor['length']
         self.deck_space = (anchor_diameter + 3) * (anchor_length + 3)
     
-        self.anchor_type = 'Suction Pile' if 'suction' in anchor['section_id'] else 'D&G Pile'
+        # Extract anchor type from section_id
+        section_id = anchor['section_id'].lower()
+        
+        if 'suction' in section_id:
+            self.anchor_type = 'Suction Pile'
+        elif 'dea' in section_id or 'drag' in section_id:
+            self.anchor_type = 'Drag Embedment'
+        elif 'dandg' in section_id:
+            self.anchor_type = 'D&G Pile'
+        else:
+            raise ValueError(f'Anchor type in {section_id} is not supported yet')
 
         self.anchor_mass = anchor['mass']       # [t]
     
@@ -516,22 +590,37 @@ class Anchor(Cargo):
 class Mooring(Cargo):
     """Single Mooring Line Cargo Component."""
 
-    def __init__(self, i, chains=None, ropes=None, **kwargs):
+    def __init__(self, i, **kwargs):
         """Creates an instance of MooringSystem."""
 
-        self.chains = chains
-        self.ropes = ropes      # >>>>>> check whether these should be sorted or not <<<<<<
+        # Get all unique (turbine_id, line_id) pairs from the chains dataframe
+        unique_pairs = kwargs['chains'][['turbine_id', 'line_id']].drop_duplicates().sort_values(['turbine_id', 'line_id']).reset_index(drop=True)
+        
+        # Get the i-th pair
+        turbine_id = unique_pairs.loc[i, 'turbine_id']
+        line_id = unique_pairs.loc[i, 'line_id']
+        
+        # Filter chains and ropes for this specific turbine and mooring line
+        # This gets ALL chain sections for this specific turbine's mooring line
+        self.chains = kwargs['chains'][
+            (kwargs['chains']['turbine_id'] == turbine_id) & 
+            (kwargs['chains']['line_id'] == line_id)
+        ]
+        self.ropes = kwargs['ropes'][
+            (kwargs['ropes']['turbine_id'] == turbine_id) & 
+            (kwargs['ropes']['line_id'] == line_id)
+        ]
 
-        nchain = len(self.chains)
-        chain_bottom = self.chains.iloc[i]
-        chain_top = self.chains.iloc[i+(int(nchain/2))]     # >>>>>>> this needs updating (for standardized bridles)
-        rope = self.ropes.iloc[i]
+        # Calculate total mass for all chain segments in this line
+        self.chain_mass = self.chains['mass'].sum() if len(self.chains) > 0 else 0.0
+        self.rope_mass = self.ropes['mass'].sum() if len(self.ropes) > 0 else 0.0
 
-        self.chain_mass = chain_bottom['mass'] + chain_top['mass'] # [t]
-        self.rope_mass = rope['mass'] # [t]
-
-        self.chain_deck_space = ((chain_bottom['length'] + chain_top['length']) * 3.28/90) * 7.5
-        self.rope_deck_space = (6.4*4.5)*(rope['length']/2020)
+        # Calculate deck space based on total lengths
+        chain_total_length = self.chains['length'].sum() if len(self.chains) > 0 else 0.0
+        rope_total_length = self.ropes['length'].sum() if len(self.ropes) > 0 else 0.0
+        
+        self.chain_deck_space = (chain_total_length * 3.28 / 90) * 7.5
+        self.rope_deck_space = (6.4 * 4.5) * (rope_total_length / 2020)
         self.deck_space = self.chain_deck_space + self.rope_deck_space
     
     @property
