@@ -6,3 +6,6 @@ For detailed methodology, please see
 
 .. autoclass:: ORBIT.phases.design.ArraySystemDesign
    :members:
+
+.. autoclass:: ORBIT.phases.design.CustomArraySystemDesign
+   :members:
