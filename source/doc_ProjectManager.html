@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Manager &mdash; ORBIT 1.2.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=36f53d34"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parametric Manager" href="doc_ParametricManager.html" />
+    <link rel="prev" title="Methodology" href="methods.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation/index.html">Installing ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Project Manager</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run">Run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#properties">Properties</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#class-methods">Class Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#soft-capex-methodology">Soft CapEx Methodology</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#construction-insurance">Construction Insurance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#commissioning">Commissioning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#decommissioning">Decommissioning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#procurement-contingency">Procurement Contingency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installation-contingency">Installation Contingency</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#construction-financing">Construction Financing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc_DesignPhase.html">Design Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc_InstallPhase.html">Install Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc_CommonCost.html">Common Costs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="methods.html">Methodology</a></li>
+      <li class="breadcrumb-item active">Project Manager</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/doc_ProjectManager.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="project-manager">
+<span id="managertoc"></span><h1>Project Manager<a class="headerlink" href="#project-manager" title="Link to this heading"></a></h1>
+<p>The following pages cover the methodology behind the project manager.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Page currently under construction.</p>
+</div>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> is the primary system for interacting with ORBIT to simulate
+a wind project. Users can customize their project by specifying a a wide variety of
+parameters as a dictionary (see <a class="reference internal" href="tutorial/project_manager.html"><span class="doc">ProjectManager tutorial</span></a>).
+For more details of the code implementation, please see <a class="reference internal" href="api_ProjectManager.html"><span class="doc">Project Manager API</span></a>.</p>
+<p>It instantiates a class aggregates project parameters, specifies a start date, and interprets a weather
+profile, and it employs a collection of decorators, <cite>methods</cite>, and <cite>classmethods</cite> to run the simulation.
+Among these methods are <cite>design_phases</cite> and <cite>install_phases</cite> that serve as components to the simulation.
+Additionally, some methods search and catch key errors to avoid simulation issues, export progress logs,
+and save the outputs.</p>
+</section>
+<section id="run">
+<h2>Run<a class="headerlink" href="#run" title="Link to this heading"></a></h2>
+<p>This method checks to see if a design or install phase is instatiated prior to running them. Depending on
+which design phases are specified, each phase is run in no particular order and the results are added to
+<cite>.design_results</cite> dictionary. Conversely, the install phases can be run sequentially or as overlapped
+processes (see example: <a class="reference internal" href="examples.html"><span class="doc">Overlapping install</span></a>). It is worth noting, that ORBIT
+has built in logic to determine any dependency between install phases.</p>
+</section>
+<section id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Link to this heading"></a></h2>
+<p>The <cite>&#64;property</cite> decorators allow the <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> to access and manipulate the attributes of certain classes. Of the
+several properties some important ones are:</p>
+<div class="toctree-wrapper compound">
+</div>
+<ul class="simple">
+<li><p>capex_categories: CapEx Categories</p></li>
+<li><p>npv: Net Present Value</p></li>
+<li><p>turbine_capex: CapEx of the Wind Turbine.</p></li>
+<li><p>bos_capex: BOS CapEx includes the System CapEx and Installation CapEx.</p></li>
+<li><p>system_capex: Total system procurement cost.</p></li>
+<li><p>installation_capex: Total installation cost.</p></li>
+<li><p>project_capex: Project Capex includes, site auction, site assessment, construction plan, and installation plan costs.</p></li>
+<li><p>soft_capex_breakdown: Soft CapEx Categories</p></li>
+</ul>
+<p>Finally, these attributes are collected in an <cite>output</cite> dictionary.</p>
+</section>
+<section id="class-methods">
+<h2>Class Methods<a class="headerlink" href="#class-methods" title="Link to this heading"></a></h2>
+<p>The <cite>&#64;classmethod</cite> decorator allows the <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> to access and modify class-level attributes.</p>
+<ul class="simple">
+<li><p>register_design_phase: Add a custom design phase to the <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> class.</p></li>
+<li><p>register_install_phase: Add a custom install phase to the <code class="docutils literal notranslate"><span class="pre">ProjectManager</span></code> class.</p></li>
+</ul>
+</section>
+<section id="soft-capex-methodology">
+<h2>Soft CapEx Methodology<a class="headerlink" href="#soft-capex-methodology" title="Link to this heading"></a></h2>
+<p>The methodology outlined in Beiter et al. (2016) applies multipliers
+(or assumed factors) to the magnitude of capital expenditure (CapEx)
+components in order to derive the Soft CapEx components. The factors used are
+consistent with those used in Stehly et al. (2024), enabling the soft costs to
+scale in proportion to the other costs calculated within ORBIT. Soft Capex is
+calculated using the default multipliers and parameters from Stehly et al. (2024).
+Users can specify any of the <code class="xref py py-attr docutils literal notranslate"><span class="pre">soft_capex_factors</span></code> below if they prefer to
+override the default values. Additionally, users can assign $/kW values for
+any calculated Soft CapEx component, ending with <span class="math notranslate nohighlight">\(\_capex\)</span>, for
+simplicity. The soft CapEx component’s definitions and their calculations
+are provided below.</p>
+<section id="construction-insurance">
+<h3>Construction Insurance<a class="headerlink" href="#construction-insurance" title="Link to this heading"></a></h3>
+<p>All risk property, delays in start-up, third party liability, and broker’s fees.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">construction_insurance_factor</span></code> = 0.0115</p>
+<p><span class="math notranslate nohighlight">\(construction\_insurance\_capex = construction\_insurance\_factor \quad \times\)</span>
+<span class="math notranslate nohighlight">\(\hspace{10em} (turbine\_capex + bos\_capex + project\_capex )\)</span></p>
+</section>
+<section id="commissioning">
+<h3>Commissioning<a class="headerlink" href="#commissioning" title="Link to this heading"></a></h3>
+<p>Cost to integrate and commission the project.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">commissioning_factor</span></code> = 0.0115</p>
+<p><span class="math notranslate nohighlight">\(commissioning\_capex = commissioning\_factor \quad \times\)</span>
+<span class="math notranslate nohighlight">\(\hspace{10em} (turbine\_capex + bos\_capex + project\_capex )\)</span></p>
+</section>
+<section id="decommissioning">
+<h3>Decommissioning<a class="headerlink" href="#decommissioning" title="Link to this heading"></a></h3>
+<p>Surety bond lease to ensure that the burden for removing offshore structures
+at the end of their useful life does not fall on taxpayers.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">decommissioning_factor</span></code> = 0.175</p>
+<p><span class="math notranslate nohighlight">\(decommissioning\_capex = decommissioning\_factor \times installation\_capex\)</span></p>
+</section>
+<section id="procurement-contingency">
+<h3>Procurement Contingency<a class="headerlink" href="#procurement-contingency" title="Link to this heading"></a></h3>
+<p>Provision for an unforeseen event or circumstance during the procurement process.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">procurement_contingency_factor</span></code> = 0.0575</p>
+<p><span class="math notranslate nohighlight">\(procurement\_contingency\_capex = procurement\_contingency\_factor \quad \times\)</span>
+<span class="math notranslate nohighlight">\(\hspace{10em} (turbine\_capex + bos\_capex + project\_capex - installation\_capex)\)</span></p>
+</section>
+<section id="installation-contingency">
+<h3>Installation Contingency<a class="headerlink" href="#installation-contingency" title="Link to this heading"></a></h3>
+<p>Provision for an unforeseen event or circumstance during the installation process.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">installation_contingency_factor</span></code> = 0.0345</p>
+<p><span class="math notranslate nohighlight">\(installation\_contingency\_capex = installation\_contingency\_factor \times installation\_capex\)</span></p>
+</section>
+<section id="construction-financing">
+<h3>Construction Financing<a class="headerlink" href="#construction-financing" title="Link to this heading"></a></h3>
+<p>Additional expenses incurred from interest on loans used to fund a construction
+project, calculated based on the borrowing period and the project’s spending schedule.</p>
+<p>The spend schedule is based on industry data from a U.S. project.</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">spend_schedule</span></code> =</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Year</p></th>
+<th class="head"><p>Amount</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>0.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>0.25</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>0.30</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>0.10</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>0.10</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>0.00</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Amount in the spend schedule must sum to 1.0 (100%).</p>
+</div>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">interest_during_construction</span></code> = 0.044</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">tax_rate</span></code> = 0.26</p>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">construction_financing_factor</span></code> =</p>
+<div class="math notranslate nohighlight">
+\[\sum_{k=0}^{n-1} spend\_schedule_k \times (1 + (1 - tax\_rate) \times ((1+ interest\_during\_construction)^{k+0.5} - 1)\]</div>
+<p>where <em>k</em> is the current year and <em>n</em> is the total number of years in <code class="xref py py-attr docutils literal notranslate"><span class="pre">spend_schedule</span></code>.</p>
+<p><span class="math notranslate nohighlight">\(construction\_financing\_capex = (construction\_financing\_factor - 1) \quad \times\)</span>
+<span class="math notranslate nohighlight">\(\hspace{10em} (construction\_insurance\_capex + commissioning\_capex \quad +\)</span>
+<span class="math notranslate nohighlight">\(\hspace{11em} decommissioning\_capex + procurement\_contingency\_capex \quad +\)</span>
+<span class="math notranslate nohighlight">\(\hspace{12em} installation\_contingency\_capex + turbine\_capex + bos\_capex)\)</span></p>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Stehly, T., Duffy, P., &amp; Mulas Hernando, D. (2024). Cost of Wind Energy Review: 2024 Edition. <a class="reference external" href="https://doi.org/10.2172/2479271">https://doi.org/10.2172/2479271</a></p></li>
+<li><p>Beiter, P., Musial, W., Kilcher, L., Sirnivas, S., Stehly, T., Gevorgian, V., Mooney, M., Scott, G., Smith, A., Damiani, R., &amp; Maness, M. (2016). A Spatial-Economic Cost-Reduction Pathway Analysis for U.S. Offshore Wind Energy Development from 2015-2030. <a class="reference external" href="https://doi.org/10.2172/1324526">https://doi.org/10.2172/1324526</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="methods.html" class="btn btn-neutral float-left" title="Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="doc_ParametricManager.html" class="btn btn-neutral float-right" title="Parametric Manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

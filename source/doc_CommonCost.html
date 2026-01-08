@@ -1,0 +1,166 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Common Costs &mdash; ORBIT 1.2.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=36f53d34"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Publications" href="publications/index.html" />
+    <link rel="prev" title="Mooring System Installation Methodology" href="phases/install/mooring/doc_MooringSystemInstallation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../contents.html" class="icon icon-home">
+            ORBIT
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro/index.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation/index.html">Installing ORBIT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/index.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="methods.html">Methodology</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="doc_ProjectManager.html">Project Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc_ParametricManager.html">Parametric Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc_DesignPhase.html">Design Phases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc_InstallPhase.html">Install Phases</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Common Costs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cost-by-procurement-year">Cost by Procurement Year</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="publications/index.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">ORBIT Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">ORBIT Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../contents.html">ORBIT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../contents.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="methods.html">Methodology</a></li>
+      <li class="breadcrumb-item active">Common Costs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/doc_CommonCost.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="common-costs">
+<span id="coststoc"></span><h1>Common Costs<a class="headerlink" href="#common-costs" title="Link to this heading"></a></h1>
+<p>Establishing cost values for each installation process, component design, and project
+parameter is essential to ORBIT’s ability to calculate CapEx. Common costs and cost rates
+were specified as default values in each module and thus spread out across multiple files.
+Further, as modules were added or updated over time, these common costs were either updated
+or were simply left as an older value. As of v1.2 (see <a class="reference internal" href="changelog.html"><span class="doc">ORBIT Changelog</span></a>), all the common costs in the design modules
+were centralized under <code class="docutils literal notranslate"><span class="pre">common_cost.yaml</span></code>. That way, users can access a single file and
+update any number of costs they wish to change.</p>
+<section id="cost-by-procurement-year">
+<h2>Cost by Procurement Year<a class="headerlink" href="#cost-by-procurement-year" title="Link to this heading"></a></h2>
+<p>Several users and industries partners have noted that some costs are out of date and
+therefore may not fully represent a project. We applied method to adjust to account for
+commodity, consumer, and labor indices as well as inflation to update the common cost of
+certain components. The following figure is a snapshot from the spreadsheet <cite>defaults/cost_by_procurement.png</cite>,
+and it shows the <cite>Class</cite>, <cite>attribute_name</cite>, <cite>units</cite>, and the cost value in 2024 USD. In
+future releases, these costs will adjust based on the market indices so any user
+can be sure that the common costs in their model is not outdated.</p>
+<figure class="align-center" id="id1">
+<img alt="../_images/cost_by_procurement.png" src="../_images/cost_by_procurement.png" />
+<figcaption>
+<p><span class="caption-text">Cost by Procurement Year. Note that values are inflated from the procurement year USD to 2024 USD using CPI</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The spreadsheet above is for tracking purposes, and the common cost values are added to the
+files shown below. Costs for all the <code class="docutils literal notranslate"><span class="pre">DesignPhases</span></code> are stored in <code class="docutils literal notranslate"><span class="pre">common_cost.yaml</span></code>; cable costs
+are stored in each cable file in the <code class="docutils literal notranslate"><span class="pre">library/cables</span></code> folder; vessel costs are stored
+in each vessel file in the <code class="docutils literal notranslate"><span class="pre">library/vessels</span></code> folder; and project costs are stored in <code class="docutils literal notranslate"><span class="pre">manager.py</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">orbit</span><span class="o">/</span><span class="n">ORBIT</span><span class="o">/</span><span class="n">core</span><span class="o">/</span><span class="n">defaults</span><span class="o">/</span><span class="n">common_cost</span><span class="o">.</span><span class="n">yaml</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">orbit</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">cables</span><span class="o">/*.</span><span class="n">yaml</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">orbit</span><span class="o">/</span><span class="n">library</span><span class="o">/</span><span class="n">vessels</span><span class="o">/*.</span><span class="n">yaml</span>
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">orbit</span><span class="o">/</span><span class="n">ORBIT</span><span class="o">/</span><span class="n">manager</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Questions regarding the methodology or organization of the common costs? Reach out to the <a class="reference internal" href="team.html"><span class="doc">ORBIT Team</span></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page is under construction and may receive an example in future releases.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="phases/install/mooring/doc_MooringSystemInstallation.html" class="btn btn-neutral float-left" title="Mooring System Installation Methodology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="publications/index.html" class="btn btn-neutral float-right" title="Publications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, National Renewable Energy Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
